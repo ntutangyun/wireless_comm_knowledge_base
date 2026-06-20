@@ -1,0 +1,162 @@
+{
+  "id": "net-security-03",
+  "title": {
+    "en": "How 802.1X Guards a Port: Architecture, Keys, PAE and PAC",
+    "zh": "802.1X 如何守护一个端口：架构、密钥、PAE 与 PAC"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1X-2020 answers one deceptively simple question: when a device plugs into a LAN (Local Area Network) port, should it be allowed to send and receive traffic, and on what terms? This lesson walks through Clause 6, the conceptual heart of the standard. Clause 6 does not define bits-on-the-wire — it explains the principles so that the detailed machinery in later clauses makes sense. We will name every acronym on first use and end with a coverage map that points at the exact subclause for each idea.",
+      "zh": "IEEE Std 802.1X-2020 回答了一个看似简单的问题：当一台设备接入局域网（LAN，Local Area Network）端口时，是否应允许它收发流量？又依据什么条件？本课讲解第 6 章——整部标准的概念核心。第 6 章并不定义线路上的具体比特，而是阐明工作原理，让后续章节的细节得以被理解。我们会在每个缩写首次出现时给出全称，并以一张覆盖映射表收尾，为每个概念标出确切的子条款。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.1 lays out the architecture. The thing being protected is the port: the stack of entities behind a MAC (Media Access Control) Service access point through which traffic flows. Around that port sit a handful of cooperating functions — a credential held by a protocol entity attached to the same system, a mutual authentication exchange between peer ports that yields a success/failure result plus a token of cryptographic keys, a step that conveys authorization data to the port's clients, a key-agreement step that builds a secure connectivity association (CA), and finally access control that permits or denies traffic based on the outcome. A common deployment centralizes the credential check in an AAA (Authentication, Authorization, and Accounting) server, so many access points share one administrative source of truth.",
+      "zh": "第 6.1 节给出整体架构。被保护的对象是“端口”：位于 MAC（Media Access Control，介质访问控制）服务接入点之后、流量经其通行的一组实体栈。围绕该端口有若干协作功能——由同一系统内的协议实体持有的凭据；对端口之间的相互认证交换，产生成功/失败结果以及一份由密码密钥组成的令牌；将授权数据传递给端口客户端的步骤；构建安全连接关联（CA，Connectivity Association）的密钥协商步骤；最后是依据结果允许或拒绝流量的访问控制。常见部署会把凭据校验集中到 AAA（Authentication, Authorization, and Accounting，认证、授权与计费）服务器，使众多接入点共享同一份管理权威。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"30\" width=\"150\" height=\"150\" rx=\"6\"/><rect x=\"290\" y=\"30\" width=\"150\" height=\"150\" rx=\"6\"/><text x=\"95\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Access Controlled System</text><text x=\"365\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Peer System</text><rect x=\"40\" y=\"50\" width=\"110\" height=\"26\" rx=\"3\"/><text x=\"95\" y=\"67\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Controlled Port</text><rect x=\"40\" y=\"86\" width=\"110\" height=\"26\" rx=\"3\"/><text x=\"95\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PAE + auth</text><rect x=\"40\" y=\"122\" width=\"110\" height=\"26\" rx=\"3\"/><text x=\"95\" y=\"139\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Access control</text><rect x=\"310\" y=\"86\" width=\"110\" height=\"26\" rx=\"3\"/><text x=\"365\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PAE + credential</text><line x1=\"150\" y1=\"99\" x2=\"310\" y2=\"99\"/><text x=\"230\" y=\"93\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Authentication + Key Agreement</text><text x=\"230\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">over the LAN (CA)</text><rect x=\"185\" y=\"160\" width=\"90\" height=\"26\" rx=\"3\"/><text x=\"230\" y=\"177\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">AAA Server</text><line x1=\"95\" y1=\"148\" x2=\"200\" y2=\"160\" stroke-dasharray=\"4 3\"/></svg>",
+      "caption": {
+        "en": "Clause 6.1's processes: a Controlled Port whose use is gated by a mutual authentication and key-agreement exchange between two PAEs, often backed by a central AAA server.",
+        "zh": "第 6.1 节的各个过程：受控端口的使用由两个 PAE 之间的相互认证与密钥协商交换把关，通常由中央 AAA 服务器支撑。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.2 is the key hierarchy. The root key is the Connectivity Association Key (CAK), named by a CAK Name (CKN). MKA — the MACsec Key Agreement protocol — never uses the CAK directly; it derives two children with AES in CMAC mode: the ICV Key (ICK), which proves a sender holds the CAK and protects message integrity, and the Key Encrypting Key (KEK), which the elected Key Server uses to wrap and hand out a stream of Secure Association Keys (SAKs) to every member of a CA. A CAK can be a pre-shared key or the product of an EAP (Extensible Authentication Protocol) exchange. The four sub-parts cover the mechanics: 6.2.1 the key derivation function (KDF, a NIST SP 800-108 counter-mode construction using AES-CMAC), 6.2.2 deriving a pairwise CAK and CKN from the EAP Master Session Key plus the two MAC addresses, 6.2.3 caching a CAK and scoping it with a Key Management Domain (KMD), and 6.2.4 algorithm agility so future ciphers can slot in.",
+      "zh": "第 6.2 节是密钥层级。根密钥是连接关联密钥（CAK，Connectivity Association Key），由 CAK 名称（CKN，CAK Name）标识。MKA——即 MACsec 密钥协商协议（MACsec Key Agreement）——从不直接使用 CAK，而是用 CMAC 模式的 AES 派生两个子密钥：ICV 密钥（ICK，ICV Key），用以证明发送方持有 CAK 并保护消息完整性；密钥加密密钥（KEK，Key Encrypting Key），由选举出的密钥服务器用来封装并分发一连串安全关联密钥（SAK，Secure Association Key）给某个 CA 的所有成员。CAK 可以是预共享密钥，也可以是 EAP（Extensible Authentication Protocol，可扩展认证协议）交换的产物。四个子节涵盖其机制：6.2.1 密钥派生函数（KDF，基于 NIST SP 800-108 计数器模式、使用 AES-CMAC）；6.2.2 从 EAP 主会话密钥及两个 MAC 地址派生成对 CAK 与 CKN；6.2.3 缓存 CAK 并以密钥管理域（KMD，Key Management Domain）界定其作用范围；6.2.4 算法敏捷性，便于未来密码算法接入。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  CAK[\"CAK (root key)\"] -->|CMAC| ICK[\"ICK: integrity / proof\"]\n  CAK -->|CMAC| KEK[\"KEK: key wrap\"]\n  KEK -->|wraps| SAK[\"SAK: protects user data\"]\n  KS[\"Key Server RNG\"] --> SAK",
+      "zh": "flowchart TD\n  CAK[\"CAK（根密钥）\"] -->|CMAC| ICK[\"ICK：完整性 / 证明\"]\n  CAK -->|CMAC| KEK[\"KEK：密钥封装\"]\n  KEK -->|封装| SAK[\"SAK：保护用户数据\"]\n  KS[\"密钥服务器 RNG\"] --> SAK"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map A — the key hierarchy in detail (6.2.1–6.2.4)",
+        "zh": "覆盖映射 A —— 密钥层级细节（6.2.1–6.2.4）"
+      },
+      "en": "6.2.1 (KDF): KDF(Key, Label, Context, Length) using a pseudorandom function that is AES-CMAC-128 for a 128-bit derivation key and AES-CMAC-256 for a 256-bit key, iterating a counter exactly as NIST SP 800-108 counter mode prescribes. 6.2.2 (EAP-derived CAK): the pairwise CAK = KDF(MSK bytes, label \"IEEE8021 EAP CAK\", mac1|mac2, length), where MSK is the EAP Master Session Key and mac1/mac2 are the lesser/greater of the two source MAC addresses; the CKN is derived similarly from the EAP-Session-ID with label \"IEEE8021 EAP CKN\". 6.2.3 (caching and scope): a CAK/CKN pair may be cached and reused with any port whose PAE shares the same Key Management Domain (KMD); the keys are never recomputed after first derivation, and caching can be inappropriate when authorization context is dynamic. 6.2.4 (algorithm agility): an explicit Algorithm Agility parameter in each MKPDU says how the ICV is computed from the CAK and how a CAK is derived from an EAP exchange, leaving room for future KDFs and ICV definitions via new parameter set types.",
+      "zh": "6.2.1（KDF）：KDF(Key, Label, Context, Length)，其伪随机函数在派生密钥为 128 位时为 AES-CMAC-128、为 256 位时为 AES-CMAC-256，按 NIST SP 800-108 计数器模式迭代计数器。6.2.2（EAP 派生 CAK）：成对 CAK = KDF(MSK 字节, 标签 \"IEEE8021 EAP CAK\", mac1|mac2, 长度)，其中 MSK 为 EAP 主会话密钥，mac1/mac2 为两个源 MAC 地址中较小/较大者；CKN 以标签 \"IEEE8021 EAP CKN\" 从 EAP-Session-ID 类似派生。6.2.3（缓存与作用范围）：CAK/CKN 对可被缓存，并可与处于同一密钥管理域（KMD）的任意端口的 PAE 复用；密钥在首次派生后不再重算，当授权上下文为动态时缓存可能并不合适。6.2.4（算法敏捷性）：每个 MKPDU 中的显式算法敏捷性参数说明如何由 CAK 计算 ICV、以及如何由 EAP 交换派生 CAK，并通过新的参数集类型为未来的 KDF 与 ICV 定义留出空间。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          41,
+          42,
+          43
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.3 introduces the Port Access Entity (PAE) — the brain that runs the protocols. Its detailed state machines live in Clause 12, but 6.3 gives the principles. 6.3.1 covers authentication exchanges: a PAE may run EAP over the Uncontrolled Port (the always-open path), carried by EAPOL (EAP over LAN) and driven by PACP (the Port Access Control Protocol), adopting one of two roles — Authenticator or Supplicant — with a third system role, the Authentication Server, possibly co-located or remote. 6.3.2 covers key agreement: a PAE may run MKA, can run multiple MKA instances (one per CAK), uses a group destination address so members discover each other, and distributes SAKs when a SecY is present. 6.3.3 covers pre-shared keys (PSKs): an administratively configured CAK with an enabled flag, a CKN, and a value — the value is never readable back out.",
+      "zh": "第 6.3 节引入端口访问实体（PAE，Port Access Entity）——运行各协议的“大脑”。其详细状态机见第 12 章，6.3 节给出原理。6.3.1 讲认证交换：PAE 可在非受控端口（始终开放的通路）上运行 EAP，由 EAPOL（EAP over LAN）承载、由 PACP（Port Access Control Protocol，端口访问控制协议）驱动，并担任两种角色之一——认证者（Authenticator）或申请者（Supplicant）；还有第三种系统角色认证服务器（Authentication Server），可与认证者同处一系统或远程部署。6.3.2 讲密钥协商：PAE 可运行 MKA，可并行运行多个 MKA 实例（每个 CAK 一个），使用组目的地址使成员相互发现，并在存在 SecY 时分发 SAK。6.3.3 讲预共享密钥（PSK，Pre-Shared Key）：经管理配置的 CAK，带启用标志、CKN 与密钥值——其值永不可被读回。"
+    },
+    {
+      "type": "prose",
+      "en": "The PAE story continues. 6.3.4 (interoperability and connectivity): a system can move from LAN to LAN without per-LAN pre-configuration, can fall back to unauthenticated connectivity to avoid stalls while PACP/MKA decide no capable peer is present, and manages reauthentication so a fresh CAK keeps SAKs flowing without interruption. Transitions between unauthenticated, unsecured, and secured states show up to clients as connectivity changes (via MAC_Operational) that should restart client state machines — for example re-running DHCP after authentication moves the host to a new subnet. 6.3.5 (announcements, identity, status): a PAE can announce a Network Identity (NID) and its KMD, solicit announcements, and advertise what kinds of access (open, restricted, MACsec-secured) it supports, speeding up a Supplicant's decision and enabling fast roaming from cached CAKs. 6.3.6 (multi-access LANs): a network access point can spin up multiple virtual ports — each with its own SecY and MKA instance — to give every station on a shared medium its own individually secured point-to-point connection, distinguished by the station's individual MAC address.",
+      "zh": "PAE 的内容继续。6.3.4（互操作与连接性）：系统可在不同 LAN 间移动而无需逐个 LAN 预配置；在 PACP/MKA 判定无可用对端期间，可回退到未认证连接以避免阻塞；并管理重认证，使新的 CAK 持续供给 SAK 而不中断。未认证、未加密、已加密三种状态间的切换会以连接性变化（通过 MAC_Operational）呈现给客户端，应触发客户端状态机重启——例如认证后主机被移至新子网时重新运行 DHCP。6.3.5（公告、身份与状态）：PAE 可公告网络标识（NID，Network Identity）及其 KMD、可征求公告，并广而告之它支持哪些接入方式（开放、受限、MACsec 加密），加快申请者的决策，并借助缓存的 CAK 实现快速漫游。6.3.6（多接入 LAN）：网络接入点可启用多个虚拟端口——每个都有自己的 SecY 与 MKA 实例——为共享介质上的每个站点提供各自单独加密的点对点连接，以站点的个体 MAC 地址加以区分。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.4 describes the Port Access Controller (PAC) — a 'protocol-less shim' that simply gates traffic. It owns three logical ports: a Common Port to the real medium, an always-open Uncontrolled Port the PAE uses for authentication, and a Controlled Port for everything else. The PAE makes the decision and flips the PAC's controlledPortEnabled variable through the Local Management Interface (LMI). Either SecY in the earlier figure could be a PAC when cryptographic protection is not needed; a SecY can even be configured to behave exactly like a PAC for interoperability. The three sub-parts: 6.4.1 Uncontrolled Port — every transmit/receive maps one-to-one to the Common Port, and its MAC_Operational tracks the Common Port; 6.4.2 Controlled Port — traffic passes through one-to-one if and only if controlledPortEnabled is set, and its MAC_Operational is True only when both the Common Port is operational and the port is enabled; 6.4.3 PAC management — exposes MAC_Enabled, MAC_Operational, point-to-point flags, and RFC 2863 interface counters for each port.",
+      "zh": "第 6.4 节描述端口访问控制器（PAC，Port Access Controller）——一个“无协议的薄垫层”，只负责为流量把关。它拥有三个逻辑端口：通向真实介质的公共端口（Common Port）、PAE 用于认证的始终开放的非受控端口（Uncontrolled Port），以及承载其余流量的受控端口（Controlled Port）。决策由 PAE 做出，并通过本地管理接口（LMI，Local Management Interface）翻转 PAC 的 controlledPortEnabled 变量。当不需要密码保护时，前图中的任一 SecY 都可替换为 PAC；为互操作，SecY 甚至可被配置为完全像 PAC 一样工作。三个子节：6.4.1 非受控端口——每次收发与公共端口一一对应，其 MAC_Operational 跟随公共端口；6.4.2 受控端口——当且仅当 controlledPortEnabled 置位时流量一一通过，其 MAC_Operational 仅在公共端口可用且端口启用时为真；6.4.3 PAC 管理——为每个端口暴露 MAC_Enabled、MAC_Operational、点对点标志及 RFC 2863 接口计数器。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The clean trick of 802.1X is splitting one physical port into two logical ones. The Uncontrolled Port is always open so the authentication conversation can happen even before you are trusted; the Controlled Port stays shut until controlledPortEnabled flips. No special 'login packet' format is needed — gating is purely about which logical port a frame is allowed to use.",
+      "zh": "802.1X 的巧妙之处在于把一个物理端口拆成两个逻辑端口。非受控端口始终开放，使认证对话在你被信任之前即可进行；受控端口在 controlledPortEnabled 翻转前一直关闭。无需任何特殊的“登录报文”格式——把关纯粹取决于允许某一帧使用哪个逻辑端口。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map B — PAE, PAC, link aggregation, and 802.11 (6.3.1–6.6)",
+        "zh": "覆盖映射 B —— PAE、PAC、链路聚合与 802.11（6.3.1–6.6）"
+      },
+      "en": "6.3.1 authentication exchanges — EAP over the Uncontrolled Port via EAPOL and PACP; Authenticator/Supplicant/Authentication Server roles. 6.3.2 key agreement — MKA over the Uncontrolled Port, multiple instances per CAK, group-addressed MKPDUs, SAK distribution with a SecY. 6.3.3 pre-shared keys — PSK CAK with enabled/CKN/value parameters; value never returned. 6.3.4 interoperability and connectivity — LAN-to-LAN portability, unauthenticated fallback, reauthentication, MAC_Operational-driven client restarts. 6.3.5 network announcements — NID and KMD announcement/solicitation, access-type advertising, fast roaming from cached CAKs. 6.3.6 multi-access LANs — virtual ports, one SecY + MKA per station, individual MAC addressing. 6.4 PAC — protocol-less shim with Common/Uncontrolled/Controlled Ports and controlledPortEnabled set via the LMI. 6.4.1 Uncontrolled Port one-to-one mapping and MAC_Operational. 6.4.2 Controlled Port pass-through gated by controlledPortEnabled. 6.4.3 PAC management status parameters and RFC 2863 counters. 6.5 link aggregation — each aggregated port is authenticated individually, and authorized ports aggregate only with others reaching the same authenticated system. 6.6 use by IEEE Std 802.11 — 802.11's own cryptographic methods play the SecY role, and 802.11 PAEs implement PACP/EAPOL for EAP authentication but not the PAE's other optional functions.",
+      "zh": "6.3.1 认证交换——经 EAPOL 与 PACP 在非受控端口上运行 EAP；认证者/申请者/认证服务器三种角色。6.3.2 密钥协商——在非受控端口上运行 MKA，每个 CAK 一个实例，MKPDU 使用组地址，配合 SecY 分发 SAK。6.3.3 预共享密钥——带启用/CKN/值参数的 PSK 型 CAK；值永不返回。6.3.4 互操作与连接性——跨 LAN 可移植、未认证回退、重认证、由 MAC_Operational 驱动的客户端重启。6.3.5 网络公告——NID 与 KMD 的公告/征求、接入类型广告、借缓存 CAK 快速漫游。6.3.6 多接入 LAN——虚拟端口，每站点一个 SecY 加 MKA，按个体 MAC 寻址。6.4 PAC——无协议薄垫层，含公共/非受控/受控端口，controlledPortEnabled 经 LMI 设置。6.4.1 非受控端口的一一映射与 MAC_Operational。6.4.2 受控端口的通行由 controlledPortEnabled 把关。6.4.3 PAC 管理的状态参数与 RFC 2863 计数器。6.5 链路聚合——每个被聚合端口单独认证，已授权端口只与连到同一已认证系统的端口聚合。6.6 IEEE Std 802.11 的使用——802.11 自身的密码方法扮演 SecY 角色，802.11 的 PAE 实现 PACP/EAPOL 以进行 EAP 认证，但不实现 PAE 的其他可选功能。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two short clauses close out the chapter. Clause 6.5 (link aggregation) handles the case where several ports are bundled into one logical link per IEEE Std 802.1AX: each port is authenticated individually by its own PAE, so a single unauthenticated link cannot ride in on the coattails of authenticated ones, and authorized ports are aggregated only with others that reach the same authenticated system. Clause 6.6 (use by IEEE Std 802.11) explains the relationship with Wi-Fi: 802.11 already specifies its own media-dependent cryptographic protection, key agreement, discovery, and roaming, so those conceptually fill the SecY role. 802.11 reuses PACP and EAPOL from this standard to authenticate with EAP — meaning a Wi-Fi PAE implements PACP but not the PAE's other optional pieces. That is exactly why 802.1X and 802.11 fit together so cleanly in enterprise Wi-Fi.",
+      "zh": "两节短小的内容为本章收尾。第 6.5 节（链路聚合）处理依据 IEEE Std 802.1AX 将多个端口捆绑为一条逻辑链路的情形：每个端口由各自的 PAE 单独认证，因此单条未认证链路无法搭已认证链路的“便车”；已授权端口只与连到同一已认证系统的端口聚合。第 6.6 节（IEEE Std 802.11 的使用）说明与 Wi-Fi 的关系：802.11 本身已规定与介质相关的密码保护、密钥协商、发现与漫游，这些在概念上充当了 SecY 的角色。802.11 复用本标准的 PACP 与 EAPOL 来完成 EAP 认证——这意味着 Wi-Fi 的 PAE 实现 PACP，但不实现 PAE 的其他可选部分。这正是 802.1X 与 802.11 在企业级 Wi-Fi 中能如此契合的原因。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        38,
+        39
+      ],
+      "note": "6.1 architecture (Figure 6-1/6-2) and 6.2 key hierarchy intro (CAK/CKN/ICK/KEK/SAK)"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "note": "6.2 group CAK distribution, 6.2.1 KDF, 6.2.2 EAP-derived CAK/CKN, 6.2.3 caching/KMD, 6.2.4 algorithm agility"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        44,
+        45,
+        46,
+        47
+      ],
+      "note": "6.3.1 authentication exchanges, 6.3.2 key agreement, 6.3.3 PSKs, 6.3.4 interoperability, 6.3.5 announcements, 6.3.6 multi-access LANs"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        47,
+        48,
+        49,
+        50
+      ],
+      "note": "6.4 PAC and 6.4.1/6.4.2/6.4.3 ports and management, 6.5 link aggregation, 6.6 use by IEEE Std 802.11"
+    }
+  ],
+  "covers": [
+    "8021X-2020:6.1",
+    "8021X-2020:6.2.1",
+    "8021X-2020:6.2.2",
+    "8021X-2020:6.2.3",
+    "8021X-2020:6.2.4",
+    "8021X-2020:6.3.1",
+    "8021X-2020:6.3.2",
+    "8021X-2020:6.3.3",
+    "8021X-2020:6.3.4",
+    "8021X-2020:6.3.5",
+    "8021X-2020:6.3.6",
+    "8021X-2020:6.4.1",
+    "8021X-2020:6.4.2",
+    "8021X-2020:6.4.3",
+    "8021X-2020:6.5",
+    "8021X-2020:6.6"
+  ],
+  "track": "net-security"
+}

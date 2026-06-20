@@ -1,0 +1,208 @@
+{
+  "id": "net-security-16",
+  "title": {
+    "en": "Inside the MAC Privacy Entity (PrY): Operation, System Placement, and MIB",
+    "zh": "MAC 隐私保护实体（PrY）内部解析：运行机制、系统部署与 MIB"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AEdk-2023 adds MAC Privacy protection to MACsec. Its centerpiece is the MAC Privacy protection Entity (PrY) — a thin 'shim' layer that takes ordinary user data frames and hides their size, timing, and address patterns from an eavesdropper. This lesson walks through the three clauses that define the PrY end to end: Clause 20 (how a PrY operates internally), Clause 21 (where it sits in real systems), and Clause 22 (how you manage it via SNMP). A PrY transmits and receives MAC Privacy protection Protocol Data Units (MPPDUs) — specially formatted frames that carry your data — to and from a peer PrY in another system.",
+      "zh": "IEEE Std 802.1AEdk-2023 为 MACsec 增加了 MAC 隐私保护功能，其核心是 MAC 隐私保护实体（PrY）——一个薄薄的“垫片”层，它把普通用户数据帧的大小、时序和地址模式隐藏起来，使窃听者无法识别。本课依次讲解端到端定义 PrY 的三个章节：第 20 章（PrY 内部如何运行）、第 21 章（它在真实系统中的位置）、第 22 章（如何通过 SNMP 管理它）。PrY 在系统之间收发 MAC 隐私保护协议数据单元（MPPDU）——一种承载用户数据的特殊格式帧——与对端系统中的对等 PrY 通信。"
+    },
+    {
+      "type": "prose",
+      "en": "The PrY model of operation (20.2) is just a description of observable behavior; an implementation can use any internal design as long as the protocol on the wire matches. Architecturally (20.3), a PrY has two independent data paths. The transmit path picks how each frame is protected, then encapsulates it. The receive path recognizes incoming MPPDUs, validates them, and reassembles the original frames. Both paths sit between a Private Port (where the PrY's user hands over plain frames, via the MAC Internal Sublayer Service, or ISS) and a Controlled Port (where protected frames go to the supporting MACsec entity, the SecY). The Private Port's link status (MAC_Enabled, MAC_Operational) and point-to-point parameters are not controlled separately — they simply mirror the Controlled Port (20.4).",
+      "zh": "PrY 的运行模型（20.2）只是对可观察行为的描述；只要线路上的协议一致，实现可采用任意内部设计。在架构上（20.3），PrY 有两条相互独立的数据通路。发送通路决定每个帧如何受保护，然后将其封装；接收通路识别进入的 MPPDU、对其校验、并重组出原始帧。两条通路都位于 Private Port（PrY 用户通过 MAC 内部子层服务 ISS 交付明文帧的地方）与 Controlled Port（受保护帧送往支撑它的 MACsec 实体 SecY 的地方）之间。Private Port 的链路状态（MAC_Enabled、MAC_Operational）和点到点参数不单独控制——它们直接镜像 Controlled Port（20.4）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"230\" y=\"16\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">PrY data paths (Clause 20)</text><rect x=\"150\" y=\"28\" width=\"160\" height=\"22\"/><text x=\"230\" y=\"43\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Private Port (ISS, plain frames)</text><rect x=\"30\" y=\"70\" width=\"180\" height=\"70\"/><text x=\"120\" y=\"88\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">TX: Privacy Selection</text><text x=\"120\" y=\"104\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Frame / Channel encap</text><text x=\"120\" y=\"120\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">MPPDU generation</text><rect x=\"250\" y=\"70\" width=\"180\" height=\"70\"/><text x=\"340\" y=\"88\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">RX: Demultiplex</text><text x=\"340\" y=\"104\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Validate + extract</text><text x=\"340\" y=\"120\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Reassemble</text><rect x=\"150\" y=\"160\" width=\"160\" height=\"30\"/><text x=\"230\" y=\"172\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Controlled Port</text><text x=\"230\" y=\"184\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">(SecY / MACsec, MPPDUs)</text><line x1=\"120\" y1=\"50\" x2=\"120\" y2=\"70\"/><line x1=\"340\" y1=\"50\" x2=\"340\" y2=\"70\"/><line x1=\"120\" y1=\"140\" x2=\"120\" y2=\"160\"/><line x1=\"340\" y1=\"140\" x2=\"340\" y2=\"160\"/></svg>",
+      "caption": {
+        "en": "The PrY sits between its Private Port (user frames) and Controlled Port (protected MPPDUs), with independent transmit and receive paths.",
+        "zh": "PrY 位于 Private Port（用户帧）与 Controlled Port（受保护的 MPPDU）之间，发送与接收通路彼此独立。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "On transmit, Privacy Selection (20.5) is the decision step. For each frame, the PrY consults a manageable Privacy Selection Table indexed by the frame's user priority and chooses one of three fates: send it unprotected (20.6, passed straight through unchanged, possibly with a different access priority); send it as an individual Privacy Frame (20.7, wrapped alone in one MPPDU, optionally padded up to a 16/32/64-octet boundary, with the option to hide the drop-eligible flag); or send it through a Privacy Channel (20.8). Encapsulation can be globally enabled or disabled, and reception can be toggled independently so a pair of PrYs can start receiving before either starts transmitting. The PrY deliberately keeps almost no buffer (20.5.1), so the system's normal transmission-selection logic stays in control of bandwidth; a PrY may also accept a stream identifier (20.5.2) for finer per-stream selection.",
+      "zh": "在发送侧，隐私选择（20.5）是决策环节。对每个帧，PrY 查询一张可管理的、以帧用户优先级为索引的隐私选择表，从三种归宿中选其一：不加保护发送（20.6，原样直通，可能使用不同的接入优先级）；作为单独的隐私帧发送（20.7，单独封进一个 MPPDU，可选填充到 16/32/64 字节边界，并可隐藏丢弃可标记位）；或经隐私通道发送（20.8）。封装可全局启用或禁用，接收可独立切换，因此一对 PrY 可在任何一方开始发送前就先行接收。PrY 刻意几乎不做缓存（20.5.1），让系统正常的传输选择逻辑保持对带宽的控制；PrY 还可接受流标识（20.5.2）以实现更细的逐流选择。"
+    },
+    {
+      "type": "prose",
+      "en": "A Privacy Channel is the strongest disguise. Each PrY supports up to two channels — an Express channel and a Preemptable channel (20.8). Each channel runs its own MPPDU Generation process (20.9) and Encapsulation process (20.10). Generation produces empty fixed-size MPPDUs at intervals that are independent of your traffic, so an observer can't tell from frame timing or size when you are actually sending data. The mandatory default generation uses a token-bucket algorithm (20.9.4) governed by a requestedKbitRate and a burst size; an optional algorithm (20.9.5) instead aligns MPPDU generation with the transmission gates and gate control list of scheduled traffic. Encapsulation (20.10) then fills each generated MPPDU with real frames or fragments — and pads the rest with zeros so every MPPDU is the same size.",
+      "zh": "隐私通道是最强的伪装。每个 PrY 支持至多两条通道——一条快速（Express）通道和一条可抢占（Preemptable）通道（20.8）。每条通道各自运行 MPPDU 生成过程（20.9）和封装过程（20.10）。生成过程按与你的流量无关的间隔产出固定大小的空 MPPDU，使观察者无法从帧时序或大小判断你何时真正在发送数据。强制实现的默认生成采用令牌桶算法（20.9.4），由 requestedKbitRate 与突发大小调控；可选算法（20.9.5）则把 MPPDU 生成与定时流量的传输门及门控列表对齐。封装过程（20.10）随后用真实帧或分片填满每个生成的 MPPDU，并以零填充其余部分，使每个 MPPDU 大小一致。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why fragment? A Privacy Channel MPPDU is a fixed-size container sent on a fixed cadence. To pack it efficiently, the encapsulation process can split a big user frame across several MPPDUs (each piece is a Frame Fragment) and stitch the remainder into the next one. The default algorithm (20.10.1) never leaves a fragment smaller than 64 octets, and only fragments frames of at least 128 octets — so reassembly stays simple and no tiny shards are produced.",
+      "zh": "为何要分片？隐私通道 MPPDU 是按固定节奏发送的固定大小容器。为高效装填，封装过程可把一个大用户帧拆到多个 MPPDU 中（每片称为帧分片），并把剩余部分接续到下一个 MPPDU。默认算法（20.10.1）从不产生小于 64 字节的分片，且只对至少 128 字节的帧分片——这样重组保持简单，也不会产生细碎的小片。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[User frame at Private Port] --> B{Privacy Selection 20.5}\n  B -->|Unprotected| C[Pass through 20.6]\n  B -->|Privacy Frame| D[One MPPDU + pad 20.7]\n  B -->|Privacy Channel| E[Generate MPPDU 20.9]\n  E --> F[Encapsulate / fragment 20.10]\n  C --> G[Controlled Port to SecY]\n  D --> G\n  F --> G",
+      "zh": "flowchart LR\n  A[Private Port 上的用户帧] --> B{隐私选择 20.5}\n  B -->|不保护| C[直通 20.6]\n  B -->|隐私帧| D[单 MPPDU + 填充 20.7]\n  B -->|隐私通道| E[生成 MPPDU 20.9]\n  E --> F[封装/分片 20.10]\n  C --> G[经 Controlled Port 到 SecY]\n  D --> G\n  F --> G"
+    },
+    {
+      "type": "prose",
+      "en": "On receive, the PrY first demultiplexes (20.11): a frame counts as an MPPDU for this PrY only if its destination MAC matches the PrY's MPPDU address (a group address, or the PrY's own source address) and its first two octets are the MAC Privacy protection EtherType. Anything else is delivered straight to the user untouched. Recognized MPPDUs go through component validation and extraction (20.12) — padding and unknown components are stripped, and Encapsulated Frames and Frame Fragments are pulled out in order. Finally, reassembly (20.13) rebuilds each original frame and delivers it as soon as it is complete, without waiting for later fragments. A PrY can reassemble one Express and one Preemptable frame per peer, holds any fragment for at most 0.1 second, and the mandatory default reassembly (20.13.1) discards out-of-order fragments by sequence number.",
+      "zh": "在接收侧，PrY 先做解复用（20.11）：只有当帧的目的 MAC 匹配本 PrY 的 MPPDU 地址（一个组地址，或 PrY 自身的源地址），且其前两个字节是 MAC 隐私保护 EtherType 时，才被视为发给本 PrY 的 MPPDU；其余帧原封不动直接交给用户。被识别的 MPPDU 进入组件校验与提取（20.12）——剥除填充与未知组件，按顺序取出封装帧和帧分片。最后由重组过程（20.13）重建每个原始帧，一旦完整就立即交付，不等待后续分片。每个对端 PrY 可同时重组一个快速帧和一个可抢占帧，任一分片最多保留 0.1 秒，强制实现的默认重组（20.13.1）按序列号丢弃乱序分片。"
+    },
+    {
+      "type": "prose",
+      "en": "PrY management (20.14) ties it all together: through a Layer Management Interface (LMI) it enables/disables encapsulation and reception, configures the MPPDU destination address and peer source addresses, populates the Privacy Selection Table, turns each Privacy Channel on or off, sets per-channel frame size and rate, and maintains transmission statistics (20.14.1, counting Privacy Frames, channel frames, fragments, pad octets, and unprotected frames) and reception statistics (20.14.2, counting received frames, fragments, discards, and errored or unknown MPPDU components). Finally, 20.15 notes that time-sensitive networking (TSN) applications can both benefit from and impose extra constraints on the delay and delay-variance the PrY introduces.",
+      "zh": "PrY 管理（20.14）把一切串联起来：通过层管理接口（LMI），它启用/禁用封装与接收、配置 MPPDU 目的地址和对端源地址、填充隐私选择表、逐条开关隐私通道、设置每通道的帧大小与速率，并维护发送统计（20.14.1，统计隐私帧、通道帧、分片、填充字节和未保护帧）与接收统计（20.14.2，统计收到的帧、分片、丢弃、以及出错或未知的 MPPDU 组件）。最后，20.15 指出时间敏感网络（TSN）应用既能从中受益，也会对 PrY 引入的时延和时延抖动提出额外约束。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 21 places the PrY in real systems. The general rule (21.1) is that a PrY uses the ISS and should be directly supported by a SecY just below it; together they protect a stretch of network the same way MACsec already does (hop by hop). The amendment then walks through specific stacks: end stations (21.2, where a locally assigned MPPDU source address can further hide identity), bridge interfaces (21.3, VLAN-aware and VLAN-unaware), Link Aggregation (21.4, where each member link gets its own SecY+PrY and a frame's fragments all travel one link in order), Ethernet Data Encryption devices or EDEs (21.5, which can privacy-protect traffic crossing a Provider Bridged Network), shared media (21.6), and multi-access LANs (21.7). Clause 21.8 covers the case where the PrY and its SecY live in separate devices — possible because MPPDUs have their own EtherType and can travel unprotected between the two, provided a physically secure path links them.",
+      "zh": "第 21 章把 PrY 放进真实系统。总则（21.1）规定 PrY 使用 ISS，并应由紧贴其下的 SecY 直接支撑；二者像 MACsec 已有方式那样逐跳保护一段网络。随后该修正案逐一讲解具体协议栈：终端站（21.2，可用本地分配的 MPPDU 源地址进一步隐藏身份）、网桥接口（21.3，含 VLAN 感知与非感知）、链路聚合（21.4，每条成员链路各有自己的 SecY+PrY，且一帧的所有分片都按序走同一条链路）、以太网数据加密设备 EDE（21.5，可为穿越运营商桥接网络的流量提供隐私保护）、共享介质（21.6）、以及多址 LAN（21.7）。21.8 则讨论 PrY 与其 SecY 分处不同设备的情形——之所以可行，是因为 MPPDU 有自己的 EtherType，可在二者间不受保护地传输，前提是有一条物理安全的路径将它们连接。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every covered clause and where it lives",
+        "zh": "覆盖地图——每个所讲章节及其位置"
+      },
+      "en": "Clause 20 — PrY operation (pp.94-110): 20.1 PrY overview (the shim and its SecY); 20.2 Model of operation (observable-behavior only); 20.3 PrY architecture (Figure 20-2, two independent paths); 20.4 MAC status and point-to-point parameters (Private Port mirrors Controlled Port); 20.5 Privacy Selection (table + three fates; 20.5.1 minimal buffering, 20.5.2 stream-based selection); 20.6 Unprotected frame transmission; 20.7 Privacy Frame transmission (padding, revealDE, accessPriority); 20.8 Privacy Channel transmission (Express + Preemptable); 20.9 Privacy Channel MPPDU Generation (20.9.4 default token bucket, 20.9.5 transmission-gate algorithm); 20.10 Privacy Channel Encapsulation (20.10.1 default fragmenting algorithm, Figure 20-3 state machine); 20.11 MPPDU reception and demultiplexing (DA + EtherType match); 20.12 MPPDU component validation and extraction; 20.13 Protected frame reception and reassembly (20.13.1 default reassembly, 0.1 s hold, Figure 20-5); 20.14 PrY management (LMI controls, 20.14.1 tx stats, 20.14.2 rx stats, Figure 20-6); 20.15 PrY performance requirements (TSN delay/jitter). Clause 21 — PrY in systems (pp.111-117): 21.1 interface stacks (Figure 21-1; 21.1.1 addressing = PAE Group Address); 21.2 end stations; 21.3 bridge interfaces (Figure 21-2); 21.4 Link Aggregation (Figure 21-3); 21.5 EDEs (Figure 21-4/21-5); 21.6 shared media; 21.7 multi-access LANs; 21.8 separate privacy-protection devices. Clause 22 — PrY MIB (pp.118-123): 22.1 Introduction (SMIv2 MIB from Clause 20/Figure 20-6); 22.2 Internet-Standard Management Framework (SNMP, RFC 2578/2579/2580); 22.3 Relationship to other MIBs (System group, IF-MIB integration, interface type macSecControlledIF(231), Figure 22-1); 22.4 Security considerations (read access can leak traffic levels/intent; write access can starve bandwidth); 22.5 Structure of the MIB module (tables indexed by ifIndex / + user priority / + channel / + peer MAC, Figure 22-2); 22.6 the actual IEEE8021-PRY-MIB module definition.",
+      "zh": "第 20 章——PrY 运行（第 94-110 页）：20.1 PrY 概述（垫片及其 SecY）；20.2 运行模型（仅约束可观察行为）；20.3 PrY 架构（图 20-2，两条独立通路）；20.4 MAC 状态与点到点参数（Private Port 镜像 Controlled Port）；20.5 隐私选择（选择表 + 三种归宿；20.5.1 最小缓存，20.5.2 基于流的选择）；20.6 未保护帧发送；20.7 隐私帧发送（填充、revealDE、接入优先级）；20.8 隐私通道发送（快速 + 可抢占）；20.9 隐私通道 MPPDU 生成（20.9.4 默认令牌桶，20.9.5 传输门算法）；20.10 隐私通道封装（20.10.1 默认分片算法，图 20-3 状态机）；20.11 MPPDU 接收与解复用（目的地址 + EtherType 匹配）；20.12 MPPDU 组件校验与提取；20.13 受保护帧接收与重组（20.13.1 默认重组，保留 0.1 秒，图 20-5）；20.14 PrY 管理（LMI 控制、20.14.1 发送统计、20.14.2 接收统计、图 20-6）；20.15 PrY 性能要求（TSN 时延/抖动）。第 21 章——系统中的 PrY（第 111-117 页）：21.1 接口栈（图 21-1；21.1.1 寻址 = PAE 组地址）；21.2 终端站；21.3 网桥接口（图 21-2）；21.4 链路聚合（图 21-3）；21.5 EDE（图 21-4/21-5）；21.6 共享介质；21.7 多址 LAN；21.8 分离的隐私保护设备。第 22 章——PrY MIB（第 118-123 页）：22.1 引言（基于第 20 章/图 20-6 的 SMIv2 MIB）；22.2 互联网标准管理框架（SNMP，RFC 2578/2579/2580）；22.3 与其他 MIB 的关系（System 组、IF-MIB 集成、接口类型 macSecControlledIF(231)、图 22-1）；22.4 安全考量（读访问可泄露流量水平/意图；写访问可耗尽带宽）；22.5 MIB 模块结构（表以 ifIndex / +用户优先级 / +通道 / +对端 MAC 为索引，图 22-2）；22.6 实际的 IEEE8021-PRY-MIB 模块定义。",
+      "cite": {
+        "pdf_id": "8021AEdk-2023",
+        "pages": [
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 22 defines the SNMP management view. The PrY MIB (22.1) is an SMIv2 module derived directly from the Clause 20 model. It plugs into the standard Internet management framework (22.2, accessed over SNMP) and relates to other MIBs (22.3): the PrY appears as a shim integrated with the Interfaces MIB (IF-MIB), with its Private Port given its own interface index and the type macSecControlledIF(231). The security considerations (22.4) are unusually important here: read-only access to the statistics and selection tables can leak the true traffic level and the intended use of an interface (defeating the very privacy goal), while write access can be abused to starve bandwidth or unhide filtered addresses. The MIB's structure (22.5) organizes objects into tables indexed by interface, by interface + user priority, by interface + Privacy Channel, or by interface + peer MAC address (Figure 22-2). Finally, 22.6 is the literal IEEE8021-PRY-MIB module — the machine-readable object definitions an SNMP agent implements.",
+      "zh": "第 22 章定义 SNMP 管理视图。PrY MIB（22.1）是直接由第 20 章模型派生的 SMIv2 模块。它接入标准的互联网管理框架（22.2，通过 SNMP 访问），并与其他 MIB 关联（22.3）：PrY 作为一个垫片与接口 MIB（IF-MIB）集成，其 Private Port 拥有独立的接口索引，类型为 macSecControlledIF(231)。此处的安全考量（22.4）尤为重要：对统计表和选择表的只读访问可泄露接口的真实流量水平与预期用途（从而破坏隐私目标本身），而写访问可能被滥用以耗尽带宽或解除对被过滤地址的隐藏。MIB 结构（22.5）将对象组织为若干表，分别以接口、接口+用户优先级、接口+隐私通道、或接口+对端 MAC 地址为索引（图 22-2）。最后，22.6 是字面意义上的 IEEE8021-PRY-MIB 模块——SNMP 代理实现的机器可读对象定义。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The big idea: privacy here is not new encryption (MACsec already encrypts). It is traffic-shape hiding. By padding frames to fixed boundaries, batching them into fixed-size MPPDUs sent on a content-independent cadence, and optionally swapping in a local source address, a PrY makes the size, timing, and identity pattern of your protected traffic look the same whether you are busy or idle.",
+      "zh": "核心思想：这里的隐私不是新的加密（MACsec 已负责加密），而是流量形态的隐藏。通过把帧填充到固定边界、将其批量装入按与内容无关的节奏发送的固定大小 MPPDU、并可选地换用本地源地址，PrY 让你受保护流量的大小、时序与身份模式无论繁忙还是空闲都看起来一致。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100
+      ],
+      "note": "Clause 20.1-20.10: PrY overview, model, architecture, Privacy Selection, unprotected/Privacy Frame/Privacy Channel transmission, MPPDU generation and encapsulation."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110
+      ],
+      "note": "Clause 20.10.1-20.15: encapsulation state machine, reception/demux, validation/extraction, reassembly, PrY management and statistics, performance."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117
+      ],
+      "note": "Clause 21.1-21.8: interface stacks, end stations, bridges, Link Aggregation, EDEs, shared media, multi-access LANs, separate devices."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        118,
+        119,
+        120,
+        121,
+        122,
+        123
+      ],
+      "note": "Clause 22.1-22.6: PrY MIB intro, management framework, IF-MIB relationship, security considerations, MIB structure, MIB module definition."
+    }
+  ],
+  "covers": [
+    "8021AEdk-2023:20.1",
+    "8021AEdk-2023:20.2",
+    "8021AEdk-2023:20.3",
+    "8021AEdk-2023:20.4",
+    "8021AEdk-2023:20.5",
+    "8021AEdk-2023:20.6",
+    "8021AEdk-2023:20.7",
+    "8021AEdk-2023:20.8",
+    "8021AEdk-2023:20.9",
+    "8021AEdk-2023:20.10",
+    "8021AEdk-2023:20.11",
+    "8021AEdk-2023:20.12",
+    "8021AEdk-2023:20.13",
+    "8021AEdk-2023:20.14",
+    "8021AEdk-2023:20.15",
+    "8021AEdk-2023:21.1",
+    "8021AEdk-2023:21.2",
+    "8021AEdk-2023:21.3",
+    "8021AEdk-2023:21.4",
+    "8021AEdk-2023:21.5",
+    "8021AEdk-2023:21.6",
+    "8021AEdk-2023:21.7",
+    "8021AEdk-2023:21.8",
+    "8021AEdk-2023:22.1",
+    "8021AEdk-2023:22.2",
+    "8021AEdk-2023:22.3",
+    "8021AEdk-2023:22.4",
+    "8021AEdk-2023:22.5",
+    "8021AEdk-2023:22.6"
+  ],
+  "track": "net-security"
+}

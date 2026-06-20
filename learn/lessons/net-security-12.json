@@ -1,0 +1,195 @@
+{
+  "id": "net-security-12",
+  "title": {
+    "en": "Inside MACsec: The SecTAG Frame, the SecY Engine, and Where It Sits in Real Systems",
+    "zh": "深入 MACsec：SecTAG 帧格式、SecY 引擎，以及它在真实系统中的位置"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AE (MACsec, short for MAC Security) protects Ethernet frames hop by hop. This lesson walks the three clauses that make it concrete: Clause 9 defines the exact bytes on the wire (the MACsec Protocol Data Unit, or MPDU), Clause 10 defines the engine that adds and checks that protection (the MAC Security Entity, or SecY), and Clause 11 shows where that engine plugs into real devices. Think of it as the wire format, the machine, and the wiring diagram.",
+      "zh": "IEEE Std 802.1AE（MACsec，即 MAC Security，MAC 层安全）逐跳保护以太网帧。本课讲解让它落地的三个章节：Clause 9 定义线路上的精确字节（MACsec 协议数据单元，MPDU），Clause 10 定义添加并校验这层保护的引擎（MAC 安全实体，SecY），Clause 11 展示这个引擎如何接入真实设备。可以把它们看作线路格式、机器，以及接线图。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.1 sets the ground rules for reading the format: every MPDU is a whole number of octets (8-bit bytes), octets are numbered from 1, bits run from 1 (least significant) to 8 (most significant), and lower-numbered octets carry the more significant part of a multi-octet number (big-endian on the wire). Clause 9.2 then names the three pieces every MPDU contains: a MAC Security TAG (SecTAG), the Secure Data, and an Integrity Check Value (ICV). The source and destination MAC addresses are NOT part of the MPDU itself — they ride alongside as parameters of the underlying service.",
+      "zh": "Clause 9.1 给出阅读格式的基本规则：每个 MPDU 都是整数个八位字节（octet，即字节），字节从 1 开始编号，比特从 1（最低位）到 8（最高位），且多字节数中编号较小的字节承载更高位（线路上为大端序）。Clause 9.2 接着指明每个 MPDU 都包含的三部分：MAC 安全标签（SecTAG）、安全数据（Secure Data）和完整性校验值（ICV）。源和目的 MAC 地址并不属于 MPDU 本身——它们作为底层服务的参数随帧一同传递。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 660 130\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"35\" width=\"300\" height=\"40\"/><rect x=\"310\" y=\"35\" width=\"180\" height=\"40\"/><rect x=\"490\" y=\"35\" width=\"160\" height=\"40\"/><text x=\"160\" y=\"60\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">SecTAG (8 or 16 octets)</text><text x=\"400\" y=\"60\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Secure Data (1..n)</text><text x=\"570\" y=\"60\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">ICV (8..16)</text><text x=\"10\" y=\"25\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">MACsec EtherType 0x88E5 | TCI+AN | SL | PN(32) | optional SCI(64)</text><text x=\"10\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">octet 1                                                                      growing octet number, big-endian -&gt;</text></svg>",
+      "caption": {
+        "en": "The MPDU layout (Clause 9.2, Figures 9-1 and 9-2): SecTAG, then Secure Data, then ICV. The SecTAG opens with the MACsec EtherType.",
+        "zh": "MPDU 布局（Clause 9.2，图 9-1 与 9-2）：先 SecTAG，再安全数据，最后 ICV。SecTAG 以 MACsec EtherType 开头。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The SecTAG (Clause 9.3) is the security header. It begins with the MACsec EtherType (Clause 9.4), value 0x88-E5, which lets MACsec coexist with ordinary traffic and be deployed incrementally — a non-MACsec device simply sees an unfamiliar EtherType. Octet 3 then packs the control bits: the TAG Control Information field (TCI, Clause 9.5) in bits 8 down to 3, and the Association Number (AN, Clause 9.6) in bits 1-2. The TCI carries a version field (V, must be 0), and four behavior flags — ES (End Station, source MAC doubles as the channel id), SC (an explicit channel id follows), SCB (EPON Single Copy Broadcast), plus the E (Encryption) and C (Changed text) bits that together say whether the payload is encrypted, integrity-only, or reserved for the key-agreement entity. The 2-bit AN picks which of up to four Security Associations (SAs) within a channel protected this frame.",
+      "zh": "SecTAG（Clause 9.3）是安全头部。它以 MACsec EtherType（Clause 9.4）开头，值为 0x88-E5，使 MACsec 能与普通流量共存并可增量部署——不支持 MACsec 的设备只会看到一个陌生的 EtherType。第 3 字节随后打包控制位：第 8 到 3 位是标签控制信息字段（TCI，Clause 9.5），第 1-2 位是关联号（AN，Clause 9.6）。TCI 携带版本字段（V，必须为 0）和四个行为标志——ES（终端站，源 MAC 兼作信道标识）、SC（后面跟显式信道标识）、SCB（EPON 单副本广播），外加 E（加密）和 C（明文已改）两位，二者共同表明载荷是加密、仅完整性保护，还是保留给密钥协商实体使用。2 位的 AN 选择本帧由信道内最多四个安全关联（SA）中的哪一个保护。"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of the SecTAG carries length and identity. Short Length (SL, Clause 9.7) holds the Secure Data byte count when it is below 48 (otherwise 0), because Ethernet pads tiny frames and the receiver must still find the ICV unambiguously. The Packet Number (PN, Clause 9.8) is a per-SA counter that gives every frame a unique initialization vector and powers replay protection; only its low 32 bits ride in the SecTAG, even when a cipher uses extended (64-bit) numbering. The optional Secure Channel Identifier (SCI, Clause 9.9) — present only if the SC bit is set — is the 64-bit globally unique name of the transmitting channel: a 48-bit MAC address plus a 16-bit Port Identifier. On a point-to-point link with one transmit channel it can be omitted to save bytes, yet it still feeds the cryptographic computation.",
+      "zh": "SecTAG 的其余部分承载长度与身份信息。短长度（SL，Clause 9.7）在安全数据字节数小于 48 时记录该字节数（否则为 0），因为以太网会对极小帧填充，而接收方仍须无歧义地定位 ICV。包号（PN，Clause 9.8）是每个 SA 的计数器，赋予每帧唯一的初始向量并支撑重放保护；即使密码套件使用扩展（64 位）编号，SecTAG 中也只携带其低 32 位。可选的安全信道标识符（SCI，Clause 9.9）——仅在 SC 位置位时出现——是发送信道的 64 位全局唯一名称：48 位 MAC 地址加 16 位端口标识符。在只有一个发送信道的点对点链路上可省略它以节省字节，但它仍参与密码学计算。"
+    },
+    {
+      "type": "prose",
+      "en": "After the SecTAG comes the Secure Data (Clause 9.10) — the user payload, either encrypted or carried in the clear under integrity protection, and never zero-length. It is followed by the Integrity Check Value (ICV, Clause 9.11), an 8-to-16-octet cryptographic tag that protects not only the payload and SecTAG but also the source and destination MAC addresses. Finally, Clause 9.12 (PDU validation) gives a precise decoding checklist: at least 17 octets, a valid MACsec EtherType, V bit clear, consistent ES/SCB/SC flags, reserved SL bits clear, and a total length matching what the C and SC bits imply. Crucially, these checks only confirm the frame can be decoded — the cryptographic verdict belongs to Clause 10.",
+      "zh": "SecTAG 之后是安全数据（Clause 9.10）——用户载荷，要么被加密，要么在完整性保护下以明文承载，且长度永不为零。其后是完整性校验值（ICV，Clause 9.11），一个 8 到 16 字节的密码学标签，不仅保护载荷和 SecTAG，还保护源和目的 MAC 地址。最后，Clause 9.12（PDU 校验）给出精确的解码检查清单：至少 17 字节、有效的 MACsec EtherType、V 位清零、ES/SCB/SC 标志一致、SL 保留位清零，以及与 C、SC 位所隐含一致的总长度。关键在于，这些检查只确认帧可被解码——密码学判定属于 Clause 10。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10 describes the engine that produces and consumes those frames: the MAC Security Entity (SecY). Clause 10.1 frames it as one box with three ports. The Common Port faces the raw, insecure LAN. Above it the SecY offers a Controlled Port (the secure service — only validated traffic passes) and an Uncontrolled Port (a transparent bypass for protocols like the key-agreement entity, the KaY, which lives in the IEEE 802.1X Port Access Entity). The KaY hands transmit and receive keys to the SecY across a Layer Management Interface (LMI). Clause 10.2 enumerates the SecY's duties — secure transmit, transparent bypass, verify-and-deliver on receive, maintain MAC status, plus deployment controls (transmit unmodified, skip integrity checks, support multiple channels and a configurable replay window).",
+      "zh": "Clause 10 描述生产和消费这些帧的引擎：MAC 安全实体（SecY）。Clause 10.1 将其刻画为一个有三个端口的盒子。公共端口（Common Port）面向原始、不安全的 LAN。在其之上，SecY 提供受控端口（Controlled Port，安全服务——只有经校验的流量通过）和非受控端口（Uncontrolled Port，为密钥协商实体 KaY 等协议提供透明旁路；KaY 位于 IEEE 802.1X 的端口访问实体内）。KaY 通过层管理接口（LMI）把发送和接收密钥交给 SecY。Clause 10.2 列举 SecY 的职责——安全发送、透明旁路、接收时校验并交付、维护 MAC 状态，以及部署控制项（不修改地发送、跳过完整性检查、支持多信道与可配置的重放窗口）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TB\n  CP[Controlled Port secure] --> TX[Secure Frame Generation]\n  UP[Uncontrolled Port bypass] --> MUX[Transmit Multiplexer]\n  TX --> MUX\n  MUX --> COM[Common Port to LAN]\n  COM --> DMX[Receive Demultiplexer]\n  DMX --> RX[Secure Frame Verification]\n  DMX --> UP2[Uncontrolled Port]\n  RX --> CP2[Controlled Port]\n  KaY[KaY keys via LMI] -. SAK .-> TX\n  KaY -. SAK .-> RX",
+      "zh": "flowchart TB\n  CP[受控端口 安全] --> TX[安全帧生成]\n  UP[非受控端口 旁路] --> MUX[发送复用器]\n  TX --> MUX\n  MUX --> COM[公共端口 接入LAN]\n  COM --> DMX[接收解复用器]\n  DMX --> RX[安全帧校验]\n  DMX --> UP2[非受控端口]\n  RX --> CP2[受控端口]\n  KaY[KaY 经LMI下发密钥] -. SAK .-> TX\n  KaY -. SAK .-> RX"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.3 stresses that this is only a reference model — implementations may do anything with the same observable behavior. Clause 10.4 lists the architectural blocks: the three ports, the generation and verification processes, the Cipher Suite, a transmit multiplexer and receive demultiplexer, optional frame-check-sequence (FCS) regenerators, and a management process. Deployment controls like protectFrames and validateFrames let a SecY be installed but stay inert until MACsec is switched on. Clause 10.5 then details secure frame generation: assign the frame to a transmit SA, take the next PN, encode the SecTAG, call the Cipher Suite's protect function with the Secure Association Key (SAK), SCI, PN, SecTAG and user data, and submit the resulting SecTAG+Secure Data+ICV to the multiplexer (its sub-steps 10.5.1-10.5.5 cover SA and PN assignment, SecTAG encoding, cryptographic protection, and the size-checked transmit request).",
+      "zh": "Clause 10.3 强调这只是参考模型——实现可用任何方式达成相同的可观察行为。Clause 10.4 列出架构模块：三个端口、生成与校验过程、密码套件、发送复用器与接收解复用器、可选的帧校验序列（FCS）重生器，以及管理过程。protectFrames、validateFrames 等部署控制项使 SecY 可先安装、在 MACsec 开启前保持不动作。Clause 10.5 接着详述安全帧生成：将帧分配给一个发送 SA、取下一个 PN、编码 SecTAG、用安全关联密钥（SAK）、SCI、PN、SecTAG 和用户数据调用密码套件的保护函数，再把得到的 SecTAG+安全数据+ICV 提交给复用器（其子步骤 10.5.1-10.5.5 覆盖 SA 与 PN 分配、SecTAG 编码、密码学保护，以及带长度检查的发送请求）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.6 mirrors that on the receive side: spot the SecTAG, validate per 9.12, decode it, locate the receive SA from the SCI and AN, recover the PN and run a preliminary replay check, call the Cipher Suite to validate (and decrypt if the E bit is set), update the replay state, and deliver to the Controlled Port. The validateFrames control (Strict, Check, Disabled, Null) decides how strictly tagged and untagged frames are policed, and a rich set of counters (InPktsOK, InPktsLate, InPktsNotValid, InPktsInvalid, and so on) records every outcome. Sub-clauses 10.6.1-10.6.5 cover receive-SA assignment, the extended-PN recovery algorithm, cryptographic validation, the replay-window update, and the final receive indication.",
+      "zh": "Clause 10.6 在接收侧做对称处理：识别 SecTAG、按 9.12 校验、解码、根据 SCI 与 AN 定位接收 SA、恢复 PN 并执行初步重放检查、调用密码套件做校验（若 E 位置位则解密）、更新重放状态，然后交付给受控端口。validateFrames 控制项（Strict、Check、Disabled、Null）决定对有标签和无标签帧的管制严格程度，一组丰富的计数器（InPktsOK、InPktsLate、InPktsNotValid、InPktsInvalid 等）记录每种结果。子条款 10.6.1-10.6.5 覆盖接收 SA 分配、扩展 PN 恢复算法、密码学校验、重放窗口更新，以及最终的接收指示。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the PN is a one-way odometer per SA. Sender increments it for every frame; receiver tracks a 'lowest acceptable PN' and a replay window. A frame older than the window is dropped as Late; a fresh valid frame slides the window forward. When the odometer is about to roll over, the KaY installs a new key before PN values could ever repeat.",
+      "zh": "记忆模型：PN 是每个 SA 的单向里程表。发送方每帧递增；接收方维护一个“最低可接受 PN”和一个重放窗口。比窗口更旧的帧被作为 Late（迟到）丢弃；新鲜的有效帧把窗口向前滑动。当里程表即将翻转时，KaY 会在 PN 值可能重复之前装入新密钥。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.7 is the management surface: it reports the default channel's SCI, maintains port MAC status and statistics, exposes frame generation/verification capabilities, and lets the KaY create transmit and receive channels (SCs) and associations (SAs), install SAKs, select the Current Cipher Suite, and set the lowest acceptable PN. Clause 10.8 (Addressing) notes a subtle point: a SecY has no MAC address of its own — frames still carry the peer end stations' addresses, which the ICV protects but never encrypts, and all processed frames use 48-bit addresses. Clause 10.9 (Priority) explains that frame priority is a local hint, so it is neither covered by the ICV nor encoded in the frame. Clause 10.10 (Performance requirements) bounds delays, delay variance, and key install/switch times (Table 10-3) so MACsec stays viable for time-sensitive networking.",
+      "zh": "Clause 10.7 是管理界面：它报告默认信道的 SCI、维护端口 MAC 状态与统计、暴露帧生成/校验能力，并让 KaY 创建发送与接收信道（SC）和关联（SA）、装入 SAK、选择当前密码套件，并设置最低可接受 PN。Clause 10.8（寻址）指出一个微妙点：SecY 没有自己的 MAC 地址——帧仍携带对端终端站的地址，ICV 保护但绝不加密这些地址，且所有处理的帧都使用 48 位地址。Clause 10.9（优先级）说明帧优先级是本地提示，因此既不被 ICV 覆盖也不编码进帧中。Clause 10.10（性能要求）限定时延、时延抖动与密钥装入/切换时间（表 10-3），使 MACsec 对时间敏感网络仍然可行。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11 places the SecY into real systems. Clause 11.1 shows the SecY sitting on a MAC Internal Sublayer Service (ISS) access point and offering ISS again at its Controlled and Uncontrolled Ports — so it stacks cleanly with other media-independent functions. Clause 11.2 covers an end station (MACsec is the sole media-independent function). Clause 11.3 puts a SecY on each port of a VLAN-unaware MAC Bridge; Clause 11.4 does the same for a VLAN-aware Bridge, placing MACsec below the VLAN tagging function so an encrypted frame hides its VLAN tag too. Clause 11.5 (Link Aggregation) runs an independent SecY below the aggregation sublayer on each physical link. Clause 11.6 routes the Link Layer Discovery Protocol (LLDP) over the Secure ISS. Clause 11.7 secures Provider Bridged Networks, optionally stacking two SecYs to protect both 'to the provider' and 'across the provider' segments. Clause 11.8 enables multi-access LANs, where one station instantiates several SecYs (transient 'virtual ports'), each distinguished by its SCI's Port Identifier.",
+      "zh": "Clause 11 把 SecY 置入真实系统。Clause 11.1 展示 SecY 位于一个 MAC 内部子层服务（ISS）接入点之上，并在其受控与非受控端口再次提供 ISS——因此能与其他媒介无关功能干净地堆叠。Clause 11.2 覆盖终端站（MACsec 是唯一的媒介无关功能）。Clause 11.3 在不感知 VLAN 的 MAC 网桥的每个端口上放置 SecY；Clause 11.4 对感知 VLAN 的网桥做同样处理，将 MACsec 置于 VLAN 标签功能之下，使加密帧连其 VLAN 标签也一并隐藏。Clause 11.5（链路聚合）在每条物理链路、聚合子层之下运行一个独立 SecY。Clause 11.6 让链路层发现协议（LLDP）走安全 ISS。Clause 11.7 保护运营商桥接网络，可选地堆叠两个 SecY 以同时保护“接入运营商”和“跨越运营商”两段。Clause 11.8 支持多址 LAN，其中一个站点实例化多个 SecY（短暂的“虚拟端口”），各以其 SCI 的端口标识符区分。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause number, where it lives",
+        "zh": "覆盖地图——每个条款编号及其归属"
+      },
+      "en": "Clause 9 (encoding): 9.1 octet/bit/big-endian rules; 9.2 the three MPDU components (SecTAG, Secure Data, ICV); 9.3 SecTAG contents; 9.4 MACsec EtherType 0x88-E5 (coexistence + incremental deployment); 9.5 TCI (V, ES, SC, SCB, E, C flags); 9.6 AN (2 bits, up to 4 SAs/SC); 9.7 SL (Secure Data length when < 48); 9.8 PN (low 32 bits, IV uniqueness + replay); 9.9 SCI (48-bit MAC + 16-bit Port Id, optional on point-to-point); 9.10 Secure Data (never zero-length); 9.11 ICV (8-16 octets, covers MAC addresses too); 9.12 PDU validation checklist (>=17 octets, length rules by C/SC bits). Clause 10 (SecY): 10.1 overview (Common/Controlled/Uncontrolled ports, KaY, LMI); 10.2 functions + deployment controls; 10.3 model-only disclaimer; 10.4 architecture blocks + protectFrames/validateFrames; 10.5 secure frame generation (10.5.1 SA assign, 10.5.2 PN assign, 10.5.3 SecTAG encode, 10.5.4 crypto protect, 10.5.5 transmit request); 10.6 verification (10.6.1 receive-SA assign, 10.6.2 PN recovery + preliminary replay, 10.6.3 crypto validate, 10.6.4 replay update, 10.6.5 receive indication + counters); 10.7 management (SCI, SC/SA creation, SAK install, cipher selection); 10.8 addressing (SecY has no MAC address; 48-bit addresses; ICV-covered not encrypted); 10.9 priority (local, not in ICV/frame); 10.10 performance bounds (Table 10-3). Clause 11 (systems): 11.1 ISS interface stacks; 11.2 end stations; 11.3 MAC Bridges; 11.4 VLAN-aware Bridges (MACsec below VLAN tag); 11.5 Link Aggregation (one SecY per link); 11.6 LLDP over Secure ISS; 11.7 Provider Bridged Networks (S-TAG/C-TAG, stacked SecYs); 11.8 multi-access LANs (virtual ports, per-SCI Port Id).",
+      "zh": "Clause 9（编码）：9.1 字节/比特/大端规则；9.2 MPDU 三部件（SecTAG、安全数据、ICV）；9.3 SecTAG 内容；9.4 MACsec EtherType 0x88-E5（共存+增量部署）；9.5 TCI（V、ES、SC、SCB、E、C 标志）；9.6 AN（2 位，每 SC 最多 4 个 SA）；9.7 SL（安全数据长度 < 48 时）；9.8 PN（低 32 位，IV 唯一性+重放）；9.9 SCI（48 位 MAC + 16 位端口标识，点对点可省）；9.10 安全数据（永不为零长度）；9.11 ICV（8-16 字节，亦覆盖 MAC 地址）；9.12 PDU 校验清单（>=17 字节，按 C/SC 位的长度规则）。Clause 10（SecY）：10.1 概览（公共/受控/非受控端口、KaY、LMI）；10.2 功能+部署控制；10.3 仅为模型的声明；10.4 架构模块+protectFrames/validateFrames；10.5 安全帧生成（10.5.1 SA 分配、10.5.2 PN 分配、10.5.3 SecTAG 编码、10.5.4 密码保护、10.5.5 发送请求）；10.6 校验（10.6.1 接收 SA 分配、10.6.2 PN 恢复+初步重放、10.6.3 密码校验、10.6.4 重放更新、10.6.5 接收指示+计数器）；10.7 管理（SCI、SC/SA 创建、SAK 装入、密码选择）；10.8 寻址（SecY 无 MAC 地址；48 位地址；被 ICV 覆盖但不加密）；10.9 优先级（本地，不入 ICV/帧）；10.10 性能边界（表 10-3）。Clause 11（系统）：11.1 ISS 接口栈；11.2 终端站；11.3 MAC 网桥；11.4 感知 VLAN 网桥（MACsec 在 VLAN 标签之下）；11.5 链路聚合（每链路一个 SecY）；11.6 LLDP 走安全 ISS；11.7 运营商桥接网络（S-TAG/C-TAG，堆叠 SecY）；11.8 多址 LAN（虚拟端口，按 SCI 端口标识）。",
+      "cite": {
+        "pdf_id": "8021AE-2018",
+        "pages": [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          69,
+          70,
+          73,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          96
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AE-2018",
+      "pages": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "note": "Clause 9 — MPDU structure, SecTAG, EtherType, TCI, AN, SL, PN, SCI, Secure Data, ICV, PDU validation."
+    },
+    {
+      "pdf_id": "8021AE-2018",
+      "pages": [
+        62,
+        63,
+        64,
+        65,
+        66,
+        69,
+        70,
+        73,
+        86,
+        87
+      ],
+      "note": "Clause 10 — SecY overview, functions, model, architecture, frame generation/verification, management, addressing, priority, performance (Table 10-3)."
+    },
+    {
+      "pdf_id": "8021AE-2018",
+      "pages": [
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        96
+      ],
+      "note": "Clause 11 — ISS stacks, end stations, MAC/VLAN-aware bridges, link aggregation, LLDP, provider bridged networks, multi-access LANs."
+    }
+  ],
+  "covers": [
+    "8021AE-2018:9.1",
+    "8021AE-2018:9.2",
+    "8021AE-2018:9.3",
+    "8021AE-2018:9.4",
+    "8021AE-2018:9.5",
+    "8021AE-2018:9.6",
+    "8021AE-2018:9.7",
+    "8021AE-2018:9.8",
+    "8021AE-2018:9.9",
+    "8021AE-2018:9.10",
+    "8021AE-2018:9.11",
+    "8021AE-2018:9.12",
+    "8021AE-2018:10.1",
+    "8021AE-2018:10.2",
+    "8021AE-2018:10.3",
+    "8021AE-2018:10.4",
+    "8021AE-2018:10.5",
+    "8021AE-2018:10.6",
+    "8021AE-2018:10.7",
+    "8021AE-2018:10.8",
+    "8021AE-2018:10.9",
+    "8021AE-2018:10.10",
+    "8021AE-2018:11.1",
+    "8021AE-2018:11.2",
+    "8021AE-2018:11.3",
+    "8021AE-2018:11.4",
+    "8021AE-2018:11.5",
+    "8021AE-2018:11.6",
+    "8021AE-2018:11.7",
+    "8021AE-2018:11.8"
+  ],
+  "track": "net-security"
+}

@@ -1,0 +1,153 @@
+{
+  "id": "net-security-20",
+  "title": {
+    "en": "Inside a DevID Certificate: Fields, Extensions, and Signature Suites",
+    "zh": "DevID 证书内部解析：字段、扩展项与签名套件"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A DevID (Device Identifier) is just an X.509 certificate — the same kind of digital ID card that secures websites — but bound permanently to a piece of hardware. An IDevID (Initial DevID) is the factory-installed one; an LDevID (Locally significant DevID) is one a network operator adds later. IEEE Std 802.1AR-2018 does not invent a new certificate format; instead Clause 8 tells you exactly what each X.509 field must contain for a DevID, and Clause 9 pins down which cryptographic recipes (signature suites) are allowed. This lesson is a guided tour of every field and every suite, naming the exact clause for each.",
+      "zh": "DevID（设备标识符，Device Identifier）本质上就是一张 X.509 证书——和保护网站的那种数字身份卡同属一类——但它被永久绑定到一台硬件设备上。IDevID（初始 DevID，Initial DevID）是出厂时安装的；LDevID（本地有效 DevID，Locally significant DevID）则是网络运营方后续添加的。IEEE Std 802.1AR-2018 并没有发明新的证书格式；相反，第 8 章精确规定了 DevID 的每个 X.509 字段应包含什么，第 9 章则锁定了允许使用的密码学配方（签名套件）。本课将逐一游览每个字段与每个套件，并指明对应的精确条款编号。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of an X.509 certificate as a sealed envelope. Most of Clause 8 describes what is written on the outside (who, what, when), and three fields at the end — signatureAlgorithm, signatureValue, and the matching signature field — describe the wax seal that proves nobody altered it. CA means Certification Authority: the trusted issuer who applies that seal.",
+      "zh": "可以把 X.509 证书想象成一个封好的信封。第 8 章的大部分内容描述信封外面写了什么（谁、是什么、何时），而末尾的三个字段——signatureAlgorithm、signatureValue 以及与之匹配的 signature 字段——则描述那枚证明无人篡改的火漆封印。CA 指认证机构（Certification Authority）：即施加该封印的受信任签发方。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 250\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><text x=\"10\" y=\"16\" font-size=\"12\" stroke=\"none\" fill=\"currentColor\">X.509 DevID certificate</text><rect x=\"10\" y=\"26\" width=\"300\" height=\"180\"/><text x=\"18\" y=\"42\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">tbsCertificate (the signed body)</text><rect x=\"18\" y=\"50\" width=\"284\" height=\"18\"/><text x=\"24\" y=\"63\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">version = v3 (8.1)  serialNumber (8.2)</text><rect x=\"18\" y=\"72\" width=\"284\" height=\"18\"/><text x=\"24\" y=\"85\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">signature alg id (8.3)  issuer (8.4)</text><rect x=\"18\" y=\"94\" width=\"284\" height=\"18\"/><text x=\"24\" y=\"107\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">validity notBefore/notAfter (8.5)</text><rect x=\"18\" y=\"116\" width=\"284\" height=\"18\"/><text x=\"24\" y=\"129\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">subject (8.6)  subjectPublicKeyInfo (8.7)</text><rect x=\"18\" y=\"138\" width=\"284\" height=\"60\"/><text x=\"24\" y=\"151\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">extensions (8.10):</text><text x=\"30\" y=\"164\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">authorityKeyIdentifier (8.10.1)</text><text x=\"30\" y=\"176\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">subjectKeyIdentifier (8.10.2)</text><text x=\"30\" y=\"188\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">keyUsage (8.10.3) subjectAltName (8.10.4)</text><rect x=\"325\" y=\"26\" width=\"125\" height=\"180\"/><text x=\"333\" y=\"42\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">the seal (Clause 9)</text><rect x=\"333\" y=\"60\" width=\"109\" height=\"30\"/><text x=\"339\" y=\"79\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">signatureAlgorithm (8.8)</text><rect x=\"333\" y=\"100\" width=\"109\" height=\"40\"/><text x=\"339\" y=\"124\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">signatureValue (8.9)</text><path d=\"M150 198 L150 224 M150 224 L375 224 L375 145\" stroke-dasharray=\"4 3\"/><text x=\"160\" y=\"240\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">CA signs the body → seal</text></svg>",
+      "caption": {
+        "en": "The two halves of a DevID: a signed body (tbsCertificate) holding the descriptive fields, and the CA's seal computed over it. Clause 8 numbers in parentheses.",
+        "zh": "DevID 的两半：一个保存描述性字段的已签名主体（tbsCertificate），以及在其上计算出的 CA 封印。括号中为第 8 章条款编号。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The identity half. version (8.1) is always 3 — DevID requires X.509v3 because only v3 supports the extensions used later. serialNumber (8.2) is a positive integer up to 20 octets, chosen by the issuing CA to be unique among the certificates it signs; it is deliberately unrelated to any factory serial number on the box. signature (8.3) names the algorithm that will sign the certificate, and must carry the same value as signatureAlgorithm (8.8) — a built-in consistency check. issuer (8.4) is the CA's name (a supplier, manufacturer, third-party CA, or operator); because names alone are not guaranteed unique, DevID leans on key-identifier extensions instead of the name for building the trust chain.",
+      "zh": "身份这一半。version（8.1）永远是 3——DevID 要求使用 X.509v3，因为只有 v3 才支持后面用到的扩展项。serialNumber（8.2）是一个最长 20 个八位字节的正整数，由签发的 CA 选定，在它所签发的证书范围内唯一；它有意与设备外壳上的任何出厂序列号无关。signature（8.3）指明将用于签署该证书的算法，且其取值必须与 signatureAlgorithm（8.8）相同——这是一项内建的一致性校验。issuer（8.4）是 CA 的名称（可能是供应商、制造商、第三方 CA 或运营方）；由于仅凭名称无法保证唯一，DevID 在构建信任链时依赖的是密钥标识扩展项，而非名称。"
+    },
+    {
+      "type": "prose",
+      "en": "validity (8.5) gives a notBefore and notAfter window, written in UTC (Coordinated Universal Time). Dates through 2049 use compact UTCTime (YYMMDDHHmmssZ); later dates use GeneralizedTime (YYYYMMDDHHmmssZ). An IDevID is meant to last for the life of the device, so it uses the special never-expires value 99991231235959Z. subject (8.6) carries the device's name as an X.500 Distinguished Name (DN); for an IDevID it must be non-null and should embed a unique device serial number. subjectPublicKeyInfo (8.7) holds the device's public key in whichever format Clause 9 specifies. Together subject, subjectAltName, and subjectPublicKeyInfo bind a name to a key.",
+      "zh": "validity（8.5）给出 notBefore 与 notAfter 两个时间界，以 UTC（协调世界时，Coordinated Universal Time）书写。2049 年（含）之前的日期使用紧凑的 UTCTime（YYMMDDHHmmssZ）；更晚的日期使用 GeneralizedTime（YYYYMMDDHHmmssZ）。IDevID 应当伴随设备终身，因此使用特殊的“永不过期”值 99991231235959Z。subject（8.6）以 X.500 可分辨名称（DN，Distinguished Name）形式承载设备名称；对 IDevID 而言该字段必须非空，且应嵌入唯一的设备序列号。subjectPublicKeyInfo（8.7）按第 9 章规定的格式保存设备的公钥。subject、subjectAltName 与 subjectPublicKeyInfo 共同把一个名称绑定到一个密钥。"
+    },
+    {
+      "type": "prose",
+      "en": "The seal half. signatureAlgorithm (8.8) identifies the exact CA signing algorithm chosen from a Clause 9 signature suite. signatureValue (8.9) is the resulting signature, encoded as a BIT STRING — the actual bytes that prove the body was signed by the holder of the issuer's private key. A verifier recomputes the hash of the body and checks it against this value using the issuer's public key; if they match, the certificate is authentic and untampered.",
+      "zh": "封印这一半。signatureAlgorithm（8.8）指明从第 9 章某个签名套件中选定的、CA 实际使用的签名算法。signatureValue（8.9）是由此产生的签名，编码为 BIT STRING（位串）——这些字节正是证明证书主体由持有签发方私钥者所签署的实证。验证方会重新计算主体的哈希值，并用签发方的公钥将其与该取值核对；若两者吻合，则证书真实且未被篡改。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "extensions (8.10) is where v3 earns its keep. The rule: IDevID certificates must not carry critical extensions except keyUsage. A critical extension is one a verifier must understand or else reject the whole certificate — so keeping IDevIDs free of surprising critical extensions keeps them usable far into the future, in protocols nobody has invented yet.",
+      "zh": "extensions（8.10）正是 v3 发挥价值之处。规则是：IDevID 证书除 keyUsage 外不得携带关键（critical）扩展项。所谓关键扩展，是指验证方必须理解、否则就要拒绝整张证书的扩展项——因此让 IDevID 不含意外的关键扩展，可使其在未来很长时间内、在尚未发明的协议中仍可使用。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Verifier gets DevID] --> B{Find issuer's cert?}\n  B -->|use authorityKeyIdentifier 8.10.1| C[Match to parent's subjectKeyIdentifier 8.10.2]\n  C --> D[Build chain to trusted root]\n  D --> E{keyUsage 8.10.3 allows this use?}\n  E -->|yes| F[Check signatureValue 8.9 with parent public key]\n  F --> G[Identity accepted]",
+      "zh": "flowchart TD\n  A[验证方拿到 DevID] --> B{能找到签发方证书?}\n  B -->|借助 authorityKeyIdentifier 8.10.1| C[匹配父证书的 subjectKeyIdentifier 8.10.2]\n  C --> D[构建到受信根的证书链]\n  D --> E{keyUsage 8.10.3 允许此用途?}\n  E -->|允许| F[用父公钥校验 signatureValue 8.9]\n  F --> G[身份被接受]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The four extensions — coverage map for 8.10.1 to 8.10.4",
+        "zh": "四个扩展项——8.10.1 至 8.10.4 的覆盖图"
+      },
+      "en": "authorityKeyIdentifier (8.10.1) is a non-critical extension carrying a unique value that points at the issuer's key; it appears in all DevID and intermediate certificates so a verifier can quickly find the parent that signed this one. subjectKeyIdentifier (8.10.2) is the matching label on the issuer's own certificate; the standard requires it in DevID intermediate certificates (the CA links in the chain) but says to omit it from leaf DevID certificates to save space, since chain building does not need it there. keyUsage (8.10.3) may restrict the key to specific uses; it is the one extension that may be marked critical in an IDevID, and if critical it must include digitalSignature (it may also include keyEncipherment) — deliberately permissive so the long-lived IDevID stays broadly useful. subjectAltName (8.10.4) supplements the subject name; in a DevID certificate it should include a HardwareModuleName (RFC 4108) giving extra device detail — for example, when a TPM (Trusted Platform Module) provides the DevID module, the hwType and hwSerialNum identify that TPM.",
+      "zh": "authorityKeyIdentifier（8.10.1）是一个非关键扩展项，携带指向签发方密钥的唯一值；它出现在所有 DevID 证书及中间证书中，使验证方能迅速找到签署本证书的父证书。subjectKeyIdentifier（8.10.2）是签发方自身证书上的相应标签；标准要求 DevID 中间证书（链中的 CA 环节）必须包含它，但建议叶端 DevID 证书省略以节省空间，因为此处构建证书链并不需要它。keyUsage（8.10.3）可将密钥限制为特定用途；它是 IDevID 中唯一可标记为关键的扩展项，若标记为关键则必须包含 digitalSignature（也可包含 keyEncipherment）——这是有意保持宽松，以使长寿命的 IDevID 保持广泛可用。subjectAltName（8.10.4）补充 subject 名称；在 DevID 证书中它应包含一个 HardwareModuleName（RFC 4108）以给出额外的设备细节——例如当 TPM（可信平台模块，Trusted Platform Module）提供 DevID 模块时，hwType 与 hwSerialNum 用于标识该 TPM。",
+      "cite": {
+        "pdf_id": "8021AR-2018",
+        "pages": [
+          41,
+          42
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now Clause 9: the signature suites. A signature suite is one agreed bundle of cryptographic choices — which signing algorithm, which key type and size, which hash, and how each is written into the DER (Distinguished Encoding Rules) bytes of the certificate. DER is the canonical binary form of ASN.1 (Abstract Syntax Notation One), the data-description language X.509 uses. 802.1AR allows exactly three suites, giving deployments a small, well-studied menu instead of an open free-for-all. A single device may support more than one suite to fit different environments — which means it holds more than one IDevID, each expressing the same identity with different security properties.",
+      "zh": "现在进入第 9 章：签名套件。一个签名套件就是一组约定好的密码学选择——使用哪种签名算法、哪种密钥类型与长度、哪种哈希，以及它们各自如何写入证书的 DER（可分辨编码规则，Distinguished Encoding Rules）字节中。DER 是 ASN.1（抽象语法标记一，Abstract Syntax Notation One，即 X.509 所用的数据描述语言）的规范二进制形式。802.1AR 恰好允许三种套件，为部署提供一份经过充分研究的小菜单，而非毫无约束的自由选择。单台设备可支持多个套件以适配不同环境——这意味着它持有不止一个 IDevID，每个都以不同的安全属性表达同一身份。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The three signature suites — coverage map for 9.1, 9.2, 9.3",
+        "zh": "三种签名套件——9.1、9.2、9.3 的覆盖图"
+      },
+      "en": "RSA-2048/SHA-256 (9.1): 9.1.1 names the algorithm — RSASSA-PKCS1-v1.5 (RFC 8017) using sha256WithRSAEncryption with a 2048-bit RSA key and SHA-256 (Secure Hash Algorithm, 256-bit, FIPS 180-4). 9.1.2 requires the RNG (random number generator) producing keys to have at least 128 bits of security strength. 9.1.3 sets signatureAlgorithm to the OID (object identifier) sha256WithRSAEncryption with a NULL parameters field. 9.1.4 sets subjectPublicKeyInfo to the rsaEncryption OID wrapping an RSAPublicKey (modulus n + publicExponent e). 9.1.5 encodes signatureValue as a BIT STRING.\n\nECDSA P-256/SHA-256 (9.2): 9.2.1 uses ECDSA (Elliptic Curve Digital Signature Algorithm, FIPS 186-4) over the P-256 curve with SHA-256. 9.2.2 again requires 128-bit security strength. 9.2.3 sets signatureAlgorithm to ecdsa-with-SHA256 with the parameters field omitted. 9.2.4 sets subjectPublicKeyInfo to id-ecPublicKey with curve parameter secp256r1, the public key being an ECPoint OCTET STRING (uncompressed form mandatory, compressed optional, hybrid form forbidden). 9.2.5 encodes signatureValue as an Ecdsa-Sig-Value SEQUENCE of two integers r and s.\n\nECDSA P-384/SHA-384 (9.3): the stronger elliptic-curve option. 9.3.1 uses the P-384 curve with SHA-384. 9.3.2 raises the RNG bar to at least 192 bits of security strength. 9.3.3 sets signatureAlgorithm to ecdsa-with-SHA384. 9.3.4 sets subjectPublicKeyInfo to id-ecPublicKey with curve parameter secp384r1 (same ECPoint encoding rules as P-256). 9.3.5 again uses the Ecdsa-Sig-Value r,s SEQUENCE.",
+      "zh": "RSA-2048/SHA-256（9.1）：9.1.1 指明算法——RSASSA-PKCS1-v1.5（RFC 8017），使用 sha256WithRSAEncryption，配 2048 位 RSA 密钥与 SHA-256（安全哈希算法 256 位，Secure Hash Algorithm，FIPS 180-4）。9.1.2 要求生成密钥的 RNG（随机数生成器，random number generator）至少具备 128 位安全强度。9.1.3 将 signatureAlgorithm 设为 OID（对象标识符，object identifier）sha256WithRSAEncryption，参数字段为 NULL。9.1.4 将 subjectPublicKeyInfo 设为 rsaEncryption OID，内含 RSAPublicKey（模数 n + 公开指数 e）。9.1.5 将 signatureValue 编码为 BIT STRING。\n\nECDSA P-256/SHA-256（9.2）：9.2.1 在 P-256 曲线上使用 ECDSA（椭圆曲线数字签名算法，Elliptic Curve Digital Signature Algorithm，FIPS 186-4），配 SHA-256。9.2.2 同样要求 128 位安全强度。9.2.3 将 signatureAlgorithm 设为 ecdsa-with-SHA256，并省略参数字段。9.2.4 将 subjectPublicKeyInfo 设为 id-ecPublicKey，曲线参数为 secp256r1，公钥为 ECPoint OCTET STRING（必须支持非压缩形式，可选支持压缩形式，禁止混合形式）。9.2.5 将 signatureValue 编码为 Ecdsa-Sig-Value 序列，含两个整数 r 与 s。\n\nECDSA P-384/SHA-384（9.3）：更强的椭圆曲线选项。9.3.1 在 P-384 曲线上配 SHA-384。9.3.2 将 RNG 门槛提高到至少 192 位安全强度。9.3.3 将 signatureAlgorithm 设为 ecdsa-with-SHA384。9.3.4 将 subjectPublicKeyInfo 设为 id-ecPublicKey，曲线参数为 secp384r1（ECPoint 编码规则与 P-256 相同）。9.3.5 同样使用 Ecdsa-Sig-Value 的 r、s 序列。",
+      "cite": {
+        "pdf_id": "8021AR-2018",
+        "pages": [
+          43,
+          44,
+          45,
+          46
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why three suites? RSA-2048 is the legacy interoperability choice many systems already trust. ECDSA P-256 gives the same 128-bit security strength with far smaller keys and signatures — ideal for constrained devices. ECDSA P-384 steps up to 192-bit strength for higher-assurance environments. All three feed the very same Clause 8 fields (8.7 subjectPublicKeyInfo, 8.8 signatureAlgorithm, 8.9 signatureValue); the suite only decides which OIDs and key bytes go inside.",
+      "zh": "为何要三种套件？RSA-2048 是许多系统早已信任的传统互操作选择。ECDSA P-256 以小得多的密钥和签名提供同样的 128 位安全强度——非常适合资源受限的设备。ECDSA P-384 则提升到 192 位强度，面向更高保障要求的环境。三者最终都填入完全相同的第 8 章字段（8.7 subjectPublicKeyInfo、8.8 signatureAlgorithm、8.9 signatureValue）；套件只决定其中放入哪些 OID 和密钥字节。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AR-2018",
+      "pages": [
+        40,
+        41,
+        42
+      ],
+      "note": "Clause 8 — DevID certificate fields 8.1-8.9 and extensions 8.10.1-8.10.4"
+    },
+    {
+      "pdf_id": "8021AR-2018",
+      "pages": [
+        43,
+        44,
+        45,
+        46
+      ],
+      "note": "Clause 9 — signature suites 9.1 (RSA-2048/SHA-256), 9.2 (ECDSA P-256/SHA-256), 9.3 (ECDSA P-384/SHA-384)"
+    }
+  ],
+  "covers": [
+    "8021AR-2018:8.1",
+    "8021AR-2018:8.2",
+    "8021AR-2018:8.3",
+    "8021AR-2018:8.4",
+    "8021AR-2018:8.5",
+    "8021AR-2018:8.6",
+    "8021AR-2018:8.7",
+    "8021AR-2018:8.8",
+    "8021AR-2018:8.9",
+    "8021AR-2018:8.10.1",
+    "8021AR-2018:8.10.2",
+    "8021AR-2018:8.10.3",
+    "8021AR-2018:8.10.4",
+    "8021AR-2018:9.1.1",
+    "8021AR-2018:9.1.2",
+    "8021AR-2018:9.1.3",
+    "8021AR-2018:9.1.4",
+    "8021AR-2018:9.1.5",
+    "8021AR-2018:9.2.1",
+    "8021AR-2018:9.2.2",
+    "8021AR-2018:9.2.3",
+    "8021AR-2018:9.2.4",
+    "8021AR-2018:9.2.5",
+    "8021AR-2018:9.3.1",
+    "8021AR-2018:9.3.2",
+    "8021AR-2018:9.3.3",
+    "8021AR-2018:9.3.4",
+    "8021AR-2018:9.3.5"
+  ],
+  "track": "net-security"
+}

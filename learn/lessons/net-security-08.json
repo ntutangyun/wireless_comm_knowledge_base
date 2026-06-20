@@ -1,0 +1,181 @@
+{
+  "id": "net-security-08",
+  "title": {
+    "en": "EAPOL PDUs: The On-the-Wire Frame Format of 802.1X",
+    "zh": "EAPOL PDU：802.1X 的线缆帧格式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 11 of IEEE Std 802.1X-2020 specifies the exact bytes that two ports exchange to do Port-Based Network Access Control. These frames are called EAPOL PDUs. EAPOL stands for 'EAP over LANs' (EAP = Extensible Authentication Protocol, a flexible framework for carrying any authentication method). A PDU (Protocol Data Unit) is one self-contained message. The peers exchanging them are PAEs (Port Access Entities) — the per-port software that gates access. EAPOL PDUs carry three kinds of work: EAP authentication (via PACP, the Port Access Control Protocol of Clause 8), the MACsec Key Agreement protocol (MKA, Clause 9) for setting up link encryption, and announcements that advertise a port's identity and capabilities. This lesson is a reference-grade tour of every part of Clause 11.",
+      "zh": "IEEE Std 802.1X-2020 第 11 章规定了两个端口为实现基于端口的网络访问控制（PNAC）而交换的确切字节。这些帧称为 EAPOL PDU。EAPOL 是 “EAP over LANs”（EAP = 可扩展认证协议，一种可承载任意认证方法的灵活框架）的缩写。PDU（协议数据单元）是一条自包含的消息。交换它们的对端是 PAE（端口访问实体）——即按端口运行、负责把守访问的软件。EAPOL PDU 承担三类工作：通过 PACP（第 8 章的端口访问控制协议）进行 EAP 认证；运行 MACsec 密钥协商协议（MKA，第 9 章）以建立链路加密；以及发布端口身份与能力的通告。本课是对第 11 章每个部分的参考级讲解。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 11.1 sets the addressing and identification rules. Each EAPOL PDU travels as one MAC service request (11.1). The destination MAC address (11.1.1) is either an individual address of one peer PAE or a group address whose choice depends on how far the connectivity should reach; Table 11-1 lists the group addresses (e.g. the PAE group address 01-80-C2-00-00-03, the default for plug-and-play). The source MAC address (11.1.2) is the individual address of the sending port — on a Wi-Fi access point this is the BSSID. Priority (11.1.3) defaults to the port's default; EAPOL frames are not VLAN-tagged by default but every PAE must accept both tagged and untagged frames. Ethertype (11.1.4): every EAPOL frame is identified by the PAE Ethertype 88-8E (Table 11-2); on media like 802.11 that lack native Ethertype encoding, it is prepended via a SNAP header (AA-AA-03-00-00-00 then 88-8E).",
+      "zh": "第 11.1 节确定寻址与标识规则。每个 EAPOL PDU 以一次 MAC 服务请求发送（11.1）。目的 MAC 地址（11.1.1）要么是某个对端 PAE 的单播地址，要么是组地址，组地址的选择取决于连通范围应达到多远；表 11-1 列出了这些组地址（如 PAE 组地址 01-80-C2-00-00-03，即即插即用的默认值）。源 MAC 地址（11.1.2）是发送端口的单播地址——在 Wi-Fi 接入点上即为 BSSID。优先级（11.1.3）默认采用端口默认值；EAPOL 帧默认不打 VLAN 标签，但每个 PAE 都必须能接收带标签与不带标签两种帧。以太网类型（11.1.4）：每个 EAPOL 帧都用 PAE 以太网类型 88-8E 标识（表 11-2）；在 802.11 等不原生支持以太网类型编码的介质上，则通过 SNAP 头前置（AA-AA-03-00-00-00 再接 88-8E）。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 11.2 fixes how bytes are read. Every EAPOL PDU is an integral number of octets numbered from 1; within an octet bits run 1 (low order) to 8 (high order); when several octets encode one number, the lower-numbered octet holds the more significant bits (big-endian). Section 11.3 then defines the common header that every EAPOL PDU shares (Figure 11-1): a one-octet Protocol Version (11.3.1, which a conformant implementation sets to 0x03 = 3), a one-octet Packet Type (11.3.2, listed in Table 11-3 — it selects which kind of message this is), a two-octet Packet Body Length (11.3.3, length of the body, 0 if absent), and the Packet Body (11.3.4) whose meaning depends entirely on the Packet Type.",
+      "zh": "第 11.2 节固定字节的读取方式。每个 EAPOL PDU 都是从 1 开始编号的整数个八位组；在一个八位组内，比特位从 1（低位）到 8（高位）；当多个八位组编码一个数字时，编号较小的八位组存放更高有效位（大端）。第 11.3 节随后定义所有 EAPOL PDU 共享的公共头（图 11-1）：一个八位组的协议版本（11.3.1，符合本规范的实现取值 0x03 = 3）、一个八位组的报文类型（11.3.2，列于表 11-3——它决定本消息属于哪种）、两个八位组的报文体长度（11.3.3，即报文体长度，无报文体时为 0），以及报文体（11.3.4），其含义完全取决于报文类型。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"80\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"150\" y=\"30\" width=\"110\" height=\"34\"/><rect x=\"260\" y=\"30\" width=\"190\" height=\"34\"/><text x=\"45\" y=\"22\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">octet 1</text><text x=\"115\" y=\"22\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">octet 2</text><text x=\"205\" y=\"22\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">octets 3-4</text><text x=\"355\" y=\"22\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">octets 5...</text><text x=\"45\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Version</text><text x=\"115\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Pkt Type</text><text x=\"205\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Body Length</text><text x=\"355\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Packet Body</text><rect x=\"10\" y=\"95\" width=\"100\" height=\"30\"/><rect x=\"110\" y=\"95\" width=\"340\" height=\"30\"/><text x=\"60\" y=\"114\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">PAE Ethertype 88-8E</text><text x=\"280\" y=\"114\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">EAPOL PDU (header + body)</text><text x=\"10\" y=\"88\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">EAPOL MPDU =</text></svg>",
+      "caption": {
+        "en": "The common EAPOL PDU structure (11.3, Figure 11-1): Version, Packet Type, Body Length, then a type-specific Body — carried after the 88-8E PAE Ethertype.",
+        "zh": "公共 EAPOL PDU 结构（11.3，图 11-1）：版本、报文类型、报文体长度，再接按类型而定的报文体——位于 88-8E PAE 以太网类型之后。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two general rules guard every type. Validation (11.4): a received PDU is processed only if the destination address matches the receiver's recognized group or individual address, the PAE Ethertype is present, there are at least two octets (a Packet Type), the Packet Type is one Table 11-3 recognizes and the receiver hosts a matching client entity, the address class (individual vs group, Table 11-4) is one the client accepts, and the Body Length fits inside the frame — otherwise the PDU is discarded, and any trailing octets are ignored. Protocol-version handling (11.5): if the received version B is greater than or equal to the implementation's version A, interpret it as version A and ignore unknown parameters and any octets past A's last defined octet; if B is less than A, interpret per version B. This forward/backward rule lets old and new implementations interoperate without breaking.",
+      "zh": "有两条通用规则护卫所有类型。校验（11.4）：仅当目的地址匹配接收方认可的组地址或单播地址、存在 PAE 以太网类型、至少有两个八位组（即报文类型字段）、报文类型是表 11-3 认可且接收方拥有相应客户端实体、地址类别（单播或组，表 11-4）是该客户端接受的、且报文体长度容纳于帧内时，接收到的 PDU 才被处理——否则丢弃，且忽略尾部多余八位组。协议版本处理（11.5）：若收到的版本 B 大于或等于本实现的版本 A，则按版本 A 解释，并忽略未知参数及超出 A 最后定义八位组的字节；若 B 小于 A，则按版本 B 解释。这条向前/向后规则让新旧实现互通而不出错。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Receive EAPOL PDU] --> B{Dest addr OK?}\n  B -- no --> X[Discard]\n  B -- yes --> C{PAE Ethertype + >=2 octets?}\n  C -- no --> X\n  C -- yes --> D{Packet Type in Table 11-3?}\n  D -- no --> X\n  D -- yes --> E{Body Length fits frame?}\n  E -- no --> X\n  E -- yes --> F[Dispatch by Packet Type]",
+      "zh": "flowchart TD\n  A[收到 EAPOL PDU] --> B{目的地址正确?}\n  B -- 否 --> X[丢弃]\n  B -- 是 --> C{有 PAE 以太网类型且>=2 八位组?}\n  C -- 否 --> X\n  C -- 是 --> D{报文类型在表 11-3 中?}\n  D -- 否 --> X\n  D -- 是 --> E{报文体长度合于帧内?}\n  E -- 否 --> X\n  E -- 是 --> F[按报文类型分发]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the individual Packet Types. EAPOL-Start (11.6) is sent by a supplicant to begin authentication; version 1-2 carry no body, but a version-3 Start may carry a body whose first octet's bit 1 solicits an announcement and whose remaining octets carry Announcement TLVs (often a NID Set TLV) to convey network-selection hints. EAPOL-Logoff (11.7) tears down access and carries no meaningful body. EAPOL-EAP (11.8) wraps exactly one EAP packet (Code, Identifier, Length, Data per IETF RFC 3748) — this is how the actual authentication conversation rides over the LAN. EAPOL-Key (11.9) carries a Key Descriptor: a one-octet Descriptor Type (Table 11-5 — type 2 is the IEEE 802.11 Key Descriptor used by Wi-Fi's 4-way handshake) plus a Descriptor Body. EAPOL-Encapsulated-ASF-Alert (11.10) forwards one ASF (Alert Standard Format, a DMTF spec) alert on the Uncontrolled Port regardless of authentication state, so management alerts get through even before a port is authorized.",
+      "zh": "下面看各报文类型。EAPOL-Start（11.6）由请求方发出以开始认证；版本 1-2 不带报文体，但版本 3 的 Start 可带报文体，其首八位组的比特 1 用于请求一次通告，其余八位组承载通告 TLV（常为 NID Set TLV）以传递网络选择提示。EAPOL-Logoff（11.7）拆除访问，不带有意义的报文体。EAPOL-EAP（11.8）恰好封装一个 EAP 报文（按 IETF RFC 3748 的 Code、Identifier、Length、Data）——真正的认证对话即以此方式在 LAN 上传输。EAPOL-Key（11.9）承载密钥描述符：一个八位组的描述符类型（表 11-5——类型 2 即 Wi-Fi 四次握手所用的 IEEE 802.11 密钥描述符）加描述符体。EAPOL-Encapsulated-ASF-Alert（11.10）在非受控端口上转发一条 ASF（告警标准格式，DMTF 规范）告警，与认证状态无关，从而管理告警在端口被授权前也能送达。"
+    },
+    {
+      "type": "prose",
+      "en": "EAPOL-MKA (11.11) carries an MKPDU — the message of the MACsec Key Agreement protocol, which negotiates the keys that protect a link with MACsec (Media Access Control Security). An MKPDU (Figure 11-6) is a Basic Parameter Set (always first), followed by zero or more further parameter sets, ending in a 16-octet ICV (Integrity Check Value) that authenticates the whole message. Each parameter set is self-describing and 4-octet aligned (Figure 11-7), so an unrecognized set can simply be skipped. The Basic Parameter Set advertises the sender's MKA Version Identifier (this revision uses 3), Key Server Priority, capabilities, SCI, member/message identifiers, and CAK Name (CKN). 11.11.1 spells out the fixed-width encodings (Table 11-6) and the parameter sets (Table 11-7: Live/Potential Peer Lists, MACsec SAK Use, Distributed SAK, Distributed CAK, KMD, Announcement, XPN, and the ICV Indicator).",
+      "zh": "EAPOL-MKA（11.11）承载 MKPDU——即 MACsec 密钥协商协议的消息，该协议协商用 MACsec（媒体访问控制安全）保护链路的密钥。MKPDU（图 11-6）由基本参数集（始终在首）、零个或多个后续参数集、以及结尾处一个 16 八位组的 ICV（完整性校验值，用于认证整条消息）组成。每个参数集自描述且按 4 八位组对齐（图 11-7），因此无法识别的集合可直接跳过。基本参数集发布发送方的 MKA 版本标识（本版为 3）、密钥服务器优先级、能力、SCI、成员/消息标识以及 CAK 名称（CKN）。11.11.1 详述定宽编码（表 11-6）与各参数集（表 11-7：活跃/潜在对端列表、MACsec SAK 使用、分发 SAK、分发 CAK、KMD、通告、XPN，以及 ICV 指示符）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "MKPDU validation (11.11.2) is strict: discard before any ICV check if the destination was an individual address, the MKPDU is under 32 octets, it is not a multiple of 4 octets, it is shorter than the Basic Parameter Set body length plus the 16-octet ICV, or the CAK Name is unrecognized. Only then is the ICV verified (per 9.4.1). Encoding (11.11.3) writes the Basic set first, then remaining sets in type-number order, with Peer Lists and the ICV Indicator handled specially. Decoding (11.11.4) walks each set, checks its body length is a legal value for that set type, stops at an ICV Indicator, and keeps only the first occurrence of any repeated set.",
+      "zh": "MKPDU 校验（11.11.2）很严格：在任何 ICV 校验之前，若目的为单播地址、MKPDU 小于 32 八位组、长度不是 4 的倍数、短于基本参数集体长度加 16 八位组 ICV、或 CAK 名称无法识别，则直接丢弃。只有通过这些检查后才（按 9.4.1）验证 ICV。编码（11.11.3）先写基本集，再按类型编号顺序写其余集合，对端列表与 ICV 指示符特殊处理。解码（11.11.4）逐一遍历各集合，检查其体长度对该集合类型是否合法，遇 ICV 指示符即停止，并对任何重复集合只保留首次出现。"
+    },
+    {
+      "type": "prose",
+      "en": "EAPOL-Announcement (11.12) lets a port advertise the networks it offers and on what terms. Its body is a sequence of TLVs (Type-Length-Value records) using the IEEE 802.1AB format (Figure 11-19): a 7-bit type, a 9-bit length, and an information string up to 511 octets. A 'set type' TLV introduces a group of TLVs that belong to it; TLVs before any set TLV are Global. Table 11-8 lists the defined TLVs, detailed in the sub-sections: NID Set TLV (11.12.1, type 114 — names a network, a UTF-8 string up to 100 octets); Access Information TLV (11.12.2, type 111 — encodes Access Status, what access is requested, and Access Capabilities like EAP/MKA/MACsec per Table 11-9); MACsec Cipher Suites TLV (11.12.3, type 112 — the cipher suites supported); Key Management Domain TLV (11.12.4, type 113 — names the authenticator's key-management domain, up to 253 UTF-8 chars); and the Organizationally Specific / Organizationally Specific Set TLVs (11.12.5, types 127/126 — vendor extensions keyed by OUI or CID).",
+      "zh": "EAPOL-Announcement（11.12）让端口发布其提供的网络及条件。其报文体是一串 TLV（类型-长度-值记录），采用 IEEE 802.1AB 格式（图 11-19）：7 比特类型、9 比特长度、以及最长 511 八位组的信息串。“集合类型”TLV 引入归属于它的一组 TLV；任何集合 TLV 之前的 TLV 为全局（Global）。表 11-8 列出已定义的 TLV，详见各小节：NID Set TLV（11.12.1，类型 114——命名网络，UTF-8 字符串最长 100 八位组）；Access Information TLV（11.12.2，类型 111——按表 11-9 编码访问状态、所请求的访问及如 EAP/MKA/MACsec 的访问能力）；MACsec Cipher Suites TLV（11.12.3，类型 112——所支持的加密套件）；Key Management Domain TLV（11.12.4，类型 113——命名认证方的密钥管理域，最长 253 个 UTF-8 字符）；以及组织专用/组织专用集合 TLV（11.12.5，类型 127/126——以 OUI 或 CID 标识的厂商扩展）。"
+    },
+    {
+      "type": "prose",
+      "en": "Announcement validation (11.12.6) discards a PDU if the destination is neither the receiver's individual nor its selected group address, or if the announcement is under 3 octets. Encoding (11.12.7) writes Global TLVs first (each at most once globally), then each Set TLV followed by its member TLVs. Decoding (11.12.8) reads TLVs in order, stops if a TLV would run past the Packet Body, treats reserved set types as set TLVs, skips unrecognized individual TLVs (or whole sets), records pre-set TLVs as Global, assigns later TLVs to the most recent set, and keeps only one value if a TLV repeats within a context. Finally, EAPOL-Announcement-Req (11.13) is sent by a supplicant to ask for an announcement without committing to EAP authentication: it requires Protocol Version 3, and like EAPOL-Start its body's first-octet bit 1 (or an absent body) solicits an announcement while trailing TLVs convey selection parameters.",
+      "zh": "通告校验（11.12.6）：若目的既非接收方单播地址也非其所选组地址，或通告短于 3 八位组，则丢弃。编码（11.12.7）：先写全局 TLV（每个在全局上下文中至多一次），再写每个集合 TLV 及其成员 TLV。解码（11.12.8）：按顺序读取 TLV，若某 TLV 越过报文体则停止，将保留的集合类型视为集合 TLV，跳过无法识别的单个 TLV（或整个集合），将集合前的 TLV 记为全局，把后续 TLV 归入最近的集合，并在同一上下文中某 TLV 重复时只保留一个值。最后，EAPOL-Announcement-Req（11.13）由请求方发出，以请求通告而不承诺进行 EAP 认证：它要求协议版本 3，且与 EAPOL-Start 一样，其报文体首八位组的比特 1（或无报文体）请求一次通告，尾部 TLV 则传递选择参数。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 11 unit by number",
+        "zh": "覆盖地图——按编号列出第 11 章每个单元"
+      },
+      "en": "Addressing & identification: 11.1 (PDU as one MAC service request), 11.1.1 (destination MAC — individual or group per Table 11-1), 11.1.2 (source MAC = sending port / BSSID), 11.1.3 (priority, tagged + untagged accepted), 11.1.4 (PAE Ethertype 88-8E, SNAP on 802.11). Encoding: 11.2 (octet/bit numbering, big-endian). Common structure (Fig 11-1): 11.3.1 Protocol Version (0x03), 11.3.2 Packet Type (Table 11-3), 11.3.3 Packet Body Length, 11.3.4 Packet Body. General rules: 11.4 (validation conditions a-f) and 11.5 (version handling: B>=A vs B<A). Per-type: 11.6 EAPOL-Start (v3 body bit-1 solicits announcement + TLVs), 11.7 EAPOL-Logoff (no body), 11.8 EAPOL-EAP (one EAP packet, Fig 11-4), 11.9 EAPOL-Key (Key Descriptor, Table 11-5), 11.10 EAPOL-Encapsulated-ASF-Alert (Uncontrolled Port, DMTF ASF). MKA: 11.11 EAPOL-MKA/MKPDU (Basic Parameter Set + sets + ICV, Fig 11-6/11-7), 11.11.1 parameter encoding (Tables 11-6/11-7), 11.11.2 MKPDU validation (discard rules a-e then ICV verify), 11.11.3 encoding, 11.11.4 decoding. Announcements: 11.12 EAPOL-Announcement (802.1AB TLVs, Fig 11-19, Table 11-8), 11.12.1 NID Set TLV (114), 11.12.2 Access Information TLV (111, Table 11-9), 11.12.3 MACsec Cipher Suites TLV (112), 11.12.4 Key Management Domain TLV (113), 11.12.5 Organizationally Specific (127) and Set (126) TLVs, 11.12.6 validation, 11.12.7 encoding, 11.12.8 decoding. Request: 11.13 EAPOL-Announcement-Req (v3, Fig 11-26).",
+      "zh": "寻址与标识：11.1（PDU 作为一次 MAC 服务请求）、11.1.1（目的 MAC——按表 11-1 为单播或组）、11.1.2（源 MAC = 发送端口 / BSSID）、11.1.3（优先级，接受带标签与不带标签）、11.1.4（PAE 以太网类型 88-8E，802.11 上用 SNAP）。编码：11.2（八位组/比特编号，大端）。公共结构（图 11-1）：11.3.1 协议版本（0x03）、11.3.2 报文类型（表 11-3）、11.3.3 报文体长度、11.3.4 报文体。通用规则：11.4（校验条件 a-f）与 11.5（版本处理：B>=A 与 B<A）。各类型：11.6 EAPOL-Start（v3 报文体比特 1 请求通告 + TLV）、11.7 EAPOL-Logoff（无报文体）、11.8 EAPOL-EAP（一个 EAP 报文，图 11-4）、11.9 EAPOL-Key（密钥描述符，表 11-5）、11.10 EAPOL-Encapsulated-ASF-Alert（非受控端口，DMTF ASF）。MKA：11.11 EAPOL-MKA/MKPDU（基本参数集 + 各集合 + ICV，图 11-6/11-7）、11.11.1 参数编码（表 11-6/11-7）、11.11.2 MKPDU 校验（丢弃规则 a-e 后验证 ICV）、11.11.3 编码、11.11.4 解码。通告：11.12 EAPOL-Announcement（802.1AB TLV，图 11-19，表 11-8）、11.12.1 NID Set TLV（114）、11.12.2 Access Information TLV（111，表 11-9）、11.12.3 MACsec Cipher Suites TLV（112）、11.12.4 Key Management Domain TLV（113）、11.12.5 组织专用（127）与集合（126）TLV、11.12.6 校验、11.12.7 编码、11.12.8 解码。请求：11.13 EAPOL-Announcement-Req（v3，图 11-26）。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          113,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          123,
+          130,
+          131,
+          132,
+          133,
+          135,
+          136,
+          137
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        113,
+        114,
+        115
+      ],
+      "note": "11.1 transmission/addressing: destination (11.1.1, Table 11-1), source (11.1.2), priority (11.1.3), Ethertype 88-8E (11.1.4, Table 11-2)."
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        116,
+        117
+      ],
+      "note": "11.2 octet encoding; 11.3 common structure (Fig 11-1) with 11.3.1-11.3.4; 11.4 validation and Table 11-3 Packet Types."
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        118,
+        119,
+        120,
+        121
+      ],
+      "note": "11.5 version handling (Table 11-4); 11.6 EAPOL-Start; 11.7 EAPOL-Logoff; 11.8 EAPOL-EAP (Fig 11-4); 11.9 EAPOL-Key (Fig 11-5, Table 11-5); 11.10 ASF-Alert; 11.11 EAPOL-MKA intro."
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        123,
+        130,
+        131
+      ],
+      "note": "11.11.1 MKA parameter encoding (Tables 11-6/11-7); 11.11.2 MKPDU validation; 11.11.3 encoding; 11.11.4 decoding."
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        131,
+        132,
+        133,
+        135,
+        136,
+        137
+      ],
+      "note": "11.12 EAPOL-Announcement (Fig 11-19, Table 11-8) and 11.12.1-11.12.8 TLVs/validation/encoding/decoding; 11.13 EAPOL-Announcement-Req (Fig 11-26)."
+    }
+  ],
+  "covers": [
+    "8021X-2020:11.1.1",
+    "8021X-2020:11.1.2",
+    "8021X-2020:11.1.3",
+    "8021X-2020:11.1.4",
+    "8021X-2020:11.2",
+    "8021X-2020:11.3.1",
+    "8021X-2020:11.3.2",
+    "8021X-2020:11.3.3",
+    "8021X-2020:11.3.4",
+    "8021X-2020:11.4",
+    "8021X-2020:11.5",
+    "8021X-2020:11.6",
+    "8021X-2020:11.7",
+    "8021X-2020:11.8",
+    "8021X-2020:11.9",
+    "8021X-2020:11.10",
+    "8021X-2020:11.11.1",
+    "8021X-2020:11.11.2",
+    "8021X-2020:11.11.3",
+    "8021X-2020:11.11.4",
+    "8021X-2020:11.12.1",
+    "8021X-2020:11.12.2",
+    "8021X-2020:11.12.3",
+    "8021X-2020:11.12.4",
+    "8021X-2020:11.12.5",
+    "8021X-2020:11.12.6",
+    "8021X-2020:11.12.7",
+    "8021X-2020:11.12.8",
+    "8021X-2020:11.13"
+  ],
+  "track": "net-security"
+}

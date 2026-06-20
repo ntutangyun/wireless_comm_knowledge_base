@@ -1,0 +1,131 @@
+{
+  "id": "net-security-19",
+  "title": {
+    "en": "Inside the DevID Module: Functionality and Interfaces",
+    "zh": "走进 DevID 模块：功能与接口"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A DevID (Secure Device Identity) is a cryptographic identity baked into a device so it can prove \"I really am this device\" on a network. Clause 7 of IEEE Std 802.1AR-2018 describes the **DevID module** — the logical security component that stores and operates on those identities. Think of it like a tamper-resistant wallet soldered into the device: it holds the secret keys and certificates, performs signatures on request, but never hands the secrets out. This lesson walks every part of Clause 7: what the module does (7.1), how software talks to it (7.2, the Service Interface), and how administrators manage it (7.3, the Management Interface).",
+      "zh": "DevID（安全设备身份，Secure Device Identity）是烧录进设备的一种加密身份，使设备能够在网络上证明“我确实就是这台设备”。IEEE Std 802.1AR-2018 的第 7 章描述了 **DevID 模块**——负责存储并操作这些身份的逻辑安全组件。可以把它想象成焊死在设备里的防篡改钱包：它保存私钥与证书，按请求执行签名，但绝不会把秘密交出来。本课逐一讲解第 7 章的每个部分：模块做什么（7.1）、软件如何与之对话（7.2，服务接口），以及管理员如何管理它（7.3，管理接口）。"
+    },
+    {
+      "type": "prose",
+      "en": "Two key terms recur throughout. An **IDevID** (Initial DevID) is the permanent, manufacturer-installed identity — like a birth certificate that never expires. An **LDevID** (Locally significant DevID) is an identity that a network operator installs locally after enrolling the device — like a workplace badge that only your employer issues and revokes. The module ships with one IDevID per supported signature suite and may later hold zero or more LDevIDs.",
+      "zh": "全文反复出现两个关键术语。**IDevID**（初始 DevID，Initial DevID）是制造商预装的永久身份——好比一张永不过期的出生证明。**LDevID**（本地有效 DevID，Locally significant DevID）则是网络运营方在设备入网注册后本地安装的身份——好比由雇主签发并吊销的工牌。模块出厂时为每种受支持的签名套件携带一个 IDevID，之后可保存零个或多个 LDevID。"
+    },
+    {
+      "type": "prose",
+      "en": "**7.1 — What the module does.** The module provides three pieces of functionality, all kept inside a protected cryptographic boundary. **7.1.1 Storage**: it holds DevID secrets (private keys) and certificate chains, maintains their integrity across power failures, and keeps service operations as available as the boot code — because a device may need to assert its identity the moment it powers on. Crucially, DevID secrets are stored confidentially and *cannot be retrieved* from the module; they are only ever used inside it. **7.1.2 Asymmetric cryptography**: the engine that signs and verifies using public/private key pairs, where deriving the private key from the public key is computationally infeasible. **7.1.3 Random number generation (RNG)**: a generator strong enough (per NIST SP 800-90A) to create the secret keys; if no hardware RNG exists, a well-seeded deterministic RNG (DRBG, Deterministic Random Bit Generator) is used, and entropy can be topped up at any time.",
+      "zh": "**7.1——模块做什么。** 模块提供三项功能，全部置于受保护的加密边界之内。**7.1.1 存储**：保存 DevID 秘密（私钥）和证书链，在断电时维持其完整性，并使服务操作与启动代码同样可用——因为设备可能在上电瞬间就需要主张其身份。关键在于，DevID 秘密以机密方式存储且*无法*从模块中取出，只能在模块内部使用。**7.1.2 非对称密码学**：使用公钥/私钥对进行签名和验证的引擎，从公钥推导私钥在计算上不可行。**7.1.3 随机数生成（RNG）**：一个强度足够（符合 NIST SP 800-90A）以生成秘密密钥的发生器；若无硬件 RNG，则使用经良好播种的确定性 RNG（DRBG，确定性随机比特发生器），并可随时补充熵。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 250\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"10\" width=\"420\" height=\"40\" rx=\"4\"/><text x=\"220\" y=\"35\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Applications &amp; OS</text><line x1=\"220\" y1=\"50\" x2=\"220\" y2=\"70\" stroke=\"currentColor\"/><rect x=\"10\" y=\"70\" width=\"200\" height=\"30\" rx=\"4\"/><text x=\"110\" y=\"90\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Service Interface (7.2)</text><rect x=\"230\" y=\"70\" width=\"200\" height=\"30\" rx=\"4\"/><text x=\"330\" y=\"90\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Mgmt Interface (7.3)</text><rect x=\"10\" y=\"115\" width=\"420\" height=\"125\" rx=\"6\" stroke-dasharray=\"5 3\"/><text x=\"220\" y=\"132\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">cryptographic boundary</text><rect x=\"25\" y=\"145\" width=\"120\" height=\"35\" rx=\"4\"/><text x=\"85\" y=\"167\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Storage 7.1.1</text><rect x=\"160\" y=\"145\" width=\"120\" height=\"35\" rx=\"4\"/><text x=\"220\" y=\"167\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Asym. crypto 7.1.2</text><rect x=\"295\" y=\"145\" width=\"120\" height=\"35\" rx=\"4\"/><text x=\"355\" y=\"167\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">RNG 7.1.3</text><rect x=\"95\" y=\"195\" width=\"250\" height=\"32\" rx=\"4\"/><text x=\"220\" y=\"215\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">DevID secrets + certificate chains</text></svg>",
+      "caption": {
+        "en": "The DevID module (Fig 7-1): two interfaces sit above a cryptographic boundary; storage, crypto, and RNG live inside it. Secrets never cross the boundary.",
+        "zh": "DevID 模块（图 7-1）：两个接口位于加密边界之上；存储、密码运算与 RNG 位于边界之内。秘密绝不跨越边界。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "**7.2 — The Service Interface: how software uses the module.** This is the everyday API (Application Programming Interface) that applications and the OS call. Several operations are *mandatory*: **7.2.1 Initialization** prepares the module for use (running self-tests, e.g. for FIPS 140-2); no other operation works until it completes. **7.2.2 Public key enumeration** lists each key pair (its keyIndex, whether it is enabled, its public key, and whether an IDevID uses it) — note only public material is ever returned. **7.2.3 Certificate enumeration** lists each certificate (certificateIndex, its keyIndex, enabled flag, IDevID flag, and the DER-encoded certificate itself). **7.2.4 Certificate chain enumeration** returns, for a given certificate, the full chain up to (optionally) the trust anchor. **7.2.5 Signing** takes a keyIndex plus data and returns the signature — this is the core act of asserting identity.",
+      "zh": "**7.2——服务接口：软件如何使用模块。** 这是应用程序和操作系统调用的日常 API（应用程序编程接口）。其中若干操作是*强制*的：**7.2.1 初始化** 让模块做好使用准备（运行自检，例如针对 FIPS 140-2）；在它完成之前其他操作均不可用。**7.2.2 公钥枚举** 列出每个密钥对（其 keyIndex、是否启用、其公钥，以及是否被某个 IDevID 使用）——注意返回的仅是公钥材料。**7.2.3 证书枚举** 列出每个证书（certificateIndex、其 keyIndex、启用标志、IDevID 标志，以及 DER 编码的证书本身）。**7.2.4 证书链枚举** 针对给定证书返回直至（可选的）信任锚的完整链。**7.2.5 签名** 接收 keyIndex 与数据并返回签名——这正是主张身份的核心动作。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why \"enable/disable\" instead of \"delete\"? Operations 7.2.6 (certificate enable/disable) and 7.2.7 (key enable/disable) let an administrator temporarily switch an identity off — for privacy, or to retire a credential — without destroying it. A key may back several certificates, so disabling a single certificate need not disturb the others. The index of a disabled item stays valid only for re-enabling or for the matching delete operation.",
+      "zh": "为什么用“启用/禁用”而非“删除”？操作 7.2.6（证书启用/禁用）和 7.2.7（密钥启用/禁用）让管理员临时关闭某身份——出于隐私考虑或淘汰某凭据——而不销毁它。一个密钥可能支撑多个证书，因此禁用单个证书无需影响其他证书。被禁用项的索引仅在重新启用或对应的删除操作中保持有效。"
+    },
+    {
+      "type": "prose",
+      "en": "**7.2 — LDevID lifecycle operations.** Because LDevIDs are installed in the field, the interface provides a full lifecycle. **7.2.8 LDevID key generate** creates a new key pair inside the module (returning its keyIndex); **7.2.9 LDevID key insert** takes an externally generated private key instead — both produce keys that start *disabled* and must be explicitly enabled. **7.2.10 LDevID key delete** removes an LDevID key (possibly with cryptographic zeroization) but will never delete an IDevID key. Then for certificates: **7.2.11 LDevID certificate insert** adds a certificate (the module checks its public key matches a stored private key), **7.2.12 LDevID certificate chain insert** attaches the chain, **7.2.13 LDevID certificate delete** and **7.2.14 LDevID certificate chain delete** remove them (again never touching an IDevID). Finally, **7.2.15 Addition of RNG entropy** lets up to 256 octets of fresh entropy be fed to the RNG at any time.",
+      "zh": "**7.2——LDevID 生命周期操作。** 由于 LDevID 是在现场安装的，接口提供了完整的生命周期。**7.2.8 LDevID 密钥生成** 在模块内部创建新密钥对（返回其 keyIndex）；**7.2.9 LDevID 密钥插入** 则接收外部生成的私钥——两者产生的密钥起始均为*禁用*状态，必须显式启用。**7.2.10 LDevID 密钥删除** 移除某 LDevID 密钥（可能伴随加密清零），但绝不删除 IDevID 密钥。证书方面：**7.2.11 LDevID 证书插入** 添加证书（模块会检查其公钥与已存私钥匹配），**7.2.12 LDevID 证书链插入** 附加证书链，**7.2.13 LDevID 证书删除** 与 **7.2.14 LDevID 证书链删除** 将其移除（同样绝不触及 IDevID）。最后，**7.2.15 增加 RNG 熵** 允许随时向 RNG 注入最多 256 字节的新熵。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  G[\"7.2.8 generate\"] --> K[\"key (disabled)\"]\n  I[\"7.2.9 insert\"] --> K\n  K --> E[\"7.2.7 enable\"]\n  E --> C[\"7.2.11 cert insert\"]\n  C --> CC[\"7.2.12 chain insert\"]\n  CC --> U[\"in use: 7.2.5 sign\"]\n  U --> D[\"7.2.13/14 delete cert/chain\"]\n  D --> KD[\"7.2.10 key delete\"]",
+      "zh": "flowchart LR\n  G[\"7.2.8 生成\"] --> K[\"密钥(禁用)\"]\n  I[\"7.2.9 插入\"] --> K\n  K --> E[\"7.2.7 启用\"]\n  E --> C[\"7.2.11 插入证书\"]\n  C --> CC[\"7.2.12 插入证书链\"]\n  CC --> U[\"使用中: 7.2.5 签名\"]\n  U --> D[\"7.2.13/14 删除证书/链\"]\n  D --> KD[\"7.2.10 删除密钥\"]"
+    },
+    {
+      "type": "prose",
+      "en": "**7.3 — The Management Interface.** Where the Service Interface is for applications, the Management Interface is for a local management agent acting on behalf of a local or remote administrator. It can reach *every* Service Interface operation except two: **Initialization (7.2.1)** and **Signing (7.2.5)** are deliberately off-limits, so management can configure and inventory identities but cannot forge signatures or re-bootstrap the module. The Management Interface also exposes operational statistics — counts of signings per key, key generations/insertions/deletions, certificate insertions/deletions — for auditing. A standard SMIv2 MIB (Management Information Base) defined in Clause 10 surfaces the module's capabilities, statistics, and a subset of these operations to network management systems.",
+      "zh": "**7.3——管理接口。** 服务接口面向应用程序，而管理接口面向代表本地或远程管理员行事的本地管理代理。它能访问*所有*服务接口操作，唯独两项除外：**初始化（7.2.1）** 与 **签名（7.2.5）** 被有意排除，因此管理方可配置并盘点身份，却无法伪造签名或重新引导模块。管理接口还提供运行统计——每个密钥的签名次数、密钥的生成/插入/删除次数、证书的插入/删除次数——以供审计。第 10 章定义的标准 SMIv2 MIB（管理信息库）向网络管理系统呈现模块的能力、统计数据及上述操作的一个子集。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every Clause 7 unit and where it lives",
+        "zh": "覆盖图：第 7 章每个条款及其归属"
+      },
+      "en": "Full index of Clause 7. 7.1 DevID module functionality — 7.1.1 Storage (confidential, non-retrievable secrets; integrity across power loss; availability of boot code); 7.1.2 Asymmetric cryptography (key pairs; infeasible private-key derivation; signature suites of Clause 9); 7.1.3 Random number generation (NIST SP 800-90A strength; DRBG when no hardware RNG; entropy addable). 7.2 DevID Service Interface — mandatory: 7.2.1 Initialization, 7.2.2 public key enumeration, 7.2.3 certificate enumeration, 7.2.4 certificate chain enumeration, 7.2.5 Signing, 7.2.6 certificate enable/disable, 7.2.7 key enable/disable; LDevID-conditional: 7.2.8 key generate, 7.2.9 key insert, 7.2.10 key delete, 7.2.11 certificate insert, 7.2.12 certificate chain insert, 7.2.13 certificate delete, 7.2.14 certificate chain delete; 7.2.15 Addition of RNG entropy (≤256 octets). 7.3 DevID Management Interface — local agent reaches all of 7.2 except 7.2.1 and 7.2.5, plus operational statistics, surfaced via the Clause 10 SMIv2 MIB. Indices (keyIndex, certificateIndex, keyType) are of purely local significance.",
+      "zh": "第 7 章完整索引。7.1 DevID 模块功能——7.1.1 存储（机密、不可取回的秘密；断电时维持完整性；与启动代码同样可用）；7.1.2 非对称密码学（密钥对；私钥推导不可行；第 9 章的签名套件）；7.1.3 随机数生成（NIST SP 800-90A 强度；无硬件 RNG 时用 DRBG；可补充熵）。7.2 DevID 服务接口——强制：7.2.1 初始化、7.2.2 公钥枚举、7.2.3 证书枚举、7.2.4 证书链枚举、7.2.5 签名、7.2.6 证书启用/禁用、7.2.7 密钥启用/禁用；LDevID 相关条件性操作：7.2.8 密钥生成、7.2.9 密钥插入、7.2.10 密钥删除、7.2.11 证书插入、7.2.12 证书链插入、7.2.13 证书删除、7.2.14 证书链删除；7.2.15 增加 RNG 熵（≤256 字节）。7.3 DevID 管理接口——本地代理可访问 7.2 全部操作，唯 7.2.1 与 7.2.5 除外，并提供运行统计，经第 10 章 SMIv2 MIB 呈现。各类索引（keyIndex、certificateIndex、keyType）仅具本地意义。",
+      "cite": {
+        "pdf_id": "8021AR-2018",
+        "pages": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One design idea ties Clause 7 together: the module is generous with public material and operations, but absolutely stingy with secrets. You can list, enable, disable, insert, and delete — but you can never read a private key out, and even management can never make the module sign for it. That asymmetry is what keeps a DevID truly bound to its device.",
+      "zh": "贯穿第 7 章的一个设计思想是：模块对公开材料与操作慷慨，对秘密却绝对吝啬。你可以列举、启用、禁用、插入、删除——但永远无法读出私钥，连管理接口也无法让模块替它签名。正是这种不对称，使 DevID 真正与其设备绑定。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AR-2018",
+      "pages": [
+        32,
+        33,
+        34
+      ],
+      "note": "7.1 module functionality: storage, asymmetric cryptography, RNG; Figure 7-1."
+    },
+    {
+      "pdf_id": "8021AR-2018",
+      "pages": [
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "note": "7.2 Service Interface operations 7.2.1–7.2.15 and 7.3 Management Interface."
+    }
+  ],
+  "covers": [
+    "8021AR-2018:7.1.1",
+    "8021AR-2018:7.1.2",
+    "8021AR-2018:7.1.3",
+    "8021AR-2018:7.2.1",
+    "8021AR-2018:7.2.2",
+    "8021AR-2018:7.2.3",
+    "8021AR-2018:7.2.4",
+    "8021AR-2018:7.2.5",
+    "8021AR-2018:7.2.6",
+    "8021AR-2018:7.2.7",
+    "8021AR-2018:7.2.8",
+    "8021AR-2018:7.2.9",
+    "8021AR-2018:7.2.10",
+    "8021AR-2018:7.2.11",
+    "8021AR-2018:7.2.12",
+    "8021AR-2018:7.2.13",
+    "8021AR-2018:7.2.14",
+    "8021AR-2018:7.2.15",
+    "8021AR-2018:7.3"
+  ],
+  "track": "net-security"
+}

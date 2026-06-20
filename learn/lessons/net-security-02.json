@@ -1,0 +1,139 @@
+{
+  "id": "net-security-02",
+  "title": {
+    "en": "Conformance: What It Takes to Claim 802.1X",
+    "zh": "符合性：声称兼容 802.1X 需要满足什么"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 5 of IEEE Std 802.1X-2020 is the standard's contract. A device that says \"I conform to 802.1X\" is making a precise, testable promise about its externally observable behavior — the protocols it runs, the management it exposes, and the service it offers other systems. Importantly, conformance does not mean the system is secure; it only means the system follows the rules this standard lays down. Clause 5 spells out exactly which rules are mandatory, which are optional, and how a supplier must document what they built. This lesson walks every sub-clause (5.1 through 5.24) so you can read a conformance claim and know what it really commits to.",
+      "zh": "IEEE Std 802.1X-2020 的第 5 章是这份标准的“契约”。当一台设备声称“我符合 802.1X”时，它就对自己的外部可观察行为做出了一个精确且可测试的承诺——它运行的协议、它暴露的管理接口、以及它向其他系统提供的服务。要特别注意：符合性并不等于系统安全，它只意味着系统遵循了本标准制定的规则。第 5 章明确规定了哪些规则是强制的、哪些是可选的，以及供应商必须如何记录自己实现的内容。本课会逐条讲解每个子条款（5.1 到 5.24），让你看到一份符合性声明时，就能明白它到底承诺了什么。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the vocabulary (5.1). The standard reserves a few words with exact meanings: shall = a mandatory requirement; may = a permitted choice (an option); should = a recommendation (desirable but not required). Plain words like is/are state definitions and logical consequences; can describes behavior that is permitted but not directly controlled by the implementer; cannot describes behavior that never occurs in a conformant system. \"Allow\" means the standard intends to support a use, and \"capable\" means \"is configurable such that...\". Every shall, may, and should in the document is mirrored in the PICS proforma — the checklist you meet in 5.2.",
+      "zh": "首先是术语（5.1）。本标准为几个词保留了精确含义：shall（应）＝强制要求；may（可）＝被允许的选择（即一个选项）；should（宜）＝推荐做法（值得做但非必须）。像 is/are 这样的普通词用于陈述定义和逻辑结论；can（能）描述被允许但不由实现者直接控制的行为；cannot（不能）描述在符合性系统中永远不会发生的行为。“allow（支持）”表示标准意在支持某种用途，“capable（具备能力）”表示“可配置成……”。文档中每一个 shall、may、should 都会在 PICS 模板中得到对应映射——也就是 5.2 中你将遇到的那份核对清单。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading trick: when you skim any 802.1X clause, the word shall is a red flag for \"this is testable and required.\" If you ever see may, that sentence describes an option, not a duty. This single distinction is the backbone of every conformance statement in the standard.",
+      "zh": "阅读技巧：当你浏览任何一个 802.1X 条款时，shall 这个词就是“此处可测试且为强制”的醒目标志。一旦看到 may，那句话描述的就是一个选项，而非义务。这一个区分，正是标准中每一条符合性声明的主心骨。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, who has to write what (5.2, 5.3). Under 5.2, any supplier claiming conformance shall fill out a copy of the PICS proforma — the Protocol Implementation Conformance Statement, the structured questionnaire in Annex A — and identify both the supplier and the implementation. If the device handles several classes of ports differently, each class needs its own PICS; and if a port secures traffic with MACsec, a separate PICS from IEEE Std 802.1AE is required too. Clause 5.3 then defines the building blocks: the standard governs two component types — the Port Access Entity (PAE, the protocol engine that runs access control on a port) and the Port Access Controller (PAC, the simpler gate that just offers a Controlled and Uncontrolled Port). A conforming port must implement the PAE's mandatory functions plus at least one of Supplicant, Authenticator, or MKA (MACsec Key Agreement).",
+      "zh": "接下来是“谁必须写什么”（5.2、5.3）。根据 5.2，任何声称符合性的供应商都 shall（应）填写一份 PICS 模板——即协议实现符合性声明（Protocol Implementation Conformance Statement），也就是附录 A 中那份结构化问卷——并标明供应商和该实现的身份。如果设备对几类端口的处理方式不同，每一类都需要各自的 PICS；如果某个端口用 MACsec 保护流量，还需要按 IEEE Std 802.1AE 另填一份 PICS。随后 5.3 定义了基本构件：本标准管辖两类组件——端口访问实体（PAE，即在端口上运行访问控制的协议引擎）和端口访问控制器（PAC，即只提供受控端口和非受控端口的较简单的门闸）。一个符合性端口必须实现 PAE 的强制功能，外加 Supplicant（请求方）、Authenticator（认证方）、MKA（MACsec 密钥协商）三者中的至少一个。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Conforming 802.1X port] --> B[PAE mandatory functions 5.4]\n  A --> C{Pick at least one role}\n  C --> D[Supplicant 5.6 5.7]\n  C --> E[Authenticator 5.8 5.9]\n  C --> F[MKA 5.10 5.11]\n  E --> G[Optional: Virtual ports 5.12]\n  F --> G\n  A --> H[No SecY? then implement PAC 5.20]\n  A --> I[Must not violate Prohibitions 5.22]",
+      "zh": "flowchart TD\n  A[符合性 802.1X 端口] --> B[PAE 强制功能 5.4]\n  A --> C{至少选一个角色}\n  C --> D[请求方 5.6 5.7]\n  C --> E[认证方 5.8 5.9]\n  C --> F[MKA 5.10 5.11]\n  E --> G[可选：虚拟端口 5.12]\n  F --> G\n  A --> H[没有 SecY？则实现 PAC 5.20]\n  A --> I[不得违反禁止项 5.22]"
+    },
+    {
+      "type": "prose",
+      "en": "The PAE's own duties (5.4, 5.5). Every PAE shall encode/decode/validate EAPOL PDUs (EAPOL = EAP over LAN; PDU = Protocol Data Unit; EAP = Extensible Authentication Protocol) per Clause 11, run the Logon Process and the CP (Controlled Port) state machine, keep retrievable EAPOL frame statistics and diagnostics, and support the configuration functions. A PAE doing both EAP and MKA shall derive a CAK (Connectivity Association Key) from each EAP MSK (Master Session Key). It shall also declare the group address it uses, and shall not send non-Announcement EAPOL packets over a MACsec-protected Controlled Port. As for 5.5, the standard deliberately specifies no extra PAE options beyond those detailed in the role-specific clauses that follow.",
+      "zh": "PAE 自身的职责（5.4、5.5）。每个 PAE 都 shall（应）按第 11 章对 EAPOL PDU 进行编码/解码/校验（EAPOL ＝ EAP over LAN，即基于局域网的 EAP；PDU ＝协议数据单元；EAP ＝可扩展认证协议），运行登录过程（Logon Process）和 CP（受控端口）状态机，保留可检索的 EAPOL 帧统计与诊断信息，并支持配置功能。同时支持 EAP 和 MKA 的 PAE 还 shall 从每个 EAP MSK（主会话密钥）派生出一个 CAK（连接关联密钥）。它还应声明所用的组地址，且不得通过受 MACsec 保护的受控端口发送非 Announcement（通告）类的 EAPOL 报文。至于 5.5，标准刻意规定：除后续各角色专门条款中详述的内容外，不再为 PAE 设定额外选项。"
+    },
+    {
+      "type": "prose",
+      "en": "The three roles (5.6–5.11). A Supplicant (the client proving its identity) shall use EAP exactly as the Supplicant PACP state machine in Clause 8 specifies, and must not use any EAP method that fails the requirements of 8.11; its option (5.7.1) is that, to claim integration with IEEE Std 802.1AR (Secure Device Identity), it shall implement EAP-TLS. An Authenticator (the gatekeeper) mirrors that: follow the Authenticator PACP state machine, reject non-conforming EAP methods, and allow remote configuration of re-authentication; optionally (5.9) it may keep diagnostic counters, and its 5.9.1 option again requires EAP-TLS for 802.1AR integration. MKA, which negotiates the keys MACsec uses, carries the most requirements (5.10): support 2+ simultaneous MKA instances and declare the max, manage participants, receive and use Group CAKs from a Key Server, encode/validate MKPDUs, use 128-bit CAKs, protect distributed keys with AES Key Wrap, and declare the MKA Version supported.",
+      "zh": "三种角色（5.6–5.11）。Supplicant（请求方，即证明自身身份的客户端）shall 完全按照第 8 章的 Supplicant PACP 状态机来使用 EAP，且不得使用任何不满足 8.11 要求的 EAP 方法；它的选项（5.7.1）是：若要声称与 IEEE Std 802.1AR（安全设备身份）集成，则 shall 实现 EAP-TLS。Authenticator（认证方，即把门者）与之对称：遵循 Authenticator PACP 状态机、拒绝不合规的 EAP 方法、并允许远程配置重认证；其可选项（5.9）是 may 保留诊断计数器，而 5.9.1 同样要求为 802.1AR 集成实现 EAP-TLS。MKA 负责协商 MACsec 所用的密钥，承担的要求最多（5.10）：支持 2 个及以上并发 MKA 实例并声明上限、管理参与者、接收并使用来自密钥服务器的组 CAK、编码/校验 MKPDU、使用 128 位 CAK、用 AES Key Wrap 保护分发的密钥，并声明所支持的 MKA 版本。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "MKA option family in detail (5.11, 5.11.1–5.11.4)",
+        "zh": "MKA 选项家族详解（5.11、5.11.1–5.11.4）"
+      },
+      "en": "MKA's optional features are split into four named sub-clauses. 5.11 itself adds one bare option: a PAE may support 256-bit CAKs (instead of just the mandatory 128-bit). 5.11.1 Support for PSKs — if a PAE supports Pre-Shared Keys (PSKs, manually configured keys), it shall let them be configured in the CAK Cache. 5.11.2 Key Server support for Group CAs — a PAE acting as MKA Key Server for Group Connectivity Associations shall be able to operate as a Key Server, and if it claims EAP Authenticator support it shall distribute a group CAK using EAP-derived pairwise CAKs, while if it claims PSK support it shall distribute a group CAK from a PSK-based instance. 5.11.3 CAK Cache — a PAE with a cache shall associate a lifetime (and delete on expiry), associate a CKN/KMD/NID and authorization info with each CAK, cache Key-Server-distributed group CAKs, and (if EAP roles are claimed) cache pairwise CAKs from EAP; it shall not cache an EAP CAK where 12.6 prohibits it, nor distribute a KMD for a Group CAK it did not itself distribute as Key Server. 5.11.4 In-service upgrades — a PAE supporting upgrades-without-downtime shall be able to suspend MKA per 9.18 and communicate the upper 32 bits of the Lowest Acceptable PN for the Latest and Old Keys when an XPN (Extended Packet Numbering) cipher suite is in use; it may also use out-of-scope protocols to coordinate the upgrade.",
+      "zh": "MKA 的可选特性被拆为四个具名子条款。5.11 本身只补充一个裸选项：PAE may 支持 256 位 CAK（而不只是强制的 128 位）。5.11.1 对 PSK 的支持——若 PAE 支持预共享密钥（PSK，即手动配置的密钥），则 shall 允许将其配置进 CAK Cache（CAK 缓存）。5.11.2 密钥服务器对组 CA 的支持——作为组连接关联（Group CA）的 MKA 密钥服务器的 PAE，shall 能够作为密钥服务器运行；若声称支持 EAP 认证方，则 shall 能用 EAP 派生的成对 CAK 分发组 CAK；若声称支持 PSK，则 shall 能从基于 PSK 的实例分发组 CAK。5.11.3 CAK 缓存——带缓存的 PAE shall 为每个 CAK 关联生命周期（到期即删除），关联 CKN/KMD/NID 及授权信息，缓存密钥服务器分发的组 CAK，并（若声称 EAP 角色）缓存来自 EAP 的成对 CAK；在 12.6 禁止的情况下不得缓存 EAP 派生的 CAK，也不得为并非自己作为密钥服务器分发的组 CAK 去分发 KMD。5.11.4 在役升级——支持“不停机升级”的 PAE shall 能按 9.18 暂停 MKA，并在使用 XPN（扩展包编号）密码套件时，传达最新密钥与旧密钥的最低可接受 PN 的高 32 位；它还 may 使用本规范范围之外的协议来协调升级。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          32,
+          33
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: virtual ports, announcements, management, PAC, and prohibitions (5.12–5.24)",
+        "zh": "覆盖地图：虚拟端口、通告、管理、PAC 与禁止项（5.12–5.24）"
+      },
+      "en": "5.12 Virtual port requirements — a PAE supporting virtual ports shall declare how many per real port/system, implement MKA with 2+ instances per virtual port, back each virtual port with a SecY (MAC Security Entity), manage them per 6.3.6/9.14/12.7, and shall not create virtual ports when Supplicant functionality is enabled on the real port; with Authenticator support it shall handle at least as many EAP exchanges as virtual ports, and if it bridges frames it shall support each virtual port per IEEE Std 802.1Q including Spanning Tree. 5.13 Virtual port options — none specified. 5.14 Announcement transmission requirements — a PAE sending EAPOL-Announcements shall support the null NID (Network Identifier) plus zero or more NIDs, use the Uncontrolled Port for generic announcements, encode them per 11.12, rate-limit them, and shall not send them over an unsecured Controlled Port. 5.15 Announcement transmission options — none. 5.16 Announcement reception requirements — a listening PAE shall interpret announcements, use them to select NIDs and authentication procedures, solicit them via EAPOL-Announcement-Req, encode request TLVs, select credentials, and be configurable to ignore all NIDs; a listening Supplicant shall encode NID-selecting TLVs in EAPOL-Start. 5.17 Announcement reception options — none. 5.18 Requirements for SNMP access to the PAE MIB — shall support the Clause 13 MIB via SNMP v3 or higher (SNMP = Simple Network Management Protocol; MIB = Management Information Base). 5.19 Options for SNMP access — none. 5.20 PAC requirements — a PAC shall provide an Uncontrolled Port and a Controlled Port per 6.4. 5.21 System recommendations — points to Table 5-1's per-role, per-scenario advice. 5.22 Prohibitions — a conformant implementation shall not allow MIB access using any SNMP version prior to v3. 5.23 Requirement for YANG data model — shall support the Clause 14 YANG model over a network configuration protocol such as NETCONF, supporting configuration and operational-state retrieval. 5.24 Options for YANG data model — none specified.",
+      "zh": "5.12 虚拟端口要求——支持虚拟端口的 PAE shall 声明每个真实端口/系统可支持的数量，为每个虚拟端口实现 2 个及以上 MKA 实例，用 SecY（MAC 安全实体）支撑每个虚拟端口，按 6.3.6/9.14/12.7 管理它们，且当真实端口启用了 Supplicant 功能时不得创建虚拟端口；若支持 Authenticator，则 shall 处理至少与虚拟端口数相同的 EAP 交换；若进行帧桥接，则 shall 按 IEEE Std 802.1Q（含生成树）支撑每个虚拟端口。5.13 虚拟端口选项——无。5.14 通告发送要求——发送 EAPOL-Announcement 的 PAE shall 支持空 NID（网络标识符）及零个或多个 NID，用非受控端口发送通用通告，按 11.12 编码，并对其限速，且不得通过未加密的受控端口发送。5.15 通告发送选项——无。5.16 通告接收要求——监听的 PAE shall 解析通告，用其选择 NID 和认证过程，通过 EAPOL-Announcement-Req 主动索取，编码请求 TLV，选择凭据，并可被配置为忽略所有 NID；监听的 Supplicant shall 在 EAPOL-Start 中编码选择 NID 的 TLV。5.17 通告接收选项——无。5.18 通过 SNMP 访问 PAE MIB 的要求——shall 支持用 SNMP v3 或更高版本访问第 13 章的 MIB（SNMP ＝简单网络管理协议；MIB ＝管理信息库）。5.19 SNMP 访问选项——无。5.20 PAC 要求——PAC shall 按 6.4 提供一个非受控端口和一个受控端口。5.21 系统建议——指向表 5-1 给出的按角色、按场景的建议。5.22 禁止项——符合性实现不得允许用 v3 之前的任何 SNMP 版本访问 MIB。5.23 PAE 的 YANG 数据模型要求——shall 支持通过 NETCONF 等网络配置协议访问第 14 章的 YANG 模型，支持配置与运行状态检索。5.24 YANG 数据模型选项——未规定。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          33,
+          34,
+          35
+        ]
+      }
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Conformance map (Clause 5)</text><rect x=\"10\" y=\"30\" width=\"150\" height=\"40\"/><text x=\"20\" y=\"54\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">5.1-5.3 Terms, PICS,</text><text x=\"20\" y=\"66\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">components</text><rect x=\"180\" y=\"30\" width=\"150\" height=\"40\"/><text x=\"190\" y=\"54\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">5.4-5.5 PAE core</text><rect x=\"350\" y=\"30\" width=\"160\" height=\"40\"/><text x=\"360\" y=\"48\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">5.6-5.11 Roles:</text><text x=\"360\" y=\"64\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Supp / Auth / MKA</text><rect x=\"10\" y=\"90\" width=\"150\" height=\"40\"/><text x=\"20\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">5.12-5.13 Virtual</text><text x=\"20\" y=\"124\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">ports</text><rect x=\"180\" y=\"90\" width=\"150\" height=\"40\"/><text x=\"190\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">5.14-5.17</text><text x=\"190\" y=\"124\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Announcements</text><rect x=\"350\" y=\"90\" width=\"160\" height=\"40\"/><text x=\"360\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">5.18-5.19 SNMP</text><text x=\"360\" y=\"124\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">MIB access</text><rect x=\"10\" y=\"150\" width=\"150\" height=\"40\"/><text x=\"20\" y=\"174\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">5.20-5.21 PAC, recs</text><rect x=\"180\" y=\"150\" width=\"150\" height=\"40\"/><text x=\"190\" y=\"174\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">5.22 Prohibitions</text><rect x=\"350\" y=\"150\" width=\"160\" height=\"40\"/><text x=\"360\" y=\"174\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">5.23-5.24 YANG model</text></svg>",
+      "caption": {
+        "en": "The nine territories of Clause 5, each pairing a 'requirements' clause with its 'options' clause. Every conformance promise lives in exactly one of these boxes.",
+        "zh": "第 5 章的九个领地，每一块都把“要求”条款与对应的“选项”条款配成一对。每一项符合性承诺都恰好落在其中一个方框里。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring rhythm: requirements (the shalls) come first, then options (the mays) right after — 5.4/5.5, 5.8/5.9, 5.10/5.11, 5.14/5.15, 5.16/5.17, 5.18/5.19, 5.23/5.24. Several option clauses say plainly \"no options are specified.\" That is not an oversight; it is the standard telling you the requirement clause already fixes the whole behavior, leaving no room for vendor-specific variation.",
+      "zh": "注意这种反复出现的节奏：先是要求（那些 shall），紧接着就是选项（那些 may）——5.4/5.5、5.8/5.9、5.10/5.11、5.14/5.15、5.16/5.17、5.18/5.19、5.23/5.24。有几个选项条款直白地写着“未规定任何选项”。这并非疏漏，而是标准在告诉你：对应的要求条款已经把全部行为定死，不给厂商留下自定义的余地。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "note": "Clause 5 Conformance in full, 5.1 through 5.24 — terminology, PICS, conformant components, and the requirement/option pairs for PAE, Supplicant, Authenticator, MKA, virtual ports, announcements, SNMP MIB, PAC, recommendations, prohibitions, and YANG."
+    }
+  ],
+  "covers": [
+    "8021X-2020:5.1",
+    "8021X-2020:5.2",
+    "8021X-2020:5.3",
+    "8021X-2020:5.4",
+    "8021X-2020:5.5",
+    "8021X-2020:5.6",
+    "8021X-2020:5.7.1",
+    "8021X-2020:5.8",
+    "8021X-2020:5.9.1",
+    "8021X-2020:5.10",
+    "8021X-2020:5.11.1",
+    "8021X-2020:5.11.2",
+    "8021X-2020:5.11.3",
+    "8021X-2020:5.11.4",
+    "8021X-2020:5.12",
+    "8021X-2020:5.13",
+    "8021X-2020:5.14",
+    "8021X-2020:5.15",
+    "8021X-2020:5.16",
+    "8021X-2020:5.17",
+    "8021X-2020:5.18",
+    "8021X-2020:5.19",
+    "8021X-2020:5.20",
+    "8021X-2020:5.21",
+    "8021X-2020:5.22",
+    "8021X-2020:5.23",
+    "8021X-2020:5.24"
+  ],
+  "track": "net-security"
+}

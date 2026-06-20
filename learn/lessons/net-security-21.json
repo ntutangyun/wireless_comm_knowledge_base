@@ -1,0 +1,160 @@
+{
+  "id": "net-security-21",
+  "title": {
+    "en": "The DevID MIB and the Reference Material: Clause 10, Annexes A, B, C",
+    "zh": "DevID 管理信息库与参考资料：第 10 章及附录 A、B、C"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "By now you know what a DevID (Secure Device Identifier) is: a cryptographic identity baked into a device — a private key (the DevID secret), a certificate carrying the matching public key and the device's name, and an optional certificate chain. This lesson covers the last pieces of IEEE Std 802.1AR-2018: how an administrator can *read out* what DevID material a device holds over the network (Clause 10, the DevID MIB), and the three annexes that turn the standard into something you can conform to, learn from, and trace back to its sources.",
+      "zh": "到目前为止，你已经知道 DevID（安全设备标识符，Secure Device Identifier）是什么：一个固化在设备里的密码学身份——一把私钥（DevID 秘密）、一张携带对应公钥和设备名称的证书，以及一条可选的证书链。本课讲解 IEEE Std 802.1AR-2018 的最后几部分：管理员如何通过网络“读出”一台设备所持有的 DevID 材料（第 10 章，DevID 管理信息库），以及把标准变得可符合、可学习、可溯源的三个附录。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10 defines the **DevID MIB** (Management Information Base — a structured catalog of values a network manager can query). It is built in **SMIv2** (Structure of Management Information, version 2 — the language used to describe MIB objects) and read with **SNMP** (Simple Network Management Protocol). Crucially, every object is **read-only**: the MIB lets you take inventory and audit what DevIDs a device carries, but it can never inject, change, or delete a key or certificate. Those changes happen only through the DevID module's own service interface (Clause 7).",
+      "zh": "第 10 章定义了 **DevID MIB**（管理信息库，Management Information Base——一个网络管理员可以查询的结构化数值目录）。它用 **SMIv2**（管理信息结构第 2 版，Structure of Management Information version 2——描述 MIB 对象所用的语言）构建，并通过 **SNMP**（简单网络管理协议，Simple Network Management Protocol）读取。关键在于：每个对象都是**只读**的——MIB 允许你清点和审计设备所携带的 DevID，但永远无法注入、修改或删除密钥或证书。那些变更只能通过 DevID 模块自身的服务接口（第 7 章）进行。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  M[Network manager] -->|SNMPv3 read| A[SNMP agent]\n  A --> T1[devIDModuleTable]\n  A --> T2[devIDCertTable]\n  A --> T3[devIDChainTable]\n  A --> T4[devIDStatisticsTable]\n  T1 -.indexed by.-> E[entPhysicalIndex<br/>from Entity MIB]\n  T2 -.indexed by.-> E",
+      "zh": "flowchart LR\n  M[网络管理员] -->|SNMPv3 读取| A[SNMP 代理]\n  A --> T1[DevID 模块表]\n  A --> T2[DevID 证书表]\n  A --> T3[DevID 证书链表]\n  A --> T4[DevID 统计表]\n  T1 -.索引依据.-> E[entPhysicalIndex<br/>来自 Entity MIB]\n  T2 -.索引依据.-> E"
+    },
+    {
+      "type": "prose",
+      "en": "How are the rows of these tables addressed? Through the **Entity MIB** (RFC 6933). One SNMP agent may speak for a whole network element made of many physical devices — line cards inside a chassis, the chassis itself. The Entity MIB's **entPhysicalIndex** gives each physical device a number, and the DevID MIB reuses that number as its index. So a DevID stays tied to the physical card that holds it: pull the card out and its DevIDs go with it — the agent does not keep them. This correlation is why a conforming system **shall** implement the Entity MIB's entPhysicalTable (10.2.1).",
+      "zh": "这些表的行是如何寻址的？通过 **Entity MIB**（RFC 6933）。一个 SNMP 代理可能代表由许多物理设备组成的整个网络单元——机箱里的线卡、机箱本身。Entity MIB 的 **entPhysicalIndex** 给每个物理设备一个编号，DevID MIB 复用这个编号作为索引。因此一个 DevID 始终绑定在持有它的那张物理卡上：把卡拔出来，它的 DevID 也随之带走——代理不会保留它们。正是这种关联使得符合标准的系统**应当**实现 Entity MIB 的 entPhysicalTable（10.2.1）。"
+    },
+    {
+      "type": "prose",
+      "en": "Inside a certificate table, each certificate is identified not by some local slot number but by a **fingerprint** — a Named Information identifier (RFC 6920): a (possibly truncated) hash of the certificate, prefixed by one octet naming the hash function. This fingerprint is a *persistent* handle: it survives the certificate being deleted and reinserted, or another certificate being swapped in. An administrator can even compute the expected fingerprint independently to confirm the device is using the certificate they think it is.",
+      "zh": "在证书表内部，每张证书的标识不是某个本地槽位号，而是一个**指纹**（fingerprint）——一个命名信息标识符（RFC 6920）：证书的（可能被截断的）哈希值，前缀一个标明哈希函数的字节。这个指纹是一个*持久*句柄：即使证书被删除后重新插入，或被另一张证书替换，它依然有效。管理员甚至可以独立计算出预期的指纹，以确认设备正在使用的正是他们以为的那张证书。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Security rule of thumb (10.4): never read this MIB over plain SNMP. SNMP versions before v3 had no real security, so a conforming implementation exposes the DevID MIB only via SNMPv3 — or SNMP over TLS (RFC 6353). Why so strict? Every readable object is privacy-sensitive: a certificate, its fields, even the slowly-changing audit counters could be used to fingerprint and track a personal device, or reveal what networks it has joined.",
+      "zh": "安全经验法则（10.4）：绝不要通过明文 SNMP 读取这个 MIB。v3 之前的 SNMP 版本没有真正的安全性，因此符合标准的实现只通过 SNMPv3——或基于 TLS 的 SNMP（RFC 6353）——暴露 DevID MIB。为何如此严格？每个可读对象都涉及隐私：一张证书、它的字段、甚至缓慢变化的审计计数器，都可能被用来给一台个人设备做指纹识别并追踪它，或泄露它加入过哪些网络。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Clause 10 subclauses (10.1–10.5)",
+        "zh": "覆盖地图——第 10 章各小节（10.1–10.5）"
+      },
+      "en": "**10.1 Internet-Standard Management Framework** — the foundations: managed objects live in a virtual store (the MIB), are accessed via SNMP, and are defined using the SMI. This MIB module is SMIv2-compliant per IETF STD 58 (RFC 2578/2579/2580); RFC 3410 gives the framework overview. **10.2 / 10.2.1 Relationship to other MIB modules / the Entity MIB** — a system implementing this module *shall* implement the Entity MIB's entPhysicalTable (RFC 6933); entPhysicalIndex indexes every device with a DevID module, and entPhysicalClass / entPhysicalContainedIn express containment among component and aggregate devices. **10.3 Structure of the MIB module** — four tables: devIDModuleTable (module capabilities, indexed by entPhysicalIndex), devIDCertTable (a certificate, indexed by entPhysicalIndex + devIDCertFingerprint), devIDChainTable (an intermediate certificate, adding devIDChainCertIndex counting up toward the trust anchor), and devIDStatisticsTable (audit counts of key/certificate generate-insert-delete operations). **10.4 Security considerations** — no write access; SNMPv3-or-TLS only; all readable objects treated as privacy-sensitive. **10.5 Definitions for Secure Device Identifier MIB** — the actual SMIv2 source of IEEE8021-DEVID-MIB: the MODULE-IDENTITY ieee8021DevIDMIB, the DevIDFingerprint textual convention, and the object groups (devIDMIBModuleGroup, devIDMIBCertificateGroup, devIDMIBStatisticsGroup). Note the historic 'devID' object-name prefix retained for backward compatibility.",
+      "zh": "**10.1 互联网标准管理框架**——基础：被管对象存放在一个虚拟存储（即 MIB）中，通过 SNMP 访问，用 SMI 定义。本 MIB 模块依据 IETF STD 58（RFC 2578/2579/2580）符合 SMIv2；RFC 3410 给出框架概述。**10.2 / 10.2.1 与其他 MIB 模块 / 与 Entity MIB 的关系**——实现本模块的系统*应当*实现 Entity MIB 的 entPhysicalTable（RFC 6933）；entPhysicalIndex 为每个带 DevID 模块的设备建立索引，entPhysicalClass 与 entPhysicalContainedIn 表达组件设备与聚合设备之间的包含关系。**10.3 MIB 模块结构**——四张表：devIDModuleTable（模块能力，以 entPhysicalIndex 为索引）、devIDCertTable（一张证书，以 entPhysicalIndex + devIDCertFingerprint 为索引）、devIDChainTable（一张中间证书，增加 devIDChainCertIndex，朝信任锚方向递增计数）、devIDStatisticsTable（密钥/证书的生成-插入-删除操作的审计计数）。**10.4 安全考量**——无写权限；仅限 SNMPv3 或 TLS；所有可读对象都视为涉及隐私。**10.5 安全设备标识符 MIB 的定义**——IEEE8021-DEVID-MIB 的实际 SMIv2 源码：MODULE-IDENTITY ieee8021DevIDMIB、DevIDFingerprint 文本约定，以及各对象组（devIDMIBModuleGroup、devIDMIBCertificateGroup、devIDMIBStatisticsGroup）。注意为向后兼容而保留的历史 'devID' 对象名前缀。",
+      "cite": {
+        "pdf_id": "8021AR-2018",
+        "pages": [
+          47,
+          48,
+          49,
+          50
+        ]
+      }
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"6\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">DevID Certificate fingerprint (RFC 6920)</text><rect x=\"6\" y=\"30\" width=\"70\" height=\"40\"/><text x=\"41\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">algo octet</text><rect x=\"76\" y=\"30\" width=\"300\" height=\"40\"/><text x=\"226\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">hash of certificate (possibly truncated)</text><text x=\"6\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Persistent: survives delete/reinsert and substitution.</text><text x=\"6\" y=\"120\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Used to index devIDCertTable and devIDChainTable.</text></svg>",
+      "caption": {
+        "en": "A certificate fingerprint = one octet naming the hash function, followed by the (possibly truncated) certificate hash. This is the persistent index used by the cert and chain tables (10.3).",
+        "zh": "证书指纹 = 一个标明哈希函数的字节，后接（可能被截断的）证书哈希。这是证书表与证书链表所用的持久索引（10.3）。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Annex A (normative): PICS proforma",
+        "zh": "覆盖地图——附录 A（规范性）：PICS 形式表"
+      },
+      "en": "Annex A is the **PICS proforma** — Protocol Implementation Conformance Statement. A supplier claiming conformance *shall* complete it: a fixed-format questionnaire stating exactly which capabilities and options were implemented (A.1 uses; A.2 status symbols M = mandatory, O = optional, O.n = at least one of a numbered group, X = prohibited, plus conditional 'pred: S' predicates with ¬ negation; A.3 how to fill it in, including Additional and Exception Information; A.3.4 conditional status and predicates). A.4 captures implementation identity and the protocol summary. A.5 lists major capabilities/options — e.g., the three signature suites are O.1 (pick at least one), while IDevID/IDevID secret/certificate/chain, secret storage, the service interface, mandatory cert fields, and SNMP restriction are M; remote signing access and prohibited cert fields are X; LDevID support and key zeroization are O. A.6 enumerates the service-interface operations, A.7 random number generation, A.8 certificate fields and extensions, A.9 supplier information, and A.10–A.12 the RSA-2048/SHA-256, ECDSA P-256/SHA-256, and ECDSA P-384/SHA-384 signature suites. A footnote grants copyright release so the proforma may be freely reproduced and the completed PICS published.",
+      "zh": "附录 A 是 **PICS 形式表**——协议实现一致性声明（Protocol Implementation Conformance Statement）。声称符合标准的供应商*应当*填写它：这是一份固定格式的问卷，明确说明实现了哪些能力和选项（A.1 用途；A.2 状态符号 M = 强制，O = 可选，O.n = 同编号组中至少支持一项，X = 禁止，以及带 ¬ 取反的条件式 'pred: S' 谓词；A.3 如何填写，含附加信息与例外信息；A.3.4 条件状态与谓词）。A.4 记录实现标识与协议摘要。A.5 列出主要能力/选项——例如三种签名套件为 O.1（至少选一种），而 IDevID/IDevID 秘密/证书/证书链、秘密存储、服务接口、强制证书字段以及 SNMP 限制为 M；远程签名访问与禁止的证书字段为 X；LDevID 支持与密钥清零为 O。A.6 列举服务接口操作，A.7 随机数生成，A.8 证书字段与扩展，A.9 供应商信息，A.10–A.12 分别为 RSA-2048/SHA-256、ECDSA P-256/SHA-256、ECDSA P-384/SHA-384 三种签名套件。脚注给予版权豁免，使该形式表可被自由复制、已填写的 PICS 可被公开发布。",
+      "cite": {
+        "pdf_id": "8021AR-2018",
+        "pages": [
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Annex B (informative): Scenarios, and Annex C (informative): Bibliography",
+        "zh": "覆盖地图——附录 B（资料性）：应用场景；附录 C（资料性）：参考文献"
+      },
+      "en": "**Annex B (informative) — Scenarios for DevID.** DevIDs are consumed by existing identification/authentication protocols; the standard does not define a new one. **B.1 DevID use in EAP-TLS** — devices are often identified with an IEEE 802.1X EAP (Extensible Authentication Protocol) method; EAP-TLS can use X.509 client credentials including DevIDs. The device enumerates certificates (7.2.3) and uses the signing operation during the TLS handshake; because the module only signs, the cipher suite must be TLS_DHE_RSA_WITH_AES_128_CBC_SHA or an ECDSA suite from RFC 5289. Figure B-1 walks the request/response exchange of nonces, certificates, certificate_verify, change_cipher_spec, and finished messages by which both peers validate each other. **B.2 consumer devices** — end users don't touch DevIDs directly; a home router/AP uses them, replacing fragile MAC-address allow-lists with cryptographic identity plus human-readable subject/serialNumber/hardwareModuleName. **B.3 enterprise devices** — an IDevID enrolls a device into a local security infrastructure (e.g., an 802.1X network with an AAA server), with authorization driven by human-readable DevID subject names that can be loaded even before the device is online. **Annex C (informative) — Bibliography** lists the supporting references [B1]–[B15]: IEEE 802.1X and 1363, the SNMP/EAP/TLS/EST/TEAP RFCs (3410, 3748, 4086, 5216, 5246, 5915, 7030, 7170), NIST FIPS 140-2 and SP 800-57, TCG TPM identity keys, BRSKI, and a paper on weak-key detection.",
+      "zh": "**附录 B（资料性）——DevID 应用场景。** DevID 被现有的识别/认证协议所使用；标准并不定义新协议。**B.1 在 EAP-TLS 中使用 DevID**——设备常用 IEEE 802.1X 的 EAP（可扩展认证协议，Extensible Authentication Protocol）方法来识别；EAP-TLS 可使用包含 DevID 的 X.509 客户端凭证。设备枚举证书（7.2.3），并在 TLS 握手期间使用签名操作；由于模块只能签名，密码套件必须是 TLS_DHE_RSA_WITH_AES_128_CBC_SHA 或 RFC 5289 中的某个 ECDSA 套件。图 B-1 演示了双方通过随机数、证书、certificate_verify、change_cipher_spec 和 finished 消息互相验证的请求/响应交互。**B.2 消费类设备**——终端用户不直接接触 DevID；家用路由器/AP 使用它们，用“密码学身份 + 人类可读的 subject/serialNumber/hardwareModuleName”取代脆弱的 MAC 地址白名单。**B.3 企业设备**——IDevID 将设备注册进本地安全基础设施（例如带 AAA 服务器的 802.1X 网络），授权由人类可读的 DevID 主体名称驱动，甚至可在设备上线之前就预先录入。**附录 C（资料性）——参考文献**列出支撑性引用 [B1]–[B15]：IEEE 802.1X 与 1363、SNMP/EAP/TLS/EST/TEAP 相关 RFC（3410、3748、4086、5216、5246、5915、7030、7170）、NIST FIPS 140-2 与 SP 800-57、TCG 的 TPM 身份密钥、BRSKI，以及一篇关于弱密钥检测的论文。",
+      "cite": {
+        "pdf_id": "8021AR-2018",
+        "pages": [
+          69,
+          70,
+          71,
+          72
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Put together, these final pieces complete the picture. Clause 10 gives operators a safe, read-only window into a device's identity material for inventory and audit, anchored to the physical device via the Entity MIB and protected by SNMPv3/TLS. Annex A is the contract a supplier signs to claim conformance. Annexes B and C show the standard in action (EAP-TLS, consumer and enterprise onboarding) and point to the wider body of work it rests on — turning 802.1AR from an abstract identity scheme into something you can implement, deploy, and verify.",
+      "zh": "把这些最后的部分拼在一起，整幅图景就完整了。第 10 章为运维人员提供了一个安全的只读窗口，用于清点和审计设备的身份材料，通过 Entity MIB 锚定到物理设备，并由 SNMPv3/TLS 加以保护。附录 A 是供应商为声称符合标准而签署的契约。附录 B 和 C 展示了标准的实际运用（EAP-TLS、消费与企业级接入），并指向它所依赖的更广泛工作体系——使 802.1AR 从一个抽象的身份方案，变成可以实现、部署和验证的东西。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AR-2018",
+      "pages": [
+        47,
+        48,
+        49,
+        50
+      ],
+      "note": "Clause 10 DevID MIB: 10.1 Internet-Standard Management Framework, 10.2.1 Relationship to the Entity MIB, 10.3 MIB structure (four tables), 10.4 security considerations, 10.5 SMIv2 definitions and Table 10-1."
+    },
+    {
+      "pdf_id": "8021AR-2018",
+      "pages": [
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68
+      ],
+      "note": "Annex A (normative) PICS proforma: A.1-A.4 instructions/identification, A.5 major capabilities/options, A.6-A.12 service interface, RNG, cert fields, supplier info, signature suites."
+    },
+    {
+      "pdf_id": "8021AR-2018",
+      "pages": [
+        69,
+        70,
+        71,
+        72
+      ],
+      "note": "Annex B (informative) scenarios (B.1 EAP-TLS, B.2 consumer, B.3 enterprise) with Figure B-1; Annex C (informative) bibliography [B1]-[B15]."
+    }
+  ],
+  "covers": [
+    "8021AR-2018:10.1",
+    "8021AR-2018:10.2.1",
+    "8021AR-2018:10.3",
+    "8021AR-2018:10.4",
+    "8021AR-2018:10.5",
+    "8021AR-2018:Annex_A",
+    "8021AR-2018:Annex_B",
+    "8021AR-2018:Annex_C"
+  ],
+  "track": "net-security"
+}

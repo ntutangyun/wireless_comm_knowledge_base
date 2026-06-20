@@ -1,0 +1,193 @@
+{
+  "id": "net-security-09",
+  "title": {
+    "en": "Inside the PAE: Operation State Machines and the PAE MIB (Clauses 12 & 13)",
+    "zh": "PAE 内部解剖：运行状态机与 PAE MIB（第 12、13 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1X-2020 controls who is allowed to use a LAN port. The component that does the work on each port is the PAE — the Port Access Entity. Earlier clauses defined the protocol frames; Clause 12 (PAE operation) finally says how the PAE behaves internally, and Clause 13 (PAE MIB) says how a network manager reads and tweaks that behavior remotely. This lesson is a guided tour of both. Clause 12 opens with a model of operation (12.1): the PAE is described as a set of cooperating state machines, but this is just a specification of required behavior — a real product can be built any way it likes as long as the frames on the wire match.",
+      "zh": "IEEE Std 802.1X-2020 控制谁可以使用某个局域网端口。在每个端口上真正干活的组件叫 PAE——端口访问实体（Port Access Entity）。前面的章节定义了协议帧，而第 12 章（PAE 运行）终于讲清楚 PAE 内部如何运作，第 13 章（PAE MIB）则讲网络管理员如何远程读取和调整这些行为。本课带你逐一走读两章。第 12 章以运行模型（12.1）开篇：PAE 被描述为一组相互协作的状态机，但这只是对所需行为的规范——只要线路上的帧一致，真实产品可以用任何内部实现方式。"
+    },
+    {
+      "type": "prose",
+      "en": "Picture three cooperating actors inside the PAE. The Logon Process is the brain: it manages credentials, decides whether to run EAP (Extensible Authentication Protocol), maintains pre-shared keys (PSKs), and chooses what kind of connectivity to ask for. The KaY (Key Agreement Entity) runs zero or more MKA (MACsec Key Agreement) instances, each identified by a CKN (CAK Key Name) and using a CAK (Connectivity Association Key); it elects a Key Server and distributes the SAK (Secure Association Key) used by MACsec. The CP (Controlled Port) state machine is the gate: it raises or lowers the controlledPortEnabled signal that decides whether real user traffic can pass. The KaY interfaces (12.2) are simply the agreed list of signals and procedure calls — createMKA(), MKA.secured, MKA.failed, newSAK, createSAs(), enableTransmitSA() and so on — through which these actors talk.",
+      "zh": "想象 PAE 内部有三个协作角色。登录进程（Logon Process）是大脑：它管理凭据，决定是否运行 EAP（可扩展认证协议），维护预共享密钥（PSK），并决定请求哪种连通性。KaY（密钥协商实体）运行零个或多个 MKA（MACsec 密钥协商）实例，每个实例由 CKN（CAK 密钥名）标识并使用一个 CAK（连通性关联密钥）；它选举出密钥服务器并分发 MACsec 使用的 SAK（安全关联密钥）。CP（受控端口）状态机是闸门：它升降 controlledPortEnabled 信号，决定真实用户流量能否通过。KaY 接口（12.2）就是这些角色之间通信所约定的信号与过程调用清单——如 createMKA()、MKA.secured、MKA.failed、newSAK、createSAs()、enableTransmitSA() 等。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TB\n  LP[Logon Process<br/>credentials, EAP, PSKs]\n  KaY[KaY<br/>MKA instances, Key Server, SAK]\n  CP[CP state machine<br/>controlledPortEnabled]\n  SecY[SecY or PAC<br/>actual data path]\n  LP -->|connect, createMKA| KaY\n  KaY -->|MKA.secured, newSAK| CP\n  CP -->|createSAs, enableTransmitSA| SecY\n  LP -->|connect| CP",
+      "zh": "flowchart TB\n  LP[登录进程<br/>凭据、EAP、PSK]\n  KaY[KaY<br/>MKA 实例、密钥服务器、SAK]\n  CP[CP 状态机<br/>controlledPortEnabled]\n  SecY[SecY 或 PAC<br/>实际数据通路]\n  LP -->|connect、createMKA| KaY\n  KaY -->|MKA.secured、newSAK| CP\n  CP -->|createSAs、enableTransmitSA| SecY\n  LP -->|connect| CP"
+    },
+    {
+      "type": "prose",
+      "en": "How do these actors agree on what the port should do? Through the CP state machine interfaces (12.3). The Logon Process sets a single variable, connect, to one of four values: Pending (block everything), Unauthenticated (open unsecured access), Authenticated (unsecured but identity-proven access, carrying authorizationData), or Secure (use MACsec keys from the KaY). Before letting traffic flow, the CP calls ifSecure(portValid, authorizationData) so the port's client knows whether the link is cryptographically protected. The CP state machine itself (12.4) is the formal flowchart the standard requires; 12.4.1 lists its two timers — transmitWhen (capped at MKA Life Time, 6 s, so a Key Server doesn't wait forever before transmitting on a fresh SAK) and retireWhen (fixed at 3 s, the grace period before the old SAK is dropped so in-flight frames still decrypt).",
+      "zh": "这些角色如何就端口该做什么达成一致？通过 CP 状态机接口（12.3）。登录进程设置一个变量 connect，取四个值之一：Pending（全部阻断）、Unauthenticated（开放非加密访问）、Authenticated（非加密但身份已验证、携带 authorizationData）、Secure（使用来自 KaY 的 MACsec 密钥）。在放行流量之前，CP 调用 ifSecure(portValid, authorizationData)，让端口客户端知道链路是否受密码学保护。CP 状态机本身（12.4）就是标准要求的正式流程图；12.4.1 列出它的两个定时器——transmitWhen（上限为 MKA 生存期 6 秒，使密钥服务器不会无限等待就用新 SAK 发送）与 retireWhen（固定 3 秒，是丢弃旧 SAK 前的宽限期，使在途帧仍可解密）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental shortcut: connect = Secure means 'turn on MACsec'; connect = Authenticated means 'I trust who you are, but we will not encrypt'; connect = Unauthenticated means 'come in, no questions asked'; connect = Pending means 'wait at the door'. Everything the CP does downstream — installing keys, flipping controlledPortEnabled — flows from that one choice made by the Logon Process.",
+      "zh": "一个好用的记忆窍门：connect = Secure 意为“开启 MACsec”；connect = Authenticated 意为“我信任你的身份，但不加密”；connect = Unauthenticated 意为“随便进，不问身份”；connect = Pending 意为“在门口等着”。CP 下游做的一切——安装密钥、翻转 controlledPortEnabled——都源自登录进程做出的这一个选择。"
+    },
+    {
+      "type": "prose",
+      "en": "The Logon Process (12.5) is rich enough to deserve its own subclauses. Controlling connectivity (12.5.1) introduces three policy knobs, each taking values like Never / Immediate / MKAfail / AuthFail / MKAserver: useEAP (when to start EAP), unauthAllowed (when to fall back to open access), and unsecureAllowed (when to allow authenticated-but-unencrypted access). Active and passive participation (12.5.2) explains the participate flag: a freshly EAP-derived CAK participates actively; a cached CAK with activate=OnOperUp participates for one MKA Life Time then goes quiet, while activate=Always keeps transmitting MKPDUs forever. Network Identities (12.5.3) — NIDs — let one port advertise and select among several network services using connectedNID, selectedNID, and requestedNID, each NID carrying its own useEAP/unauthAllowed/unsecureAllowed. Session statistics (12.5.4) are per-session counters (sessionOctetsRx/Tx, sessionFramesRx/Tx, sessionId, sessionTime, sessionTerminateCause, sessionUserName) zeroed when a session begins, ideal for AAA accounting.",
+      "zh": "登录进程（12.5）内容丰富，足以拥有自己的多个子条款。控制连通性（12.5.1）引入三个策略旋钮，每个取 Never / Immediate / MKAfail / AuthFail / MKAserver 等值：useEAP（何时启动 EAP）、unauthAllowed（何时回退到开放访问）、unsecureAllowed（何时允许已认证但未加密的访问）。主动与被动参与（12.5.2）解释 participate 标志：刚由 EAP 导出的 CAK 主动参与；缓存且 activate=OnOperUp 的 CAK 参与一个 MKA 生存期后转为安静，而 activate=Always 则永久持续发送 MKPDU。网络标识（12.5.3）——NID——让一个端口可通过 connectedNID、selectedNID、requestedNID 通告并在多个网络服务中选择，每个 NID 携带自己的 useEAP/unauthAllowed/unsecureAllowed。会话统计（12.5.4）是按会话计数器（sessionOctetsRx/Tx、sessionFramesRx/Tx、sessionId、sessionTime、sessionTerminateCause、sessionUserName），在会话开始时清零，非常适合 AAA 计费。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more Clause 12 mechanisms keep things fast and scalable. The CAK cache (12.6) stores CAKs (with a CKN, a Key Management Domain or KMD, and a NID) so a device can re-authenticate or roam quickly; every cached CAK has a bounded lifetime, but a configured PSK lives forever. Virtual port creation and deletion (12.7) lets one physical port behave like many: on a shared LAN, each peer gets its own virtual port (its own Controlled/Uncontrolled Port and Connectivity Association). Frames are kept apart using the SCI (Secure Channel Identifier) carried in the MACsec SecTAG — the Port Identifier field allows up to 65 534 virtual ports per Common Port. The variables vpStart and vpPeerAddress record that a virtual port was born from an EAPOL-Start frame and from which source MAC address.",
+      "zh": "第 12 章还有两个机制让系统既快又可扩展。CAK 缓存（12.6）存储 CAK（连同 CKN、密钥管理域 KMD 和一个 NID），使设备能快速重新认证或漫游；每个缓存的 CAK 都有有界生存期，但配置的 PSK 则永久存在。虚拟端口的创建与删除（12.7）让一个物理端口表现得像多个端口：在共享局域网上，每个对端获得自己的虚拟端口（各自的受控/非受控端口与连通性关联）。各帧靠 MACsec SecTAG 中携带的 SCI（安全信道标识）区分——其端口标识字段允许每个公共端口拥有多达 65 534 个虚拟端口。变量 vpStart 和 vpPeerAddress 记录某虚拟端口由 EAPOL-Start 帧创建以及来自哪个源 MAC 地址。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally for Clause 12, the EAPOL Transmit and Receive Process (12.8) is the single per-real-port mailroom that multiplexes outgoing EAPOL frames and validates/demultiplexes incoming ones by EAPOL Packet Type — and, when virtual ports are supported, routes frames by source MAC address. It maintains three families of counters: reception statistics (12.8.1) such as invalidEapolFramesRx, eapLengthErrorFramesRx, eapolStartFramesRx, eapolEapFramesRx, eapolMKnoCKN, and eapolPortUnavailable (a frame dropped because no virtual port could be created); reception diagnostics (12.8.2) — lastEapolFrameSource and lastEapolFrameVersion; and transmission statistics (12.8.3) such as eapolSuppEapFramesTx, eapolStartFramesTx, eapolAuthEapFramesTx, and eapolMKAFramesTx.",
+      "zh": "第 12 章的最后，EAPOL 收发进程（12.8）是每个真实端口唯一的“收发室”，它复用外发的 EAPOL 帧，并按 EAPOL 包类型校验和分解入站帧——在支持虚拟端口时，还按源 MAC 地址路由帧。它维护三类计数器：接收统计（12.8.1），如 invalidEapolFramesRx、eapLengthErrorFramesRx、eapolStartFramesRx、eapolEapFramesRx、eapolMKnoCKN 及 eapolPortUnavailable（因无法创建虚拟端口而丢弃的帧）；接收诊断（12.8.2）——lastEapolFrameSource 与 lastEapolFrameVersion；以及发送统计（12.8.3），如 eapolSuppEapFramesTx、eapolStartFramesTx、eapolAuthEapFramesTx 与 eapolMKAFramesTx。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"10\" y=\"40\" width=\"150\" height=\"60\"/><text x=\"85\" y=\"66\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">EAPOL TX/RX</text><text x=\"85\" y=\"84\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">12.8 mailroom</text><line x1=\"160\" y1=\"70\" x2=\"210\" y2=\"70\" marker-end=\"url(#a)\"/><rect x=\"210\" y=\"10\" width=\"130\" height=\"40\"/><text x=\"275\" y=\"34\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">RX stats 12.8.1</text><rect x=\"210\" y=\"55\" width=\"130\" height=\"40\"/><text x=\"275\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">RX diag 12.8.2</text><rect x=\"210\" y=\"100\" width=\"130\" height=\"40\"/><text x=\"275\" y=\"124\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">TX stats 12.8.3</text><line x1=\"340\" y1=\"70\" x2=\"400\" y2=\"70\" marker-end=\"url(#a)\"/><rect x=\"400\" y=\"40\" width=\"110\" height=\"60\"/><text x=\"455\" y=\"66\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">per-PAE /</text><text x=\"455\" y=\"84\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">virtual port</text><line x1=\"510\" y1=\"70\" x2=\"560\" y2=\"70\" marker-end=\"url(#a)\"/><rect x=\"560\" y=\"40\" width=\"70\" height=\"60\"/><text x=\"595\" y=\"73\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MIB</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "The per-port EAPOL Transmit and Receive Process (12.8) feeds three counter families, which roll up per PAE / virtual port and surface through the PAE MIB (Clause 13).",
+        "zh": "每端口的 EAPOL 收发进程（12.8）汇入三类计数器，按 PAE/虚拟端口汇总，并通过 PAE MIB（第 13 章）对外呈现。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "PAE management (12.9) ties it together and bridges into Clause 13. System level PAE management (12.9.1) gives two master switches — systemAccessControl {Enabled, Disabled} (Disabled tears down virtual ports and forces open access) and systemAnnouncements {Enabled, Disabled} — plus read-only reporting of the EAPOL protocol version and MKA Version Identifier. Identifying PAEs and their capabilities (12.9.2) defines the port-number space (portNumber, portType RealPort/VirtualPort, controlledPortNumber, uncontrolledPortNumber, commonPortNumber, eapolGroupAddress) and a set of implemented.* capability flags (supp, auth, mka, macsec, isupgrades, announcements, listener, virtualPorts) plus maxVirtualPorts / currentVirtualPorts. Initialization (12.9.3) is the single procedure initializePort(): assert BEGIN on every state machine, clear the peer lists, delete all cached CAKs (but keep PSKs), and tear down virtual ports.",
+      "zh": "PAE 管理（12.9）把这一切串起来，并承接到第 13 章。系统级 PAE 管理（12.9.1）提供两个主开关——systemAccessControl {Enabled, Disabled}（Disabled 拆除虚拟端口并强制开放访问）与 systemAnnouncements {Enabled, Disabled}——外加对 EAPOL 协议版本和 MKA 版本标识的只读上报。识别 PAE 及其能力（12.9.2）定义了端口号空间（portNumber、portType RealPort/VirtualPort、controlledPortNumber、uncontrolledPortNumber、commonPortNumber、eapolGroupAddress）以及一组 implemented.* 能力标志（supp、auth、mka、macsec、isupgrades、announcements、listener、virtualPorts）和 maxVirtualPorts / currentVirtualPorts。初始化（12.9.3）就是那个单一过程 initializePort()：对每个状态机置 BEGIN、清空对端列表、删除所有缓存的 CAK（但保留 PSK）、并拆除虚拟端口。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 13 turns all of that into a standard, remotely-readable MIB (Management Information Base) — the table of objects a manager reads or sets over SNMP (Simple Network Management Protocol). 13.1 The Internet Standard Management Framework points to IETF RFC 3410 and states this is an SMIv2 module (Structure of Management Information version 2, RFCs 2578/2579/2580). 13.2 Structure of the MIB says it is one module whose objects are arranged into groups, cross-referenced in Tables 13-4/13-5 and mirroring the containment in Figure 12-3. The relationship to other MIBs (13.3) is spelled out in three parts: 13.3.1 a system must also implement the System Group of the SNMPv2-MIB (RFC 3418); 13.3.2 it must implement the Interfaces MIB / IF-MIB (RFC 2863) — here port numbers equal ifIndex, the Controlled/Uncontrolled Ports appear as ifTable rows of type macSecControlledIF(231)/macSecUncontrolledIF(232), and the ifStackTable expresses their layering; 13.3.3 it imports the IEEE8021-SECY-MIB from IEEE Std 802.1AE for MACsec, which is only required when MACsec is actually used.",
+      "zh": "第 13 章把上述一切变成一个标准的、可远程读取的 MIB（管理信息库）——管理员通过 SNMP（简单网络管理协议）读取或设置的对象表。13.1 互联网标准管理框架指向 IETF RFC 3410，并声明这是一个 SMIv2 模块（管理信息结构第 2 版，RFC 2578/2579/2580）。13.2 MIB 的结构说明它是单一模块，其对象按组排列，在表 13-4/13-5 中交叉引用，并与图 12-3 的包含关系对应。与其他 MIB 的关系（13.3）分三部分阐述：13.3.1 系统还须实现 SNMPv2-MIB 的系统组（RFC 3418）；13.3.2 须实现接口 MIB / IF-MIB（RFC 2863）——此处端口号等于 ifIndex，受控/非受控端口作为 ifTable 行出现，类型为 macSecControlledIF(231)/macSecUncontrolledIF(232)，并由 ifStackTable 表达其层次；13.3.3 它从 IEEE Std 802.1AE 导入 IEEE8021-SECY-MIB 以支持 MACsec，仅在实际使用 MACsec 时才要求实现。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "13.4 Security considerations is short but important: because the MIB exposes powerful knobs, access is allowed only via SNMPv3 (which adds real cryptographic security). Writing systemAccessControl off can disable access control entirely; toggling ieee8021XPaePortKayMkaEnable can disable MACsec; editing nidConfigTable can loosen policy. Even read access to these can help an attacker map weak ports — so encrypt SNMP by default and grant rights narrowly. Secret keys are never exposed by any defined read operation.",
+      "zh": "13.4 安全考量虽短却重要：由于 MIB 暴露了强力旋钮，访问只允许经由 SNMPv3（它提供真正的密码学安全）。把 systemAccessControl 关掉可彻底禁用访问控制；切换 ieee8021XPaePortKayMkaEnable 可禁用 MACsec；编辑 nidConfigTable 可放松策略。即便是对这些对象的读访问也能帮助攻击者标定薄弱端口——因此默认对 SNMP 加密并最小化授权。任何已定义的读操作都不会暴露密钥。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause unit, by exact number",
+        "zh": "覆盖地图——逐一对应每个条款编号"
+      },
+      "en": "Clause 12 (PAE operation): 12.1 Model of operation — the PAE as cooperating state machines (CP, KaY, Logon, EAPOL TX/RX), conformance only to observable protocol. 12.2 KaY interfaces — mka.enabled, createMKA()/MKA.created/MKA.delete/MKA.deleted, MKA.participate/authenticated/secured/failed, the to-CP variables (chgdServer, electedSelf, cipherSuite, cipherOffset, newSAK, distributedKI/AN, lki/lan/lrx/ltx, oki/oan/orx/otx), the CP-called procedures createSAs()/enableReceiveSAs()/enableTransmitSA(), and SecY controls protectFrames/replayProtect/validateFrames. 12.3 CP state machine interfaces — connect {Pending/Unauthenticated/Authenticated/Secure}, authorizationData, portValid, ifSecure(). 12.4.1 CP state machine variables and timers — transmitWhen (transmitDelay = MKA Life Time = 6 s) and retireWhen (retireDelay = 3 s). 12.5.1 Controlling connectivity — useEAP, unauthAllowed, unsecureAllowed. 12.5.2 Active and passive participation — participate vs activate Default/OnOperUp/Always. 12.5.3 Network Identities — connectedNID, selectedNID, requestedNID. 12.5.4 Session statistics — sessionOctets/Frames Rx/Tx, sessionId, sessionTime, sessionTerminateCause, sessionUserName. 12.6 CAK cache — bounded-lifetime CAKs vs permanent PSKs, CKN/KMD/NID association. 12.7 Virtual port creation and deletion — SCI/Port Identifier partitioning, up to 65 534 virtual ports, vpStart/vpPeerAddress. 12.8.1 reception statistics; 12.8.2 reception diagnostics (lastEapolFrameSource/Version); 12.8.3 transmission statistics. 12.9.1 System level PAE management — systemAccessControl, systemAnnouncements, version reporting. 12.9.2 Identifying PAEs and their capabilities — port numbers, portType, implemented.* flags, max/currentVirtualPorts. 12.9.3 Initialization — initializePort(). Clause 13 (PAE MIB): 13.1 Internet Standard Management Framework (SMIv2, SNMP, RFC 3410). 13.2 Structure of the MIB (one module, object groups, Tables 13-4/13-5). 13.3.1 System MIB Group (SNMPv2-MIB, RFC 3418). 13.3.2 Relationship to the Interfaces MIB (IF-MIB RFC 2863; ifIndex, macSecControlledIF(231)/UncontrolledIF(232), ifStackTable). 13.3.3 Relationship to the MAC Security MIB (imports IEEE8021-SECY-MIB from 802.1AE). 13.4 Security considerations (SNMPv3 only; sensitive objects systemAccessControl, ieee8021XPaePortKayMkaEnable, nidConfigTable). 13.5 Definitions for PAE MIB — the normative SMIv2 module itself, freely reproducible, with other clauses taking precedence over DESCRIPTION text on any discrepancy.",
+      "zh": "第 12 章（PAE 运行）：12.1 运行模型——PAE 作为协作状态机（CP、KaY、登录、EAPOL 收发），仅就可观测协议进行符合性判定。12.2 KaY 接口——mka.enabled，createMKA()/MKA.created/MKA.delete/MKA.deleted，MKA.participate/authenticated/secured/failed，发往 CP 的变量（chgdServer、electedSelf、cipherSuite、cipherOffset、newSAK、distributedKI/AN、lki/lan/lrx/ltx、oki/oan/orx/otx），CP 调用的过程 createSAs()/enableReceiveSAs()/enableTransmitSA()，以及 SecY 控制 protectFrames/replayProtect/validateFrames。12.3 CP 状态机接口——connect {Pending/Unauthenticated/Authenticated/Secure}、authorizationData、portValid、ifSecure()。12.4.1 CP 状态机变量与定时器——transmitWhen（transmitDelay = MKA 生存期 = 6 秒）与 retireWhen（retireDelay = 3 秒）。12.5.1 控制连通性——useEAP、unauthAllowed、unsecureAllowed。12.5.2 主动与被动参与——participate 与 activate 的 Default/OnOperUp/Always。12.5.3 网络标识——connectedNID、selectedNID、requestedNID。12.5.4 会话统计——sessionOctets/Frames Rx/Tx、sessionId、sessionTime、sessionTerminateCause、sessionUserName。12.6 CAK 缓存——有界生存期的 CAK 与永久 PSK，CKN/KMD/NID 关联。12.7 虚拟端口的创建与删除——SCI/端口标识分割，最多 65 534 个虚拟端口，vpStart/vpPeerAddress。12.8.1 接收统计；12.8.2 接收诊断（lastEapolFrameSource/Version）；12.8.3 发送统计。12.9.1 系统级 PAE 管理——systemAccessControl、systemAnnouncements、版本上报。12.9.2 识别 PAE 及其能力——端口号、portType、implemented.* 标志、max/currentVirtualPorts。12.9.3 初始化——initializePort()。第 13 章（PAE MIB）：13.1 互联网标准管理框架（SMIv2、SNMP、RFC 3410）。13.2 MIB 的结构（单一模块、对象组、表 13-4/13-5）。13.3.1 系统 MIB 组（SNMPv2-MIB，RFC 3418）。13.3.2 与接口 MIB 的关系（IF-MIB RFC 2863；ifIndex、macSecControlledIF(231)/UncontrolledIF(232)、ifStackTable）。13.3.3 与 MAC 安全 MIB 的关系（从 802.1AE 导入 IEEE8021-SECY-MIB）。13.4 安全考量（仅 SNMPv3；敏感对象 systemAccessControl、ieee8021XPaePortKayMkaEnable、nidConfigTable）。13.5 PAE MIB 定义——规范性 SMIv2 模块本身，可自由复制，如 DESCRIPTION 文本与其他章节有出入则以其他章节为准。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          138,
+          140,
+          142,
+          143,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          154,
+          155,
+          156,
+          163
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        138,
+        139,
+        140
+      ],
+      "note": "12.1 Model of operation; 12.2 KaY interfaces"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        142,
+        143
+      ],
+      "note": "12.3 CP state machine interfaces; 12.4/12.4.1 CP state machine variables and timers; 12.5 Logon Process"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        145,
+        146,
+        147
+      ],
+      "note": "12.5.1–12.5.4; 12.6 CAK cache"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        148,
+        149,
+        150
+      ],
+      "note": "12.7 Virtual ports; 12.8/12.8.1/12.8.2/12.8.3 EAPOL Transmit and Receive Process"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        151,
+        152
+      ],
+      "note": "12.9/12.9.1/12.9.2/12.9.3 PAE management"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        154,
+        155,
+        156
+      ],
+      "note": "13.1–13.3.3 MIB framework, structure, relationships to other MIBs"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        163
+      ],
+      "note": "13.4 Security considerations; 13.5 Definitions for PAE MIB"
+    }
+  ],
+  "covers": [
+    "8021X-2020:12.1",
+    "8021X-2020:12.2",
+    "8021X-2020:12.3",
+    "8021X-2020:12.4.1",
+    "8021X-2020:12.5.1",
+    "8021X-2020:12.5.2",
+    "8021X-2020:12.5.3",
+    "8021X-2020:12.5.4",
+    "8021X-2020:12.6",
+    "8021X-2020:12.7",
+    "8021X-2020:12.8.1",
+    "8021X-2020:12.8.2",
+    "8021X-2020:12.8.3",
+    "8021X-2020:12.9.1",
+    "8021X-2020:12.9.2",
+    "8021X-2020:12.9.3",
+    "8021X-2020:13.1",
+    "8021X-2020:13.2",
+    "8021X-2020:13.3.1",
+    "8021X-2020:13.3.2",
+    "8021X-2020:13.3.3",
+    "8021X-2020:13.4",
+    "8021X-2020:13.5"
+  ],
+  "track": "net-security"
+}

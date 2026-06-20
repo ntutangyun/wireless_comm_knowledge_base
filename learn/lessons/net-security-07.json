@@ -1,0 +1,130 @@
+{
+  "id": "net-security-07",
+  "title": {
+    "en": "Network Announcements: How a Port Advertises What's On Offer",
+    "zh": "网络通告：端口如何宣告可提供的接入服务"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A laptop roams: it attaches to one LAN (Local Area Network), then moves and attaches to another, often visiting many networks before returning to the first. Each access point may offer different capabilities, different networks, and different services — and the same user may act in different roles (employee, private individual) at different times. Manually configuring the right security parameters at every access point is inconvenient or impractical, and blindly searching every possible way to gain access would be slow. Clause 10 of IEEE Std 802.1X-2020 (the standard for Port-Based Network Access Control, PNAC) solves this with **network announcements**: a port advertises what networks and access mechanisms it offers, so an arriving system gets a valuable hint instead of guessing.",
+      "zh": "笔记本电脑会漫游：它先接入一个 LAN（局域网，Local Area Network），随后移动并接入另一个，往往在回到最初的网络前已造访过多个网络。每个接入点可能提供不同的能力、不同的网络与不同的服务，同一用户在不同时刻还可能扮演不同角色（员工、私人个体）。在每个接入点手动配置正确的安全参数既不方便也不现实，而盲目尝试所有可能的接入方式又太慢。IEEE Std 802.1X-2020（基于端口的网络接入控制标准，Port-Based Network Access Control, PNAC）的第 10 章用**网络通告**解决这一问题：端口主动宣告它能提供哪些网络与接入机制，使到达的系统得到有价值的提示，而不必盲猜。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10 has four parts, and this lesson is a reference-grade map of each. **10.1 Announcement information** — what is announced and how it is organized. **10.2 Making and requesting announcements** — how, when, and to whom they are sent. **10.3 Receiving announcements** — how a receiver uses them. **10.4 Managing announcements** — the controls that enable, disable, and monitor them. The actual byte formats (EAPOL-Announcements, EAPOL-Announcement Requests, and the announcement TLVs — Type-Length-Value fields) live in Clause 11; Clause 10 is about meaning and behavior.",
+      "zh": "第 10 章分为四部分，本课为每一部分提供参考级的导览。**10.1 通告信息**——通告什么以及如何组织。**10.2 发起与请求通告**——如何、何时、向谁发送。**10.3 接收通告**——接收方如何使用。**10.4 通告管理**——启用、禁用与监控通告的控制项。具体的字节格式（EAPOL-Announcements、EAPOL-Announcement 请求，以及通告 TLV——类型-长度-值字段，Type-Length-Value）位于第 11 章；第 10 章关注的是含义与行为。"
+    },
+    {
+      "type": "prose",
+      "en": "At the heart of announcements is the **NID (Network Identifier)**: a UTF-8 string a system uses to pick a *network profile* — the stored information needed to access that network, such as the right EAP (Extensible Authentication Protocol) credentials. One announcement can carry information for several NIDs. For each NID, the announcement describes the authentication and protection capabilities, the requirements for access, and the current connectivity status — telling an arriving system what it can or should do to get on. The word 'network' here is broad: a NID may map to a VLAN (Virtual LAN), a path to an organization's network, or to the internet — whether two such paths count as different 'networks' is an administrative choice.",
+      "zh": "通告的核心是 **NID（网络标识符，Network Identifier）**：一个 UTF-8 字符串，系统用它来选取*网络配置档（network profile）*——访问该网络所需的存储信息，例如正确的 EAP（可扩展认证协议，Extensible Authentication Protocol）凭据。一条通告可携带多个 NID 的信息。对每个 NID，通告描述其认证与保护能力、接入所需条件以及当前连通状态——告诉到达的系统它能做什么、应做什么才能接入。这里的“网络”含义宽泛：一个 NID 可映射到 VLAN（虚拟局域网，Virtual LAN）、通往某组织网络的路径，或互联网——这样的两条路径是否算作不同“网络”，由管理者决定。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "10.1 deep dive — the per-NID fields carried in an announcement",
+        "zh": "10.1 深入解析——通告中每个 NID 携带的字段"
+      },
+      "en": "Clause 10.1 lists the questions a newly-attached peer wants answered: what networks/services are available; is access already available or is authentication needed; what mechanisms are required; what credentials and cached CAKs (Connectivity Association Keys) might work; and what level of authorization to expect. Per NID, the standard defines: **Access Status** — a coarse view of the announcer's Controlled Port MAC_Operational state and current access level: No Access, Remedial Access, Restricted Access, or Expected Access. **Access Requested** — set when authenticated access for this NID is in progress (cleared once done), so a receiver can tell a temporary No Access from an authentication failure. **Unauthenticated Access** — what is available without authenticating: No Access, Fallback Access, Limited Access, or Open Access. **Virtual Port Access** — set if a virtual port can provide access. **Group Access** — set if access is as a member of a group CA (Connectivity Association); clear means pairwise. **Access Capabilities** — the supported auth/protection combinations: EAP, EAP+MKA, EAP+MKA+MACsec, MKA, MKA+MACsec, Higher Layer (WebAuth), Higher Layer Fallback, or vendor-specific. Plus **Supported Ciphersuites** and the **KMD (Key Management Domain)**. Access Status and Access Requested are dynamic; the rest are essentially static (though resource exhaustion can indirectly change capabilities). MKA = MACsec Key Agreement; MACsec = Media Access Control Security.",
+      "zh": "10.1 列出新接入对端想得到答复的问题：有哪些网络/服务可用；接入是否已就绪还是需要认证；需要哪些机制；哪些凭据与缓存的 CAK（连通性关联密钥，Connectivity Association Keys）可能有效；以及可期望的授权级别。每个 NID 定义：**Access Status（接入状态）**——对通告方受控端口 MAC_Operational 状态与当前接入级别的粗略描述：No Access、Remedial Access（补救接入）、Restricted Access（受限接入）或 Expected Access（预期接入）。**Access Requested（已请求接入）**——当该 NID 的认证接入正在进行时置位（完成后清除），使接收方能区分临时的 No Access 与认证失败。**Unauthenticated Access（未认证接入）**——无需认证即可获得的接入：No Access、Fallback Access（回退接入）、Limited Access（有限接入）或 Open Access（开放接入）。**Virtual Port Access（虚拟端口接入）**——若虚拟端口可提供接入则置位。**Group Access（组接入）**——若以组 CA（连通性关联，Connectivity Association）成员身份接入则置位；清零表示成对（pairwise）接入。**Access Capabilities（接入能力）**——支持的认证/保护组合：EAP、EAP+MKA、EAP+MKA+MACsec、MKA、MKA+MACsec、高层认证（WebAuth）、高层回退认证，或厂商专有。另含 **Supported Ciphersuites（支持的密码套件）**与 **KMD（密钥管理域，Key Management Domain）**。Access Status 与 Access Requested 是动态的；其余基本静态（但资源耗尽可间接改变能力）。MKA = MACsec 密钥协商；MACsec = 媒体接入控制安全。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          106,
+          107,
+          108,
+          109
+        ]
+      }
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">EAPOL-Announcement (per-NID record)</text><rect x=\"10\" y=\"32\" width=\"120\" height=\"30\"/><text x=\"70\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">NID (UTF-8)</text><rect x=\"130\" y=\"32\" width=\"110\" height=\"30\"/><text x=\"185\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">Access Status</text><rect x=\"240\" y=\"32\" width=\"110\" height=\"30\"/><text x=\"295\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">Access Req.</text><rect x=\"350\" y=\"32\" width=\"100\" height=\"30\"/><text x=\"400\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">Unauth Access</text><rect x=\"10\" y=\"72\" width=\"120\" height=\"30\"/><text x=\"70\" y=\"91\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">Virtual Port</text><rect x=\"130\" y=\"72\" width=\"110\" height=\"30\"/><text x=\"185\" y=\"91\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">Group Access</text><rect x=\"240\" y=\"72\" width=\"210\" height=\"30\"/><text x=\"345\" y=\"91\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">Access Capabilities</text><rect x=\"10\" y=\"112\" width=\"210\" height=\"30\"/><text x=\"115\" y=\"131\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">Supported Ciphersuites</text><rect x=\"220\" y=\"112\" width=\"230\" height=\"30\"/><text x=\"335\" y=\"131\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">KMD (Key Management Domain)</text><text x=\"10\" y=\"170\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Dynamic: Access Status, Access Requested</text><text x=\"10\" y=\"186\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Mostly static: Unauth Access, Capabilities, Ciphersuites, KMD</text></svg>",
+      "caption": {
+        "en": "The per-NID information an announcement conveys (10.1). Access Status and Access Requested change with authentication; the rest are essentially static. Exact encodings are in Clause 11.",
+        "zh": "通告携带的每个 NID 信息（10.1）。Access Status 与 Access Requested 随认证变化，其余基本静态。具体编码见第 11 章。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "**10.2 — making and requesting announcements.** A PAE (Port Access Entity, the logical entity that runs access control on a port) sends announcements as EAPOL-PDUs (EAPOL = EAP over LANs; PDU = Protocol Data Unit) through the **Uncontrolled Port** — these are unprotected. Announcement parameters also ride inside MKPDUs (MKA Protocol Data Units), where they are protected. EAPOL-Announcements may also go through a Controlled Port only if that port is secured by MACsec; they must never be sent through an unsecured Controlled Port. Announcements come in two flavors: **generic** (for every system on the LAN, sent to a group address) and **specific** (addressed to one recipient, only by PAEs that support virtual ports, so each potential user of a virtual port learns its own Access Status and Access Requested before secure connectivity exists).",
+      "zh": "**10.2——发起与请求通告。** PAE（端口接入实体，Port Access Entity，即在端口上运行接入控制的逻辑实体）通过**非受控端口（Uncontrolled Port）**以 EAPOL-PDU（EAPOL = EAP over LANs；PDU = 协议数据单元，Protocol Data Unit）发送通告——这些是未受保护的。通告参数也可携带在 MKPDU（MKA 协议数据单元）内，此时受到保护。仅当受控端口由 MACsec 保护时，EAPOL-Announcements 才可经受控端口发送；绝不能经未受保护的受控端口发送。通告分两种：**通用（generic）**（面向 LAN 上所有系统，发往组地址）与**特定（specific）**（发往单一接收方，仅由支持虚拟端口的 PAE 发送，使虚拟端口的每个潜在用户在安全连通建立前就获知自己的 Access Status 与 Access Requested）。"
+    },
+    {
+      "type": "prose",
+      "en": "Timing matters. An access point sends a generic announcement when its access-controlled Common Port becomes MAC_Operational, then repeats every **Announcement Time** (5 seconds). It also responds to an EAPOL-Start or EAPOL-Announcement-Req, and whenever Access Requested changes for a NID — replying with a specific announcement if it supports virtual ports, otherwise a generic one. Unprotected announcements are **rate-limited**: at most twice the configured rate (the rate is 5 per second) to any one destination per second, and an announcement that fits within the limit must go out within **Announcement Delay** (0.03 s). A solicited announcement triggered by an EAPOL-Start must precede any other frame that EAPOL-Start triggers. Crucially, a system that requested an announcement must **not** wait for it before starting EAP — its absence usually just means the access point does not implement announcements.",
+      "zh": "时序很关键。接入点在其受控的公共端口（Common Port）变为 MAC_Operational 时发送一条通用通告，之后每隔 **Announcement Time（通告间隔，5 秒）**重复一次。它还会响应 EAPOL-Start 或 EAPOL-Announcement-Req，以及任一 NID 的 Access Requested 发生变化时——若支持虚拟端口则回复特定通告，否则回复通用通告。未受保护的通告受**速率限制**：每秒对任一目的地址最多为配置速率的两倍（速率为每秒 5 条），且在限额内的通告必须在 **Announcement Delay（通告时延，0.03 秒）**内发出。由 EAPOL-Start 触发的应答通告必须先于该 EAPOL-Start 触发的任何其他帧。关键是：请求了通告的系统**不得**等待该通告再开始 EAP——通告缺失通常只意味着接入点未实现通告功能。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as Supplicant (new system)\n  participant AP as Access Point PAE\n  AP->>S: Generic announcement (port MAC_Operational)\n  Note over AP: then every Announcement Time (5s)\n  S->>AP: EAPOL-Start / Announcement-Req (with NID)\n  AP->>S: Announcement (specific if virtual ports)\n  Note over AP: within Announcement Delay (0.03s), rate-limited\n  S->>AP: Begin EAP (do not wait for announcement)",
+      "zh": "sequenceDiagram\n  participant S as 申请者(新系统)\n  participant AP as 接入点 PAE\n  AP->>S: 通用通告(端口 MAC_Operational)\n  Note over AP: 之后每隔 Announcement Time(5秒)\n  S->>AP: EAPOL-Start / 通告请求(含 NID)\n  AP->>S: 通告(支持虚拟端口则为特定通告)\n  Note over AP: 在 Announcement Delay(0.03秒)内,受速率限制\n  S->>AP: 开始 EAP(不等待通告)"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why never wait for an announcement? Deploying security must not degrade the user's experience. A missing announcement most likely means the access point simply doesn't do announcements — so the supplicant proceeds with authentication anyway. But a *received* announcement that fails to acknowledge the NID it requested is a useful hint that the EAPOL-Start was lost, or that the number of virtual ports has been exceeded.",
+      "zh": "为什么绝不等待通告？部署安全不能损害用户体验。通告缺失最可能只是因为接入点根本不发通告——所以申请者照常进行认证。但若*收到*的通告未确认其请求的 NID，则是一个有用的提示：可能 EAPOL-Start 丢失，或虚拟端口数量已超限。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "10.3 & 10.4 deep dive — receiving and managing announcements",
+        "zh": "10.3 与 10.4 深入解析——接收与管理通告"
+      },
+      "en": "**10.3 Receiving announcements.** Information in an *unprotected* EAPOL-Announcement could have been forged or altered by an attacker, so it is treated as a **hint to speed access, not a definitive fact**. A supplicant still attempts the mechanisms its Logon Process controls (12.5) selected even if the announcement claims they are unavailable; for example, if MKA/MACsec is absent but Access Status reports connectivity, it may enable its Controlled Port early (under policy) while still attempting MKA if a CAK exists. Announcements carry current state, not bulk data: each new announcement **completely replaces** the previous one — except that announcements received on a secured Controlled Port, and those sent to the recipient's unicast address, are held for **Announcement Hold Time** (15 s) before an unprotected announcement may replace them. A PAE that is both Supplicant and Authenticator keeps received and transmitted announcement information strictly separate (Figure 12-3) and does not retransmit what it received. **10.4 Managing announcements.** The standard does not define how an access point actually provisions access for a NID — that may involve VLAN membership and other policy controls (IEEE Std 802.1Q) outside this standard's scope. It does specify management operations: transmission and reception of announcements may be disabled per port; announcements for particular NIDs may be enabled/disabled per port. The static parameters (Unauthenticated Access, Access Capabilities, KMD) may be configured per NID system-wide; Supported Ciphersuites should reflect the SecY (MAC Security Entity) of the port. Access Status reflects authentication results and may be set by the system or by AAA (Authentication, Authorization, and Accounting) protocols — the MIB (Management Information Base) lets the announced Access Status be **read but not configured** (configuring it would rarely be timely). Received announcement parameters may also be read by management.",
+      "zh": "**10.3 接收通告。** *未受保护*的 EAPOL-Announcement 中的信息可能被攻击者伪造或篡改，因此被视为**加速接入的提示，而非确定的事实**。即便通告声称某机制不可用，申请者仍会尝试其登录过程控制（Logon Process controls，12.5）所选的机制；例如，若缺少 MKA/MACsec 但 Access Status 报告已连通，它可在策略允许下提前启用受控端口，同时若存在 CAK 仍尝试 MKA。通告承载当前状态而非批量数据：每条新通告**完全替换**前一条——但经安全受控端口收到的通告，以及发往接收方单播地址的通告，会被保持 **Announcement Hold Time（通告保持时间，15 秒）**之后才允许被未受保护的通告替换。既是申请者又是认证者的 PAE 会将收到的与发送的通告信息严格分开保存（图 12-3），且不转发其收到的内容。**10.4 通告管理。** 标准不定义接入点如何为某 NID 实际开通接入——这可能涉及 VLAN 成员关系及其他策略控制（IEEE Std 802.1Q），超出本标准范围。它确实规定了管理操作：通告的发送与接收可按端口禁用；特定 NID 的通告可按端口启用/禁用。静态参数（Unauthenticated Access、Access Capabilities、KMD）可按 NID 在系统范围内配置；Supported Ciphersuites 应反映端口的 SecY（MAC 安全实体，MAC Security Entity）。Access Status 反映认证结果，可由系统或 AAA（认证、授权与计费，Authentication, Authorization, and Accounting）协议设置——MIB（管理信息库，Management Information Base）允许**读取但不可配置**通告的 Access Status（配置它很少能及时生效）。收到的通告参数也可由管理读取。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          111,
+          112
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The throughline of Clause 10: an announcement is a trust-aware hint. Protected (via MKA) it can shape decisions before Controlled Port connectivity exists; unprotected it only accelerates choices the Logon Process would make anyway. Either way it never overrides policy or terminates an in-progress EAP exchange — security first, convenience second.",
+      "zh": "第 10 章的主线：通告是一种带信任意识的提示。受保护时（经 MKA）它能在受控端口连通建立前左右决策；未受保护时它只加速登录过程本就会做出的选择。无论哪种情形，它都不会覆盖策略或中断进行中的 EAP 交换——安全第一，便利第二。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        106,
+        107,
+        108,
+        109
+      ],
+      "note": "Clause 10 intro and 10.1 Announcement information — NID, per-NID fields (Access Status, Access Requested, Unauthenticated Access, Virtual/Group Access, Access Capabilities, Ciphersuites, KMD)."
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        109,
+        110
+      ],
+      "note": "10.2 Making and requesting announcements — Uncontrolled/Controlled Port rules, generic vs specific, timing (Table 10-1: Announcement Time, Hold Time, rate limit, Delay), do-not-wait rule."
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        111,
+        112
+      ],
+      "note": "10.3 Receiving announcements (hint vs fact, complete replacement, Announcement Hold Time) and 10.4 Managing announcements (per-port/per-NID enable, configurable static params, MIB read-only Access Status)."
+    }
+  ],
+  "covers": [
+    "8021X-2020:10.1",
+    "8021X-2020:10.2",
+    "8021X-2020:10.3",
+    "8021X-2020:10.4"
+  ],
+  "track": "net-security"
+}

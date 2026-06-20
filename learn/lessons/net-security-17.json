@@ -1,0 +1,168 @@
+{
+  "id": "net-security-17",
+  "title": {
+    "en": "Managing MACsec Privacy: The YANG Data Models, PICS, and Privacy Annexes",
+    "zh": "管理 MACsec 隐私保护：YANG 数据模型、PICS 与隐私附录"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier clauses defined *what* MAC Security (MACsec) and the new MAC Privacy protection do to frames. This lesson covers the management side: how an operator configures and monitors those features remotely, and the conformance and privacy material at the back of the standard. Clause 23 specifies YANG data models. YANG (Yet Another Next Generation, IETF RFC 7950) is a language for describing the configuration and state data a device exposes to a network-management protocol such as NETCONF (Network Configuration Protocol, IETF RFC 6241). In short, Clause 23 is the remote-control panel for MACsec and MAC Privacy, while the annexes are the checklists and background notes.",
+      "zh": "前面的条款定义了 MAC 安全（MACsec）和新增的 MAC 隐私保护对帧做了*什么*。本课讲管理侧：运营商如何远程配置和监控这些功能，以及标准末尾的一致性与隐私材料。第 23 条规定了 YANG 数据模型。YANG（Yet Another Next Generation，IETF RFC 7950）是一种描述设备向网络管理协议（如 NETCONF，网络配置协议，IETF RFC 6241）暴露的配置与状态数据的语言。简言之，第 23 条是 MACsec 和 MAC 隐私的远程控制面板，而各附录则是核对清单与背景说明。"
+    },
+    {
+      "type": "prose",
+      "en": "23.1 (YANG Framework) sets the ground rules: data models follow the YANG authoring guidelines (IETF RFC 6087), use IEEE-assigned URNs (Uniform Resource Names) for module identity, and organize objects into a hierarchy. Crucially, IEEE's modules do not stand alone — they *augment* (graft new nodes onto) existing IETF models. New nodes hang under /ietf-system:system (system-wide settings, IETF RFC 7317) and under /ietf-interfaces:interface (per-port settings, IETF RFC 8343), with the prefixes 'sys' and 'if'. Bridge-related Endpoint Data Encryption (EDE) pieces also reuse the 802.1Q bridge model.",
+      "zh": "23.1（YANG 框架）确立基本规则：数据模型遵循 YANG 编写指南（IETF RFC 6087），使用 IEEE 分配的 URN（统一资源名称）标识模块，并将对象组织成层级结构。关键在于，IEEE 的模块并非独立存在，而是*增补*（在既有模型上嫁接新节点）现有的 IETF 模型。新节点挂在 /ietf-system:system（系统级设置，IETF RFC 7317）和 /ietf-interfaces:interface（按端口设置，IETF RFC 8343）之下，前缀分别为 sys 和 if。与桥接相关的端点数据加密（EDE）部分也复用 802.1Q 桥接模型。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why augment instead of inventing fresh trees? A MACsec port is still an ordinary network interface — it has a name, a speed, octet counters. Reusing the standard IETF interface model means existing tools already understand most of the port, and MACsec adds only the security-specific leaves on top. A device may also expose the older SNMP MIB modules (Clause 13, Clause 22), but any one system is expected to be managed by either YANG/NETCONF or SNMP, not both at once.",
+      "zh": "为什么要增补而不是另起新树？一个 MACsec 端口仍然是普通网络接口，它有名称、速率、字节计数器。复用标准 IETF 接口模型意味着既有工具已能理解端口的大部分内容，MACsec 只需在其上添加安全相关的叶节点。设备也可暴露较旧的 SNMP MIB 模块（第 13、22 条），但任一系统应当只用 YANG/NETCONF 或 SNMP 之一管理，而非两者并用。"
+    },
+    {
+      "type": "prose",
+      "en": "23.2 defines the SecY model. A SecY (MAC Security Entity) is the per-port shim that actually encrypts and validates frames; it pairs with a PAE (Port Access Entity, from 802.1X) whose Key Agreement Entity (KaY) supplies keys. The model lives in two sub-trees: secy-system augments the system-wide pae-system (cipher-suite catalogue, system-wide access-control toggle), and secy augments the per-interface pae (the generation and verification controls, transmit/receive Secure Channels and Secure Associations, packet counters). 23.2 also explains the relationship to the IETF system model (23.2.1), the IETF interface model (23.2.2), the PAE model (23.2.3), and lists the modules that compose it (23.2.4). Notably the model deliberately omits the cryptographic keys themselves — those stay private to the device.",
+      "zh": "23.2 定义了 SecY 模型。SecY（MAC 安全实体）是每端口实际加密和校验帧的垫片；它与 PAE（端口访问实体，来自 802.1X）配对，后者的密钥协商实体（KaY）提供密钥。该模型分两棵子树：secy-system 增补系统级的 pae-system（密码套件目录、系统级访问控制开关），secy 增补每接口的 pae（生成与校验控制、收发安全通道和安全关联、数据包计数器）。23.2 还说明了与 IETF 系统模型（23.2.1）、IETF 接口模型（23.2.2）、PAE 模型（23.2.3）的关系，并列出组成它的模块（23.2.4）。值得注意的是，模型刻意省略了加密密钥本身，这些密钥仅留在设备内部。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">/ietf-system:system</text><rect x=\"10\" y=\"28\" width=\"200\" height=\"26\"/><text x=\"18\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">+ pae-system (802.1X)</text><rect x=\"30\" y=\"60\" width=\"200\" height=\"26\"/><text x=\"38\" y=\"77\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">+ secy-system (cipher-suites)</text><line x1=\"60\" y1=\"54\" x2=\"60\" y2=\"60\"/><text x=\"250\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">/ietf-interfaces:interface</text><rect x=\"250\" y=\"28\" width=\"200\" height=\"26\"/><text x=\"258\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">+ pae (port access)</text><rect x=\"270\" y=\"60\" width=\"180\" height=\"26\"/><text x=\"278\" y=\"77\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">+ secy (gen/verify)</text><rect x=\"270\" y=\"92\" width=\"180\" height=\"26\"/><text x=\"278\" y=\"109\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">+ pry (privacy)</text><line x1=\"300\" y1=\"54\" x2=\"300\" y2=\"60\"/><line x1=\"300\" y1=\"86\" x2=\"300\" y2=\"92\"/><text x=\"10\" y=\"150\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">IEEE modules graft (augment) onto IETF base models.</text><text x=\"10\" y=\"168\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">SecY and PrY each augment the same per-interface pae node.</text></svg>",
+      "caption": {
+        "en": "How the IEEE YANG sub-trees augment the IETF system and interface base models (after Clause 23 Figures 23-2 to 23-4).",
+        "zh": "IEEE YANG 子树如何增补 IETF 系统模型与接口基础模型（参照第 23 条图 23-2 至 23-4）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "23.4 defines the PrY model, the management view of MAC Privacy protection. A PrY (MAC Privacy protection entity) is the per-port shim that hides frame size, address, and timing patterns by wrapping user frames inside MPPDUs (MAC Privacy Protection Data Units) — either as individual Privacy Frames or multiplexed into Privacy Channels. The pry sub-tree augments the per-interface pae and exposes: reception/transmission privacy-protection toggles, a per-user-priority privacy-selection table (none / Privacy Frame / Express or Preemptable Channel), channel parameters (rate, frame size, fragmentation), peer MAC addresses, and rich counters. When the PrY is backed by a SecY in the same interface, addresses come automatically from MKA (MACsec Key Agreement) and are read-only here. 23.4.1–23.4.4 cover the relationships to the system, interface, and PAE/SecY models and list the composing modules.",
+      "zh": "23.4 定义了 PrY 模型，即 MAC 隐私保护的管理视图。PrY（MAC 隐私保护实体）是每端口垫片，通过把用户帧封装进 MPPDU（MAC 隐私保护数据单元）来隐藏帧大小、地址和时序特征——可作为单独的隐私帧，或复用进隐私通道。pry 子树增补每接口的 pae，暴露：接收/发送隐私保护开关、按用户优先级的 privacy-selection 表（无 / 隐私帧 / 快速通道或可抢占通道）、通道参数（速率、帧大小、分片）、对端 MAC 地址，以及丰富的计数器。当 PrY 由同一接口内的 SecY 支撑时，地址自动来自 MKA（MACsec 密钥协商）且在此为只读。23.4.1–23.4.4 讲述与系统、接口、PAE/SecY 模型的关系，并列出组成模块。"
+    },
+    {
+      "type": "prose",
+      "en": "23.6 explains interface stack models. A network interface is often a *stack* of shims (PAE, SecY, PrY, 802.3 PHY, link aggregation, LLDP). The model supports two styles: an *explicit* stack where each shim is its own interface tied together by higher-layer-if / lower-layer-if references, and an *augmented* stack where adjacent shims collapse into one interface for simpler configuration. The standard's worked examples show end stations, link aggregation, and LLDP instances using either the secure Controlled Port or the insecure Common Port. The choice matters operationally: migrating an explicit end-station stack to link aggregation requires tearing the interfaces down and rebuilding, whereas some starting layouts transition smoothly.",
+      "zh": "23.6 讲述接口栈模型。一个网络接口往往是若干垫片的*栈*（PAE、SecY、PrY、802.3 物理层、链路聚合、LLDP）。模型支持两种风格：*显式*栈中每个垫片是独立接口，通过 higher-layer-if / lower-layer-if 引用串联；*增补*栈中相邻垫片合并为一个接口以简化配置。标准给出的示例展示端站、链路聚合，以及使用安全受控端口或非安全公共端口的 LLDP 实例。这个选择在运维上很重要：把显式端站栈迁移到链路聚合需要拆除接口再重建，而某些初始布局则可平滑过渡。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TB\n  A[\"Interface A: top of stack\"] --> B[\"SecY shim: encrypt/validate\"]\n  B --> P[\"PrY shim: hide size/timing\"]\n  P --> E[\"802.3 PHY: on the wire\"]\n  A -. higher-layer-if .-> B\n  E -. lower-layer-if .-> P",
+      "zh": "flowchart TB\n  A[\"接口 A：栈顶\"] --> B[\"SecY 垫片：加密/校验\"]\n  B --> P[\"PrY 垫片：隐藏大小/时序\"]\n  P --> E[\"802.3 物理层：线路上\"]\n  A -. higher-layer-if .-> B\n  E -. lower-layer-if .-> P"
+    },
+    {
+      "type": "prose",
+      "en": "23.8 covers system models — how the per-port models assemble into a whole device. A system may bundle end-station, bridge, and routing components; each interface may run MACsec, MAC Privacy, or both. The standard groups interfaces by NID (Network Identity) so an operator can apply one configuration profile to all ports of a type. 23.8.1 maps the four EDE (Ethernet Data Encryption device) flavours onto 802.1Q bridge templates: EDE-M onto a VLAN-unaware MAC Bridge, EDE-CS onto a Provider Edge Bridge, and EDE-CC / EDE-SS onto Provider Edge Port models with C-VLAN or S-VLAN components respectively.",
+      "zh": "23.8 讲述系统模型——各端口模型如何组装成整台设备。一个系统可包含端站、桥接和路由组件；每个接口可运行 MACsec、MAC 隐私或两者。标准用 NID（网络身份）对接口分组，使运营商能将一份配置档应用到同类型的所有端口。23.8.1 把四种 EDE（以太网数据加密设备）形态映射到 802.1Q 桥接模板：EDE-M 对应 VLAN 不感知 MAC 桥，EDE-CS 对应运营商边缘桥，EDE-CC / EDE-SS 分别对应使用 C-VLAN 或 S-VLAN 组件的运营商边缘端口模型。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Security considerations come paired with each model — 23.3 (SecY), 23.5 (PrY), 23.7 (interface stacks), 23.9 (systems). The recurring lesson: writable (config true) nodes are sensitive because tampering can silently disable protection — e.g. flipping system-access-control off disables MACsec, shrinking validate-frames weakens checking, and changing privacy-selection lets an adversary distinguish flows again. 23.7.1 warns that Aggregation Ports under one Aggregator must share identical NID settings, or an attacker could route traffic through a weaker port. 23.9.1 notes an EDE-CC can remap the outer VLAN tag per privacy, but only when MACsec is actually operational. Read-only state can also leak privacy-relevant statistics to a remote observer.",
+      "zh": "每个模型都配有安全考量——23.3（SecY）、23.5（PrY）、23.7（接口栈）、23.9（系统）。反复出现的要点是：可写（config true）节点很敏感，因为篡改可悄然关闭保护——例如关掉 system-access-control 会禁用 MACsec，缩小 validate-frames 会削弱校验，改动 privacy-selection 会让对手重新区分数据流。23.7.1 警告同一聚合器下的聚合端口必须共享相同的 NID 设置，否则攻击者可让流量经过较弱端口。23.9.1 指出 EDE-CC 可按隐私需要重映射外层 VLAN 标签，但仅在 MACsec 确实运行时。只读状态也可能向远程观察者泄露与隐私相关的统计信息。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: schema trees, full modules, and the annexes (23.10, 23.11, B, D, G, H, I)",
+        "zh": "覆盖图：模式树、完整模块与各附录（23.10、23.11、B、D、G、H、I）"
+      },
+      "en": "23.10 (YANG module schema) presents each module as a compact tree diagram with notation: rw = read-write config, ro = read-only state, ? = optional, ! = presence container, * = list/leaf-list, [key] = list key. It draws the trees for ieee802-dot1ae-secy (23.10.1), ieee802-dot1ae-pry (23.10.2, including the pry-max-peers-exceeded notification), and ieee802-dot1x-eapol (23.10.3, just the eapol-group-address leaf). 23.11 (YANG modules) then prints the full normative module source: 23.11.1 ieee802-dot1ae-secy, 23.11.2 ieee802-dot1ae-pry, 23.11.3 ieee802-dot1x-eapol — each declaring yang-version 1.1, an IEEE namespace URN, imports, and descriptions. The modules are freely reproducible and also shipped as ASCII attachments. The annexes round out the standard. Annex B (informative) Bibliography lists supporting references — UML, IETF RFCs for NETCONF/SSH/EAP/YANG-guidelines, GCM, and the XPN recovery algorithm — none required to implement, only informational. Annex D (normative) is the PICS (Protocol Implementation Conformance Statement) proforma for an Ethernet Data Encryption device; this amendment changes D.5 (EDE type and common requirements — EDE-M/CS/CC/SS selection, the two red/black ports, SecY-per-port, optional PrY) and D.8 (EDE-CC configuration — how C-VLAN tags are relayed, including the optional privacy C-VID remapping). Annex G (informative) is retitled 'SecY Management and MIB revisions'. Annex H (normative) is a brand-new PICS proforma specifically for MAC Privacy protection: H.1–H.3 explain how to fill it in (status symbols M/O/O.n/X, conditional predicates), H.4 is implementation identification, H.5 lists the mandatory PrY capabilities (Private/Controlled ports, MPPDU encoding, per-priority privacy selection, unprotected/Privacy-Frame/Privacy-Channel transmission, default generation and reassembly algorithms, addressing rules), and H.6 the optional ones (reassembly from many peers, stream-based privacy selection). Annex I (informative) is a thorough discussion of privacy in bridged networks: personal versus shared devices (I.1), what adversaries want — who/where/what/with-whom (I.2), how normal bridge operation exposes flow-distinguishing fields (I.3), how security protocols and physical access interact (I.4), and the concrete privacy exposures including MAC-address fingerprinting (I.5), with per-standard notes promised in I.6.",
+      "zh": "23.10（YANG 模块模式）以紧凑树图呈现每个模块，记号为：rw = 可读写配置，ro = 只读状态，? = 可选，! = 存在容器，* = 列表/叶列表，[key] = 列表键。它绘制了 ieee802-dot1ae-secy（23.10.1）、ieee802-dot1ae-pry（23.10.2，含 pry-max-peers-exceeded 通知）和 ieee802-dot1x-eapol（23.10.3，仅 eapol-group-address 叶）的树。23.11（YANG 模块）随后给出完整的规范性模块源码：23.11.1 ieee802-dot1ae-secy、23.11.2 ieee802-dot1ae-pry、23.11.3 ieee802-dot1x-eapol——各自声明 yang-version 1.1、IEEE 命名空间 URN、import 与描述。这些模块可自由复制，并以 ASCII 附件形式随附。各附录补全了标准。附录 B（资料性）参考书目列出支撑性参考文献——UML、关于 NETCONF/SSH/EAP/YANG 指南的 IETF RFC、GCM 以及 XPN 恢复算法——均非实现所必需，仅供参考。附录 D（规范性）是以太网数据加密设备的 PICS（协议实现一致性声明）格式；本修正案修改了 D.5（EDE 类型与通用要求——EDE-M/CS/CC/SS 选择、红/黑两端口、每端口 SecY、可选 PrY）和 D.8（EDE-CC 配置——如何中继 C-VLAN 标签，含可选的隐私 C-VID 重映射）。附录 G（资料性）改名为“SecY 管理与 MIB 修订”。附录 H（规范性）是专为 MAC 隐私保护新增的 PICS 格式：H.1–H.3 说明如何填写（状态符号 M/O/O.n/X、条件谓词），H.4 是实现标识，H.5 列出强制的 PrY 能力（私有/受控端口、MPPDU 编码、按优先级的隐私选择、无保护/隐私帧/隐私通道发送、默认生成与重组算法、寻址规则），H.6 列出可选能力（多对端重组、基于流的隐私选择）。附录 I（资料性）深入讨论桥接网络中的隐私：个人设备与共享设备（I.1）、对手想要什么——谁/在哪/做什么/与谁（I.2）、正常桥接操作如何暴露区分流的字段（I.3）、安全协议与物理访问的相互作用（I.4），以及包括 MAC 地址指纹在内的具体隐私暴露（I.5），并在 I.6 承诺给出按标准分列的说明。",
+      "cite": {
+        "pdf_id": "8021AEdk-2023",
+        "pages": [
+          154,
+          155,
+          156,
+          157,
+          158,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          195,
+          196,
+          197,
+          198,
+          199
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Put together, this back half of the standard answers a practical question: once MACsec and MAC Privacy exist, how does an operator drive them safely and prove a product conforms? Clause 23's YANG models are the live control surface (augmenting standard IETF models, never exposing keys); Annexes D and H are the conformance checklists; Annex G points to the SecY MIB history; Annex B is the reading list; and Annex I explains the privacy threat landscape that motivated the whole MAC Privacy amendment in the first place.",
+      "zh": "综合来看，标准的后半部分回答了一个实际问题：MACsec 与 MAC 隐私存在之后，运营商如何安全地驾驭它们，并证明产品符合要求？第 23 条的 YANG 模型是实时控制面（增补标准 IETF 模型，绝不暴露密钥）；附录 D 与 H 是一致性核对清单；附录 G 指向 SecY MIB 的沿革；附录 B 是阅读清单；附录 I 阐释了最初推动整个 MAC 隐私修正案的隐私威胁全景。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        140,
+        141,
+        142,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153
+      ],
+      "note": "Clause 23 framework, SecY model (23.1-23.3), PrY model (23.4-23.5), interface stacks (23.6-23.7), system models (23.8-23.9)."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        154,
+        155,
+        156,
+        157,
+        158
+      ],
+      "note": "23.10 schema trees and 23.11 full YANG module source."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        195,
+        196,
+        197,
+        198,
+        199
+      ],
+      "note": "Annex B bibliography, Annex D and H PICS proformas, Annex G retitle, Annex I privacy considerations."
+    }
+  ],
+  "covers": [
+    "8021AEdk-2023:23.1",
+    "8021AEdk-2023:23.2",
+    "8021AEdk-2023:23.3",
+    "8021AEdk-2023:23.4",
+    "8021AEdk-2023:23.5",
+    "8021AEdk-2023:23.6",
+    "8021AEdk-2023:23.7",
+    "8021AEdk-2023:23.8",
+    "8021AEdk-2023:23.9",
+    "8021AEdk-2023:23.10",
+    "8021AEdk-2023:23.11",
+    "8021AEdk-2023:Annex_B",
+    "8021AEdk-2023:Annex_D",
+    "8021AEdk-2023:Annex_G",
+    "8021AEdk-2023:Annex_H",
+    "8021AEdk-2023:Annex_I"
+  ],
+  "track": "net-security"
+}

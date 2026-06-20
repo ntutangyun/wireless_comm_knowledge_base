@@ -1,0 +1,138 @@
+{
+  "id": "net-security-18",
+  "title": {
+    "en": "Secure Device Identity (802.1AR): Scope, Conformance, and How DevIDs Work",
+    "zh": "安全设备身份（802.1AR）：标准范围、合规要求，以及 DevID 的工作原理"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AR-2018 answers a deceptively simple question: when a device joins a network, how do you know it really is the device it claims to be? The answer is a DevID — a Secure Device Identifier. A DevID is a per-device name that is cryptographically bound to the hardware, so it cannot be cheaply copied onto a different box. There are two flavors. An IDevID (Initial Device Identifier) is installed by the manufacturer, is globally unique, and is stored so it cannot be modified. An LDevID (Locally Significant Device Identifier) is created later by a network administrator to carry local meaning, and it is bound to the device just as strongly. This lesson walks through Clause 1 (what the standard is for), Clause 5 (what it means to conform), and Clause 6 (how DevID secrets, certificates, chains, trust, and privacy fit together).",
+      "zh": "IEEE Std 802.1AR-2018 回答了一个看似简单的问题：当一台设备接入网络时，你如何确认它真的是它所声称的那台设备？答案就是 DevID——安全设备标识符（Secure Device Identifier）。DevID 是绑定到硬件的、每台设备唯一的名字，因此无法被廉价地复制到另一台设备上。它有两种形态：IDevID（初始设备标识符，Initial Device Identifier）由制造商安装，全球唯一，且以不可修改的方式存储；LDevID（本地有效设备标识符，Locally Significant Device Identifier）则由网络管理员稍后创建以承载本地含义，并以同样牢固的方式绑定到设备。本课依次讲解第 1 章（标准的用途）、第 5 章（合规的含义）以及第 6 章（DevID 的密钥、证书、证书链、信任模型与隐私如何组合在一起）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 1 sets the frame. The Scope (1.1) says the standard specifies unique per-device identifiers, the cryptographic binding of a device to those identifiers, the relationship between the initially installed identity and later locally significant ones, and interfaces for using DevIDs with existing and new provisioning and authentication protocols. The Purpose (1.2) is to give IEEE 802 devices a standard identifier that is cryptographically bound to the device plus a standard way to authenticate that identity, so device provisioning can be done securely. The Relationship to other standards (1.3) explains that DevID is meant to be useful across IEEE 802 networks and aims, where possible, for compatibility with the Trusted Platform Module (TPM) and with EAP-TLS (Extensible Authentication Protocol-Transport Layer Security); a manufacturer-installed IDevID can be used inside enrollment protocols such as IETF RFC 7030 (Enrollment over Secure Transport) that issue certificates from a Public Key Infrastructure (PKI).",
+      "zh": "第 1 章搭建了整体框架。范围（1.1）指出本标准规定了每台设备唯一的标识符、设备与这些标识符之间的密码学绑定、初始安装身份与后续本地有效身份之间的关系，以及在现有和新的配置与认证协议中使用 DevID 的接口。目的（1.2）是为 IEEE 802 设备提供一个与设备做密码学绑定的标准标识符，并提供一种认证该身份的标准机制，从而让设备配置可以安全地完成。与其他标准的关系（1.3）说明 DevID 旨在跨 IEEE 802 网络通用，并在可能时与可信平台模块（TPM，Trusted Platform Module）以及 EAP-TLS（可扩展认证协议-传输层安全，Extensible Authentication Protocol-Transport Layer Security）保持兼容；制造商预装的 IDevID 可用于诸如 IETF RFC 7030（基于安全传输的注册，Enrollment over Secure Transport）这类从公钥基础设施（PKI，Public Key Infrastructure）签发证书的注册协议中。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 defines conformance. A conformance claim means a device meets the standard's requirements for the use, format, secure storage, and management of DevIDs — but it explicitly does not promise the device is secure overall. The requirements terminology (5.1) is the usual IEEE convention: shall is mandatory, should is recommended, and may is a permitted choice; the PICS proforma in Annex A tracks every shall/should/may. The PICS itself (5.2) — Protocol Implementation Conformance Statement — is a checklist the supplier must complete to identify both the supplier and the implementation.",
+      "zh": "第 5 章定义了合规性。声明合规意味着设备满足本标准对 DevID 的使用、格式、安全存储和管理的要求——但它明确并不保证设备整体上是安全的。需求术语（5.1）采用 IEEE 惯例：shall（应当）表示强制要求，should（宜）表示推荐选择，may（可）表示被允许的选择；附录 A 中的 PICS 表格逐条记录了每一处 shall/should/may。PICS 本身（5.2）——协议实现一致性声明（Protocol Implementation Conformance Statement）——是供应商必须填写的检查表，用以标明供应商与具体实现。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Clause 5.3, 5.4, 5.5: what a conforming device must, should, and may do",
+        "zh": "覆盖地图——第 5.3、5.4、5.5 节：合规设备的强制、推荐与可选行为"
+      },
+      "en": "Required capabilities (5.3): a conforming device shall support one or more signature suites from Clause 9 with a DevID module that contains an IDevID for each suite, stores DevID secrets per 7.1, supports the mandatory service-interface operations of 7.2 a)–g), includes all Clause 8 fields in IDevID and intermediate certificates, puts an X.500 Distinguished Name (DN) in each IDevID certificate's subject field, and restricts any SNMP (Simple Network Management Protocol) access to SNMPv3 in privacy/authentication mode or SNMP over TLS. If the module generates random numbers it shall make them unpredictable enough for the required key strength. It shall NOT permit remote access to the module's signing operations, nor include any field marked prohibited (8.10). Optional capabilities (5.4): a device should support at least one LDevID and should include a unique device serialNumber in each IDevID subject; it may zeroize LDevID keys on delete, may use a deterministic or non-deterministic RNG (and if deterministic, should use an SP 800-90A DRBG), may support SNMP-based management via the DevID MIB, and may include a subjectAltName (with a HardwareModuleName). Supplier information (5.5): the supplier shall publish an RFC 3647 Certificate Policy (CP) and Certification Practices Statement (CPS), make trust-anchor information available as a self-signed RFC 5280 certificate, and disclose in the PICS how subject-name fields are parsed, how IDevID secrets are generated and installed, plans for handling CA or secret compromise, and how the module keeps DevID secrets confidential.",
+      "zh": "必需能力（5.3）：合规设备 shall 支持第 9 章中的一个或多个签名套件，其 DevID 模块需为每个套件包含一个 IDevID、按 7.1 存储 DevID 密钥、支持 7.2 a)–g) 的强制服务接口操作、在 IDevID 及中间证书中包含第 8 章要求的全部字段、在每个 IDevID 证书的 subject 字段中放入 X.500 可分辨名称（DN，Distinguished Name），并将任何 SNMP（简单网络管理协议，Simple Network Management Protocol）访问限制为带隐私/认证模式的 SNMPv3 或基于 TLS 的 SNMP。若模块生成随机数，则 shall 保证其不可预测且满足所需密钥强度。设备 shall NOT 允许远程访问模块的签名操作，也不得包含任何标记为禁止的字段（8.10）。可选能力（5.4）：设备 should 支持至少一个 LDevID，并 should 在每个 IDevID 的 subject 中包含唯一的 serialNumber；它 may 在删除时对 LDevID 密钥做归零化、may 使用确定性或非确定性 RNG（若为确定性则 should 采用 SP 800-90A 中的 DRBG）、may 通过 DevID MIB 支持基于 SNMP 的管理、may 包含 subjectAltName（内含 HardwareModuleName）。供应商信息（5.5）：供应商 shall 发布符合 RFC 3647 的证书策略（CP）与认证业务声明（CPS），以自签名的 RFC 5280 证书形式提供信任锚信息，并在 PICS 中披露 subject 名称字段如何被解析、IDevID 密钥如何生成与安装、应对 CA 或密钥泄露的计划，以及模块如何保持 DevID 密钥的机密性。",
+      "cite": {
+        "pdf_id": "8021AR-2018",
+        "pages": [
+          23,
+          24
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6 is the conceptual heart. It opens with DevID secrets (6.1): a DevID secret is simply the private key of the signature suite that backs the DevID. Creation (6.1.1) can happen two ways — the DevID module generates the key internally with its own random number generator, or the key is generated externally and installed. The standard warns that the quality of this secret directly determines the quality of every certificate built on it: weak randomness or sloppy external handling both compromise security, and any leftover copy of an externally generated key must be cleared. Insertion (6.1.2) is the delicate moment: the ability to insert LDevID secrets must be limited to trusted components that protect the secret's confidentiality and integrity in transit and that authenticate the generating system. Installing an IDevID into a module with no internal key generation is especially risky because there is no pre-existing secret to protect the channel — so internal generation is recommended.",
+      "zh": "第 6 章是概念核心。它以 DevID 密钥（6.1）开篇：DevID 密钥就是支撑该 DevID 的签名套件的私钥。创建（6.1.1）有两种方式——DevID 模块用自身的随机数生成器在内部生成密钥，或在外部生成后再安装进设备。标准提醒：该密钥的质量直接决定建立在其之上的每一张证书的质量——糟糕的随机性或草率的外部处理都会损害安全，且外部生成密钥的任何残留副本都必须被清除。插入（6.1.2）是最微妙的环节：插入 LDevID 密钥的能力必须限于可信组件，这些组件需在传输途中保护密钥的机密性与完整性，并对生成系统进行认证。向没有内部密钥生成能力的模块安装 IDevID 尤其危险，因为没有现成的密钥来保护通道——因此推荐采用内部生成。"
+    },
+    {
+      "type": "prose",
+      "en": "DevID certificates (6.2) wrap the public half of that key in a name. A DevID certificate is a subset of the X.509 v3 certificates profiled in RFC 5280. Each must be unique among the certificates a given CA (Certification Authority) issues, and the CA must itself be uniquely identified. Creation (6.2.1): if the device already holds its DevID secret, it can sign a Certificate Signing Request (CSR) proposing a subject name, and a Registration Authority (RA) or CA validates it, builds the certificate, and returns it for insertion. Alternatively an RA can pull the subject and public key straight from a certificate the device presents over TLS, with no prior CSR. Notably, the contents of a new certificate are not limited to what the device supplies — an RA can fold in supplier-provided and operator-provided information to grant explicit authorization. Validation (6.2.2): checking a DevID certificate confirms the device is what the certificate claims and that it holds the matching secret, using the standard RFC 5280 path-validation and signature checks; IDevIDs deliberately carry very long validity periods, and revocation (CRL) checking is allowed but not required of suppliers.",
+      "zh": "DevID 证书（6.2）用一个名字把该密钥的公钥部分包裹起来。DevID 证书是 RFC 5280 所规范的 X.509 v3 证书的一个子集。每张证书在某个 CA（证书颁发机构，Certification Authority）签发的证书中必须唯一，而该 CA 本身也必须被唯一标识。创建（6.2.1）：若设备已持有自己的 DevID 密钥，它可以签署一份提出 subject 名称的证书签名请求（CSR，Certificate Signing Request），由注册机构（RA，Registration Authority）或 CA 校验后构造证书并返回以供插入；另一种方式是 RA 直接从设备通过 TLS 出示的证书中提取 subject 与公钥，无需事先的 CSR。值得注意的是，新证书的内容并不局限于设备所提供的信息——RA 可以纳入供应商提供和操作者提供的信息，从而授予明确的授权。验证（6.2.2）：核验一张 DevID 证书可确认设备确实是证书所声称的对象，并持有匹配的密钥，使用的是标准的 RFC 5280 路径验证与签名校验；IDevID 有意采用很长的有效期，撤销（CRL）检查被允许但并不强制供应商提供。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 250\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"160\" y=\"10\" width=\"140\" height=\"34\" rx=\"4\"/><text x=\"230\" y=\"32\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Manufacturing CA</text><rect x=\"20\" y=\"100\" width=\"180\" height=\"140\" rx=\"6\"/><text x=\"110\" y=\"120\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">DevID Module</text><rect x=\"40\" y=\"132\" width=\"140\" height=\"26\" rx=\"3\"/><text x=\"110\" y=\"149\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">IDevID secret + cert</text><rect x=\"40\" y=\"172\" width=\"140\" height=\"26\" rx=\"3\" stroke-dasharray=\"4 3\"/><text x=\"110\" y=\"189\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">LDevID secret (opt.)</text><rect x=\"40\" y=\"206\" width=\"140\" height=\"26\" rx=\"3\" stroke-dasharray=\"4 3\"/><text x=\"110\" y=\"223\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">LDevID cert (opt.)</text><rect x=\"300\" y=\"160\" width=\"140\" height=\"34\" rx=\"4\" stroke-dasharray=\"4 3\"/><text x=\"370\" y=\"182\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Local CA (opt.)</text><line x1=\"200\" y1=\"44\" x2=\"120\" y2=\"100\"/><line x1=\"300\" y1=\"185\" x2=\"200\" y2=\"185\" stroke-dasharray=\"4 3\"/></svg>",
+      "caption": {
+        "en": "The DevID trust hierarchy (Clause 6.4, Figure 6-1): a Manufacturing CA signs the IDevID baked into the module; an optional Local CA later signs LDevIDs. This standard places no requirement on PKI depth and assumes no global trust anchor.",
+        "zh": "DevID 信任层级（第 6.4 节，图 6-1）：制造 CA 签发烧录进模块的 IDevID；可选的本地 CA 之后签发 LDevID。本标准对 PKI 层级深度不作要求，并假设不存在全局信任锚。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "For validation to work, the verifier needs to reach a trust anchor — the self-signed root it already trusts. DevID certificate chains (6.3) handle this: the DevID module needs to include the entire certificate chain for each DevID up to that trust anchor (including the self-signed root is recommended), so the chain can be presented to an authenticator. In a shallow hierarchy where the trust anchor signed the DevID directly, no explicit chain need ship on the device. The supplier is responsible for making the IDevID trust-anchor information available in a way customer administrators can conveniently obtain and trust.",
+      "zh": "要让验证成立，验证方必须能够回溯到一个信任锚——即它本就信任的自签名根。DevID 证书链（6.3）解决了这一点：DevID 模块需要为每个 DevID 包含直到该信任锚的完整证书链（推荐连自签名根一并包含），以便把证书链出示给认证方。在信任锚直接签发了 DevID 的浅层级中，设备上无需携带显式的证书链。供应商有责任以客户管理员能够方便获取并信任的方式提供 IDevID 信任锚信息。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Clause 6.4 Trust Model: the three risks and their mitigations",
+        "zh": "覆盖地图——第 6.4 节信任模型：三类风险及其缓解"
+      },
+      "en": "The DevID Trust Model (6.4) describes who signs what. IDevID certificates are typically issued by a manufacturer's CA — though the manufacturer may run only an RA and rely on a third-party or supplier CA — and that CA is usually part of a larger hierarchy of unspecified depth, with no global trust anchor. Using an LDevID implies a local CA, which may be a full PKI or a single low-cost CA. Solutions validate DevIDs against a configurable trust-anchor store the administrator can edit. The clause names three risks: (a) the supplier's signing credentials are compromised (private key disclosed, or a CA tricked into signing for an attacker) — letting an attacker forge an IDevID; (b) the trust-anchor store gets incorrect entries (injected at the supplier or the customer misdirected to a fake list); and (c) a device's DevID secret is disclosed — letting an attacker clone the device and spoof it even under a different subject name. Mitigations: customers can install an LDevID to limit pre-deployment exposure; suppliers treat credential compromise like any high-priority vulnerability; administrators can edit the trust-anchor store, examine the CP/PICS before trusting a supplier, and validate device types and serial numbers against expected shipments; and a one-time authorization tied to LDevID provisioning that records authorized public keys can block a clone from rejoining.",
+      "zh": "DevID 信任模型（6.4）描述了由谁签发什么。IDevID 证书通常由制造商的 CA 签发——制造商也可能只运营 RA 而依赖第三方或供应商的 CA——该 CA 通常属于一个深度不限的更大层级，且不存在全局信任锚。使用 LDevID 意味着存在本地 CA，它可以是完整的 PKI，也可以是单一的低成本 CA。各类解决方案依据管理员可编辑的、可配置的信任锚库来验证 DevID。本节列出三类风险：(a) 供应商签名凭据被泄露（私钥泄露，或某 CA 被诱骗为攻击者签发证书）——使攻击者得以伪造 IDevID；(b) 信任锚库被注入错误条目（在供应商处被注入，或客户被误导到伪造的列表）；(c) 设备的 DevID 密钥被泄露——使攻击者得以克隆设备并冒充它，即便使用不同的 subject 名称。缓解措施包括：客户可安装 LDevID 以限制部署前的暴露；供应商把凭据泄露当作高优先级漏洞处理；管理员可编辑信任锚库、在信任某供应商前审阅其 CP/PICS，并将设备型号与序列号与预期到货清单核对；此外，与 LDevID 配置绑定、记录已授权公钥的一次性授权机制可阻止克隆设备重新入网。",
+      "cite": {
+        "pdf_id": "8021AR-2018",
+        "pages": [
+          29,
+          30
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Finally, privacy considerations (6.5) acknowledge a tension: a fixed per-device identifier is exactly the kind of thing that can be used to track a personal device and its owner. The standard reduces this by encouraging selective, careful use of DevIDs — especially LDevIDs. For example, the TEAP authentication protocol (RFC 7170) lets a device delay revealing its identity until a TLS tunnel is built and the network has authenticated itself, so a device joining many networks need not expose its presence on the others to eavesdroppers. Privacy also requires attention to commonality between certificate fields: if many LDevIDs share one secret (perhaps the IDevID secret), the shared subjectPublicKeyInfo effectively fingerprints the device. The Clause 7 operations let an administrator selectively enable or disable IDevIDs and LDevIDs, and a device management agent can restrict remote access to particular DevIDs based on who is asking.",
+      "zh": "最后，隐私考量（6.5）承认了一种张力：固定的、每台设备唯一的标识符，恰恰是可用于追踪个人设备及其所有者的东西。标准通过鼓励有选择地、审慎地使用 DevID——尤其是 LDevID——来降低这一风险。例如，TEAP 认证协议（RFC 7170）允许设备推迟到 TLS 隧道建立、且网络已完成自我认证之后再透露身份，这样一台接入多个网络的设备就无需向窃听者暴露它在其他网络上的存在。隐私还要求关注证书字段之间的共性：若许多 LDevID 共用一个密钥（可能就是 IDevID 密钥），那么共享的 subjectPublicKeyInfo 实际上会给设备留下指纹。第 7 章的操作允许管理员有选择地启用或禁用 IDevID 与 LDevID，设备上的管理代理还可根据请求者的身份，将远程访问限制在特定的 DevID 上。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: think of an IDevID as a tamper-proof factory birth certificate (manufacturer-signed, globally unique, very long-lived) and an LDevID as a locally issued work badge (administrator-signed, carries local authorization, revocable). Both prove possession of a private key bound to the hardware — the difference is who vouches for the name and what the name means.",
+      "zh": "记忆模型：把 IDevID 想成一张防篡改的出厂出生证明（由制造商签发、全球唯一、有效期极长），把 LDevID 想成一张本地签发的工作证（由管理员签发、承载本地授权、可撤销）。两者都证明持有一把绑定到硬件的私钥——区别在于由谁为这个名字背书，以及这个名字意味着什么。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AR-2018",
+      "pages": [
+        15
+      ],
+      "note": "Clause 1 — 1.1 Scope, 1.2 Purpose, 1.3 Relationship to other standards"
+    },
+    {
+      "pdf_id": "8021AR-2018",
+      "pages": [
+        23,
+        24
+      ],
+      "note": "Clause 5 — 5.1 terminology, 5.2 PICS, 5.3 required, 5.4 optional, 5.5 supplier info"
+    },
+    {
+      "pdf_id": "8021AR-2018",
+      "pages": [
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "note": "Clause 6 — 6.1 secrets, 6.2 certificates, 6.3 chains, 6.4 trust model, 6.5 privacy"
+    }
+  ],
+  "covers": [
+    "8021AR-2018:1.1",
+    "8021AR-2018:1.2",
+    "8021AR-2018:1.3",
+    "8021AR-2018:5.1",
+    "8021AR-2018:5.2",
+    "8021AR-2018:5.3",
+    "8021AR-2018:5.4",
+    "8021AR-2018:5.5",
+    "8021AR-2018:6.1.1",
+    "8021AR-2018:6.1.2",
+    "8021AR-2018:6.2.1",
+    "8021AR-2018:6.2.2",
+    "8021AR-2018:6.3",
+    "8021AR-2018:6.4",
+    "8021AR-2018:6.5"
+  ],
+  "track": "net-security"
+}

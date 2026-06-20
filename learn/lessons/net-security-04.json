@@ -1,0 +1,185 @@
+{
+  "id": "net-security-04",
+  "title": {
+    "en": "Where 802.1X Lives: Access-Control Deployments and the EAP Handshake (PACP)",
+    "zh": "802.1X 的落地之处：访问控制部署场景与 EAP 握手（PACP）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1X-2020 is the standard for Port-based Network Access Control (PNAC) — the rule that says \"a network port stays closed to your data until you prove who you are.\" This lesson covers two halves of the standard. Clause 7 is the gallery of deployment scenarios: it shows the same access-control machinery wearing seven different costumes, from a desktop on a locked-down wire to encrypted links spanning a service provider's network. Clause 8 then drills into the actual conversation that grants access — the Port Access Control Protocol (PACP), which drives an EAP (Extensible Authentication Protocol) exchange between the two ends. By the end you should be able to point at any of these clauses and say what problem it solves.",
+      "zh": "IEEE Std 802.1X-2020 是基于端口的网络访问控制（PNAC，Port-based Network Access Control）标准，核心规则是：在你证明身份之前，网络端口对你的数据保持关闭。本课覆盖该标准的两大部分。Clause 7 是部署场景的画廊：它展示同一套访问控制机制如何穿上七套不同的外衣，从锁定线缆上的台式机，到跨越运营商网络的加密链路。Clause 8 则深入真正授予访问权的那段对话——端口访问控制协议（PACP，Port Access Control Protocol），它在两端之间驱动一次 EAP（可扩展认证协议，Extensible Authentication Protocol）交换。学完后，你应能指着其中任意一节，说出它解决的是什么问题。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"55\" width=\"95\" height=\"40\" rx=\"4\"/><text x=\"57\" y=\"73\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Supplicant</text><text x=\"57\" y=\"87\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(Host PAE)</text><rect x=\"180\" y=\"55\" width=\"100\" height=\"40\" rx=\"4\"/><text x=\"230\" y=\"73\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Authenticator</text><text x=\"230\" y=\"87\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(port guard)</text><rect x=\"355\" y=\"55\" width=\"95\" height=\"40\" rx=\"4\"/><text x=\"402\" y=\"73\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Auth Server</text><text x=\"402\" y=\"87\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(AAA/RADIUS)</text><line x1=\"105\" y1=\"75\" x2=\"180\" y2=\"75\"/><text x=\"142\" y=\"68\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">EAPOL</text><line x1=\"280\" y1=\"75\" x2=\"355\" y2=\"75\" stroke-dasharray=\"4 3\"/><text x=\"317\" y=\"68\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">EAP-in-AAA</text><line x1=\"180\" y1=\"110\" x2=\"280\" y2=\"110\"/><text x=\"230\" y=\"123\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Controlled Port (data, once authd)</text><line x1=\"180\" y1=\"125\" x2=\"280\" y2=\"125\" stroke-dasharray=\"2 2\"/></svg>",
+      "caption": {
+        "en": "The three roles. The Supplicant is the device asking for access (running a Supplicant PAE — Port Access Entity); the Authenticator guards the port (Authenticator PAE); the Authentication Server (via a AAA protocol such as RADIUS) checks credentials. Each port has an Uncontrolled Port that always passes authentication traffic and a Controlled Port that opens for data only after success. Every scenario mandates mutual authentication. The Supplicant talks EAPOL (EAP over LAN) to the Authenticator, which relays EAP to the server (\"pass-through\").",
+        "zh": "三个角色。请求方（Supplicant）是申请访问的设备（运行请求方 PAE——端口访问实体，Port Access Entity）；认证方（Authenticator）守护端口（认证方 PAE）；认证服务器（通过 RADIUS 等 AAA 协议）核对凭据。每个端口有始终放行认证流量的非受控端口（Uncontrolled Port），以及成功后才为数据开放的受控端口（Controlled Port）。所有场景都强制双向认证。请求方通过 EAPOL（EAP over LAN）与认证方对话，认证方再把 EAP 透传给服务器。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 walks through deployments in order of growing complexity. The simplest (7.1) is host access over a physically secure LAN: one PC on a wire you can verify by eye, where the goal is stopping theft of service. The same port can also offer limited connectivity to unauthenticated systems (7.1.3) — for example using an 'Unauthenticated VLAN' or a selective relay that only forwards harmless frames like Wake-on-LAN. Scenario 7.2 flips the emphasis to infrastructure links between similar systems (bridges, routers) where the worry is miswiring, not malice, and an interruption is unacceptable — so MKA (the MACsec Key Agreement protocol) lets two peers re-confirm each other locally without reaching a central server.",
+      "zh": "Clause 7 按复杂度递增逐一讲解部署。最简单的（7.1）是物理安全 LAN 上的主机访问：一台 PC 接在你可以肉眼核实的线缆上，目标是阻止盗用服务。同一端口还能为未认证系统提供受限连通（7.1.3）——例如使用“未认证 VLAN”，或仅转发 Wake-on-LAN 等无害帧的选择性中继（selective relay）。场景 7.2 把重点转向相似系统（网桥、路由器）之间的基础设施链路，这里担心的是接线错误而非恶意，且中断不可接受——因此 MKA（MACsec 密钥协商协议，MACsec Key Agreement）让两个对等体在本地相互确认，无需联系中央服务器。"
+    },
+    {
+      "type": "prose",
+      "en": "The next scenarios add MACsec (Media Access Control Security, IEEE 802.1AE), which encrypts the link itself. With MACsec on a point-to-point LAN (7.3), an attacker can no longer quietly splice in extra equipment. MACsec also secures infrastructure links (7.4), where peers often can't tell in advance which side should be Supplicant and which Authenticator — so MKA settles it. On a shared multi-access LAN (7.5) the access point spins up a separate virtual port (each with its own SecY, the MACsec entity) per host, keeping each host's traffic cryptographically separate and distinguishable by its MAC Address / SCI. Group host access (7.6) instead hands every host a shared group CAK (Connectivity Association Key) so that, say, a PC and an IP phone on one desk can talk directly. Finally (7.7), MACsec can ride across a Provider Bridged Network (PBN) so an enterprise secures its own traffic independently of the provider.",
+      "zh": "接下来的场景引入 MACsec（媒体访问控制安全，IEEE 802.1AE），它对链路本身加密。在点对点 LAN 上启用 MACsec（7.3）后，攻击者再也无法悄悄接入额外设备。MACsec 也用于保护基础设施链路（7.4），此时对等体往往事先无法判断哪一方应当作请求方、哪一方作认证方——于是由 MKA 来裁定。在共享的多址 LAN 上（7.5），接入点为每台主机创建一个独立的虚拟端口（各自带有一个 SecY，即 MACsec 实体），通过 MAC 地址 / SCI 把各主机流量在密码学上分离并区分开来。组主机访问（7.6）则给每台主机分发一个共享的组 CAK（连通关联密钥，Connectivity Association Key），让同一办公桌上的 PC 与 IP 电话可以直接通信。最后（7.7），MACsec 可跨越运营商桥接网络（PBN，Provider Bridged Network），使企业独立于运营商保护自身流量。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental sort for Clause 7: 7.1/7.2 trust the physical wire; 7.3–7.7 don't, so they add MACsec encryption. Within the MACsec group, 7.3/7.4 are point-to-point (one peer), 7.5 is one access point fanning out to many isolated hosts, 7.6 lets the hosts also talk to each other via a shared key, and 7.7 stretches the whole thing across someone else's provider network.",
+      "zh": "Clause 7 的一个便捷记忆法：7.1/7.2 信任物理线缆；7.3–7.7 不信任，于是加上 MACsec 加密。在 MACsec 这组里，7.3/7.4 是点对点（单一对等体），7.5 是一个接入点向多台彼此隔离的主机分发，7.6 让主机之间也能通过共享密钥互通，7.7 则把整套机制延伸到他人的运营商网络之上。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8 turns to the handshake. PACP (Port Access Control Protocol) is the lightweight controller in each PAE: it doesn't understand the contents of the authentication — it just starts an EAP attempt, retries the opening message if it gets lost, schedules periodic reauthentication, and can abort. All the real cryptographic back-and-forth (8.1) is done by the higher layer above PACP, which on the Supplicant side is plain EAP and on the Authenticator side is EAP plus AAA. PACP carries everything in EAPOL (EAP over LAN) frames: EAPOL-Start (Supplicant asks to begin), EAPOL-EAP (an EAP message in transit), and EAPOL-Logoff (Supplicant signals it's done). The example exchange (8.2) shows an authenticator-initiated EAP-TLS run, with the Authenticator transparently 'passing through' each EAP message to the Authentication Server.",
+      "zh": "Clause 8 转向握手本身。PACP（端口访问控制协议）是每个 PAE 中的轻量控制器：它并不理解认证内容——它只是发起一次 EAP 尝试、在开场消息丢失时重发、安排周期性重认证，并可中止。所有真正的密码学往返（8.1）都由 PACP 之上的高层完成：请求方一侧是纯 EAP，认证方一侧是 EAP 加 AAA。PACP 用 EAPOL（EAP over LAN）帧承载一切：EAPOL-Start（请求方请求开始）、EAPOL-EAP（传输中的一条 EAP 消息）、EAPOL-Logoff（请求方表示结束）。示例交换（8.2）展示了一次由认证方发起的 EAP-TLS 流程，认证方把每条 EAP 消息透明地“透传”给认证服务器。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as Supplicant PAE\n  participant A as Authenticator PAE\n  participant AS as Auth Server\n  S->>A: EAPOL-Start\n  A->>S: EAPOL-EAP (EAP-Req/Identity)\n  S->>A: EAPOL-EAP (EAP-Resp/Identity)\n  A-->>AS: EAP-Resp (via AAA)\n  AS-->>A: EAP-Req (TLS)\n  A->>S: EAPOL-EAP (EAP-Req/TLS)\n  S->>A: EAPOL-EAP (EAP-Resp/TLS)\n  A-->>AS: pass-through\n  AS-->>A: EAP-Success\n  A->>S: EAPOL-EAP (EAP-Success)\n  Note over S,A: Controlled Port opens",
+      "zh": "sequenceDiagram\n  participant S as 请求方 PAE\n  participant A as 认证方 PAE\n  participant AS as 认证服务器\n  S->>A: EAPOL-Start\n  A->>S: EAPOL-EAP (EAP-请求/身份)\n  S->>A: EAPOL-EAP (EAP-响应/身份)\n  A-->>AS: EAP-响应 (经 AAA)\n  AS-->>A: EAP-请求 (TLS)\n  A->>S: EAPOL-EAP (EAP-请求/TLS)\n  S->>A: EAPOL-EAP (EAP-响应/TLS)\n  A-->>AS: 透传\n  AS-->>A: EAP-成功\n  A->>S: EAPOL-EAP (EAP-成功)\n  Note over S,A: 受控端口开放"
+    },
+    {
+      "type": "prose",
+      "en": "PACP is specified as a pair of state machines whose behavior is defined entirely by a small set of interface signals. The higher-layer interface (8.3) is how PACP talks to EAP: PACP raises eapStart / eapStop, and EAP answers with exactly one of eapSuccess, eapTimeout, or eapFail (plus eapResults, and the message-passing eapRxMsg / eapTxMsg). The client interface (8.4) is how PACP talks to the PAE's Logon Process, the entity that makes the actual access decision: signals like enabled, authenticate (request), authenticated (granted), and failed. The EAPOL interface (8.5) connects PACP to frame transmit/receive: portEnabled, rxEapolStart, rxEapolLogoff, and the txEapolStart() / txEapolLogoff() procedures. A neat security touch — once MACsec/MKA secures the link, a received EAPOL-Logoff may be discarded so it can't be abused for denial of service.",
+      "zh": "PACP 被规定为一对状态机，其行为完全由一小组接口信号定义。高层接口（8.3）是 PACP 与 EAP 对话的方式：PACP 置位 eapStart / eapStop，EAP 则恰好返回 eapSuccess、eapTimeout、eapFail 三者之一（外加 eapResults，以及消息传递用的 eapRxMsg / eapTxMsg）。客户端接口（8.4）是 PACP 与 PAE 的登录进程（Logon Process，做出实际访问决定的实体）对话的方式：包括 enabled、authenticate（请求）、authenticated（已授予）、failed 等信号。EAPOL 接口（8.5）把 PACP 连到帧的收发：portEnabled、rxEapolStart、rxEapolLogoff，以及 txEapolStart() / txEapolLogoff() 过程。一个巧妙的安全设计——一旦 MACsec/MKA 已保护链路，收到的 EAPOL-Logoff 可被丢弃，防止其被滥用于拒绝服务攻击。"
+    },
+    {
+      "type": "prose",
+      "en": "Both state machines share a clear lifecycle: INITIALIZE → UNAUTHENTICATED → AUTHENTICATING → AUTHENTICATED, with a HELD detour on failure. Timers (8.6) govern the rhythm: the Supplicant's heldWhile (default heldPeriod 60 s) is a cool-off after a failure; the Authenticator's quietWhile plays the same role, and reAuthWhen (default reAuthPeriod 3600 s, one hour) triggers periodic reauthentication. A retryCount versus retryMax (default 2) decides when to give up and drop into HELD. The Supplicant machine (8.7) transmits EAPOL-Start and tracks retries; the Authenticator machine (8.9) additionally honors reAuthEnabled and reacts to received EAPOL-Start/Logoff. Both define diagnostic counters — Supplicant counters (8.8) and Authenticator counters (8.10) — that simply tally how often each state transition fires (entering AUTHENTICATING, timeouts, logoffs, successes, fails).",
+      "zh": "两个状态机共享清晰的生命周期：INITIALIZE → UNAUTHENTICATED（未认证）→ AUTHENTICATING（认证中）→ AUTHENTICATED（已认证），失败时绕行到 HELD（保持）。计时器（8.6）掌控节奏：请求方的 heldWhile（默认 heldPeriod 60 秒）是失败后的冷却期；认证方的 quietWhile 起同样作用，而 reAuthWhen（默认 reAuthPeriod 3600 秒，即一小时）触发周期性重认证。retryCount 与 retryMax（默认 2）的对比决定何时放弃并落入 HELD。请求方状态机（8.7）发送 EAPOL-Start 并跟踪重试次数；认证方状态机（8.9）还额外遵从 reAuthEnabled，并对收到的 EAPOL-Start/Logoff 作出反应。两者都定义了诊断计数器——请求方计数器（8.8）与认证方计数器（8.10）——只是统计各状态转换发生的次数（进入 AUTHENTICATING、超时、登出、成功、失败）。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> UNAUTHENTICATED\n  UNAUTHENTICATED --> AUTHENTICATING: authenticate\n  AUTHENTICATING --> AUTHENTICATED: eapSuccess\n  AUTHENTICATING --> AUTHENTICATING: timeout, retry<max\n  AUTHENTICATING --> HELD: eapFail / retry>=max\n  HELD --> UNAUTHENTICATED: heldWhile==0\n  AUTHENTICATED --> AUTHENTICATING: reauth\n  AUTHENTICATED --> UNAUTHENTICATED: logoff",
+      "zh": "stateDiagram-v2\n  [*] --> 未认证\n  未认证 --> 认证中: authenticate\n  认证中 --> 已认证: eapSuccess\n  认证中 --> 认证中: 超时, 重试<上限\n  认证中 --> 保持: eapFail / 重试>=上限\n  保持 --> 未认证: heldWhile==0\n  已认证 --> 认证中: 重认证\n  已认证 --> 未认证: 登出"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8 closes with EAP method requirements (8.11). EAP is just a framework — the actual method (EAP-TLS, TEAP, and so on) does the cryptography — so the standard sets a floor: every method used by a PAE must support mutual authentication. When a method is combined with MKA (8.11.1) it must additionally support key derivation (strength equivalent to at least 128 bits), generate a Master Session Key (MSK) of at least 64 octets, and produce a Session-Id; it should also offer integrity, replay, and dictionary-attack protection, cryptographic binding, session independence, fragmentation, and ciphersuite negotiation. And for integration with IEEE 802.1AR Secure Device Identifiers (8.11.2), an implementation must use EAP-TLS and support TLS 1.2.",
+      "zh": "Clause 8 以 EAP 方法要求（8.11）收尾。EAP 只是一个框架——真正的方法（EAP-TLS、TEAP 等）才做密码学运算——因此标准设定了底线：PAE 使用的每种方法都必须支持双向认证。当方法与 MKA 结合使用时（8.11.1），还必须支持密钥派生（强度至少等价于 128 位）、生成至少 64 字节的主会话密钥（MSK，Master Session Key），并产生 Session-Id；同时应提供完整性、防重放与抗字典攻击保护、密码学绑定、会话独立性、分片以及密码套件协商。而为了与 IEEE 802.1AR 安全设备标识符集成（8.11.2），实现必须使用 EAP-TLS 并支持 TLS 1.2。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause numbered (Clause 7 deployments and Clause 8 PACP/EAP)",
+        "zh": "覆盖地图：逐节编号（Clause 7 部署与 Clause 8 PACP/EAP）"
+      },
+      "en": "Clause 7 — deployment applications (pp. 51–65). 7.1 Host access with a physically secure LAN: 7.1.1 assumptions/requirements (single system, visually verifiable wire, anti-theft-of-service); 7.1.2 system configuration (Supplicant + Authenticator PAEs, EAPOL announcements, optional MKA/CAK caching for roaming); 7.1.3 connectivity to unauthenticated systems (Unauthenticated VLAN via PVID/static entries, or selective relay of a safe subset such as Wake-on-LAN). 7.2 Infrastructure with a physically secure LAN: 7.2.1 (miswiring not malice; uninterruptible; local config) and 7.2.2 (PAE implements MKA, may skip PACP). 7.3 Host access with MACsec, point-to-point: 7.3.1 (extends 7.1.1 with cryptographic keys, mission-critical continuity), 7.3.2 (Supplicant/Authenticator over SecY), 7.3.3 (reuse 7.1.3 methods, recommend 7.5.3's layout). 7.4 MACsec for infrastructure LANs: 7.4.1 (peers can't pre-assign roles), 7.4.2 (Figure 7-10), 7.4.3 (unauthenticated connectivity undesirable; staged MACsec deployment). 7.5 Host access with MACsec, multi-access LAN: 7.5.1 (one AP, independent secured links per host), 7.5.2 (Figure 7-12), 7.5.3 (separate Bridge Port for unsecured connectivity; SCI distinguishes virtual ports). 7.6 Group host access: 7.6.1 (stations talk directly + via AP; group CAK from AP key server), 7.6.2 (group CAK distributed, MKPDUs direct, survives AP power-down). 7.7 Virtual shared-media infrastructure across a PBN: 7.7.1 (provider untrusted, enterprise secures across/to PBN), 7.7.2 (dual SecYs in the Customer Bridge Port, pre-shared Group CAK common). Clause 8 — PACP & EAP (pp. 66–77). 8.1 PACP overview (initiate/retry/reauth/abort; EAPOL-Start/EAP/Logoff; Logon Process; DoS-resistant logoff handling). 8.2 example EAP-TLS pass-through exchange (authenticator- and supplicant-initiated). 8.3 higher-layer interface (eapStart/eapStop, eapSuccess/eapTimeout/eapFail, eapResults, eapRxMsg/eapTxMsg). 8.4 PAE client interface (enabled, authenticate, authenticated, results, failed → Logon Process). 8.5 EAPOL transmit/receive (portEnabled, rxEapolStart, rxEapolLogoff, txEapolStart()/txEapolLogoff()). 8.6 timers (Supplicant heldWhile/heldPeriod 60 s; Authenticator quietWhile, reAuthWhen/reAuthPeriod 3600 s). 8.7 Supplicant PACP state machine + retryCount/retryMax (default 2). 8.8 Supplicant counters (enters/timeouts/logoffs/fails/successes). 8.9 Authenticator PACP state machine + reAuthEnabled. 8.10 Authenticator counters. 8.11 EAP methods: 8.11.1 MKA requirements (mutual auth, key derivation ≥128-bit-equivalent, MSK ≥64 octets, Session-Id, plus integrity/replay/dictionary/binding/independence/fragmentation/ciphersuite-negotiation), 8.11.2 802.1AR integration mandates EAP-TLS with TLS 1.2.",
+      "zh": "Clause 7——部署应用（第 51–65 页）。7.1 物理安全 LAN 上的主机访问：7.1.1 假设/要求（单系统、可肉眼核实的线缆、防盗用服务）；7.1.2 系统配置（请求方 + 认证方 PAE、EAPOL 通告、可选 MKA/CAK 缓存以支持漫游）；7.1.3 对未认证系统的连通（经 PVID/静态条目的未认证 VLAN，或对 Wake-on-LAN 等安全子集的选择性中继）。7.2 物理安全 LAN 上的基础设施：7.2.1（担心接线错误而非恶意；不可中断；本地配置）与 7.2.2（PAE 实现 MKA，可不实现 PACP）。7.3 MACsec 点对点主机访问：7.3.1（在 7.1.1 基础上加密码密钥、关键业务连续性）、7.3.2（经 SecY 的请求方/认证方）、7.3.3（复用 7.1.3 方法，推荐 7.5.3 布局）。7.4 用于基础设施 LAN 的 MACsec：7.4.1（对等体无法预先分配角色）、7.4.2（图 7-10）、7.4.3（不希望有未认证连通；分阶段部署 MACsec）。7.5 MACsec 多址 LAN 主机访问：7.5.1（一个接入点，对每台主机独立加密链路）、7.5.2（图 7-12）、7.5.3（用单独网桥端口提供非加密连通；SCI 区分虚拟端口）。7.6 组主机访问：7.6.1（站点间直接通信 + 经接入点；组 CAK 来自接入点密钥服务器）、7.6.2（分发组 CAK 后直接交换 MKPDU，接入点断电仍可工作）。7.7 跨 PBN 的虚拟共享媒体基础设施：7.7.1（运营商不可信，企业跨 PBN/到 PBN 自行保护）、7.7.2（客户网桥端口内的双 SecY，常用预共享组 CAK）。Clause 8——PACP 与 EAP（第 66–77 页）。8.1 PACP 概览（发起/重发/重认证/中止；EAPOL-Start/EAP/Logoff；登录进程；抗 DoS 的登出处理）。8.2 EAP-TLS 透传交换示例（认证方发起与请求方发起）。8.3 高层接口（eapStart/eapStop、eapSuccess/eapTimeout/eapFail、eapResults、eapRxMsg/eapTxMsg）。8.4 PAE 客户端接口（enabled、authenticate、authenticated、results、failed → 登录进程）。8.5 EAPOL 收发（portEnabled、rxEapolStart、rxEapolLogoff、txEapolStart()/txEapolLogoff()）。8.6 计时器（请求方 heldWhile/heldPeriod 60 秒；认证方 quietWhile、reAuthWhen/reAuthPeriod 3600 秒）。8.7 请求方 PACP 状态机 + retryCount/retryMax（默认 2）。8.8 请求方计数器（进入/超时/登出/失败/成功）。8.9 认证方 PACP 状态机 + reAuthEnabled。8.10 认证方计数器。8.11 EAP 方法：8.11.1 MKA 要求（双向认证、密钥派生不低于 128 位等价强度、MSK ≥64 字节、Session-Id，外加完整性/防重放/抗字典/密码学绑定/会话独立/分片/密码套件协商），8.11.2 与 802.1AR 集成要求 EAP-TLS 且支持 TLS 1.2。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65
+      ],
+      "note": "Clause 7 deployment applications 7.1-7.7, including all leaf subclauses (assumptions/requirements, system configuration, connectivity to unauthenticated systems)."
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77
+      ],
+      "note": "Clause 8 Authentication using EAP: PACP overview/examples, higher-layer & client & EAPOL interfaces, timers, Supplicant and Authenticator state machines and counters, EAP method requirements."
+    }
+  ],
+  "covers": [
+    "8021X-2020:7.1.1",
+    "8021X-2020:7.1.2",
+    "8021X-2020:7.1.3",
+    "8021X-2020:7.2.1",
+    "8021X-2020:7.2.2",
+    "8021X-2020:7.3.1",
+    "8021X-2020:7.3.2",
+    "8021X-2020:7.3.3",
+    "8021X-2020:7.4.1",
+    "8021X-2020:7.4.2",
+    "8021X-2020:7.4.3",
+    "8021X-2020:7.5.1",
+    "8021X-2020:7.5.2",
+    "8021X-2020:7.5.3",
+    "8021X-2020:7.6.1",
+    "8021X-2020:7.6.2",
+    "8021X-2020:7.7.1",
+    "8021X-2020:7.7.2",
+    "8021X-2020:8.1",
+    "8021X-2020:8.2",
+    "8021X-2020:8.3",
+    "8021X-2020:8.4",
+    "8021X-2020:8.5",
+    "8021X-2020:8.6",
+    "8021X-2020:8.7",
+    "8021X-2020:8.8",
+    "8021X-2020:8.9",
+    "8021X-2020:8.10",
+    "8021X-2020:8.11.1",
+    "8021X-2020:8.11.2"
+  ],
+  "track": "net-security"
+}

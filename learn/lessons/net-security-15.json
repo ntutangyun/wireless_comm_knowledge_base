@@ -1,0 +1,250 @@
+{
+  "id": "net-security-15",
+  "title": {
+    "en": "MAC Privacy Protection: From Scope and Conformance to the MPPDU Wire Format",
+    "zh": "MAC 隐私保护：从范围与符合性到 MPPDU 线格式"
+  },
+  "estMinutes": 8,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "MACsec (Media Access Control Security, IEEE Std 802.1AE) lets trusted devices on a LAN (Local Area Network) encrypt and integrity-protect the frames they exchange. But even after MACsec encrypts the payload, an eavesdropper can still see each frame's source and destination MAC addresses, its size, and exactly when it was sent. By correlating those leftovers, an adversary can fingerprint who is talking to whom and infer what they are doing. The 2023 amendment 802.1AEdk adds MAC Privacy protection to close that gap. This lesson walks the whole amendment in order — the Overview (Clause 1), Conformance (Clause 5), a touch of SecY management and the MIB (Clauses 10 and 13), the Ethernet Data Encryption device (EDE) wiring (Clauses 15 and 16), and then the heart of the amendment: the privacy concept, protocol, and wire format (Clauses 17, 18, and 19).",
+      "zh": "MACsec（媒体访问控制安全，IEEE Std 802.1AE）让局域网（LAN）上受信任的设备对彼此交换的帧进行加密和完整性保护。但即使 MACsec 加密了载荷，窃听者仍能看到每一帧的源和目的 MAC 地址、帧的大小以及它确切的发送时刻。把这些残留信息关联起来，攻击者就能刻画出谁在和谁通信，并推断他们在做什么。2023 年的修正案 802.1AEdk 增加了 MAC 隐私保护来弥补这一缺口。本课按顺序通览整个修正案——概述（第 1 章）、符合性（第 5 章）、SecY 管理与 MIB 的少量内容（第 10、13 章）、以太网数据加密设备（EDE）的接线（第 15、16 章），然后是修正案的核心：隐私保护的理念、协议与线格式（第 17、18、19 章）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 1 sets the stage. The Introduction (1.1) explains that MACsec protects trusted infrastructure components and is complementary to — not a replacement for — end-to-end application security; the new privacy protocol is introduced as something used together with MACsec to reduce an adversary's ability to correlate MAC addresses, frame sizes, and timing with individual people and applications. The Scope (1.2) lists what the standard now also does: it models a privacy-protected MAC Service in terms of MAC Privacy protection Entities (PrYs) that encapsulate user data frames inside MAC Privacy protection Protocol Data Units (MPPDUs) to hide the user source/destination addresses and to blur the correlation between frame size/timing and user identity. It also promises to specify the addressing, encoding, and decoding of MPPDUs.",
+      "zh": "第 1 章奠定基调。引言（1.1）说明 MACsec 保护的是受信任的基础设施组件，它是端到端应用安全的补充而非替代；新的隐私协议被引入为与 MACsec 一同使用的机制，用以削弱攻击者将 MAC 地址、帧大小和时序与具体的人和应用关联起来的能力。范围（1.2）列出了标准现在还要做的事：它用 MAC 隐私保护实体（PrY）来对受隐私保护的 MAC 服务建模，这些实体把用户数据帧封装进 MAC 隐私保护协议数据单元（MPPDU），以隐藏用户的源/目的地址，并模糊帧大小/时序与用户身份之间的关联。它还承诺规定 MPPDU 的寻址、编码和解码。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two key acronyms to keep straight: a SecY is a MAC Security Entity (the shim that does MACsec encryption); a PrY is a MAC Privacy protection Entity (the shim that encapsulates frames into MPPDUs). The PrY sits above the SecY: the PrY first wraps and pads the user frame into an MPPDU, then the SecY confidentiality-protects the whole MPPDU. Only when both work together do the inner addresses and the true frame size disappear from view.",
+      "zh": "两个要分清的关键缩写：SecY 是 MAC 安全实体（执行 MACsec 加密的填隙层）；PrY 是 MAC 隐私保护实体（把帧封装进 MPPDU 的填隙层）。PrY 位于 SecY 之上：PrY 先把用户帧包装并填充成 MPPDU，然后 SecY 对整个 MPPDU 做机密性保护。只有两者协同工作，内部地址和真实帧大小才会从视野中消失。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 is about Conformance — how a vendor claims their box obeys the standard. The Requirements terminology (5.1) fixes the meaning of the keywords: shall is mandatory, may is a permitted choice, should is a recommendation. PICS (5.2, Protocol Implementation Conformance Statements) are the checklists a supplier must fill in: a SecY uses Annex A, an EDE adds Annexes D and the 802.1Q proformas for its bridge components, and a PrY uses Annex H. The amendment then adds privacy-specific conformance: 5.5 (general EDE conformance) now lets any EDE optionally provide privacy via a PrY on its black-side port; 5.8 (EDE-CC conformance) adds the option to use the received customer VID to pick the outer VID so multiple customer VLANs to the same peer look identical; and brand-new 5.10/5.11 enumerate exactly what a PrY shall do (mandatory) versus may do (optional).",
+      "zh": "第 5 章讲符合性——厂商如何声称其设备遵守标准。需求术语（5.1）固定了关键词的含义：shall 表示强制，may 表示允许的选择，should 表示建议。PICS（5.2，协议实现符合性声明）是供应商必须填写的清单：SecY 用附录 A，EDE 还要加附录 D 以及其桥接组件所需的 802.1Q 表格，PrY 用附录 H。修正案随后加入隐私专属的符合性：5.5（EDE 通用符合性）现允许任何 EDE 在其黑侧端口上通过 PrY 可选地提供隐私保护；5.8（EDE-CC 符合性）增加了用接收到的客户 VID 来选择外层 VID 的选项，使发往同一对端的多个客户 VLAN 看起来一致；而全新的 5.10/5.11 则准确列举了 PrY 必须做（强制）与可以做（可选）的事项。"
+    },
+    {
+      "type": "prose",
+      "en": "Two short management touch-points come next. Clause 10.7 (SecY management) updates the management model figure so it cross-references the SecY MIB module (Clause 13) and the YANG model (Clause 23), and notes that each managed parameter is marked read (r) or write (w) and is still subject to security limits. Clause 13 then carries the MIB itself: 13.1 (Introduction) points to Annex G for the change history, and 13.6 (MAC Security Entity (SecY) MIB definition) replaces the entire IEEE8021-SECY-MIB module text. A MIB (Management Information Base) is the SNMP (Simple Network Management Protocol) schema a manager reads and writes; this MIB describes a SecY as a shim that runs MACsec over Secure Channels (SCs) and Secure Associations (SAs) within a Connectivity Association (CA).",
+      "zh": "接下来是两个简短的管理触点。第 10.7 节（SecY 管理）更新了管理模型图，使其交叉引用 SecY MIB 模块（第 13 章）和 YANG 模型（第 23 章），并指出每个受管参数都标注为读（r）或写（w），且仍受安全限制约束。第 13 章则承载 MIB 本身：13.1（引言）指向附录 G 查阅变更历史，13.6（MAC 安全实体（SecY）MIB 定义）替换了整个 IEEE8021-SECY-MIB 模块文本。MIB（管理信息库）是管理者读写所依据的 SNMP（简单网络管理协议）模式；此 MIB 把 SecY 描述为一个填隙层，它在连接关联（CA）内通过安全通道（SC）和安全关联（SA）运行 MACsec。"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 15 and 16 handle the box that carries privacy across a provider network. An EDE (Ethernet Data Encryption device) is a two-port bridge — a red (trusted/customer) side and a black (exposed/network) side — that adds MACsec transparently. The EDE-CC variant is built from two C-VLAN bridge components. Clause 15.6 (Securing PBN connectivity with an EDE-CC) explains the new multiplexing option: a privacy-capable EDE-CC can map several inner customer VIDs onto one outer (black-side visible) VID, hiding the fact that traffic to the same peer used different customer VLANs. It spells out the per-component Static VLAN Registration Entries that realize this. Clause 16.4 (EDE-CC and EDE-SS Management) then says how to manage it: a privacy-capable EDE-CC may allow multiple red-side VIDs to egress one Provider Edge Port, multiplexed onto the outer C-VLAN, and that configuring this requires managing both the edge and network components.",
+      "zh": "第 15、16 章处理在运营商网络上承载隐私保护的设备。EDE（以太网数据加密设备）是一个双端口桥——红侧（受信任/客户侧）和黑侧（暴露/网络侧）——它透明地加入 MACsec。EDE-CC 变体由两个 C-VLAN 桥接组件构成。第 15.6 节（用 EDE-CC 保护 PBN 连接）说明了新的复用选项：具备隐私能力的 EDE-CC 可以把若干内层客户 VID 映射到一个外层（黑侧可见）VID 上，从而隐藏发往同一对端的流量使用了不同客户 VLAN 的事实。它详细列出了实现这一点的各组件静态 VLAN 注册条目。第 16.4 节（EDE-CC 与 EDE-SS 管理）随后说明如何管理它：具备隐私能力的 EDE-CC 可以允许多个红侧 VID 从同一个 Provider Edge Port 出口，复用到外层 C-VLAN 上，而配置这一能力需要同时管理边缘组件和网络组件。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17 is the intuitive overview of MAC Privacy protection. 17.1 (Need for MAC Privacy protection) frames the threat: personally identifiable information (PII) is hidden by encryption, but adversaries correlate observable leftovers — addresses, frame-size patterns, timing — into a fingerprint of a person or organization, even across many low-information observations. 17.2 (Protecting user data frames) gives the three defenses a PrY applies: (a) encapsulate the user frame and its inner addresses inside an MPPDU, (b) pad the MPPDU to a fixed size before MACsec encrypts it, and (c) control the timing of MPPDU transmissions. The MPPDU's outer source address identifies the sending PrY and the outer destination identifies the receiving PrY(s); the inner FCS (Frame Check Sequence) is dropped because the MACsec ICV (Integrity Check Value) already protects everything.",
+      "zh": "第 17 章是对 MAC 隐私保护的直观概述。17.1（MAC 隐私保护的必要性）刻画威胁：个人可识别信息（PII）已被加密隐藏，但攻击者会把可观测的残留——地址、帧大小模式、时序——关联成对个人或组织的指纹，即便要跨越许多信息量很小的观测也行。17.2（保护用户数据帧）给出 PrY 应用的三种防御：(a) 把用户帧及其内层地址封装进 MPPDU；(b) 在 MACsec 加密前把 MPPDU 填充到固定大小；(c) 控制 MPPDU 的发送时序。MPPDU 的外层源地址标识发送 PrY，外层目的地址标识接收 PrY；内层的 FCS（帧校验序列）被丢弃，因为 MACsec 的 ICV（完整性校验值）已经保护了一切。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 720 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\">\n<text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Original user data frame (visible without privacy protection):</text>\n<rect x=\"10\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"55\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">user DA</text>\n<rect x=\"100\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"145\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">user SA</text>\n<rect x=\"190\" y=\"30\" width=\"180\" height=\"34\"/><text x=\"280\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">user data (MSDU)</text>\n<rect x=\"370\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"400\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">FCS</text>\n<text x=\"10\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">After PrY encapsulation + padding, then MACsec confidentiality protection:</text>\n<rect x=\"10\" y=\"110\" width=\"80\" height=\"34\"/><text x=\"50\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">PrY DA</text>\n<rect x=\"90\" y=\"110\" width=\"80\" height=\"34\"/><text x=\"130\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">PrY SA</text>\n<rect x=\"170\" y=\"110\" width=\"70\" height=\"34\"/><text x=\"205\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">SecTAG</text>\n<rect x=\"240\" y=\"110\" width=\"330\" height=\"34\" stroke-dasharray=\"5 3\"/><text x=\"405\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">encrypted: MPP EtherType + Encapsulated Frame + Pad</text>\n<rect x=\"570\" y=\"110\" width=\"55\" height=\"34\"/><text x=\"597\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">ICV</text>\n<text x=\"240\" y=\"165\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Inner addresses + true size hidden inside the encrypted region</text>\n</svg>",
+      "caption": {
+        "en": "A user data frame is wrapped by the PrY into an MPPDU (with optional padding), then the SecY confidentiality-protects the whole thing. Only the outer PrY addresses and the SecTAG/ICV stay visible; the inner addresses and the real frame size are concealed (Figure 17-2).",
+        "zh": "用户数据帧被 PrY 包装成 MPPDU（可选填充），随后 SecY 对整体做机密性保护。只有外层 PrY 地址和 SecTAG/ICV 保持可见；内层地址与真实帧大小被隐藏（图 17-2）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "17.3 (Quality of Service impact and mitigation) is honest about the cost: encapsulation adds octets, padding adds more, and a fixed transmit schedule can delay traffic. The mitigations are clever — pack several user frames into one MPPDU to amortize overhead, and fragment a long frame across successive MPPDUs to fill space that would otherwise be padding. Fragments come in two independently sequence-numbered classes, Express (urgent) and Preemptable, so an urgent frame can preempt a lower-priority one. Drop-eligibility is hidden (the MPPDU is always sent with drop_eligible False). 17.4 (Configuring MAC Privacy protection) introduces the Privacy Selection Table: per user priority, a frame can be sent (a) unprotected, (b) as a single Privacy Frame, or (c) in a Privacy Channel (a timed stream that can carry multiple frames and fragment them). Crucially, the receiver treats every MPPDU the same — whether it was a Privacy Frame or a Privacy Channel is never encoded, so the transmitter is free to choose strategies without telling the receiver.",
+      "zh": "17.3（服务质量影响与缓解）坦率地说明代价：封装增加字节，填充再增加，固定的发送时间表会延迟流量。缓解手段很巧妙——把多个用户帧打包进一个 MPPDU 来摊薄开销，并把长帧分片到连续的 MPPDU 中，去填补本应是填充的空间。分片分为两个独立编号的类别，Express（紧急）和 Preemptable（可抢占），这样紧急帧就能抢占低优先级帧。丢弃资格被隐藏（MPPDU 始终以 drop_eligible 为 False 发送）。17.4（配置 MAC 隐私保护）引入了隐私选择表：按用户优先级，一帧可以被(a) 不加保护地发送、(b) 作为单个隐私帧发送，或(c) 在隐私信道中发送（一个定时的流，可承载多帧并对其分片）。关键在于，接收方对每个 MPPDU 一视同仁——它究竟是隐私帧还是隐私信道从不在帧中编码，因此发送方可以自由选择策略而无需告知接收方。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 18 (MAC Privacy protection protocol) states the protocol rules in prose. 18.1 (Addressing): every MPPDU from a given PrY uses the same DA/SA pair; the receiver groups fragments of one frame by that DA/SA pair. When a PrY sits directly on a SecY, the DA shall be the PAE Group Address that MKA (MACsec Key Agreement) already uses, and the SA shall be the address that generates the SecY's SCI — so nothing extra needs configuring. When the PrY is separated from its SecY, the addresses must be configured carefully to avoid flooding. 18.2 leans entirely on MACsec for authenticity, integrity, and confidentiality. 18.3 (Applicability) covers true vs virtual shared media. 18.4 (Bandwidth utilization, fragmentation, and transit delay) sets the hard numbers: a 24-bit fragment sequence number per class, a transmitter must wait at least 2 seconds before reusing/reordering sequence numbers, and a receiver holds fragments for at most 0.1 second. 18.5 (Coexistence and use) confirms privacy-protected and ordinary frames can be freely interspersed between the same two stations, the transmitter deciding per frame.",
+      "zh": "第 18 章（MAC 隐私保护协议）以散文形式陈述协议规则。18.1（寻址）：来自某个 PrY 的每个 MPPDU 都使用相同的 DA/SA 对；接收方按该 DA/SA 对把一帧的各分片归组。当 PrY 直接位于 SecY 之上时，DA 应为 MKA（MACsec 密钥协商）已在使用的 PAE 组地址，SA 应为生成该 SecY 的 SCI 的地址——因此无需额外配置。当 PrY 与其 SecY 分离时，必须谨慎配置地址以避免泛洪。18.2 在真实性、完整性和机密性上完全依赖 MACsec。18.3（适用性）涵盖真实共享介质与虚拟共享介质。18.4（带宽利用、分片与传输时延）给出硬性数字：每类一个 24 位的分片序列号；发送方在重用/重排序列号前必须等待至少 2 秒；接收方保留分片至多 0.1 秒。18.5（共存与使用）确认受隐私保护的帧与普通帧可以在同两个站点之间自由交错，由发送方逐帧决定。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[User data frame arrives] --> B{Privacy Selection Table<br/>by user priority}\n  B -->|unprotected| C[Send frame as-is]\n  B -->|Privacy Frame| D[One Encapsulated Frame<br/>+ optional Trailing Pad]\n  B -->|Privacy Channel| E[Timed MPPDU stream:<br/>pack multiple frames,<br/>fragment if needed]\n  D --> F[Prepend MPP EtherType]\n  E --> F\n  F --> G[SecY confidentiality-protects MPPDU]\n  G --> H[Transmit on black side]",
+      "zh": "flowchart TD\n  A[用户数据帧到达] --> B{隐私选择表<br/>按用户优先级}\n  B -->|不保护| C[原样发送帧]\n  B -->|隐私帧| D[一个封装帧<br/>+ 可选尾部填充]\n  B -->|隐私信道| E[定时 MPPDU 流：<br/>打包多帧，<br/>必要时分片]\n  D --> F[前置 MPP 以太类型]\n  E --> F\n  F --> G[SecY 对 MPPDU 做机密性保护]\n  G --> H[在黑侧发送]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 19 nails down the bytes. 19.1 (Structure, representation, and encoding) says MPPDUs are whole octets using the standard bit/octet conventions. 19.2 (MPPDU Format): inside the MACsec Secure Data sits the MAC Privacy protection EtherType followed by one or more MPPDU components, each a frame, a fragment, or padding. 19.3 (MAC Privacy protection EtherType) allocates the value E2-3B, present so privacy-capable and ordinary systems coexist and deploy incrementally. 19.4 (Protocol Version strategy): there is no version field — instead every component carries a length, so an old implementation can skip an unknown future component and keep processing the rest; the base capability set is informally version 0. 19.5 (MPPDU component encoding) defines four components by the top bits of the first octet: Encapsulated Frame, Trailing Pad, Explicit Pad, and Frame Fragment.",
+      "zh": "第 19 章把字节定死。19.1（结构、表示与编码）规定 MPPDU 为整数个八位组，采用标准的位/八位组约定。19.2（MPPDU 格式）：在 MACsec 安全数据内部是 MAC 隐私保护以太类型，后跟一个或多个 MPPDU 组件，每个组件是一帧、一个分片或填充。19.3（MAC 隐私保护以太类型）分配值 E2-3B，其存在使具备隐私能力的系统与普通系统共存并可增量部署。19.4（协议版本策略）：没有版本字段——而是每个组件都带长度，因此老的实现可以跳过未知的未来组件并继续处理其余部分；基础能力集非正式地记为版本 0。19.5（MPPDU 组件编码）通过第一个八位组的高位定义四种组件：封装帧、尾部填充、显式填充和帧分片。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 700 230\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\">\n<text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">MPPDU component type is decoded from bits 8 and 7 of the first octet:</text>\n<rect x=\"10\" y=\"30\" width=\"330\" height=\"40\"/><text x=\"20\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">bits 87 = 00, length >= 14</text><text x=\"20\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" font-weight=\"bold\">Encapsulated Frame (DA, SA, MSDU)</text>\n<rect x=\"360\" y=\"30\" width=\"330\" height=\"40\"/><text x=\"370\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">first octet 0 (and 2nd octet 0 or absent)</text><text x=\"370\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" font-weight=\"bold\">Trailing Pad (last component)</text>\n<rect x=\"10\" y=\"80\" width=\"330\" height=\"40\"/><text x=\"20\" y=\"97\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">bits 87 = 01</text><text x=\"20\" y=\"113\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" font-weight=\"bold\">Explicit Pad (specified length)</text>\n<rect x=\"360\" y=\"80\" width=\"330\" height=\"40\"/><text x=\"370\" y=\"97\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">bits 87 = 10, octet-3 bit 8 = 0</text><text x=\"370\" y=\"113\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" font-weight=\"bold\">Frame Fragment (seq#, I/F/E bits)</text>\n<rect x=\"10\" y=\"140\" width=\"680\" height=\"40\" stroke-dasharray=\"5 3\"/><text x=\"20\" y=\"157\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">bits 87 = 11, or other reserved patterns</text><text x=\"20\" y=\"173\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" font-weight=\"bold\">Unrecognized / reserved -> skip via length, keep going</text>\n<text x=\"10\" y=\"205\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Every component carries a 'following length' so a receiver can always skip ahead.</text>\n</svg>",
+      "caption": {
+        "en": "How a receiver decodes each MPPDU component from the leading bits, and why a length field on every component lets old implementations skip future component types (19.5, 19.5.1-19.5.6).",
+        "zh": "接收方如何根据首字节的高位解码每个 MPPDU 组件，以及为何每个组件都带长度字段使老实现能跳过未来的组件类型（19.5、19.5.1–19.5.6）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The Frame Fragment (19.5.4) carries a 24-bit sequence number plus three flags in octet 3: I (Initial, first fragment, which then begins with the inner DA/SA/Length-Type), F (Final, last fragment), and E (Express vs Preemptable, selecting one of two independent sequence-number spaces). A fragment with both I and F set is a complete frame. A frame under 128 octets cannot be fragmented, and each fragment is at least 64 octets. 19.6 (MPPDU generation) lists the must-obey rules for a transmitter: start with the EtherType, only use defined components, give Encapsulated Frames/Fragments an accurate length, zero all pad octets, number fragments consecutively, and make any Trailing Pad the last component. 19.7 (MPPDU validation) defines the receiver loop: recognize the EtherType, then walk components in order, incrementing counters (inEncapsulatedFrames, inExpressFragments, inPreemptableFragments, InPadOctets, inUnknownMppcis, inErroredMppdus), extracting frames and fragments while discarding pads and unknowns — and stopping cleanly at a Trailing Pad or an encoding error without affecting any other MPPDU.",
+      "zh": "帧分片（19.5.4）携带一个 24 位序列号，外加第 3 个八位组中的三个标志位：I（Initial，首分片，此时它以内层 DA/SA/长度-类型开头）、F（Final，末分片）和 E（Express 与 Preemptable，用于选择两个独立序列号空间之一）。同时置位 I 和 F 的分片是一个完整帧。小于 128 个八位组的帧不能分片，每个分片至少 64 个八位组。19.6（MPPDU 生成）列出发送方必须遵守的规则：以以太类型开头、只使用已定义的组件、为封装帧/分片给出准确长度、把所有填充字节置零、对分片连续编号、并使任何尾部填充成为最后一个组件。19.7（MPPDU 校验）定义了接收方循环：识别以太类型，然后按顺序遍历各组件，递增计数器（inEncapsulatedFrames、inExpressFragments、inPreemptableFragments、InPadOctets、inUnknownMppcis、inErroredMppdus），提取帧与分片，丢弃填充和未知项——并在遇到尾部填充或编码错误时干净地停止，且不影响任何其他 MPPDU。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause in this lesson with its exact number",
+        "zh": "覆盖图——本课每一个章节及其确切编号"
+      },
+      "en": "Clause 1 Overview: 1.1 Introduction (MACsec purpose; privacy reduces correlation), 1.2 Scope (models privacy-protected MAC Service via PrYs encapsulating frames in MPPDUs; specifies MPPDU addressing/encoding/decoding). Clause 5 Conformance: 5.1 Requirements terminology (shall/may/should), 5.2 PICS (SecY=Annex A, EDE=Annex D + 802.1Q proformas, PrY=Annex H), 5.5 EDE conformance (optional PrY on black-side port), 5.8 EDE-CC conformance (optional inner-VID to outer-VID multiplexing), 5.10 PrY requirements (mandatory shall list: Private/Controlled Ports, Privacy Frames, Privacy Channels, addressing 18.1, reassembly), 5.11 PrY options (optional may list: multi-peer reassembly, stream_handle selection). Clause 10.7 SecY management (figure cross-references SecY MIB and YANG; r/w marking). Clause 13: 13.1 Introduction (Annex G history), 13.6 SecY MIB definition (full IEEE8021-SECY-MIB module). Clause 15.6 Securing PBN connectivity with an EDE-CC (inner-to-outer C-VID multiplexing via Static VLAN Registration Entries). Clause 16.4 EDE-CC and EDE-SS Management (privacy-capable EDE-CC may egress multiple red-side VIDs on one PEP; manage both components). Clause 17 MAC Privacy protection: 17.1 Need (PII/PCI fingerprinting), 17.2 Protecting user data frames (encapsulate, pad, time; drop inner FCS), 17.3 QoS impact and mitigation (packing, fragmentation, Express/Preemptable, hidden drop-eligibility), 17.4 Configuring (Privacy Selection Table: unprotected / Privacy Frame / Privacy Channel). Clause 18 protocol: 18.1 Addressing (same DA/SA per PrY; PAE Group Address as DA when on a SecY), 18.2 authenticity/integrity/confidentiality (relies on MACsec), 18.3 Applicability (true vs virtual shared media), 18.4 Bandwidth/fragmentation/transit delay (24-bit seq#, 2s reorder gap, 0.1s reassembly hold), 18.5 Coexistence and use (free interspersing). Clause 19 encoding: 19.1 Structure/representation/encoding, 19.2 MPPDU Format, 19.3 EtherType E2-3B, 19.4 Protocol Version strategy (no version field; length-based skip; version 0), 19.5 component encoding (Encapsulated Frame, Trailing Pad, Explicit Pad, Frame Fragment, unrecognized, incorrectly encoded), 19.6 MPPDU generation rules, 19.7 MPPDU validation loop and counters.",
+      "zh": "第 1 章 概述：1.1 引言（MACsec 目的；隐私削弱关联），1.2 范围（通过 PrY 把帧封装进 MPPDU 来建模受隐私保护的 MAC 服务；规定 MPPDU 的寻址/编码/解码）。第 5 章 符合性：5.1 需求术语（shall/may/should），5.2 PICS（SecY=附录 A，EDE=附录 D + 802.1Q 表格，PrY=附录 H），5.5 EDE 符合性（黑侧端口上可选的 PrY），5.8 EDE-CC 符合性（可选的内层 VID 到外层 VID 复用），5.10 PrY 要求（强制 shall 清单：Private/Controlled 端口、隐私帧、隐私信道、18.1 寻址、重组），5.11 PrY 选项（可选 may 清单：多对端重组、stream_handle 选择）。第 10.7 节 SecY 管理（图交叉引用 SecY MIB 与 YANG；标注 r/w）。第 13 章：13.1 引言（附录 G 历史），13.6 SecY MIB 定义（完整 IEEE8021-SECY-MIB 模块）。第 15.6 节 用 EDE-CC 保护 PBN 连接（经静态 VLAN 注册条目实现内层到外层 C-VID 复用）。第 16.4 节 EDE-CC 与 EDE-SS 管理（具备隐私能力的 EDE-CC 可在一个 PEP 上出口多个红侧 VID；需管理两个组件）。第 17 章 MAC 隐私保护：17.1 必要性（PII/PCI 指纹），17.2 保护用户数据帧（封装、填充、定时；丢弃内层 FCS），17.3 QoS 影响与缓解（打包、分片、Express/Preemptable、隐藏丢弃资格），17.4 配置（隐私选择表：不保护/隐私帧/隐私信道）。第 18 章 协议：18.1 寻址（每个 PrY 同一 DA/SA；位于 SecY 上时以 PAE 组地址为 DA），18.2 真实性/完整性/机密性（依赖 MACsec），18.3 适用性（真实与虚拟共享介质），18.4 带宽/分片/传输时延（24 位序列号、2 秒重排间隔、0.1 秒重组保留），18.5 共存与使用（自由交错）。第 19 章 编码：19.1 结构/表示/编码，19.2 MPPDU 格式，19.3 以太类型 E2-3B，19.4 协议版本策略（无版本字段；基于长度跳过；版本 0），19.5 组件编码（封装帧、尾部填充、显式填充、帧分片、未识别、错误编码），19.6 MPPDU 生成规则，19.7 MPPDU 校验循环与计数器。",
+      "cite": {
+        "pdf_id": "8021AEdk-2023",
+        "pages": [
+          17,
+          18,
+          24,
+          25,
+          26,
+          27,
+          28,
+          31,
+          32,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The elegant trick to remember: the wire format never tells you whether a stream was a Privacy Frame or a Privacy Channel. A receiver just decodes components and reassembles frames. That asymmetry — strict, simple, mandatory receiver behavior versus flexible transmitter strategy — is what lets vendors innovate on padding, packing, and timing without ever renegotiating with the other end.",
+      "zh": "值得记住的优雅技巧：线格式从不告诉你某个流是隐私帧还是隐私信道。接收方只是解码组件并重组帧。这种不对称——严格、简单、强制的接收方行为对比灵活的发送方策略——正是让厂商可以在填充、打包和时序上创新，而无需与对端重新协商的原因。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        17,
+        18
+      ],
+      "note": "Clause 1.1 Introduction and 1.2 Scope: MACsec purpose and the new privacy-protection scope (PrYs, MPPDUs)."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "note": "Clause 5 Conformance: 5.1 terminology, 5.2 PICS, 5.5 EDE, 5.8 EDE-CC, 5.10/5.11 PrY requirements and options."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        28
+      ],
+      "note": "Clause 10.7 SecY management figure cross-references and r/w marking."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        31,
+        32
+      ],
+      "note": "Clause 13.1 Introduction and 13.6 SecY MIB module definition."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        70,
+        71
+      ],
+      "note": "Clause 15.6 EDE-CC PBN connectivity multiplexing; Clause 16.4 EDE-CC/EDE-SS management."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78
+      ],
+      "note": "Clause 17: need, protecting frames, QoS mitigation, configuring (Privacy Selection Table)."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        82,
+        83,
+        84,
+        85
+      ],
+      "note": "Clause 18: addressing, authenticity/integrity/confidentiality, applicability, bandwidth/fragmentation/delay, coexistence."
+    },
+    {
+      "pdf_id": "8021AEdk-2023",
+      "pages": [
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "note": "Clause 19: structure, format, EtherType E2-3B, version strategy, component encoding, generation, validation."
+    }
+  ],
+  "covers": [
+    "8021AEdk-2023:1.1",
+    "8021AEdk-2023:1.2",
+    "8021AEdk-2023:5.1",
+    "8021AEdk-2023:5.2",
+    "8021AEdk-2023:5.5",
+    "8021AEdk-2023:5.8",
+    "8021AEdk-2023:5.10",
+    "8021AEdk-2023:5.11",
+    "8021AEdk-2023:10.7",
+    "8021AEdk-2023:13.1",
+    "8021AEdk-2023:13.6",
+    "8021AEdk-2023:15.6",
+    "8021AEdk-2023:16.4",
+    "8021AEdk-2023:17.1",
+    "8021AEdk-2023:17.2",
+    "8021AEdk-2023:17.3",
+    "8021AEdk-2023:17.4",
+    "8021AEdk-2023:18.1",
+    "8021AEdk-2023:18.2",
+    "8021AEdk-2023:18.3",
+    "8021AEdk-2023:18.4",
+    "8021AEdk-2023:18.5",
+    "8021AEdk-2023:19.1",
+    "8021AEdk-2023:19.2",
+    "8021AEdk-2023:19.3",
+    "8021AEdk-2023:19.4",
+    "8021AEdk-2023:19.5",
+    "8021AEdk-2023:19.6",
+    "8021AEdk-2023:19.7"
+  ],
+  "track": "net-security"
+}

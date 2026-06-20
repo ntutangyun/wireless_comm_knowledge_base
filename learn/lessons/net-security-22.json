@@ -1,0 +1,96 @@
+{
+  "id": "net-security-22",
+  "title": {
+    "en": "The TCI Octet: Decoding MACsec's TAG Control Information",
+    "zh": "TCI 字节：解码 MACsec 的标签控制信息（TAG Control Information）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every MACsec-protected frame carries a small header called the SecTAG (Security TAG). Its very first byte is the TAG Control Information, or TCI. This single octet is the 'control panel' of MACsec: a handful of flag bits that tell a receiver how the frame was protected and which key to use. This lesson walks through Clause 9.5 of IEEE Std 802.1AE-2018 — and the small but important Corrigendum 1 (Cor 1-2020) that fixes the figure describing it.",
+      "zh": "每个受 MACsec 保护的帧都带有一个称为 SecTAG（安全标签，Security TAG）的小型头部。它的第一个字节就是标签控制信息（TAG Control Information，简称 TCI）。这个字节是 MACsec 的“控制面板”：少量标志位告诉接收方该帧是如何被保护的、以及应使用哪个密钥。本课讲解 IEEE Std 802.1AE-2018 的第 9.5 条，以及修正其图示的那份小而重要的勘误（Corrigendum 1，Cor 1-2020）。"
+    },
+    {
+      "type": "prose",
+      "en": "MACsec stands for Media Access Control Security — Layer 2 encryption and integrity protection applied hop by hop on an Ethernet link. When a frame is secured, MACsec inserts the SecTAG right after the source MAC address, and appends an ICV (Integrity Check Value) at the end. The TCI octet at the front of the SecTAG is what makes the whole scheme self-describing: a receiver reads these bits before it does anything else with the frame.",
+      "zh": "MACsec 是 Media Access Control Security（媒体访问控制安全）的缩写——它在以太网链路上逐跳（hop by hop）地施加二层加密与完整性保护。当一个帧被保护时，MACsec 会在源 MAC 地址之后立即插入 SecTAG，并在帧尾追加一个 ICV（完整性校验值，Integrity Check Value）。位于 SecTAG 最前端的 TCI 字节，正是让整套机制能够“自我描述”的关键：接收方在对该帧做任何处理之前，会先读取这些位。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a corrigendum just for one figure? In preparing the 2018 edition, the editors accidentally pasted in a TCI figure from an early draft of the 2006 standard. Cor 1-2020 simply restores the correct Figure 9-4 (the one matching 802.1AE-2006). The bit definitions never changed — only the picture was wrong. So when you read 9.5 today, trust the corrigendum's figure.",
+      "zh": "为什么仅为一张图就发布勘误？在编制 2018 版时，编辑们不慎贴入了一张来自 2006 版早期草案的 TCI 图。Cor 1-2020 只是把正确的图 9-4（与 802.1AE-2006 一致的那张）恢复回来。各比特位的定义从未改变——只是图画错了。因此，今天阅读 9.5 条时，应以勘误中的图为准。"
+    },
+    {
+      "type": "prose",
+      "en": "The TCI octet packs eight bits. Six of them are true TCI flags (V, ES, SC, SCB, E, C), and the remaining two form the AN (Association Number). The AN is not a flag — it is a small 2-bit counter that selects which of up to four keys (Secure Associations) within a Secure Channel was used to protect this frame. Bundling TCI and AN into one byte keeps the SecTAG compact.",
+      "zh": "TCI 字节共有八个比特位。其中六个是真正的 TCI 标志位（V、ES、SC、SCB、E、C），剩下两个组成 AN（关联号，Association Number）。AN 并不是标志位——它是一个 2 比特的小计数器，用于指明在一条安全通道（Secure Channel）内、最多四个密钥（安全关联，Secure Association）中的哪一个保护了本帧。把 TCI 与 AN 合并到一个字节里，可以让 SecTAG 保持紧凑。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 560 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">TCI octet (bits 8 .. 1, MSB on left)</text><g font-size=\"12\"><rect x=\"10\" y=\"40\" width=\"60\" height=\"40\"/><rect x=\"70\" y=\"40\" width=\"60\" height=\"40\"/><rect x=\"130\" y=\"40\" width=\"60\" height=\"40\"/><rect x=\"190\" y=\"40\" width=\"60\" height=\"40\"/><rect x=\"250\" y=\"40\" width=\"60\" height=\"40\"/><rect x=\"310\" y=\"40\" width=\"60\" height=\"40\"/><rect x=\"370\" y=\"40\" width=\"90\" height=\"40\"/></g><g stroke=\"none\" fill=\"currentColor\" font-size=\"13\" text-anchor=\"middle\"><text x=\"40\" y=\"65\">V</text><text x=\"100\" y=\"65\">ES</text><text x=\"160\" y=\"65\">SC</text><text x=\"220\" y=\"65\">SCB</text><text x=\"280\" y=\"65\">E</text><text x=\"340\" y=\"65\">C</text><text x=\"415\" y=\"65\">AN</text></g><g stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\"><text x=\"40\" y=\"95\">bit 8 (=0)</text><text x=\"100\" y=\"95\">bit 7</text><text x=\"160\" y=\"95\">bit 6</text><text x=\"220\" y=\"95\">bit 5</text><text x=\"280\" y=\"95\">bit 4</text><text x=\"340\" y=\"95\">bit 3</text><text x=\"415\" y=\"95\">bits 2-1</text></g><text x=\"10\" y=\"125\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">First octet of the SecTAG = TCI flags + 2-bit Association Number</text></svg>",
+      "caption": {
+        "en": "Figure 9-4 (as restored by Cor 1-2020): the TCI octet holds six TCI flag bits (V, ES, SC, SCB, E, C) plus the 2-bit AN.",
+        "zh": "图 9-4（由 Cor 1-2020 恢复）：TCI 字节包含六个 TCI 标志位（V、ES、SC、SCB、E、C），外加 2 比特的 AN。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Let's name each flag. V is the Version bit and is always 0 — it lets the format evolve later, but in this edition any frame with V=1 is invalid. E is the Encryption bit: set to 1 when the user data is confidentiality-protected (encrypted), 0 when only integrity is protected. C is the Changed Text bit: set to 1 when the bytes after the SecTAG differ from the original frame's data — which, in practice, signals that encryption (E=1) or, in earlier modes, ICV-only changes were applied. Together E and C tell the receiver whether to decrypt.",
+      "zh": "我们来逐一命名这些标志位。V 是版本（Version）位，恒为 0——它为格式日后的演进预留空间，但在本版中任何 V=1 的帧都是无效的。E 是加密（Encryption）位：当用户数据受到保密保护（即被加密）时置 1，仅做完整性保护时置 0。C 是文本已改变（Changed Text）位：当 SecTAG 之后的字节与原始帧数据不同时置 1——实际中这表示施加了加密（E=1），或在早期模式下表示发生了仅 ICV 之外的改变。E 与 C 共同告诉接收方是否需要解密。"
+    },
+    {
+      "type": "prose",
+      "en": "The next three flags describe addressing. SC is the Secure Channel bit: when 1, an explicit 8-octet SCI (Secure Channel Identifier) follows in the SecTAG, naming exactly which channel sent the frame. ES is the End Station bit: when 1, it signals the source is an end station, so the SCI can be derived from the source MAC address — no explicit SCI needed. SCB is the Single Copy Broadcast bit, used in EPON (Ethernet Passive Optical Network) scenarios to indicate a single broadcast copy. ES and SCB are only meaningful when SC=0 (no explicit SCI present).",
+      "zh": "接下来的三个标志位描述寻址。SC 是安全通道（Secure Channel）位：为 1 时，SecTAG 中会随后携带一个显式的 8 字节 SCI（安全通道标识符，Secure Channel Identifier），用以精确指明是哪条通道发出了该帧。ES 是端站（End Station）位：为 1 时表示源端是一个端站，于是 SCI 可由源 MAC 地址推导得出——无需显式 SCI。SCB 是单副本广播（Single Copy Broadcast）位，用于 EPON（以太网无源光网络，Ethernet Passive Optical Network）场景，表示一个单一的广播副本。ES 与 SCB 只有在 SC=0（不携带显式 SCI）时才有意义。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Receiver reads TCI octet] --> B{V == 0?}\n  B -- no --> X[Invalid frame]\n  B -- yes --> C{SC == 1?}\n  C -- yes --> D[Read explicit 8-octet SCI]\n  C -- no --> E[Derive SCI from source MAC<br/>per ES / SCB]\n  D --> F{E == 1?}\n  E --> F\n  F -- yes --> G[Decrypt then verify ICV]\n  F -- no --> H[Verify ICV only]\n  G --> I[Select SA by AN]\n  H --> I",
+      "zh": "flowchart TD\n  A[接收方读取 TCI 字节] --> B{V == 0?}\n  B -- 否 --> X[无效帧]\n  B -- 是 --> C{SC == 1?}\n  C -- 是 --> D[读取显式 8 字节 SCI]\n  C -- 否 --> E[依据 ES / SCB<br/>由源 MAC 推导 SCI]\n  D --> F{E == 1?}\n  E --> F\n  F -- 是 --> G[先解密再校验 ICV]\n  F -- 否 --> H[仅校验 ICV]\n  G --> I[按 AN 选择 SA]\n  H --> I"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the AN (Association Number) in the low two bits. A Secure Channel can hold up to four Secure Associations (SAs) at once — each with its own key — so that keys can be rotated without dropping traffic mid-stream. The 2-bit AN (values 0..3) tells the receiver which of those four SAs, and therefore which key, protected this particular frame. This is how MACsec performs hitless key rollover.",
+      "zh": "最后是位于低两位的 AN（关联号，Association Number）。一条安全通道（Secure Channel）可以同时持有最多四个安全关联（Secure Association，SA）——每个 SA 拥有各自的密钥——从而可以在不中断数据流的情况下轮换密钥。2 比特的 AN（取值 0..3）告诉接收方：这四个 SA 中的哪一个、亦即哪个密钥保护了这一个具体的帧。MACsec 正是借此实现无中断（hitless）的密钥切换。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A quick mnemonic for the whole octet, MSB to LSB: V (must be 0), ES (end station shortcut), SC (explicit SCI present?), SCB (single-copy broadcast / EPON), E (encrypted?), C (text changed?), then AN-AN (which of 4 keys). Read these seven items and you know everything the sender wants you to know before touching the payload.",
+      "zh": "整个字节的快速记忆口诀（从高位到低位）：V（须为 0）、ES（端站捷径）、SC（是否带显式 SCI）、SCB（单副本广播 / EPON）、E（是否加密）、C（文本是否改变），随后是 AN-AN（四个密钥中的哪一个）。读完这七项，你就掌握了发送方希望你在触碰净荷之前所知道的一切。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Clause 9.5 (TAG Control Information) and what Cor 1-2020 changes",
+        "zh": "覆盖地图——第 9.5 条（标签控制信息）及 Cor 1-2020 的改动"
+      },
+      "en": "Clause 9.5 'TAG Control Information (TCI)' defines the first octet of the SecTAG. IEEE Std 802.1AE-2018/Cor 1-2020 is a single-purpose corrigendum: its only normative action is 'Replace Figure 9-4 with the following figure,' restoring the correct 'MACsec TCI and AN Encoding' figure that had been accidentally replaced by an early-draft figure during the 2018 edition (see the corrigendum's Introduction). The restored Figure 9-4 lays out, within one octet: the six TCI flag bits — V (Version, =0), ES (End Station), SC (Secure Channel, signals an explicit SCI), SCB (Single Copy Broadcast, EPON), E (Encryption), C (Changed Text) — together with the 2-bit AN (Association Number, 0..3) selecting the Secure Association/key. No bit semantics were altered by the corrigendum; only the figure was corrected. This single unit (9.5) is the entirety of the corrigendum's technical body.",
+      "zh": "第 9.5 条“标签控制信息（TCI）”定义了 SecTAG 的第一个字节。IEEE Std 802.1AE-2018/Cor 1-2020 是一份单一用途的勘误：其唯一的规范性动作是“以下图替换图 9-4”，即恢复正确的“MACsec TCI 与 AN 编码”图——该图在 2018 版中被一张早期草案的图误替（见勘误的引言）。被恢复的图 9-4 在一个字节内排布出：六个 TCI 标志位——V（版本，=0）、ES（端站）、SC（安全通道，指示带有显式 SCI）、SCB（单副本广播，EPON）、E（加密）、C（文本已改变）——以及用于选择安全关联/密钥的 2 比特 AN（关联号，0..3）。本勘误未改动任何比特位的语义，仅修正了图示。这一个单元（9.5）即构成勘误技术正文的全部内容。",
+      "cite": {
+        "pdf_id": "802-1AE-2018-Cor1-2020",
+        "pages": [
+          9,
+          13
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802-1AE-2018-Cor1-2020",
+      "pages": [
+        9,
+        13
+      ],
+      "note": "p.9 Introduction explains the corrigendum restores Figure 9-4 from 802.1AE-2006; p.13 contains Clause 9 / 9.5 and the replacement Figure 9-4 (MACsec TCI and AN Encoding) with bits V, ES, SC, SCB, E, C, AN."
+    }
+  ],
+  "covers": [
+    "802-1AE-2018-Cor1-2020:9.5"
+  ],
+  "track": "net-security"
+}

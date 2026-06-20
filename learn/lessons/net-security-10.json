@@ -1,0 +1,217 @@
+{
+  "id": "net-security-10",
+  "title": {
+    "en": "Managing 802.1X with YANG, plus the Reference Annexes (PICS, Test Vectors, and More)",
+    "zh": "用 YANG 管理 802.1X，以及参考性附录（PICS、测试向量等）"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "By Clause 14 the standard has already defined what Port-Based Network Access Control (PNAC) does and how its protocols behave. This final clause answers a practical operations question: how does a network manager remotely configure and monitor all of that machinery across thousands of ports? The answer is a YANG data model. YANG (Yet Another Next Generation) is a modeling language used to describe configuration and operational data; an external controller reads and writes that data over NETCONF (Network Configuration Protocol). Clause 14 defines the IEEE 802.1X YANG model, then the annexes wrap up the standard with conformance checklists, notation, and worked examples.",
+      "zh": "到了第 14 章，标准已经讲清楚了基于端口的网络接入控制（PNAC，Port-Based Network Access Control）做什么、它的协议如何运行。这最后一章回答一个实际运维问题：网络管理员如何在成千上万个端口上远程配置和监控这一整套机制？答案是 YANG 数据模型。YANG（Yet Another Next Generation）是一种用来描述配置数据和运行数据的建模语言；外部控制器通过 NETCONF（网络配置协议，Network Configuration Protocol）读写这些数据。第 14 章定义了 IEEE 802.1X 的 YANG 模型，随后的附录用一致性清单、记号约定和算例为整部标准收尾。"
+    },
+    {
+      "type": "prose",
+      "en": "The Port Access Entity (PAE) is the per-port software entity that runs 802.1X. Clause 14.1 explains that the YANG model gives operators access to the same controls, statistics, and diagnostics that Clause 12 defined in its information model (Figure 12-3). It deliberately mirrors the older Management Information Base (MIB) of Clause 13 in capability, but the two are not meant to run together: an implementation uses either the MIB or the YANG model, not both, to manage its PAEs. The model also manages each port's Port Access Controller (PAC), the simple shim used when MACsec (MAC Security) is not in play.",
+      "zh": "端口接入实体（PAE，Port Access Entity）是每个端口上运行 802.1X 的软件实体。第 14.1 节说明，YANG 模型让运维人员能访问第 12 章信息模型（图 12-3）定义的那套控制、统计和诊断能力。它有意在能力上与第 13 章较早的管理信息库（MIB，Management Information Base）保持一致，但两者并不打算同时使用：一个实现要么用 MIB、要么用 YANG 模型来管理 PAE，而不是两者并用。该模型还管理每个端口的端口接入控制器（PAC，Port Access Controller），即不使用 MACsec（MAC 安全，MAC Security）时所用的那个简单垫层。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why model 802.1X with YANG at all? Because modern networks are configured programmatically. Instead of logging into each switch by hand, a controller pushes a structured tree of settings over NETCONF. YANG defines the shape of that tree so every vendor's device speaks the same dialect — turning per-port security from a manual chore into automatable infrastructure.",
+      "zh": "为什么要用 YANG 给 802.1X 建模？因为现代网络是以编程方式配置的。控制器不再逐台登录交换机，而是通过 NETCONF 下发一棵结构化的设置树。YANG 定义了这棵树的形状，从而让各厂商的设备说同一种方言——把逐端口的安全配置从手工活变成可自动化的基础设施。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14.3 describes the model's structure: a single YANG module with two main sub-trees. The PAE System sub-tree holds device-wide settings (whether access control is on, what announcements to send, the EAPOL and MKA protocol versions). EAPOL is the EAP over LAN encapsulation; MKA is the MACsec Key Agreement protocol. The PAE sub-tree holds the per-port pieces: the Supplicant and Authenticator roles, the KaY (Key Agreement Entity), the Logon Process, the Announcer and Listener, and the NID (Network Identity) groups. Crucially, these two sub-trees do not float free — they attach to existing IETF models by augmentation, described next.",
+      "zh": "第 14.3 节描述模型结构：一个 YANG 模块，含两棵主子树。PAE System 子树存放设备级设置（是否开启接入控制、要发送哪些通告、EAPOL 与 MKA 协议版本）。EAPOL 是 EAP over LAN（基于局域网的 EAP）封装；MKA 是 MACsec 密钥协商协议（MACsec Key Agreement）。PAE 子树存放逐端口的部分：申请者（Supplicant）与认证者（Authenticator）角色、KaY（密钥协商实体，Key Agreement Entity）、登录过程（Logon Process）、通告者（Announcer）与监听者（Listener），以及 NID（网络标识，Network Identity）组。关键在于，这两棵子树并非凭空存在——它们通过“增补”（augmentation）挂接到既有的 IETF 模型上，下面就讲这一点。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  SYS[\"IETF System Management\\n(RFC 7317)\"] -->|augmented by| PS[\"PAE System sub-tree\"]\n  IFM[\"IETF Interface Management\\n(RFC 8343)\"] -->|augmented by| PAE[\"PAE sub-tree\"]\n  PS --> A1[\"access control / announcements\\nEAPOL & MKA versions / NID groups\"]\n  PAE --> A2[\"Supplicant / Authenticator\\nKaY / Logon Process\\nAnnouncer / Listener\"]\n  NET[\"NETCONF controller\\nover SSH\"] -.reads & writes.-> SYS\n  NET -.reads & writes.-> IFM",
+      "zh": "flowchart TD\n  SYS[\"IETF 系统管理\\n(RFC 7317)\"] -->|被增补| PS[\"PAE System 子树\"]\n  IFM[\"IETF 接口管理\\n(RFC 8343)\"] -->|被增补| PAE[\"PAE 子树\"]\n  PS --> A1[\"接入控制 / 通告\\nEAPOL 与 MKA 版本 / NID 组\"]\n  PAE --> A2[\"申请者 / 认证者\\nKaY / 登录过程\\n通告者 / 监听者\"]\n  NET[\"NETCONF 控制器\\n经由 SSH\"] -.读写.-> SYS\n  NET -.读写.-> IFM"
+    },
+    {
+      "type": "prose",
+      "en": "Augmentation is the heart of how 802.1X plugs into the wider management world (Clause 14.4). Rather than reinventing how a device or an interface is described, the model adds its branches onto two standard IETF models. The PAE System nodes augment the IETF System Management model (RFC 7317), which describes device-wide properties; the PAE nodes augment the IETF Interface Management model (RFC 8343), which describes network interfaces. A conforming system must implement both IETF models. Because an interface can be built from stacked sub-layers (an 802.3 port, a MACsec SecY shim or a protocol-less PAC, a Controlled Port on top), the model uses the standard higher-layer-if and lower-layer-if links to express that interface stack — and supports both explicit stacking (one interface per layer) and augmented stacking (adjacent layers merged into one interface for simpler cases).",
+      "zh": "增补正是 802.1X 接入更广阔管理世界的核心方式（第 14.4 节）。模型不去重新发明如何描述一台设备或一个接口，而是把自己的分支挂接到两个标准 IETF 模型上。PAE System 节点增补描述设备级属性的 IETF 系统管理模型（RFC 7317）；PAE 节点增补描述网络接口的 IETF 接口管理模型（RFC 8343）。一个符合标准的系统必须同时实现这两个 IETF 模型。由于一个接口可由多个堆叠的子层构成（一个 802.3 端口、一个 MACsec SecY 垫层或无协议的 PAC、再在其上放一个受控端口），模型用标准的 higher-layer-if 与 lower-layer-if 链接来表达这一接口栈——并且既支持显式堆叠（每层一个接口），也支持增补式堆叠（相邻层合并为一个接口，用于较简单的场景）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Interface stack (explicit model)</text><rect x=\"30\" y=\"34\" width=\"180\" height=\"34\"/><text x=\"40\" y=\"55\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Controlled Port (ifType=bridge)</text><rect x=\"30\" y=\"86\" width=\"180\" height=\"34\"/><text x=\"40\" y=\"107\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">SecY / PAE (macSecControlledIF)</text><rect x=\"30\" y=\"138\" width=\"180\" height=\"34\"/><text x=\"40\" y=\"159\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">802.3 port (ethernetCsmacd)</text><line x1=\"120\" y1=\"68\" x2=\"120\" y2=\"86\" marker-end=\"url(#a)\"/><line x1=\"120\" y1=\"120\" x2=\"120\" y2=\"138\" marker-end=\"url(#a)\"/><text x=\"240\" y=\"58\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">higher-layer-if</text><text x=\"240\" y=\"152\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">lower-layer-if</text><text x=\"240\" y=\"105\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">links join the layers</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"4\" refY=\"4\" orient=\"auto\"><path d=\"M0,0 L8,4 L0,8\" stroke=\"currentColor\"/></marker></defs></svg>",
+      "caption": {
+        "en": "An 802.1X interface stack expressed with the IETF interface links. The higher-layer-if / lower-layer-if pointers tie a Controlled Port to its SecY/PAE layer and down to the physical 802.3 port (Clause 14.4.4).",
+        "zh": "用 IETF 接口链接表达的 802.1X 接口栈。higher-layer-if / lower-layer-if 指针把受控端口与其 SecY/PAE 层相连，再向下连到物理 802.3 端口（第 14.4.4 节）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14.2 covers security considerations — a reminder that the management channel is itself an attack surface. Because the YANG modules are reached over NETCONF, the standard mandates a secure transport (SSH is the mandatory-to-implement choice) and the NETCONF Access Control Model to limit who may invoke which operations. It flags the genuinely dangerous knobs: turning off system-access-control could open a network to attack, and disabling MKA (kay:enable) would strip away MACsec protection. It also warns that even read-only nodes leak useful intelligence to an attacker, and that secret keys are never exposed for reading — they are used internally (for example to compute an Integrity Check Value, ICV) but never disclosed.",
+      "zh": "第 14.2 节讲安全考量——提醒我们管理通道本身就是一个攻击面。由于这些 YANG 模块通过 NETCONF 访问，标准要求使用安全传输（SSH 是必须实现的选项），并要求使用 NETCONF 接入控制模型来限制谁可调用哪些操作。它点名了真正危险的开关：关闭 system-access-control 可能让网络门户洞开，而禁用 MKA（kay:enable）会剥离 MACsec 保护。它还警告，即便是只读节点也会向攻击者泄露有用情报，并且密钥永远不可被读取——它们仅在内部使用（例如计算完整性校验值 ICV，Integrity Check Value），绝不外泄。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14.5 is the formal definition itself: 14.5.1 gives the tree schema (the at-a-glance outline showing every read-write 'rw' and read-only 'ro' node — supplicant, authenticator, kay, logon-nid, announcer, listener, eapol-statistics, and the logon-process with its per-session statistics); 14.5.2 defines the ieee802-dot1x-types module of shared data types (the NID string, session user names, key numbers, and so on); and 14.5.3 is the full ieee802-dot1x module that imports those types and the IETF modules and spells out every container and leaf in YANG syntax. Then Clause 14.6 grounds the model in six worked applications, showing which nodes you actually need in each scenario.",
+      "zh": "第 14.5 节是模型的正式定义本身：14.5.1 给出树形概要（一眼可览的轮廓，标出每个读写“rw”与只读“ro”节点——supplicant、authenticator、kay、logon-nid、announcer、listener、eapol-statistics，以及带逐会话统计的 logon-process）；14.5.2 定义 ieee802-dot1x-types 模块中的共享数据类型（NID 字符串、会话用户名、密钥编号等）；14.5.3 则是完整的 ieee802-dot1x 模块，它导入上述类型和 IETF 模块，并用 YANG 语法逐一列出每个容器和叶子。随后第 14.6 节用六个实际应用把模型落地，展示每种场景下你真正需要哪些节点。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map A — Clause 14 subclauses, node by node",
+        "zh": "覆盖图 A —— 第 14 章各小节，逐节点解读"
+      },
+      "en": "14.1 PAE management using YANG — purpose and scope; YANG mirrors the Clause 13 MIB in capability but the two are not used together, and also manages the PAC when MACsec is absent. 14.2 Security considerations — NETCONF over a secure transport (SSH), the NETCONF access-control model, the sensitive nodes (system-access-control, kay:enable, nid-group), and the non-disclosure of secret keys. 14.3 802.1X YANG model structure — one module, two sub-trees (PAE System and PAE), per Figure 14-1/14-2. 14.4.1 General — the model augments two IETF models and may need companion models for EAP methods, credentials, trust roots, and PSKs. 14.4.2 Relationship to the System Management model — PAE System augments RFC 7317; cross-reference Table 14-1 maps management info to YANG nodes. 14.4.3 Relationship to the Interface Management model — PAE augments RFC 8343; SecY shim (with MACsec) or PAC shim (without); Controlled/Uncontrolled/Common Ports tied by higher-layer-if and lower-layer-if. 14.4.4 The Interface Stack Models — explicit vs augmented stacks; examples for Bridge Port, LAG, MACsec, and virtual ports. 14.5.1 Tree schema; 14.5.2 ieee802-dot1x-types module; 14.5.3 full ieee802-dot1x module definition (with copyright release allowing free reproduction of the YANG modules).",
+      "zh": "14.1 用 YANG 管理 PAE——目的与范围；YANG 在能力上对应第 13 章 MIB，但两者不并用，且在无 MACsec 时也管理 PAC。14.2 安全考量——经安全传输（SSH）的 NETCONF、NETCONF 接入控制模型、敏感节点（system-access-control、kay:enable、nid-group），以及密钥不可读取。14.3 802.1X YANG 模型结构——一个模块、两棵子树（PAE System 与 PAE），见图 14-1/14-2。14.4.1 概述——模型增补两个 IETF 模型，并可能需要配套模型来处理 EAP 方法、凭据、信任根与 PSK。14.4.2 与系统管理模型的关系——PAE System 增补 RFC 7317；交叉引用表 14-1 把管理信息映射到 YANG 节点。14.4.3 与接口管理模型的关系——PAE 增补 RFC 8343；SecY 垫层（有 MACsec）或 PAC 垫层（无）；受控/非受控/公共端口由 higher-layer-if 与 lower-layer-if 关联。14.4.4 接口栈模型——显式与增补式堆叠；含网桥端口、LAG、MACsec 与虚拟端口的示例。14.5.1 树形概要；14.5.2 ieee802-dot1x-types 模块；14.5.3 完整 ieee802-dot1x 模块定义（附版权释放，允许自由复制其中的 YANG 模块）。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          225,
+          226,
+          230,
+          233,
+          237
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map B — the six application scenarios (Clause 14.6)",
+        "zh": "覆盖图 B —— 六个应用场景（第 14.6 节）"
+      },
+      "en": "14.6.1 General — the modules support the full range of access-control applications from Clause 7 and from IEEE Std 802.1AE-2018, used together with the IEEE 802.1Q YANG models. The next five are representative scenarios. 14.6.2 Host on a physically secure point-to-point LAN (7.1) — the host's PAE is a Supplicant; because the link is physically secure, no KaY (MACsec) nodes are needed; a PAC shim sits in the stack; set logon-process:logon true to manage credentials. 14.6.3 Network access point on a physically secure point-to-point LAN (7.1) — same idea from the access point's side; its PAE is an Authenticator, no Supplicant or KaY nodes needed. 14.6.4 Access point with MACsec on a point-to-point LAN (7.3) — link is not secure, so KaY nodes are required; enable kay, set actor and key-server priorities, set kay:macsec:capable true, optionally enable the listener. 14.6.5 Access point with MACsec on a multi-access LAN (7.5) — like 14.6.4 plus pae:vp-enable true to turn on virtual-port capabilities for the shared medium. 14.6.6 Access point with MACsec over a Link Aggregation Group, LAG (per 11.5 of 802.1AE-2018) — PAE/KaY nodes attach to each aggregation-port interface, which mutually authenticate before aggregating, and each port's SecY runs MACsec; the higher-layer-if identifies the aggregator.",
+      "zh": "14.6.1 概述——这些模块支持第 7 章及 IEEE Std 802.1AE-2018 中的全部接入控制应用，并与 IEEE 802.1Q 的 YANG 模型配合使用。后五节为代表性场景。14.6.2 物理安全点对点 LAN 上的主机（7.1）——主机 PAE 为申请者；因链路物理安全，无需 KaY（MACsec）节点；栈中放 PAC 垫层；置 logon-process:logon 为 true 以管理凭据。14.6.3 物理安全点对点 LAN 上的网络接入点（7.1）——从接入点一侧看同理；其 PAE 为认证者，无需申请者或 KaY 节点。14.6.4 点对点 LAN 上启用 MACsec 的接入点（7.3）——链路不安全，故需要 KaY 节点；启用 kay、设置 actor 与 key-server 优先级、置 kay:macsec:capable 为 true，并可选启用 listener。14.6.5 多址 LAN 上启用 MACsec 的接入点（7.5）——与 14.6.4 类似，并额外置 pae:vp-enable 为 true 以为共享介质开启虚拟端口能力。14.6.6 经链路聚合组（LAG，Link Aggregation Group）启用 MACsec 的接入点（依 802.1AE-2018 之 11.5）——PAE/KaY 节点挂接到每个聚合端口接口，它们在聚合前相互认证，每个端口的 SecY 运行 MACsec；higher-layer-if 标识聚合器。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          262,
+          263,
+          264,
+          265,
+          266
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "With the body of the standard complete, the annexes provide the reference scaffolding. Two are normative (binding): Annex A is the PICS proforma and Annex C is the state-diagram notation. The rest are informative (helpful background): Annex B (bibliography), Annex D (EAP/RADIUS guidelines), Annex E (Wake-on-LAN), Annex F (unsecured multi-access LANs), and Annex G (test vectors). EAP is the Extensible Authentication Protocol; RADIUS is Remote Authentication Dial-In User Service, the back-end server that vets credentials.",
+      "zh": "正文讲完后，附录提供参考性的支撑结构。其中两个是规范性（具有约束力）的：附录 A 是 PICS 表格，附录 C 是状态图记号。其余为资料性（有益背景）：附录 B（参考文献）、附录 D（EAP/RADIUS 指南）、附录 E（网络唤醒）、附录 F（未加密的多址 LAN）和附录 G（测试向量）。EAP 是可扩展认证协议（Extensible Authentication Protocol）；RADIUS 是远程认证拨入用户服务（Remote Authentication Dial-In User Service），即后端核验凭据的服务器。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map C — the seven annexes (A through G)",
+        "zh": "覆盖图 C —— 七个附录（A 至 G）"
+      },
+      "en": "Annex A (normative) PICS proforma — the Protocol Implementation Conformance Statement: a fixed-format questionnaire a supplier completes to declare which capabilities and options were implemented. Status symbols include M (mandatory), O (optional), O.n (one-of-group), X (prohibited), and conditional predicates; the proforma may be freely reproduced and the completed form published. Annex B (informative) Bibliography — the numbered [Bn] references (UML guides, RADIUS RFCs, EAP RFCs, NETCONF and YANG RFCs, ASN.1 and C++ standards) cited throughout. Annex C (normative) State diagram notation — how to read the standard's state machines: states as boxes (identifier above, entry procedures below), transitions as labeled arrows, UCT (unconditional transition), the BEGIN global condition, ELSE, and a C++-derived symbol table (=, ==, !=, &&, ||, if...then, braces); if text and diagram conflict, the diagram wins. Annex D (informative) EAP and RADIUS usage guidelines — points to IETF RFC 3580 and successors; D.1 the EAP Session-Id (used to derive the CKN, the secure Connectivity Association Key Name); D.2 RADIUS attributes for IEEE 802 networks (RFC 7268) carrying the NID and Access Status. Annex E (informative) Wake-on-LAN — how a sleeping station that cannot run EAPOL/MKA/MACsec still receives a 'magic packet' through the Uncontrolled Port. Annex F (informative) Unsecured multi-access LANs — describes commercial 'authenticated' shared-media access that does not meet the standard's (or 802.1AE's) security bar, and how filters approximating virtual ports offer a migration path toward real MACsec. Annex G (informative) Test vectors — worked hexadecimal examples of the Key Derivation Function (KDF, 6.2.1) for 128-bit and 256-bit keys: G.1 the KDF itself, G.2 CAK (Connectivity Association Key) derivation from an EAP MSK, and G.3 CKN derivation — so implementers can confirm their crypto produces the exact expected output.",
+      "zh": "附录 A（规范性）PICS 表格——协议实现一致性声明（Protocol Implementation Conformance Statement）：供应商填写的固定格式问卷，用以声明实现了哪些能力和选项。状态符号包括 M（强制）、O（可选）、O.n（组内择一）、X（禁止）及条件谓词；该表格可自由复制，填好的表可公开发布。附录 B（资料性）参考文献——全文引用的编号 [Bn] 条目（UML 指南、RADIUS RFC、EAP RFC、NETCONF 与 YANG RFC、ASN.1 与 C++ 标准）。附录 C（规范性）状态图记号——如何阅读标准中的状态机：状态为方框（上为标识符，下为入态过程）、转移为带标签的箭头、UCT（无条件转移）、BEGIN 全局条件、ELSE，以及源自 C++ 的符号表（=、==、!=、&&、||、if...then、花括号）；若文字与状态图冲突，以状态图为准。附录 D（资料性）EAP 与 RADIUS 使用指南——指向 IETF RFC 3580 及其后续；D.1 讲 EAP Session-Id（用于派生 CKN，即安全的连接关联密钥名，Connectivity Association Key Name）；D.2 讲用于 IEEE 802 网络的 RADIUS 属性（RFC 7268），用以承载 NID 与接入状态。附录 E（资料性）网络唤醒——无法运行 EAPOL/MKA/MACsec 的休眠站点，如何仍能经由非受控端口收到“魔法包”。附录 F（资料性）未加密的多址 LAN——描述某些商用的“已认证”共享介质接入，它达不到本标准（或 802.1AE）的安全门槛，以及用近似虚拟端口的过滤器如何提供向真正 MACsec 迁移的路径。附录 G（资料性）测试向量——密钥派生函数（KDF，Key Derivation Function，见 6.2.1）的十六进制算例，覆盖 128 位与 256 位密钥：G.1 KDF 本身、G.2 由 EAP MSK 派生 CAK（连接关联密钥，Connectivity Association Key）、G.3 派生 CKN——便于实现者确认其加密产出与预期输出完全一致。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          267,
+          268,
+          276,
+          277,
+          279,
+          280,
+          281,
+          282,
+          283,
+          285
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How to use the annexes in practice: build to the body of the standard, then walk Annex A to certify conformance, lean on Annex C whenever a state machine looks cryptic, consult Annex D before wiring up EAP/RADIUS, remember Annex E if sleeping devices must still wake, weigh Annex F only as a stepping-stone (it is explicitly not 'secure'), and run your KDF against Annex G's vectors to prove your key derivation is bit-for-bit correct.",
+      "zh": "实践中如何用好这些附录：先按标准正文实现，再走附录 A 来认证一致性；每当某个状态机看起来晦涩，就依靠附录 C；接入 EAP/RADIUS 之前查阅附录 D；若休眠设备仍需被唤醒，记得附录 E；附录 F 只可当作过渡跳板来权衡（它明确不是“安全的”）；用附录 G 的向量跑一遍你的 KDF，以证明密钥派生逐位正确。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        213,
+        214,
+        215,
+        216,
+        217,
+        218
+      ],
+      "note": "14.1-14.4.3: YANG purpose, security considerations, model structure (two sub-trees), augmentation of IETF System (RFC 7317) and Interface (RFC 8343) models; cross-reference tables."
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        225,
+        226,
+        230,
+        233,
+        237
+      ],
+      "note": "14.4.4 interface stack models (explicit vs augmented); 14.5.1 tree schema; 14.5.2 ieee802-dot1x-types; 14.5.3 ieee802-dot1x module definition."
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        262,
+        263,
+        264,
+        265,
+        266
+      ],
+      "note": "14.6.1-14.6.6: six representative YANG application scenarios (host/access-point, physically secure, MACsec point-to-point, multi-access, and over LAG)."
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        267,
+        268,
+        276,
+        277,
+        279,
+        280,
+        281,
+        282,
+        283,
+        285
+      ],
+      "note": "Annex A PICS proforma; Annex B bibliography; Annex C state-diagram notation; Annex D EAP/RADIUS guidelines; Annex E Wake-on-LAN; Annex F unsecured multi-access LANs; Annex G KDF/CAK/CKN test vectors."
+    }
+  ],
+  "covers": [
+    "8021X-2020:14.1",
+    "8021X-2020:14.2",
+    "8021X-2020:14.3",
+    "8021X-2020:14.4.1",
+    "8021X-2020:14.4.2",
+    "8021X-2020:14.4.3",
+    "8021X-2020:14.4.4",
+    "8021X-2020:14.5.1",
+    "8021X-2020:14.5.2",
+    "8021X-2020:14.5.3",
+    "8021X-2020:14.6.1",
+    "8021X-2020:14.6.2",
+    "8021X-2020:14.6.3",
+    "8021X-2020:14.6.4",
+    "8021X-2020:14.6.5",
+    "8021X-2020:14.6.6",
+    "8021X-2020:Annex_A",
+    "8021X-2020:Annex_B",
+    "8021X-2020:Annex_C",
+    "8021X-2020:Annex_D",
+    "8021X-2020:Annex_E",
+    "8021X-2020:Annex_F",
+    "8021X-2020:Annex_G"
+  ],
+  "track": "net-security"
+}

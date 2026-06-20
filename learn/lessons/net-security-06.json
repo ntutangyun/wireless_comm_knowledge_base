@@ -1,0 +1,129 @@
+{
+  "id": "net-security-06",
+  "title": {
+    "en": "MKA In-Service Upgrades: Suspending Without Dropping the Link",
+    "zh": "MKA 在线升级：暂停密钥协商而不中断链路"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Sometimes you need to upgrade the control-plane software on a switch or router that is in the middle of a secure MACsec link. The problem: while that software reboots, it cannot run MKA (the MACsec Key Agreement protocol — the chatter that negotiates and refreshes encryption keys). If MKA simply stopped, the peers would notice the silence, decide the link is dead, tear down the key, and your encrypted traffic would drop. Clause 9.18 of IEEE Std 802.1X-2020 defines an *in-service upgrade*: a controlled, agreed-upon pause of MKA where the existing key keeps protecting data the whole time. This lesson walks through how that pause is requested, entered, survived, and exited.",
+      "zh": "有时你需要给一台正处于 MACsec 安全链路中间的交换机或路由器升级控制面软件。问题在于：在软件重启期间，它无法运行 MKA（MACsec 密钥协商协议——负责协商和刷新加密密钥的那套交互）。如果 MKA 直接停止，对端会察觉到这段静默，判定链路已断，拆除密钥，于是你的加密流量就会中断。IEEE Std 802.1X-2020 的第 9.18 条定义了一种“在线升级”：让 MKA 受控地、经各方约定地暂停，而现有密钥在整个过程中持续保护数据。本课逐步讲解这种暂停是如何被请求、进入、维持并退出的。"
+    },
+    {
+      "type": "prose",
+      "en": "Two timers carry the whole mechanism. A non-Key-Server member that wants to pause announces `suspendFor` — \"please grant me a suspension this many seconds long.\" The Key Server (the member elected to mint and hand out keys) responds with `suspendedWhile` — \"a suspension is in effect, and this many seconds remain.\" A Key Server that supports in-service upgrades always puts the current `suspendedWhile` value into every MKPDU (MKA Protocol Data Unit — the periodic MKA message). A non-zero `suspendedWhile` is the universal signal to every member: hold the current key, do not panic, do not declare yourself the lone survivor (9.18).",
+      "zh": "整个机制由两个计时器承载。想要暂停的非密钥服务器成员通过 `suspendFor` 宣告：“请给我一段这么多秒的暂停期。”密钥服务器（被选举出来负责生成和分发密钥的成员）则用 `suspendedWhile` 回应：“暂停正在生效，还剩这么多秒。”支持在线升级的密钥服务器会把当前的 `suspendedWhile` 值放进每一个 MKPDU（MKA 协议数据单元，即周期性的 MKA 报文）。非零的 `suspendedWhile` 是向所有成员发出的统一信号：保持当前密钥，不要恐慌，不要自认为是唯一幸存者（9.18）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Vocabulary anchor: CA = Connectivity Association (the group of peers sharing one MACsec security relationship). KaY = the Key Agreement entity (the part of a PAE running MKA). MI = Member Identifier; SAK = Secure Association Key (the actual encryption key); SCI = Secure Channel Identifier; AN = Association Number. These appear throughout — keep them handy.",
+      "zh": "术语锚点：CA = 连通性关联（共享同一个 MACsec 安全关系的一组对端）。KaY = 密钥协商实体（PAE 中运行 MKA 的部分）。MI = 成员标识符；SAK = 安全关联密钥（真正的加密密钥）；SCI = 安全信道标识符；AN = 关联号。这些缩写贯穿全文，请随手记好。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as Member S (not Key Server)\n  participant K as Key Server K\n  S->>K: suspendFor = 60\n  Note over K: policy suspendOnRequest = True\n  K->>S: suspendedWhile = 60\n  Note over S: S suspends, upgrades\n  K->>K: decrement suspendedWhile each second\n  Note over S: S resumes (new MI)\n  S->>K: suspendFor = 0\n  K->>S: suspendedWhile = 0; new SAK\n  Note over S,K: fresh key installed, normal MKA resumes",
+      "zh": "sequenceDiagram\n  participant S as 成员 S（非密钥服务器）\n  participant K as 密钥服务器 K\n  S->>K: suspendFor = 60\n  Note over K: 策略 suspendOnRequest = True\n  K->>S: suspendedWhile = 60\n  Note over S: S 暂停并升级\n  K->>K: 每秒递减 suspendedWhile\n  Note over S: S 恢复（新的 MI）\n  S->>K: suspendFor = 0\n  K->>S: suspendedWhile = 0；新 SAK\n  Note over S,K: 安装新密钥，恢复正常 MKA"
+    },
+    {
+      "type": "prose",
+      "en": "How a suspension begins (9.18.1): any member except the Key Server requests one by sending a non-zero `suspendFor`, repeating it in every MKPDU until it actually suspends (a request lasts only as long as it is repeated; sending `suspendFor = 0` cancels it). The Key Server records, per live peer, the lesser of that peer's `suspendFor` and the configured *MKA Suspension Limit* (a policy cap from Table 9-3). A Key Server should not start a suspension until it is cleanly on one key — formally, its CP (Control Plane) state machine has reached state RETIRE: transmitting on the newest SAK and no longer receiving on any older one. It then initiates if its own `suspendFor` is non-zero, or if its policy `suspendOnRequest` is True and some peer asked. To begin, it sets `suspendedWhile` to the greatest applicable `suspendFor`, decrements it once per second, and broadcasts that value in all MKPDUs.",
+      "zh": "暂停如何开始（9.18.1）：除密钥服务器外的任何成员都可以通过发送非零的 `suspendFor` 来请求，并在每个 MKPDU 中重复该值，直到它真正暂停为止（请求只在持续重复期间有效；发送 `suspendFor = 0` 即可取消）。密钥服务器针对每个活跃对端，记录该对端的 `suspendFor` 与配置的 *MKA 暂停上限*（来自表 9-3 的策略上限）中较小的那个值。密钥服务器在干净地只使用一把密钥之前不应发起暂停——严格地说，其 CP（控制面）状态机要已进入 RETIRE 状态：正在用最新的 SAK 发送，且不再用任何旧 SAK 接收。随后，若它自身的 `suspendFor` 非零，或其策略 `suspendOnRequest` 为真且有对端提出请求，它便发起暂停。开始时，它把 `suspendedWhile` 设为适用的最大 `suspendFor`，每秒递减一次，并在所有 MKPDU 中广播该值。"
+    },
+    {
+      "type": "prose",
+      "en": "When to actually suspend (9.18.2) and what happens while suspended (9.18.3): a member should only suspend itself if it is on a single SAK (transmitting and receiving with one key), or if policy limits how long it is willing to wait. A requesting non-Key-Server member should wait for an MKPDU from the Key Server whose `suspendedWhile` is at least its `suspendFor` before going dark. Once suspended, the member keeps doing MACsec — it still generates, transmits, receives, and verifies secure data frames per IEEE Std 802.1AE — using the receive and transmit SAs (Secure Associations) frozen at suspension time; in effect its CP machine stays in RETIRE. It need not remember its MI, peer lists, or even the key identifier (it may report a zero KI afterward), but it must keep just enough — the SCI and AN of each active SA — to resume, and it must never share or redistribute the SAK.",
+      "zh": "何时真正暂停（9.18.2）以及暂停期间会发生什么（9.18.3）：成员只应在仅使用单一 SAK（用一把密钥收发）时，或在策略限制了它愿意等待的时长时，才暂停自身。提出请求的非密钥服务器成员应等到收到密钥服务器的一个 MKPDU，其 `suspendedWhile` 至少等于自身的 `suspendFor` 后，才进入静默。一旦暂停，成员仍继续执行 MACsec——它依然按 IEEE Std 802.1AE 生成、发送、接收并校验安全数据帧——使用暂停时刻冻结下来的收发 SA（安全关联）；实际上其 CP 状态机停留在 RETIRE。它不必记住自己的 MI、对端列表、甚至密钥标识符（之后可报告 KI 为零），但必须保留刚好够用的信息——每个活跃 SA 的 SCI 和 AN——以便恢复，并且绝不可分享或重新分发该 SAK。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><line x1=\"20\" y1=\"110\" x2=\"500\" y2=\"110\"/><polygon points=\"500,110 492,106 492,114\" fill=\"currentColor\" stroke=\"none\"/><text x=\"455\" y=\"128\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\">time</text><rect x=\"30\" y=\"60\" width=\"110\" height=\"40\"/><text x=\"40\" y=\"84\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\">RUN (MKA live)</text><rect x=\"150\" y=\"60\" width=\"90\" height=\"40\"/><text x=\"160\" y=\"78\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">request</text><text x=\"160\" y=\"92\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">suspendFor</text><rect x=\"250\" y=\"60\" width=\"150\" height=\"40\"/><text x=\"258\" y=\"78\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">SUSPENDED (RETIRE)</text><text x=\"258\" y=\"92\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">data keeps flowing</text><rect x=\"410\" y=\"60\" width=\"80\" height=\"40\"/><text x=\"418\" y=\"84\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">RESUME</text><text x=\"250\" y=\"40\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">suspendedWhile decrements 60 -> 0</text><line x1=\"250\" y1=\"45\" x2=\"250\" y2=\"58\"/><line x1=\"400\" y1=\"45\" x2=\"400\" y2=\"58\"/></svg>",
+      "caption": {
+        "en": "The CP state machine parks in RETIRE for the whole suspension. The existing SAK keeps protecting data while suspendedWhile counts down.",
+        "zh": "在整个暂停期间，CP 状态机停泊在 RETIRE。当 suspendedWhile 倒数时，现有 SAK 持续保护数据。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Resuming (9.18.4): a returning member sets its own `suspendedWhile` to the Max Suspension Limit (or a lower policy value) and, once it confirms the upgrade succeeded, sets `suspendFor` back to zero. If it kept MKA alive while suspended, it retains its MI and peer lists; otherwise it picks a fresh MI and starts with empty lists. A neat resilience trick: if the Key Server that started the suspension suspends itself, another member can be elected Key Server in the meantime and will keep broadcasting the decrementing `suspendedWhile` — so no member has to remember whether it used to be Key Server. The current Key Server must end the suspension (reset `suspendedWhile` to zero) before the timer hits zero once, for every active receive SA, it has a matching live peer (or sees a brand-new member), and it has recorded `suspendFor = 0` from each such peer. It checks SA activity via the InPktsOK counter of IEEE Std 802.1AE: an SA with no increment for one MKA Life Time (6 seconds) is treated as inactive.",
+      "zh": "恢复（9.18.4）：归来的成员把自己的 `suspendedWhile` 设为最大暂停上限（或更低的策略值），并在确认升级成功后，把 `suspendFor` 重新设为零。如果它在暂停期间保持了 MKA 运行，就保留其 MI 和对端列表；否则它选取一个新的 MI 并以空列表起步。一个巧妙的容错设计：如果发起暂停的密钥服务器自己也暂停了，在此期间可以选举出另一个密钥服务器，它会继续广播递减的 `suspendedWhile`——这样任何成员都不必记住自己曾经是否是密钥服务器。当前密钥服务器必须在计时器归零之前结束暂停（把 `suspendedWhile` 重置为零），其条件是：对每个活跃接收 SA 都有匹配的活跃对端（或发现了全新成员），并且已记录到每个此类对端的 `suspendFor = 0`。它通过 IEEE Std 802.1AE 的 InPktsOK 计数器判断 SA 是否活跃：某个 SA 在一个 MKA 生命期（6 秒）内计数器没有增长，即视为不活跃。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "XPN edge case (9.18.5): with an XPN (eXtended Packet Number) cipher suite, losing more than 2^32 frames during a long silence corrupts the receiver's guess of the upper 32 bits of the packet number, after which every frame fails validation. At 100 Gb/s you could lose that many frames within the suspension window. So when in-service upgrades and an XPN suite are both in use, members also carry the most-significant 32 bits of the Lowest Acceptable PN for the Latest Key (and the Old Key, if in use) so everyone re-syncs on resume.",
+      "zh": "XPN 边角情况（9.18.5）：在使用 XPN（扩展包编号）密码套件时，长时间静默中若丢失超过 2^32 个帧，接收方对包编号高 32 位的推测就会出错，此后每一帧都会校验失败。在 100 Gb/s 下，你可能在暂停窗口内就丢失这么多帧。因此，当同时使用在线升级和 XPN 套件时，成员还会携带“最新密钥”（以及在用的“旧密钥”）的最低可接受 PN 的高 32 位，以便所有人在恢复时重新同步。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: managing upgrades & the MKPDU field (9.18.6, 9.18.7)",
+        "zh": "覆盖地图：管理升级与 MKPDU 字段（9.18.6、9.18.7）"
+      },
+      "en": "9.18.6 Managing in-service upgrades — MKA only makes a modest contribution; the network administrator still owns the hard parts. Best practices listed include: keep an up-to-date record of all systems and config; back up software, revision levels, and parameters of the systems being upgraded and their peers; do off-line compatibility testing; retain the old software until the new one is confirmed; use a 'dead man' timer that auto-reverts if the NOC (network operations center) can't be reached; test that fallback; and upgrade one intermediate system at a time. The 120-second maximum suspension is sized for an upgrade plus dead-man expiry plus reversion. A subtle hazard: if MKA resumes and distributes a new SAK before management connectivity is restored, a later dead-man revert could leave members not converged on one key (the Key Server must not redistribute the previous SAK, per 9.8) — so a system using a dead-man timer should not reset suspendFor to zero until that timer is reset. Existing upgrade frameworks may instead drive suspendFor/suspendOnRequest, and even set suspendedWhile directly, through each system's LMI (Local Management Interface) — but any directly set value must be consistent with what MKA would send. Setting a timer when no suspension is needed terminates immediately and resets before the next MKPDU.\n\n9.18.7 MKPDU application data — every in-service-upgrade-capable participant includes the *MKA suspension time* parameter in each MKPDU (Figure 11-16). The value carried is `suspendedWhile` if the sender considers itself Key Server (bit 8 set in octet 3 of the Basic Parameter Set, Figure 11-8), otherwise it is `suspendFor`. With an XPN cipher suite it also carries the MS-32-bits of the Lowest Acceptable PN for the Latest Key, and for the Old Key if in use. A receiver adopts a received `suspendedWhile` into its own timer only if it is the member's principal actor and agrees the sender is the Key Server; it records a `suspendFor` from any live partner, superseding that partner's prior value.",
+      "zh": "9.18.6 管理在线升级——MKA 只做出有限贡献；网络管理员仍然承担最难的部分。列出的最佳实践包括：保持所有系统和配置的最新记录；备份被升级系统及其对端的软件、版本级别和参数；做离线兼容性测试；在确认新软件可用前保留旧软件；使用“死人”计时器，在无法联系到 NOC（网络运营中心）时自动回滚；测试该回滚机制；以及一次只升级一台中间系统。120 秒的最大暂停时长是按“升级 + 死人计时器到期 + 回滚”来设计的。一个微妙的隐患：如果 MKA 在管理连通性恢复之前就恢复并分发了新 SAK，之后的死人回滚可能导致成员未收敛到同一把密钥（按 9.8，密钥服务器不得重新分发上一把 SAK）——所以使用死人计时器的系统在该计时器被重置之前，不应把 suspendFor 重置为零。现有的升级框架也可以转而通过每个系统的 LMI（本地管理接口）来驱动 suspendFor/suspendOnRequest，甚至直接设置 suspendedWhile——但任何直接设置的值都必须与 MKA 会发送的值保持一致。在无需暂停时设置计时器会立即终止，并在下一个 MKPDU 之前重置。\n\n9.18.7 MKPDU 应用数据——每个支持在线升级的参与者都在每个 MKPDU 中包含 *MKA 暂停时间* 参数（图 11-16）。所携带的值：若发送方自认为是密钥服务器（基本参数集第 3 字节的第 8 位置位，图 11-8），则为 `suspendedWhile`，否则为 `suspendFor`。在使用 XPN 密码套件时，它还携带“最新密钥”最低可接受 PN 的高 32 位，以及在用的“旧密钥”的高 32 位。接收方仅在它是该成员的主行为体、且认同发送方是密钥服务器时，才把收到的 `suspendedWhile` 采纳进自己的计时器；它会记录来自任何活跃伙伴的 `suspendFor`，并取代该伙伴此前的值。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          101,
+          102,
+          103
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: four worked examples (9.19.1–9.19.4)",
+        "zh": "覆盖地图：四个实例（9.19.1–9.19.4）"
+      },
+      "en": "9.19 introduces a compact notation — `Actor : Live Peer List : Potential Peer List : other parameters`, with each member shown as MI+MN (message number), e.g. A+47.\n\n9.19.1 Requested by end station in point-to-point CA — end station S (not Key Server) sends `suspendFor = 60`; Key Server K has `suspendOnRequest = True` and replies `suspendedWhile = 60`; S suspends. K holds 60 while S is still on its Live Peer List, then decrements (… 58 … 30). S resumes with a new MI and naively assumes `suspendedWhile = 120`. After re-exchange, K terminates (`suspendedWhile = 0`) and distributes a fresh SAK. \n\n9.19.2 Initiated by Key Server in point-to-point CA — K itself starts by sending `suspendedWhile = 60`, then suspends; here the other member also suspends and upgrades at the same time. Both resume with new MIs (K as D, S as G), each assuming 120, re-recognize each other, and K distributes a fresh SAK. \n\n9.19.3 Intermediate systems suspending multiple CAs — a router/bridge I with ports/participants I1, I2, I3 must suspend all CAs because one software upgrade hits every port. I is Key Server on some ports, not others; I2 is already in a suspension started by neighbor B. The example shows I setting suspendFor=60 on all ports, driving suspendedWhile where it is Key Server, waiting for neighbor C to respond on the port where C is Key Server, then suspending and upgrading. It illustrates how MKA helps even amid imperfect coordination across multiple CAs. \n\n9.19.4 Key Server suspends in a group CA — in a group CA of A, B, C with A as Key Server, A sets suspendFor, advertises `suspendedWhile = 30`, and transmits for one MKA Life Time (6 s) before suspending. While A is still on B's and C's Live Peer Lists neither claims Key Server; then B (higher Key Server Priority) takes over and keeps broadcasting the decrementing value (… 24). When A resumes it advertises 120, re-exchanges, and finds the termination conditions met — but if A never returns, B ends the suspension when its timer expires.",
+      "zh": "9.19 引入一种紧凑记法——`行为体 : 活跃对端列表 : 潜在对端列表 : 其他参数`，每个成员记为 MI+MN（消息号），例如 A+47。\n\n9.19.1 点对点 CA 中由端站请求——端站 S（非密钥服务器）发送 `suspendFor = 60`；密钥服务器 K 的 `suspendOnRequest = True`，回复 `suspendedWhile = 60`；S 暂停。当 S 仍在 K 的活跃对端列表上时 K 保持 60，随后递减（… 58 … 30）。S 用新 MI 恢复，并简单地假定 `suspendedWhile = 120`。重新交互后，K 终止暂停（`suspendedWhile = 0`）并分发新的 SAK。\n\n9.19.2 点对点 CA 中由密钥服务器发起——K 自己先发送 `suspendedWhile = 60`，然后暂停；这里另一个成员也同时暂停并升级。两者用新 MI 恢复（K 作为 D，S 作为 G），各自假定 120，重新相互识别，K 分发新的 SAK。\n\n9.19.3 中间系统暂停多个 CA——路由器/网桥 I 拥有端口/参与者 I1、I2、I3，由于一次软件升级会影响每个端口，它必须暂停所有 CA。I 在某些端口上是密钥服务器，在另一些端口上则不是；I2 已经处于由邻居 B 发起的暂停中。该例展示 I 在所有端口上设置 suspendFor=60，在它是密钥服务器的端口上驱动 suspendedWhile，在 C 是密钥服务器的端口上等待邻居 C 响应，然后暂停并升级。它说明了即使在多个 CA 间协调不完美时，MKA 仍能提供帮助。\n\n9.19.4 群组 CA 中密钥服务器暂停——在由 A、B、C 组成、A 为密钥服务器的群组 CA 中，A 设置 suspendFor，宣告 `suspendedWhile = 30`，并在暂停前传输一个 MKA 生命期（6 秒）。当 A 仍在 B 和 C 的活跃对端列表上时，二者都不会自称密钥服务器；随后 B（密钥服务器优先级更高）接管，并持续广播递减的值（… 24）。A 恢复时宣告 120，重新交互，发现满足终止条件——但如果 A 始终不归来，B 会在其计时器到期时结束暂停。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          103,
+          104,
+          105
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The big picture: in-service upgrade is a graceful, timer-coordinated truce. One member asks (`suspendFor`), the Key Server grants and counts down a shared deadline (`suspendedWhile`) that everyone can see in every MKPDU, the existing SAK keeps the data link encrypted the whole time, and any member can be elected to keep the countdown alive if the original Key Server steps out. When the upgraded member returns and proves it is healthy, the Key Server zeroes the timer and rolls a fresh key — and the link never noticed the maintenance window.",
+      "zh": "全景：在线升级是一种优雅的、由计时器协调的“停火”。一个成员提出请求（`suspendFor`），密钥服务器予以批准并对一个共享期限（`suspendedWhile`）倒计时，这个期限人人都能在每个 MKPDU 中看到；现有的 SAK 在整个过程中持续为数据链路加密；如果原来的密钥服务器退出，任何成员都可被选举出来让倒计时延续。当被升级的成员归来并证明自身健康后，密钥服务器把计时器清零并轮换出一把新密钥——而链路从头到尾都没有察觉到这段维护窗口。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105
+      ],
+      "note": "9.18 In-service upgrades (9.18.1 initiating suspension through 9.18.7 MKPDU application data) and 9.19 In-service upgrade examples (9.19.1-9.19.4)."
+    }
+  ],
+  "covers": [
+    "8021X-2020:9.18.1",
+    "8021X-2020:9.18.2",
+    "8021X-2020:9.18.3",
+    "8021X-2020:9.18.4",
+    "8021X-2020:9.18.5",
+    "8021X-2020:9.18.6",
+    "8021X-2020:9.18.7",
+    "8021X-2020:9.19.1",
+    "8021X-2020:9.19.2",
+    "8021X-2020:9.19.3",
+    "8021X-2020:9.19.4"
+  ],
+  "track": "net-security"
+}

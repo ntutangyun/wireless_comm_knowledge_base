@@ -1,0 +1,200 @@
+{
+  "id": "net-security-11",
+  "title": {
+    "en": "MACsec Foundations: Overview, Conformance, the Secure MAC Service, and the Protocol",
+    "zh": "MACsec 基础：概述、一致性、安全 MAC 服务与协议本身"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AE-2018 defines MAC Security (MACsec) — a way for authorized devices on a Local Area Network (LAN, a single Ethernet-like network segment) to keep their data confidential and to detect frames forged or altered by unauthorized devices. Clause 1.1 (Introduction) explains why: the protocols that manage a network usually run over that same network, so an attacker who can attach a device can disrupt service, steal data, or impersonate a peer. MACsec protects communication between trusted infrastructure components hop-by-hop; it does not replace end-to-end application security, and it relies on a companion standard (IEEE Std 802.1X) for authentication and cryptographic key distribution. Clause 1.2 (Scope) lists exactly what the standard delivers: data confidentiality, frame integrity, and data origin authenticity, provided by media-independent entities that operate transparently to the MAC Client (the higher-layer user of the network).",
+      "zh": "IEEE Std 802.1AE-2018 定义了 MAC 安全（MACsec）——一种让局域网（LAN，即单个类以太网网段）上经过授权的设备保持数据机密、并检测出未授权设备伪造或篡改帧的机制。Clause 1.1（引言）说明了原因：管理网络的协议通常就运行在该网络之上，因此能接入设备的攻击者可以中断服务、窃取数据或冒充对端。MACsec 逐跳保护可信基础设施组件之间的通信；它不替代端到端的应用层安全，并依赖配套标准 IEEE Std 802.1X 来完成认证和密钥分发。Clause 1.2（范围）列出了标准确切交付的内容：数据机密性、帧完整性和数据源真实性，由介质无关、对 MAC 客户端（更高层网络使用者）透明的实体来提供。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Key vocabulary used throughout: SecY = MAC Security Entity (the engine that runs MACsec inside a device); CA = secure Connectivity Association (the group of mutually authenticated peers); SC = Secure Channel (one direction of secure transmission); SA = Secure Association (one channel using one key); SAK = Secure Association Key; SecTAG = MAC Security TAG (the security header). The KaY (MAC Security Key Agreement Entity) inside 802.1X supplies the keys; the SecY just uses them.",
+      "zh": "全文反复出现的核心术语：SecY = MAC 安全实体（设备内部运行 MACsec 的引擎）；CA = 安全连接关联（相互认证的对端组成的组）；SC = 安全通道（安全传输的一个方向）；SA = 安全关联（使用一把密钥的通道阶段）；SAK = 安全关联密钥；SecTAG = MAC 安全标签（安全头）。802.1X 内部的 KaY（MAC 安全密钥协商实体）负责提供密钥，SecY 只负责使用它们。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 (Conformance) defines what it means to claim a device conforms. A conformance claim is about the externally observable behavior of the SecY: how it runs the protocol, how it is managed, and the service it provides to clients. Clause 5.1 (Requirements terminology) fixes the meaning of the keywords — shall (mandatory), may (a permitted choice), should (recommended). Clause 5.2 requires the supplier to fill in a Protocol Implementation Conformance Statement (PICS), a checklist proforma that records exactly which features are implemented. Conformance does not by itself make a system secure; it only means the SecY obeys the rules.",
+      "zh": "Clause 5（一致性）定义了声称设备符合标准意味着什么。一致性声明针对的是 SecY 的外部可观察行为：它如何运行协议、如何被管理、向客户端提供什么服务。Clause 5.1（要求术语）固定了关键词的含义——shall（强制）、may（允许的选择）、should（建议）。Clause 5.2 要求供应商填写协议实现一致性声明（PICS），这是一份记录究竟实现了哪些特性的清单式表格。一致性本身并不能让系统变得安全，它只表示 SecY 遵守了规则。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.3 lists the mandatory SecY capabilities (shall): support a Controlled Port, an Uncontrolled Port, and a Common Port; encode/decode MACsec Protocol Data Units (MPDUs); use a 48-bit MAC address plus a 16-bit Port Identifier to name each transmit channel; support the mandatory Default Cipher Suite for integrity; and keep at least one receive SC, two receive keys, and one transmit SC. It also lists what a conformant SecY shall not do — for example, do not raise the undetected error rate, and do not allow management via SNMP older than v3. Clause 5.4 lists the options (may): supporting confidentiality (encryption), more channels or keys, SNMPv3 management, and extra Cipher Suites. The Controlled Port carries the secure service; the Uncontrolled Port carries plain (e.g. key-agreement) traffic; the Common Port is the single shared connection to the LAN below.",
+      "zh": "Clause 5.3 列出强制的 SecY 能力（shall）：支持受控端口、非受控端口和公共端口；编解码 MACsec 协议数据单元（MPDU）；用 48 位 MAC 地址加 16 位端口标识符来命名每条发送通道；支持强制的默认密码套件以提供完整性保护；并至少保留一条接收 SC、两把接收密钥和一条发送 SC。它还列出符合标准的 SecY 不得做的事——例如不得提高漏检错误率，也不得允许通过早于 v3 的 SNMP 进行管理。Clause 5.4 列出可选项（may）：支持机密性（加密）、更多通道或密钥、SNMPv3 管理以及额外的密码套件。受控端口承载安全服务；非受控端口承载明文（如密钥协商）流量；公共端口是与下层 LAN 唯一共享的连接。"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 5.5 through 5.9 add conformance rules for Ethernet Data Encryption devices (EDEs) — two-port bridges that take unprotected frames on a red-side port and relay them protected by MACsec on a black-side port, transparently to the bridged network. Clause 5.5 gives the common EDE rules (exactly two ports, each SecY paired with an 802.1X PAE/KaY). Clauses 5.6–5.9 then specialize the four flavours: the EDE-M (a VLAN-unaware bridge), the EDE-CS (a Provider Edge Bridge translating C-tags to S-tags), the EDE-CC (two C-VLAN components), and the EDE-SS (two S-VLAN components). Each flavour differs mainly in which VLAN tags it recognizes on the red side and which it adds/removes on the black side.",
+      "zh": "Clause 5.5 至 5.9 为以太网数据加密设备（EDE，Ethernet Data Encryption device）补充一致性规则——这是一种双端口网桥，在红侧端口接收未保护的帧，并在黑侧端口经 MACsec 保护后转发，对被桥接网络透明。Clause 5.5 给出 EDE 的通用规则（恰好两个端口，每个 SecY 都配一个 802.1X 的 PAE/KaY）。Clause 5.6–5.9 进而细化四种形态：EDE-M（VLAN 无感知网桥）、EDE-CS（将 C-tag 转换为 S-tag 的提供商边缘网桥）、EDE-CC（两个 C-VLAN 组件）和 EDE-SS（两个 S-VLAN 组件）。各形态的差别主要在于红侧识别哪种 VLAN 标签、黑侧添加或移除哪种标签。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  Client[MAC Client] --> CP[Controlled Port]\n  CP --> SecY\n  KaY[KaY / 802.1X] -- keys via LMI --> SecY\n  SecY --> Common[Common Port]\n  UC[Uncontrolled Port] --> Common\n  Common --> LAN[(insecure LAN)]",
+      "zh": "flowchart LR\n  Client[MAC 客户端] --> CP[受控端口]\n  CP --> SecY\n  KaY[KaY / 802.1X] -- 经 LMI 下发密钥 --> SecY\n  SecY --> Common[公共端口]\n  UC[非受控端口] --> Common\n  Common --> LAN[(不安全的 LAN)]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6 (Secure provision of the MAC Service) frames the whole problem around preserving the ordinary MAC Service. Clause 6.1 reviews that service: it is an unconfirmed, connectionless data transfer where each request carries four parameters — Destination Address, Source Address, Priority, and the MAC Service Data Unit (MSDU, the payload). Clause 6.2 (connectivity) says a single LAN gives symmetric and transitive connectivity (if A reaches B, B reaches A; if A reaches B and B reaches C, then A reaches C). Clause 6.3 covers point-to-multipoint LANs, where one distinguished station (an access point, OLT, or root) relays between the others. Clause 6.4 (MAC status parameters) defines MAC_Enabled and MAC_Operational, and Clause 6.5 (point-to-point parameters) defines operPointToPointMAC and the ForceTrue / ForceFalse / Auto setting of adminPointToPointMAC.",
+      "zh": "Clause 6（安全地提供 MAC 服务）将整个问题围绕“保持普通 MAC 服务不变”来展开。Clause 6.1 回顾该服务：它是无确认、无连接的数据传输，每个请求携带四个参数——目的地址、源地址、优先级和 MAC 服务数据单元（MSDU，即净荷）。Clause 6.2（连通性）指出单个 LAN 提供对称且传递的连通性（若 A 能到 B，则 B 能到 A；若 A 到 B、B 到 C，则 A 到 C）。Clause 6.3 讨论点到多点 LAN，其中一个特定站点（接入点、OLT 或根节点）在其他站点之间转发。Clause 6.4（MAC 状态参数）定义 MAC_Enabled 与 MAC_Operational，Clause 6.5（点到点参数）定义 operPointToPointMAC 以及 adminPointToPointMAC 的 ForceTrue / ForceFalse / Auto 取值。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.6 (Security threats) catalogues what can go wrong: losing service indications, duplicating or delaying them, delivering them to the wrong recipient, modifying address or data, or disclosing the payload — enabling attacks like denial of service, theft of service, eavesdropping, masquerading, and man-in-the-middle (often via source-address spoofing). Clause 6.7 (MACsec connectivity) explains that MACsec operates within one CA, and that MAC_Operational is True only when the CA is complete (symmetric and transitive) and the local SecY can both send and receive. Clause 6.8 (MACsec guarantees) is the heart: every accepted indication came from a request by a member of the same CA, with unchanged parameters; and MACsec can additionally guarantee at most one indication per request, a bounded receive delay, and confidentiality of the MSDU. Clause 6.9 (Security services) maps those guarantees onto named services — connectionless integrity, data origin authenticity, confidentiality, replay protection, bounded receive delay — and notes what MACsec does not provide (non-repudiation, protection against traffic analysis).",
+      "zh": "Clause 6.6（安全威胁）列举可能出错的情形：丢失服务指示、重复或延迟指示、投递到错误接收方、篡改地址或数据、泄露净荷——从而支撑拒绝服务、盗用服务、窃听、冒充和中间人（常借助源地址欺骗）等攻击。Clause 6.7（MACsec 连通性）说明 MACsec 在单个 CA 内运行，且只有当 CA 完整（对称且传递）、本地 SecY 既能收又能发时，MAC_Operational 才为 True。Clause 6.8（MACsec 保证）是核心：每个被接受的指示都来自同一 CA 成员的请求，且参数未变；MACsec 还可附加保证每个请求至多一个指示、有界的接收时延以及 MSDU 的机密性。Clause 6.9（安全服务）把这些保证映射为具名服务——无连接完整性、数据源真实性、机密性、防重放、有界接收时延——并指出 MACsec 不提供的内容（不可否认性、抵御流量分析）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.10 (Quality of Service maintenance) checks that adding security does not wreck the network's QoS. MACsec adds no extra frame loss on a single LAN beyond a small size increase; introduces no new duplication or misordering; preserves the order of requests and indications; and keeps the undetected error rate no worse, because the existing frame check sequence (FCS) still covers the whole frame. The main costs are a slightly smaller usable MSDU (the SecTAG and integrity check value, ICV, take room) and some processing delay, which the standard bounds (Table 10-3). The mandatory Default Cipher Suite was chosen partly so it can run economically across the full range of LAN speeds.",
+      "zh": "Clause 6.10（服务质量维护）确认加入安全不会破坏网络的 QoS。在单个 LAN 上，除帧长略增外 MACsec 不引入额外丢帧；不引入新的重复或乱序；保持请求与指示的顺序；并且不会让漏检错误率变差，因为既有的帧校验序列（FCS）仍覆盖整帧。主要代价是可用 MSDU 略减（SecTAG 和完整性校验值 ICV 占用空间）以及一些处理时延，而标准对此设有上界（表 10-3）。强制的默认密码套件之所以被选中，部分原因正是它能在各种 LAN 速率上经济地运行。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"4\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"74\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"144\" y=\"30\" width=\"120\" height=\"34\"/><rect x=\"264\" y=\"30\" width=\"180\" height=\"34\"/><rect x=\"444\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"39\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Dest Addr</text><text x=\"109\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Src Addr</text><text x=\"204\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">SecTAG</text><text x=\"354\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Secure Data</text><text x=\"479\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">ICV</text><text x=\"204\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">starts with MACsec EtherType</text><text x=\"354\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">User Data (encrypted if confidentiality on)</text></svg>",
+      "caption": {
+        "en": "A MACsec frame (Clause 8.3): the SecY prepends a SecTAG (carrying the MACsec EtherType, the channel/key identifiers, and the packet number), encrypts the User Data into Secure Data when confidentiality is enabled, and appends an ICV that integrity-protects the addresses, SecTAG, and data.",
+        "zh": "一个 MACsec 帧（Clause 8.3）：SecY 在前部加上 SecTAG（携带 MACsec EtherType、通道/密钥标识和包号），在启用机密性时把用户数据加密成安全数据，并在尾部追加 ICV，对地址、SecTAG 和数据做完整性保护。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 (Principles of secure network operation) establishes the model of relationships behind the service. Clause 7.1 (support by an individual LAN) explains the hierarchy: the KaY discovers and authenticates peers and builds a CA; each CA is supported by unidirectional SCs (one per transmitter); each SC is a succession of SAs, each with a fresh SAK. This layering lets a channel live for years while keys rotate underneath — important because the Default Cipher Suite can protect only 2^32 - 1 frames under one key. Clause 7.2 (multiple instances on a single LAN) explains that several secure services can share one physical LAN, provided unencrypted fields (such as the source address or SCI) identify each insecure instance; clients then see them as separate LANs. Clause 7.3 (use of the secure MAC Service) covers the client side: the service guarantees integrity and CA membership, but trust in the channel does not equal trust in the peer, so clients should apply their own policies (for example, a bridge filtering or rate-limiting what it forwards).",
+      "zh": "Clause 7（安全网络运行原理）确立了服务背后的关系模型。Clause 7.1（单个 LAN 的支撑）解释了层次结构：KaY 发现并认证对端、建立 CA；每个 CA 由单向 SC 支撑（每个发送方一条）；每条 SC 是一连串 SA，各自使用新的 SAK。这种分层让通道可以存活多年而底层密钥不断轮换——这很重要，因为默认密码套件在一把密钥下只能保护 2^32 − 1 个帧。Clause 7.2（单个 LAN 上的多个实例）说明只要用未加密字段（如源地址或 SCI）标识各个不安全实例，多个安全服务就能共享一条物理 LAN；客户端会把它们看作不同的 LAN。Clause 7.3（安全 MAC 服务的使用）讲客户端一侧：服务保证完整性和 CA 成员身份，但对通道的信任不等于对对端的信任，因此客户端应施加自己的策略（例如网桥对其转发内容进行过滤或限速）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  CA[CA: secure Connectivity Association] --> SCa[SC from A]\n  CA --> SCb[SC from B]\n  SCa --> SA1[SA - SAK#1]\n  SCa --> SA2[SA - SAK#2]\n  SA1 -. rotate .-> SA2",
+      "zh": "flowchart TD\n  CA[CA: 安全连接关联] --> SCa[来自 A 的 SC]\n  CA --> SCb[来自 B 的 SC]\n  SCa --> SA1[SA - 密钥#1]\n  SCa --> SA2[SA - 密钥#2]\n  SA1 -. 轮换 .-> SA2"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8 (MAC Security protocol) ties it together. Clause 8.1 (protocol design requirements) lists the goals MACsec must meet — security, manageability, interoperability, incremental deployment, coexistence, scalability, intrusion detection, and attack localization — and the bounds that make them concrete (a fresh SA usable within one second of getting its key; key changes as often as every ten seconds; integrity-only mode lets analyzers read but not alter data; interoperability from 1 Mb/s to 100 Gb/s without renegotiating formats). Clause 8.2 (protocol support requirements) states what the surrounding system and the KaY must provide: unique SC identification (8.2.1), fast SAK preparation and switching (8.2.2), KaY independence from MACsec state (8.2.3), and connectivity discovery, authentication, authorization, and key maintenance (8.2.4-8.2.7). Clause 8.3 (MACsec operation) is the per-frame walkthrough drawn in the figure above: on transmit, pick the SC and SA, build the SecTAG (AN, SCI, lower 32 bits of the Packet Number, MACsec EtherType), call the cipher's PROTECT to get Secure Data and ICV; on receive, read the SecTAG, find the SAK, call VALIDATE, then apply replay protection by checking the Packet Number against the lowest acceptable value.",
+      "zh": "Clause 8（MAC 安全协议）把一切串起来。Clause 8.1（协议设计要求）列出 MACsec 必须满足的目标——安全性、可管理性、互操作性、增量部署、共存、可扩展性、入侵检测和攻击本地化——并给出使其具体的边界（拿到密钥后一秒内即可启用新 SA；密钥最频繁可每十秒更换一次；仅完整性模式让分析仪能读取但无法篡改数据；从 1 Mb/s 到 100 Gb/s 互操作而无需重新协商格式）。Clause 8.2（协议支撑要求）规定周边系统与 KaY 必须提供什么：唯一的 SC 标识（8.2.1）、快速的 SAK 准备与切换（8.2.2）、KaY 独立于 MACsec 状态（8.2.3），以及连通性发现、认证、授权和密钥维护（8.2.4–8.2.7）。Clause 8.3（MACsec 运行）就是上图所示的逐帧流程：发送时选定 SC 和 SA，构建 SecTAG（AN、SCI、包号的低 32 位、MACsec EtherType），调用密码套件的 PROTECT 得到安全数据和 ICV；接收时读取 SecTAG、找到 SAK、调用 VALIDATE，再用包号与最低可接受值比较来做防重放。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught here, by number",
+        "zh": "覆盖地图——本课所讲每个条款（按编号）"
+      },
+      "en": "Clause 1 Overview: 1.1 Introduction (why MACsec, complementary to 802.1X and end-to-end security); 1.2 Scope (confidentiality, integrity, data origin authenticity by media-independent SecYs). Clause 5 Conformance: 5.1 Requirements terminology (shall/may/should); 5.2 PICS proforma (Annex A for SecYs, Annex D for EDEs); 5.3 SecY requirements (Controlled/Uncontrolled/Common Ports, MPDU coding, SCI naming, Default Cipher Suite, minimum channels/keys, shall-not items); 5.4 SecY options (confidentiality, extra channels/keys/Cipher Suites, SNMPv3); 5.5 EDE conformance (two ports, paired PAE/KaY); 5.6 EDE-M; 5.7 EDE-CS; 5.8 EDE-CC; 5.9 EDE-SS (the four EDE flavours and their VLAN-tag handling). Clause 6 Secure MAC Service: 6.1 primitives/parameters (DA, SA, Priority, MSDU); 6.2 connectivity (symmetric, transitive); 6.3 point-to-multipoint LANs; 6.4 status parameters (MAC_Enabled, MAC_Operational); 6.5 point-to-point parameters (operPointToPointMAC, adminPointToPointMAC); 6.6 threats; 6.7 MACsec connectivity (one CA, MAC_Operational rules); 6.8 guarantees; 6.9 security services; 6.10 QoS maintenance. Clause 7 Principles: 7.1 support by an individual LAN (CA/SC/SA/SAK hierarchy); 7.2 multiple service instances on one LAN; 7.3 use of the service (client policies). Clause 8 Protocol: 8.1 design requirements (8.1.1-8.1.9); 8.2 support requirements (8.2.1-8.2.7); 8.3 per-frame operation (SecTAG build, PROTECT/VALIDATE, replay check).",
+      "zh": "Clause 1 概述：1.1 引言（为何需要 MACsec，与 802.1X 及端到端安全互补）；1.2 范围（由介质无关的 SecY 提供机密性、完整性、数据源真实性）。Clause 5 一致性：5.1 要求术语（shall/may/should）；5.2 PICS 表格（SecY 用附录 A，EDE 用附录 D）；5.3 SecY 要求（受控/非受控/公共端口、MPDU 编解码、SCI 命名、默认密码套件、最少通道/密钥、不得做的事项）；5.4 SecY 可选项（机密性、额外通道/密钥/密码套件、SNMPv3）；5.5 EDE 一致性（两端口、配对 PAE/KaY）；5.6 EDE-M；5.7 EDE-CS；5.8 EDE-CC；5.9 EDE-SS（四种 EDE 形态及其 VLAN 标签处理）。Clause 6 安全 MAC 服务：6.1 原语/参数（目的地址、源地址、优先级、MSDU）；6.2 连通性（对称、传递）；6.3 点到多点 LAN；6.4 状态参数（MAC_Enabled、MAC_Operational）；6.5 点到点参数（operPointToPointMAC、adminPointToPointMAC）；6.6 威胁；6.7 MACsec 连通性（单个 CA、MAC_Operational 规则）；6.8 保证；6.9 安全服务；6.10 QoS 维护。Clause 7 原理：7.1 单个 LAN 的支撑（CA/SC/SA/SAK 层次）；7.2 一条 LAN 上的多个服务实例；7.3 服务的使用（客户端策略）。Clause 8 协议：8.1 设计要求（8.1.1–8.1.9）；8.2 支撑要求（8.2.1–8.2.7）；8.3 逐帧运行（构建 SecTAG、PROTECT/VALIDATE、防重放检查）。",
+      "cite": {
+        "pdf_id": "8021AE-2018",
+        "pages": [
+          17,
+          18,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          40,
+          45,
+          46,
+          49,
+          50,
+          53,
+          54
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AE-2018",
+      "pages": [
+        17,
+        18
+      ],
+      "note": "Clause 1.1 Introduction and 1.2 Scope"
+    },
+    {
+      "pdf_id": "8021AE-2018",
+      "pages": [
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "note": "Clause 5.1-5.9 Conformance, SecY requirements/options, and EDE conformance"
+    },
+    {
+      "pdf_id": "8021AE-2018",
+      "pages": [
+        31,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "note": "Clause 6.1-6.10 Secure provision of the MAC Service"
+    },
+    {
+      "pdf_id": "8021AE-2018",
+      "pages": [
+        40,
+        44,
+        45,
+        46
+      ],
+      "note": "Clause 7.1-7.3 Principles of secure network operation"
+    },
+    {
+      "pdf_id": "8021AE-2018",
+      "pages": [
+        49,
+        50,
+        52,
+        53,
+        54
+      ],
+      "note": "Clause 8.1-8.3 MAC Security protocol design, support, and operation"
+    }
+  ],
+  "covers": [
+    "8021AE-2018:1.1",
+    "8021AE-2018:1.2",
+    "8021AE-2018:5.1",
+    "8021AE-2018:5.2",
+    "8021AE-2018:5.3",
+    "8021AE-2018:5.4",
+    "8021AE-2018:5.5",
+    "8021AE-2018:5.6",
+    "8021AE-2018:5.7",
+    "8021AE-2018:5.8",
+    "8021AE-2018:5.9",
+    "8021AE-2018:6.1",
+    "8021AE-2018:6.2",
+    "8021AE-2018:6.3",
+    "8021AE-2018:6.4",
+    "8021AE-2018:6.5",
+    "8021AE-2018:6.6",
+    "8021AE-2018:6.7",
+    "8021AE-2018:6.8",
+    "8021AE-2018:6.9",
+    "8021AE-2018:6.10",
+    "8021AE-2018:7.1",
+    "8021AE-2018:7.2",
+    "8021AE-2018:7.3",
+    "8021AE-2018:8.1",
+    "8021AE-2018:8.2",
+    "8021AE-2018:8.3"
+  ],
+  "track": "net-security"
+}

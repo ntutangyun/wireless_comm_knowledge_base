@@ -1,0 +1,176 @@
+{
+  "id": "net-security-05",
+  "title": {
+    "en": "Inside MKA: How MACsec Peers Agree on Keys (Part 1)",
+    "zh": "深入 MKA：MACsec 对等体如何协商密钥（上）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "MACsec (Media Access Control Security) encrypts and integrity-protects Ethernet frames hop by hop, but it needs fresh secret keys to do so. Clause 9 defines the MACsec Key Agreement protocol (MKA): the conversation that a group of authenticated devices on the same LAN run to discover each other, prove they are alive, elect a leader, and distribute working keys. The shared root secret is the secure Connectivity Association Key (CAK); the group of devices sharing it is a Connectivity Association (CA); each device's protocol persona is a KaY (Key Agreement Entity), and a single KaY's participation in one key's conversation is a participant. This lesson walks the first half of Clause 9, from design goals through worked key-distribution examples.",
+      "zh": "MACsec（媒体访问控制安全）逐跳地为以太网帧提供加密与完整性保护，但它需要新鲜的秘密密钥才能工作。Clause 9 定义了 MACsec 密钥协商协议（MKA）：同一局域网上一组已认证设备运行的对话，用来彼此发现、证明各自在线、选举出一个主导者，并分发工作密钥。它们共享的根秘密是连接关联密钥（CAK）；共享它的这组设备构成一个连接关联（CA）；每台设备的协议化身称为 KaY（密钥协商实体），而单个 KaY 在某一把密钥的对话中的参与则称为一个 participant（参与者）。本课讲解 Clause 9 的前半部分，从设计目标一直到密钥分发的实例演示。"
+    },
+    {
+      "type": "prose",
+      "en": "9.1 sets the threat model and goals. MKA must work even against an attacker who can copy any frame, selectively block delivery, and inject arbitrary frames — as long as that attacker does not hold the CAK. It promises mutual discovery of CA members, proof of mutual liveness (current possession of the CAK), bounded convergence (within 8 seconds of clean delivery), tiny constant bandwidth (designed for up to 30 participants), and the ability to bound MACsec data delay to 2 seconds. What MKA does NOT defend against are “byzantine” attacks by an insider who legitimately holds the CAK. 9.2 lists the two support requirements every MKA system must satisfy: a strong random number generator (RNG, 9.2.1) and secure Channel (SC) identification — each SC is named by an SCI built from a MAC address plus a Port Identifier (9.2.2).",
+      "zh": "9.1 设定了威胁模型与目标。即使面对一个能复制任意帧、有选择地阻断投递、并注入任意帧的攻击者，MKA 也必须正常工作——前提是该攻击者不掌握 CAK。它承诺：CA 成员之间的相互发现、相互在线性证明（当前确实持有 CAK）、有界的收敛（在干净投递后 8 秒内完成）、极小且恒定的带宽（按最多 30 个参与者设计），以及把 MACsec 数据时延限制在 2 秒内的能力。MKA 并不防御由合法持有 CAK 的内部人发起的“拜占庭”攻击。9.2 列出每个 MKA 系统必须满足的两项支撑要求：强随机数发生器（RNG，9.2.1）与安全信道（SC）标识——每个 SC 由一个 SCI 命名，SCI 由 MAC 地址加端口标识符构成（9.2.2）。"
+    },
+    {
+      "type": "prose",
+      "en": "9.3 describes the key hierarchy that grows out of the CAK. The CAK itself is never used directly; instead a Key Derivation Function (KDF, AES in CMAC mode) stretches it into purpose-specific keys. Each CAK is named by a CKN (secure Connectivity Association Key Name), 1 to 32 octets, so a received MKPDU (MKA Protocol Data Unit) can be matched to the right key (9.3.1). Successive CAKs are kept cryptographically independent so a CA can live for decades through key rollovers without leaking past keys (9.3.2). From the CAK the protocol derives the ICK (ICV Key, which verifies the integrity of every MKPDU) and the KEK (Key Encrypting Key, used with AES Key Wrap to wrap SAKs and CAKs in transit), each tagged to the CAK's identity (9.3.3).",
+      "zh": "9.3 描述了由 CAK 派生出的密钥层级。CAK 本身从不直接使用；而是由密钥派生函数（KDF，AES 的 CMAC 模式）把它扩展成用途专一的子密钥。每个 CAK 由一个 CKN（安全连接关联密钥名，1 到 32 个八位字节）命名，使收到的 MKPDU（MKA 协议数据单元）能匹配到正确的密钥（9.3.1）。相继的 CAK 在密码学上保持相互独立，因此 CA 可在数十年间历经多次换密而不泄露旧密钥（9.3.2）。协议从 CAK 派生出 ICK（ICV 密钥，用于校验每个 MKPDU 的完整性）和 KEK（密钥加密密钥，配合 AES Key Wrap 在传输中封装 SAK 与 CAK），二者都与该 CAK 的身份绑定（9.3.3）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"150\" y=\"10\" width=\"100\" height=\"34\" rx=\"4\"/><text x=\"200\" y=\"32\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">CAK (root)</text><line x1=\"200\" y1=\"44\" x2=\"200\" y2=\"70\"/><line x1=\"80\" y1=\"70\" x2=\"320\" y2=\"70\"/><line x1=\"80\" y1=\"70\" x2=\"80\" y2=\"90\"/><line x1=\"200\" y1=\"70\" x2=\"200\" y2=\"90\"/><line x1=\"320\" y1=\"70\" x2=\"320\" y2=\"90\"/><rect x=\"30\" y=\"90\" width=\"100\" height=\"34\" rx=\"4\"/><text x=\"80\" y=\"112\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">ICK (verify ICV)</text><rect x=\"150\" y=\"90\" width=\"100\" height=\"34\" rx=\"4\"/><text x=\"200\" y=\"112\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">KEK (wrap keys)</text><rect x=\"270\" y=\"90\" width=\"100\" height=\"34\" rx=\"4\"/><text x=\"320\" y=\"112\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">SAK (per-CA)</text><line x1=\"320\" y1=\"124\" x2=\"320\" y2=\"150\"/><rect x=\"250\" y=\"150\" width=\"140\" height=\"34\" rx=\"4\"/><text x=\"320\" y=\"172\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">MACsec data frames</text><text x=\"200\" y=\"208\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">KDF = AES-CMAC; KEK wraps SAK/CAK</text></svg>",
+      "caption": {
+        "en": "The MKA key hierarchy (9.3): one CAK is derived by a KDF into an ICK (integrity), a KEK (key wrapping), and the SAK that actually protects data.",
+        "zh": "MKA 密钥层级（9.3）：一个 CAK 经 KDF 派生出 ICK（完整性）、KEK（密钥封装）以及真正保护数据的 SAK。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "9.4 is the MKA transport — the secure, fully distributed channel members use to talk. Every MKPDU is integrity-protected by a 128-bit ICV computed with AES-CMAC over the destination and source MAC addresses plus the payload, so a valid ICV proves the sender held the CAK and that nothing was tampered with (9.4.1). Each participant picks a random 96-bit Member Identifier (MI) and a 32-bit Message Number (MN) starting at 1 and counting up; a receiver discards any replay with the same MI and an equal or lower MN (9.4.2). You prove liveness by echoing a partner's recent MI and MN back to them, and each participant advertises a Live Peer List and a Potential Peer List (9.4.3). The MKPDU carries the CKN, the sender's SCI, its MI/MN, and both peer lists (9.4.4). MKPDUs are sent to a group MAC address with an individual source address (9.4.5), and a participant may be active (sending periodic MKPDUs) or passive, becoming active when a feasible partner appears (9.4.6).",
+      "zh": "9.4 是 MKA 传输——成员之间通信所用的安全、完全分布式的通道。每个 MKPDU 都由一个 128 位 ICV 提供完整性保护，该 ICV 用 AES-CMAC 对目的与源 MAC 地址加载荷计算得出，因此一个有效的 ICV 证明发送方持有 CAK 且内容未被篡改（9.4.1）。每个参与者选取一个随机的 96 位成员标识符（MI）和一个从 1 开始递增的 32 位消息编号（MN）；接收方丢弃任何 MI 相同且 MN 相等或更低的重放（9.4.2）。你通过把伙伴最近的 MI 与 MN 回送给对方来证明在线性，并且每个参与者都通告一份活跃对等体列表（Live Peer List）和一份潜在对等体列表（Potential Peer List）（9.4.3）。MKPDU 携带 CKN、发送方的 SCI、自身的 MI/MN 以及这两份对等体列表（9.4.4）。MKPDU 发往一个组 MAC 地址，源地址为单个地址（9.4.5）；参与者可以是主动的（周期性发送 MKPDU）或被动的，在出现可行伙伴时转为主动（9.4.6）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a random MI instead of a permanent MAC address? Because after a reboot a device has no memory of the last message number it used. By choosing a fresh random MI on every start (and again when the MN would wrap around), replay protection works without persisting any counter — and a duplicate MAC address becomes visible rather than dangerous.",
+      "zh": "为什么用随机 MI 而不是固定的 MAC 地址？因为重启后设备不记得自己上次用到的消息编号。每次启动（以及 MN 即将回绕时）选取一个全新的随机 MI，重放保护无需持久化任何计数器即可工作——而且重复的 MAC 地址会变得可见，而非危险。"
+    },
+    {
+      "type": "prose",
+      "en": "Once members see each other as live, they elect a Key Server (9.5): the single participant responsible for deciding whether to use MACsec, choosing the cipher suite, generating and distributing SAKs, assigning ANs, and forming the CA. If the CAK came straight from EAP (Extensible Authentication Protocol), the EAP Authenticator's participant is automatically the Key Server. Otherwise election uses an 8-bit Key Server Priority advertised in every MKPDU — lowest number wins, ties broken by lowest SCI. Each participant simply accepts whatever the leader it elected sends; transient disagreement during membership churn is harmless. The MKPDU carries the priority and a Key Server flag (9.5.1). 9.6 then has the Key Server decide for the whole CA whether to use MACsec at all, with each participant advertising its MACsec capability and whether it desires protection (9.6.1).",
+      "zh": "一旦成员们认为彼此在线，它们便选举一个密钥服务器（Key Server，9.5）：负责决定是否使用 MACsec、选择加密套件、生成并分发 SAK、分配 AN，以及组建 CA 的那个唯一参与者。如果 CAK 直接来自 EAP（可扩展认证协议），则 EAP 认证方的参与者自动成为密钥服务器。否则选举采用每个 MKPDU 中通告的 8 位密钥服务器优先级——数值最小者胜出，平局时由最小的 SCI 决定。每个参与者只需接受自己所选主导者发来的内容；成员变动期间短暂的分歧无害。MKPDU 携带该优先级和一个 Key Server 标志位（9.5.1）。随后 9.6 让密钥服务器为整个 CA 决定是否使用 MACsec，每个参与者通告自己的 MACsec 能力以及是否希望启用保护（9.6.1）。"
+    },
+    {
+      "type": "prose",
+      "en": "9.7 covers cipher suite selection: if MACsec is on, the Key Server picks one cipher suite (identified by an 8-octet reference number) and advertises it with each key; the mandatory default is GCM-AES-128, and a special reference value marks the Null Cipher Suite (plaintext, used when MKA only proves prior authentication). The cipher suite and a confidentiality offset travel alongside each SAK (9.7.1). 9.8 is the heart of the protocol: SAK (Secure Association Key) generation, distribution, and selection. The Key Server derives or randomly generates each SAK (9.8.1), wraps it with AES Key Wrap under the KEK (9.8.2, per RFC 3394), and encodes the wrapped SAK plus a Key Number in the MKPDU (9.8.3). Each SAK is named by a 128-bit Key Identifier (KI) = the Key Server's MI plus a sequential Key Number (KN). A fresh SAK is distributed whenever a live member joins, the cipher suite changes, or packet numbers near exhaustion.",
+      "zh": "9.7 讲加密套件选择：若启用 MACsec，密钥服务器选定一个加密套件（由 8 个八位字节的参考号标识）并随每把密钥一同通告；强制默认套件为 GCM-AES-128，而一个特殊参考值表示空加密套件（明文，用于 MKA 仅证明此前已认证的场景）。加密套件与一个机密性偏移随每把 SAK 一起传输（9.7.1）。9.8 是协议的核心：SAK（安全关联密钥）的生成、分发与选择。密钥服务器派生或随机生成每把 SAK（9.8.1），用 KEK 以 AES Key Wrap 封装（9.8.2，依据 RFC 3394），并把封装后的 SAK 加一个密钥编号编码进 MKPDU（9.8.3）。每把 SAK 由一个 128 位密钥标识符（KI）命名 = 密钥服务器的 MI 加上一个顺序密钥编号（KN）。每当有活跃成员加入、加密套件变更，或包编号接近耗尽时，便分发一把新鲜的 SAK。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant SA as Station A (KS)\n  participant SB as Station B\n  SA->>SB: A+1 : - : - (hello)\n  SB->>SA: B+1 : A+1 : - (proves A live)\n  Note over SA: A sees B live, wraps SAK\n  SA->>SB: A+2 : B+1 : DistributeSAK, AN 0, rx+tx\n  SB->>SA: B+2 : A+2 : SAKuse A+1.0.rt (installed)",
+      "zh": "sequenceDiagram\n  participant SA as 站点 A（密钥服务器）\n  participant SB as 站点 B\n  SA->>SB: A+1 : - : -（hello）\n  SB->>SA: B+1 : A+1 : -（证明 A 在线）\n  Note over SA: A 确认 B 在线，封装 SAK\n  SA->>SB: A+2 : B+1 : 分发SAK, AN 0, 收+发\n  SB->>SA: B+2 : A+2 : SAK使用 A+1.0.rt（已安装）"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining mechanisms fill out the lifecycle. 9.9 has the Key Server assign an Association Number (AN, one of 0–3) to each distributed key, cycling in sequence (9.9.1 carries the Distributed AN). 9.10 installs the SAK: each KaY uses the SecY's management interface to create receive and transmit Secure Associations (SAs), advertises receive/transmit status, and reports the Lowest Acceptable Packet Number (LPN) so peers can drop delayed traffic; the per-AN fields (KI, LPN, Receiving, Transmitting, Delay Protect) ride in every MKPDU (9.10.1). 9.11 explains how CA membership changes map onto link-level MAC_Operational signals so higher-layer protocols like spanning tree re-initialize correctly. 9.12 lets a Key Server distribute a group CAK (AES Key-Wrapped, 9.12.1) with its CKN to form a group CA (9.12.2). 9.13 carries secure announcements (e.g., NID sets) so pre-authentication decisions can be retrospectively confirmed (9.13.1).",
+      "zh": "其余机制补全了整个生命周期。9.9 让密钥服务器给每把分发的密钥分配一个关联编号（AN，取值 0–3），按序循环（9.9.1 携带 Distributed AN）。9.10 安装 SAK：每个 KaY 通过 SecY 的管理接口创建接收与发送的安全关联（SA），通告收/发状态，并上报最低可接受包编号（LPN）以便对等体丢弃延迟流量；每个 AN 的字段（KI、LPN、Receiving、Transmitting、Delay Protect）都搭载在每个 MKPDU 中（9.10.1）。9.11 解释 CA 成员变动如何映射到链路层 MAC_Operational 信号，使生成树等高层协议能正确重新初始化。9.12 让密钥服务器分发一个组 CAK（经 AES Key Wrap 封装，9.12.1）连同其 CKN 以组建组 CA（9.12.2）。9.13 传输安全通告（如 NID 集），使认证前的决策可被事后确认（9.13.1）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: lifecycle, timers, management, and the worked examples (9.14–9.17)",
+        "zh": "覆盖图：生命周期、定时器、管理与实例演示（9.14–9.17）"
+      },
+      "en": "9.14 — MKA participant creation and deletion: a participant is created when a CAK/CKN tuple becomes available (from a PSK, from successful EAP, or from a received distributed CAK), and is deleted when the CAK lifetime expires or an EAP-derived CAK finds no live peer within MKA Life Time. Each KaY supports at least two participants per Common Port and per virtual port. 9.15 — timer values (Table 9-3): MKA Hello Time 2.0 s (or MKA Bounded Hello Time 0.5 s), MKA Life Time 6.0 s for peer-list aging, and MKA Suspension Limit 120.0 s. 9.16 — MKA management: the variables the PAE management process uses to drive the KaY — enable, active, authenticated, secured, failed, actorSCI, actorPriority, keyServerSCI/Priority, join/form/newGroup, macsecCapable/Desired, txKN/txAN, rxKN/rxAN, suspendFor/suspendOnRequest/suspendedWhile, and per-participant CKN/KMD/NID/cached/activate; crucially, the CAK itself is never readable by management. 9.17 — SAK distribution examples using the notation Actor : Live Peer List : Potential Peer List : other params. 9.17.1 (two participants, SA and SB) shows how the higher-priority station becomes Key Server, distributes a wrapped SAK on AN 0, and both enable rx+tx after four messages. 9.17.2 (another participant SC joins) shows SA distributing a fresh SAK on AN 1 once SC proves liveness, with both the old and new keys coexisting (rx) until every member can receive, then everyone transmits on the new key.",
+      "zh": "9.14 — MKA 参与者的创建与删除：当一个 CAK/CKN 元组可用时创建参与者（来自 PSK、来自成功的 EAP，或来自收到的分发 CAK），当 CAK 寿命到期或某个由 EAP 派生的 CAK 在 MKA Life Time 内找不到活跃对等体时删除。每个 KaY 在每个公共端口与每个虚拟端口上至少支持两个参与者。9.15 — 定时器取值（表 9-3）：MKA Hello Time 为 2.0 秒（或 MKA Bounded Hello Time 0.5 秒），用于对等体列表老化的 MKA Life Time 为 6.0 秒，MKA Suspension Limit 为 120.0 秒。9.16 — MKA 管理：PAE 管理进程用以驱动 KaY 的各项变量——enable、active、authenticated、secured、failed、actorSCI、actorPriority、keyServerSCI/Priority、join/form/newGroup、macsecCapable/Desired、txKN/txAN、rxKN/rxAN、suspendFor/suspendOnRequest/suspendedWhile，以及每个参与者的 CKN/KMD/NID/cached/activate；关键的一点是 CAK 本身永远不可被管理读取。9.17 — SAK 分发实例，采用“参与者 : 活跃对等体列表 : 潜在对等体列表 : 其他参数”的记法。9.17.1（两个参与者 SA 与 SB）展示优先级更高的站点如何成为密钥服务器、在 AN 0 上分发封装的 SAK，并在四条消息后双方都启用收+发。9.17.2（又一个参与者 SC 加入）展示一旦 SC 证明在线，SA 便在 AN 1 上分发新鲜 SAK，新旧密钥并存（仅收）直至每个成员都能接收，然后所有人切换到新密钥发送。",
+      "cite": {
+        "pdf_id": "8021X-2020",
+        "pages": [
+          94,
+          95,
+          96,
+          97,
+          98,
+          99
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for Part 1: discover (peer lists + MIs) → prove liveness (echo MI/MN) → elect a Key Server (lowest priority) → the Key Server wraps and hands out SAKs on rotating ANs → everyone installs, signals receiving, and only then transmits. Part 2 of this lesson covers in-service upgrades and suspension (9.18–9.19).",
+      "zh": "上篇的思维模型：发现（对等体列表 + MI）→ 证明在线（回送 MI/MN）→ 选举密钥服务器（优先级最小）→ 密钥服务器封装并按轮换的 AN 下发 SAK → 各方安装、上报“正在接收”，之后才开始发送。本课下篇将讲解在役升级与挂起（9.18–9.19）。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        79,
+        80,
+        81,
+        82
+      ],
+      "note": "9.1 design requirements; 9.2 support requirements (RNG, SC identification); 9.3 key hierarchy, CAK identification/independence, derived ICK/KEK"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        83,
+        84,
+        85,
+        86
+      ],
+      "note": "9.4 MKA transport (ICV, MI/MN, liveness, info elements, addressing, active/passive); 9.5 Key Server election"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        87,
+        88,
+        89,
+        90
+      ],
+      "note": "9.6 use of MACsec; 9.7 cipher suite selection; 9.8 SAK generation/distribution/selection and AES Key Wrap"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        91,
+        92,
+        93,
+        94
+      ],
+      "note": "9.8.3/9.9 SA assignment; 9.10 SAK installation; 9.11 connectivity change; 9.12 group CAK distribution; 9.13 secure announcements"
+    },
+    {
+      "pdf_id": "8021X-2020",
+      "pages": [
+        95,
+        96,
+        97,
+        98,
+        99
+      ],
+      "note": "9.14 participant creation/deletion; 9.15 timer values; 9.16 management variables; 9.17 SAK distribution examples"
+    }
+  ],
+  "covers": [
+    "8021X-2020:9.1",
+    "8021X-2020:9.2.1",
+    "8021X-2020:9.2.2",
+    "8021X-2020:9.3.1",
+    "8021X-2020:9.3.2",
+    "8021X-2020:9.3.3",
+    "8021X-2020:9.4.1",
+    "8021X-2020:9.4.2",
+    "8021X-2020:9.4.3",
+    "8021X-2020:9.4.4",
+    "8021X-2020:9.4.5",
+    "8021X-2020:9.4.6",
+    "8021X-2020:9.5.1",
+    "8021X-2020:9.6.1",
+    "8021X-2020:9.7.1",
+    "8021X-2020:9.8.1",
+    "8021X-2020:9.8.2",
+    "8021X-2020:9.8.3",
+    "8021X-2020:9.9.1",
+    "8021X-2020:9.10.1",
+    "8021X-2020:9.11",
+    "8021X-2020:9.12.1",
+    "8021X-2020:9.12.2",
+    "8021X-2020:9.13.1",
+    "8021X-2020:9.14",
+    "8021X-2020:9.15",
+    "8021X-2020:9.16",
+    "8021X-2020:9.17.1",
+    "8021X-2020:9.17.2"
+  ],
+  "track": "net-security"
+}
