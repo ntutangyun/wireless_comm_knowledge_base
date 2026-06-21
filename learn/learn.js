@@ -166,6 +166,18 @@ document.getElementById("theme-btn").addEventListener("click", () => {
   localStorage.setItem("kb_theme", state.theme);
   applyChrome();
 });
-window.addEventListener("hashchange", route);
+// ---- mobile curriculum drawer ----
+function setNav(open) {
+  document.body.classList.toggle("nav-open", open);
+  const mb = document.getElementById("menu-btn");
+  if (mb) mb.setAttribute("aria-expanded", open ? "true" : "false");
+}
+const menuBtn = document.getElementById("menu-btn");
+if (menuBtn) menuBtn.addEventListener("click", () => setNav(!document.body.classList.contains("nav-open")));
+const scrim = document.getElementById("lscrim");
+if (scrim) scrim.addEventListener("click", () => setNav(false));
+document.addEventListener("keydown", e => { if (e.key === "Escape") setNav(false); });
+
+window.addEventListener("hashchange", () => { setNav(false); route(); });
 applyChrome();
 route();

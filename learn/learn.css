@@ -27,12 +27,18 @@ body { font-family:var(--sans); color:var(--fg); background:var(--bg); line-heig
 .lhead { position:sticky; top:0; z-index:10; height:var(--header-h); display:flex; align-items:center;
   gap:14px; padding:0 18px; background:var(--bg-2); border-bottom:1px solid var(--border); }
 .lhead .back { color:var(--fg-2); text-decoration:none; font-size:13px; white-space:nowrap; }
-.ltitle { font-size:16px; margin:0; flex:1; }
+.ltitle { font-size:16px; margin:0; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .lhead-actions { display:flex; gap:8px; }
 .lbtn { font:inherit; font-size:13px; cursor:pointer; background:var(--bg-3); color:var(--fg);
   border:1px solid var(--border); border-radius:var(--radius); padding:4px 10px; }
 .lbtn:hover { border-color:var(--border-strong); }
 .lwrap { padding:0; }
+/* drawer chrome is desktop-hidden; revealed in the mobile media query below */
+.licon { display:none; }
+.lscrim { display:none; }
+/* keep wide diagrams/widgets from forcing horizontal page scroll */
+.block.diagram { overflow-x:auto; }
+.block.diagram svg, .widget svg, .widget canvas { max-width:100%; height:auto; }
 
 /* two-pane layout: whole-curriculum sidebar + content */
 .layout { display:grid; grid-template-columns:280px minmax(0,1fr); align-items:start; }
@@ -66,10 +72,30 @@ body { font-family:var(--sans); color:var(--fg); background:var(--bg); line-heig
 
 @media (max-width:760px) {
   .layout { grid-template-columns:1fr; }
-  .curriculum { position:static; height:auto; border-right:0; border-bottom:1px solid var(--border);
-    display:flex; flex-wrap:wrap; gap:4px; }
-  .trk { margin-bottom:6px; }
-  .content { padding:20px 16px 64px; }
+  /* hamburger + a more compact header */
+  .licon { display:inline-flex; align-items:center; justify-content:center;
+    min-width:40px; height:36px; padding:0 8px; font-size:17px; }
+  .lhead { gap:10px; padding:0 12px; }
+  .lhead .back span { display:none; }            /* keep the ← arrow, drop the word */
+  .lhead-actions .lbtn { min-height:36px; }
+  /* the whole-curriculum nav becomes a slide-in drawer */
+  .curriculum { position:fixed; top:var(--header-h); left:0; bottom:0;
+    width:min(86vw,330px); height:auto; z-index:30;
+    border-right:1px solid var(--border); border-bottom:0;
+    transform:translateX(-100%); transition:transform .22s ease;
+    box-shadow:0 0 24px rgba(0,0,0,.25); overscroll-behavior:contain; }
+  body.nav-open .curriculum { transform:none; }
+  /* dimming backdrop behind the open drawer */
+  .lscrim { display:block; position:fixed; inset:var(--header-h) 0 0 0;
+    background:rgba(0,0,0,.45); z-index:20; opacity:0; pointer-events:none;
+    transition:opacity .22s ease; }
+  body.nav-open .lscrim { opacity:1; pointer-events:auto; }
+  body.nav-open { overflow:hidden; }             /* lock page scroll while drawer is open */
+  /* full-width reading + finger-sized targets */
+  .content { padding:20px 16px 64px; max-width:none; }
+  .lsn { padding:11px 10px; font-size:14px; }
+  .trk-name { padding:8px 10px; }
+  .lesson-nav .lbtn { flex:1; text-align:center; padding:11px 8px; }
 }
 
 /* lesson view */
