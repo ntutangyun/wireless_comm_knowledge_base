@@ -913,6 +913,15 @@ def main(argv: list[str]) -> int:
         else:
             seen_ids[r["id"]] = r["entry_path"]
     today = dt.date.today().isoformat()
+    # `last_updated` reflects the most recent CONTENT change (newest entry's
+    # ingest date), so it stays put on zero-yield days even when the rebuild
+    # runs purely as a heartbeat. `last_scanned` (set to today on every run)
+    # is the heartbeat the daily scout stamps so the public viewer can show
+    # "scan ran today" even when no new entries landed.
+    content_date = max(
+        (r["date_found"] for r in records if r.get("date_found")),
+        default=today,
+    )
     for r in records:
         if r["date_found"] > today:
             warnings.append(f"future date_found in {r['entry_path']}: {r['date_found']}")
@@ -949,7 +958,8 @@ def main(argv: list[str]) -> int:
 
     index_payload = {
         "schema_version": 6,
-        "last_updated": today,
+        "last_updated": content_date,
+        "last_scanned": today,
         "technologies_vocab": tech_vocab,
         "topics_vocab": {
             "stacks": vocab.get("stacks", []),
@@ -974,7 +984,8 @@ def main(argv: list[str]) -> int:
         kb_entries.append(e)
     kb_payload = {
         "schema_version": 6,
-        "last_updated": today,
+        "last_updated": content_date,
+        "last_scanned": today,
         "topic_counts": dict(topic_counts.most_common()),
         "primary_topic_counts": dict(primary_topic_counts.most_common()),
         "type_counts": dict(type_counts.most_common()),
@@ -995,7 +1006,7 @@ def main(argv: list[str]) -> int:
     # Cheaper to load than kb.json (no entry bodies, no summaries) and shaped
     # to match what the scout's Step 3 actually does.
     dedup_path = data_root / "dedup_index.json"
-    write_json_atomic(dedup_path, build_dedup_index(records, today))
+    write_json_atomic(dedup_path, build_dedup_index(records, content_date))
 
     # kb.js: same payload as a JS assignment, so the viewer can load it via
     # <script src="kb.js"> when the page is opened over file://. Modern
