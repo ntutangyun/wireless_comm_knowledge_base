@@ -11,6 +11,9 @@ const state = {
   theme: localStorage.getItem("kb_theme") || "light",
   curriculum: null,
   standards: null,
+  searchIndex: null,
+  acronyms: null,
+  acrList: null,
   lessonCache: {},
 };
 
@@ -29,6 +32,11 @@ const T = {
   min: { en: "min", zh: "分钟" },
   references: { en: "References", zh: "参考文献" },
   refSections: { en: "Sections / clauses:", zh: "章节 / 条款：" },
+  acronyms: { en: "Acronyms used in this lesson", zh: "本课使用的缩略语" },
+  searchPlaceholder: { en: "Search all lessons — English or 中文…", zh: "搜索全部课程——支持英文或中文……" },
+  searchHint: { en: "Type to search across every lesson, in English or 中文.", zh: "输入关键词以搜索全部课程，支持英文或中文。" },
+  searchNone: { en: "No matching lessons.", zh: "没有匹配的课程。" },
+  searchResults: { en: "results", zh: "条结果" },
 };
 const tr = k => pick(T[k], state.lang);
 
@@ -57,6 +65,26 @@ async function loadStandards() {
   try { state.standards = await (await fetch("standards.json")).json(); }
   catch (e) { state.standards = {}; }
   return state.standards;
+}
+async function loadSearchIndex() {
+  if (state.searchIndex) return state.searchIndex;
+  try {
+    const idx = await (await fetch("search-index.json")).json();
+    idx.forEach(e => { e._h = ((e.t.en || "") + " " + (e.t.zh || "") + " " + (e.x.en || "") + " " + (e.x.zh || "")).toLowerCase(); });
+    state.searchIndex = idx;
+  } catch (e) { state.searchIndex = []; }
+  return state.searchIndex;
+}
+async function loadAcronyms() {
+  if (state.acronyms) return state.acronyms;
+  try { state.acronyms = await (await fetch("acronyms.json")).json(); }
+  catch (e) { state.acronyms = {}; }
+  // precompile boundary-aware matchers (no lookbehind, for older WebKit)
+  state.acrList = Object.keys(state.acronyms).map(acr => ({
+    acr, def: state.acronyms[acr],
+    re: new RegExp("(^|[^A-Za-z0-9])" + acr.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![A-Za-z0-9])"),
+  }));
+  return state.acronyms;
 }
 
 function ctx() {
@@ -94,6 +122,40 @@ function fmtPages(pages) {
   const parts = ranges.map(([a, b]) => a === b ? `${a}` : `${a}–${b}`);
   const plural = s.length > 1;
   return (plural ? "pp. " : "p. ") + parts.join(", ");
+}
+// concatenated EN+ZH human text of a lesson, for acronym detection
+function lessonText(lesson) {
+  const out = [];
+  const t = lesson.title || {}; out.push(t.en || "", t.zh || "");
+  for (const b of (lesson.blocks || [])) {
+    if (b.type === "prose" || b.type === "callout") out.push(b.en || "", b.zh || "");
+    else if (b.type === "figure" && b.caption) out.push(b.caption.en || "", b.caption.zh || "");
+    else if (b.type === "deepdive") { const s = b.summary || {}; out.push(s.en || "", s.zh || "", b.en || "", b.zh || ""); }
+  }
+  return out.join("  ");
+}
+function buildAcronyms(lesson) {
+  const list = state.acrList;
+  if (!list || !list.length) return null;
+  const text = lessonText(lesson);
+  const found = [];
+  for (const it of list) { if (it.re.test(text)) found.push(it); }
+  if (!found.length) return null;
+  found.sort((a, b) => a.acr.localeCompare(b.acr));
+  const sec = document.createElement("section");
+  sec.className = "acrs";
+  sec.appendChild(Object.assign(document.createElement("h2"), { textContent: tr("acronyms") }));
+  const dl = document.createElement("dl");
+  dl.className = "acr-list";
+  for (const it of found) {
+    const exp = pick(it.def, state.lang) || it.def.en || it.def.zh || "";
+    const row = document.createElement("div");
+    row.className = "acr-row";
+    row.innerHTML = `<dt class="acr-k">${escapeHtml(it.acr)}</dt><dd class="acr-v">${escapeHtml(exp)}</dd>`;
+    dl.appendChild(row);
+  }
+  sec.appendChild(dl);
+  return sec;
 }
 function buildReferences(lesson) {
   const cites = lesson.cites || [], covers = lesson.covers || [];
@@ -189,6 +251,9 @@ async function renderLessonContent(trackId, lessonId, cur) {
   wrap.appendChild(est);
   wrap.appendChild(renderBlocks(lesson.blocks, state.lang, ctx()));
 
+  const acr = buildAcronyms(lesson);
+  if (acr) wrap.appendChild(acr);
+
   const refs = buildReferences(lesson);
   if (refs) wrap.appendChild(refs);
 
@@ -217,6 +282,7 @@ async function renderLessonContent(trackId, lessonId, cur) {
 async function route() {
   const cur = await loadCurriculum();
   await loadStandards();
+  await loadAcronyms();
   const { trackId, lessonId } = parseHash(location.hash);
   if (trackId && lessonId) {
     const content = await renderLessonContent(trackId, lessonId, cur);
@@ -237,6 +303,89 @@ document.getElementById("theme-btn").addEventListener("click", () => {
   localStorage.setItem("kb_theme", state.theme);
   applyChrome();
 });
+// ---- bilingual search ----
+let searchTimer = null;
+function trackTitle(id) {
+  const t = ((state.curriculum && state.curriculum.tracks) || []).find(x => x.id === id);
+  return t ? pick(t.title, state.lang) : id;
+}
+function reEsc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function highlight(text, tokens) {
+  let h = escapeHtml(text);
+  const valid = tokens.filter(Boolean).map(reEsc);
+  if (valid.length) h = h.replace(new RegExp("(" + valid.join("|") + ")", "gi"), "<mark>$1</mark>");
+  return h;
+}
+function snippet(text, tokens) {
+  if (!text) return "";
+  const low = text.toLowerCase();
+  let pos = -1;
+  for (const t of tokens) { const i = low.indexOf(t); if (i >= 0 && (pos < 0 || i < pos)) pos = i; }
+  if (pos < 0) pos = 0;
+  const start = Math.max(0, pos - 40);
+  const frag = text.slice(start, start + 200);
+  return (start > 0 ? "…" : "") + frag + (start + 200 < text.length ? "…" : "");
+}
+function runSearch(q) {
+  const results = document.getElementById("search-results");
+  if (!results) return;
+  const idx = state.searchIndex || [];
+  const query = (q || "").trim().toLowerCase();
+  if (!query) { results.innerHTML = `<p class="sr-hint">${escapeHtml(tr("searchHint"))}</p>`; return; }
+  const tokens = query.split(/\s+/).filter(Boolean);
+  const scored = [];
+  for (const e of idx) {
+    if (!tokens.every(t => e._h.includes(t))) continue;
+    const titleLow = ((e.t.en || "") + " " + (e.t.zh || "")).toLowerCase();
+    let score = 0;
+    for (const t of tokens) { if (titleLow.includes(t)) score += 5; score += Math.min(e._h.split(t).length - 1, 5); }
+    scored.push({ e, score });
+  }
+  scored.sort((a, b) => b.score - a.score);
+  const top = scored.slice(0, 40);
+  if (!top.length) { results.innerHTML = `<p class="sr-hint">${escapeHtml(tr("searchNone"))}</p>`; return; }
+  results.innerHTML = "";
+  const count = document.createElement("p");
+  count.className = "sr-count";
+  count.textContent = top.length + (scored.length > top.length ? "+" : "") + " " + tr("searchResults");
+  results.appendChild(count);
+  for (const { e } of top) {
+    const a = document.createElement("a");
+    a.className = "sr-item";
+    a.href = buildHash(e.tr, e.id);
+    const body = pick(e.x, state.lang) || e.x.en || e.x.zh || "";
+    a.innerHTML = `<div class="sr-top"><span class="sr-title">${highlight(pick(e.t, state.lang) || e.t.en || "", tokens)}</span>` +
+      `<span class="sr-trk">${escapeHtml(trackTitle(e.tr))}</span></div>` +
+      `<div class="sr-snip">${highlight(snippet(body, tokens), tokens)}</div>`;
+    a.addEventListener("click", closeSearch);
+    results.appendChild(a);
+  }
+}
+async function openSearch() {
+  const ov = document.getElementById("search-overlay");
+  if (!ov) return;
+  ov.hidden = false;
+  document.body.classList.add("search-open");
+  const inp = document.getElementById("search-input");
+  if (inp) inp.placeholder = tr("searchPlaceholder");
+  await loadSearchIndex();
+  if (inp) { inp.focus(); runSearch(inp.value); }
+}
+function closeSearch() {
+  const ov = document.getElementById("search-overlay");
+  if (ov) ov.hidden = true;
+  document.body.classList.remove("search-open");
+}
+const searchBtn = document.getElementById("search-btn");
+if (searchBtn) searchBtn.addEventListener("click", openSearch);
+const searchCloseBtn = document.getElementById("search-close");
+if (searchCloseBtn) searchCloseBtn.addEventListener("click", closeSearch);
+const searchInput = document.getElementById("search-input");
+if (searchInput) searchInput.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => runSearch(searchInput.value), 120);
+});
+
 // ---- mobile curriculum drawer ----
 function setNav(open) {
   document.body.classList.toggle("nav-open", open);
@@ -247,8 +396,8 @@ const menuBtn = document.getElementById("menu-btn");
 if (menuBtn) menuBtn.addEventListener("click", () => setNav(!document.body.classList.contains("nav-open")));
 const scrim = document.getElementById("lscrim");
 if (scrim) scrim.addEventListener("click", () => setNav(false));
-document.addEventListener("keydown", e => { if (e.key === "Escape") setNav(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { setNav(false); closeSearch(); } });
 
-window.addEventListener("hashchange", () => { setNav(false); route(); });
+window.addEventListener("hashchange", () => { setNav(false); closeSearch(); route(); });
 applyChrome();
 route();
