@@ -10,6 +10,7 @@ const state = {
   lang: (new URLSearchParams(location.search).get("lang") || localStorage.getItem("kb_lang") || "en") === "zh" ? "zh" : "en",
   theme: localStorage.getItem("kb_theme") || "light",
   curriculum: null,
+  standards: null,
   lessonCache: {},
 };
 
@@ -26,6 +27,8 @@ const T = {
   doneAgain: { en: "✓ Done", zh: "✓ 已完成" },
   lessons: { en: "lessons", zh: "节" },
   min: { en: "min", zh: "分钟" },
+  references: { en: "References", zh: "参考文献" },
+  refSections: { en: "Sections / clauses:", zh: "章节 / 条款：" },
 };
 const tr = k => pick(T[k], state.lang);
 
@@ -49,6 +52,12 @@ async function loadLesson(id) {
   state.lessonCache[id] = data;
   return data;
 }
+async function loadStandards() {
+  if (state.standards) return state.standards;
+  try { state.standards = await (await fetch("standards.json")).json(); }
+  catch (e) { state.standards = {}; }
+  return state.standards;
+}
 
 function ctx() {
   return {
@@ -62,6 +71,64 @@ function ctx() {
 }
 
 function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+// ---- references section, built from each lesson's verified cites + covers ----
+function clauseLabel(c) { return (c.split(":")[1] || c).replace(/^Annex_/, "Annex "); }
+function cmpClause(a, b) {
+  const ax = a.startsWith("Annex"), bx = b.startsWith("Annex");
+  if (ax !== bx) return ax ? 1 : -1;
+  if (ax) return a.localeCompare(b);
+  const A = a.split("."), B = b.split(".");
+  for (let i = 0; i < Math.max(A.length, B.length); i++) {
+    const d = (parseInt(A[i], 10) || 0) - (parseInt(B[i], 10) || 0);
+    if (d) return d;
+  }
+  return 0;
+}
+function fmtPages(pages) {
+  if (!pages || !pages.length) return "";
+  const s = [...new Set(pages)].sort((a, b) => a - b);
+  const ranges = []; let lo = s[0], hi = s[0];
+  for (let i = 1; i < s.length; i++) { if (s[i] === hi + 1) hi = s[i]; else { ranges.push([lo, hi]); lo = hi = s[i]; } }
+  ranges.push([lo, hi]);
+  const parts = ranges.map(([a, b]) => a === b ? `${a}` : `${a}–${b}`);
+  const plural = s.length > 1;
+  return (plural ? "pp. " : "p. ") + parts.join(", ");
+}
+function buildReferences(lesson) {
+  const cites = lesson.cites || [], covers = lesson.covers || [];
+  if (!cites.length && !covers.length) return null;
+  const byPdf = {};
+  const grp = pid => (byPdf[pid] = byPdf[pid] || { clauses: [], cites: [] });
+  covers.forEach(c => grp(c.split(":")[0]).clauses.push(clauseLabel(c)));
+  cites.forEach(ct => grp(ct.pdf_id).cites.push(ct));
+  const sec = document.createElement("section");
+  sec.className = "refs";
+  sec.appendChild(Object.assign(document.createElement("h2"), { textContent: tr("references") }));
+  for (const pid of Object.keys(byPdf)) {
+    const g = byPdf[pid];
+    const std = document.createElement("div");
+    std.className = "ref-std";
+    const title = (state.standards && state.standards[pid]) || pid;
+    let html = `<div class="ref-title">${escapeHtml(title)}</div>`;
+    const uniq = [...new Set(g.clauses)].sort(cmpClause);
+    if (uniq.length) html += `<div class="ref-clauses"><span class="ref-k">${escapeHtml(tr("refSections"))}</span> ${escapeHtml(uniq.join(", "))}</div>`;
+    std.innerHTML = html;
+    if (g.cites.length) {
+      const ul = document.createElement("ul");
+      ul.className = "ref-cites";
+      g.cites.forEach(ct => {
+        const li = document.createElement("li");
+        const pg = fmtPages(ct.pages);
+        li.innerHTML = (pg ? `<span class="ref-pg">${escapeHtml(pg)}</span> ` : "") + escapeHtml(ct.note || "");
+        ul.appendChild(li);
+      });
+      std.appendChild(ul);
+    }
+    sec.appendChild(std);
+  }
+  return sec;
+}
 
 // ---- the persistent whole-curriculum sidebar ----
 function renderSidebar(cur, activeLessonId) {
@@ -122,6 +189,9 @@ async function renderLessonContent(trackId, lessonId, cur) {
   wrap.appendChild(est);
   wrap.appendChild(renderBlocks(lesson.blocks, state.lang, ctx()));
 
+  const refs = buildReferences(lesson);
+  if (refs) wrap.appendChild(refs);
+
   const nav = document.createElement("div"); nav.className = "lesson-nav";
   const i = ids.indexOf(lessonId);
   const prev = i > 0 ? ids[i - 1] : null;
@@ -146,6 +216,7 @@ async function renderLessonContent(trackId, lessonId, cur) {
 
 async function route() {
   const cur = await loadCurriculum();
+  await loadStandards();
   const { trackId, lessonId } = parseHash(location.hash);
   if (trackId && lessonId) {
     const content = await renderLessonContent(trackId, lessonId, cur);
