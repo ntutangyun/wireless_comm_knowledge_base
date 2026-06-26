@@ -1,14 +1,14 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-06-25",
-  "last_scanned": "2026-06-25",
+  "last_updated": "2026-06-26",
+  "last_scanned": "2026-06-26",
   "topic_counts": {
     "MAC-layer": 36,
     "agentic-AI": 35,
-    "802.11bn": 33,
+    "802.11bn": 34,
     "scheduling": 30,
     "products": 26,
-    "security": 24,
+    "security": 25,
     "6G": 23,
     "802.11be": 21,
     "WiFi-sensing": 20,
@@ -17,8 +17,8 @@ window.KB_DATA = {
     "MLO": 14,
     "LEO": 13,
     "802.11bf": 13,
+    "MAPC": 12,
     "5G-NR": 12,
-    "MAPC": 11,
     "802.11ax": 11,
     "IoT": 11,
     "network-slicing": 8,
@@ -31,14 +31,18 @@ window.KB_DATA = {
     "Starlink": 7,
     "NTN": 7,
     "generative-AI": 7,
+    "Wi-Fi-8": 6,
     "XR": 6,
     "reinforcement-learning": 6,
     "URLLC": 6,
     "energy-efficiency": 6,
     "802.11bp": 6,
+    "802.11": 5,
+    "Co-SR": 5,
+    "Co-BF": 5,
+    "NPCA": 5,
     "AI-RAN": 5,
     "resource-allocation": 5,
-    "Wi-Fi-8": 5,
     "digital-twin": 5,
     "OFDMA": 5,
     "UWB": 5,
@@ -48,16 +52,13 @@ window.KB_DATA = {
     "automotive": 5,
     "SLE": 4,
     "handover": 4,
-    "Co-SR": 4,
-    "Co-BF": 4,
     "6GHz": 4,
     "5G-core": 4,
     "802.15.4ab": 4,
     "RIC": 4,
-    "NPCA": 4,
     "FCC": 4,
-    "802.11": 4,
     "802.11az": 4,
+    "privacy": 3,
     "dApp": 3,
     "OpenAirInterface": 3,
     "5G-Advanced": 3,
@@ -107,7 +108,6 @@ window.KB_DATA = {
     "IAB": 2,
     "mobility": 2,
     "TSN": 2,
-    "privacy": 2,
     "sub-THz": 2,
     "orchestration": 2,
     "edge-computing": 2,
@@ -158,6 +158,10 @@ window.KB_DATA = {
     "FiRa": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "MAC-randomization": 1,
+    "device-fingerprinting": 1,
+    "DSO": 1,
+    "simulator": 1,
     "WiFi": 1,
     "VR": 1,
     "bitrate-adaptation": 1,
@@ -580,11 +584,11 @@ window.KB_DATA = {
     "TWS": 1
   },
   "primary_topic_counts": {
-    "wifi8-uhr": 19,
+    "wifi8-uhr": 20,
     "sensing-csi": 19,
+    "security-privacy": 14,
     "cellular-ai": 14,
     "6g-vision": 13,
-    "security-privacy": 13,
     "wifi7-deployment": 12,
     "5g-nr": 11,
     "mapc-cosr": 11,
@@ -620,7 +624,7 @@ window.KB_DATA = {
     "uwb-fi-ra": 1
   },
   "type_counts": {
-    "academic-paper": 147,
+    "academic-paper": 149,
     "industry-news": 45,
     "product": 12,
     "ieee-document": 12,
@@ -630,7 +634,7 @@ window.KB_DATA = {
     "bluetooth-spec": 1
   },
   "category_counts": {
-    "academia": 147,
+    "academia": 149,
     "industry": 58,
     "standards": 19
   },
@@ -1549,6 +1553,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-ma-mab-spatial-reuse"
       ],
       "entries_secondary": [
+        "2026-06-26_arxiv-kom8ndor-wifi8-simulator",
         "2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence",
         "2026-06-08_asus-rog-gt-bn98-pro-wifi8-router",
         "2026-06-03_arxiv-cmab-802-11bq-multi-ap-mmwave-throughput",
@@ -1803,6 +1808,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Wi-Fi 8 / 802.11bn / UHR))\n    Schedule 2026\n      D1.3 approved Jan Victoria\n      March plenary - no D2.0 ratify\n      D2.0 ballot slipped May to Jul\n      Ratify target May 2028\n    Study groups\n      AIML TIG/SC\n      AI Offload SG\n      WNG SC\n    Vendor positioning\n      Qualcomm AI-Native MWC 2026\n      Broadcom unified CES 2026\n      MediaTek Filogic 8000\n      Intel four-pillar WWC\n      Gemtek / Quectel\n    Background reading\n      25-year Wi-Fi tutorial\n      AIML CSI feedback survey\n    Watch\n      July 2026 D2.0 ballot\n      AI Offload SG charter\n      Wi-Fi 9 / WNG contributions",
       "diagram_mmd_zh": "mindmap\n  root((Wi-Fi 8 / 802.11bn / UHR))\n    2026 进度\n      D1.3 于 Jan Victoria 批准\n      3 月全会未通过 D2.0\n      D2.0 投票从 5 月推迟至 7 月\n      批准目标 2028-05\n    研究组\n      AIML TIG/SC\n      AI Offload SG\n      WNG SC\n    厂商站位\n      Qualcomm AI-Native（MWC 2026）\n      Broadcom 统一栈（CES 2026）\n      MediaTek Filogic 8000\n      Intel 四支柱（WWC）\n      Gemtek / Quectel\n    背景阅读\n      Wi-Fi 25 年综述\n      AIML CSI 反馈综述\n    关注\n      2026-07 D2.0 投票\n      AI Offload SG 立项\n      Wi-Fi 9 / WNG 贡献",
       "entries_primary": [
+        "2026-06-26_arxiv-kom8ndor-wifi8-simulator",
         "2026-06-08_asus-rog-gt-bn98-pro-wifi8-router",
         "2026-06-04_broadcom-samsung-wifi8-5g-fwa-soc",
         "2026-05-25_arxiv-dcf-full-duplex-wlan-hidden-terminals",
@@ -1837,6 +1843,11 @@ window.KB_DATA = {
         "2026-05-01_arxiv-aiml-csi-feedback-compression"
       ],
       "by_type_primary": {
+        "academic-paper": [
+          "2026-06-26_arxiv-kom8ndor-wifi8-simulator",
+          "2026-05-25_arxiv-dcf-full-duplex-wlan-hidden-terminals",
+          "2026-05-01_arxiv-25-years-tutorial"
+        ],
         "product": [
           "2026-06-08_asus-rog-gt-bn98-pro-wifi8-router",
           "2026-05-14_broadcom-wifi8-bcm67142-67192-mass-market",
@@ -1849,10 +1860,6 @@ window.KB_DATA = {
           "2026-05-04_intel-wwc-wifi8-vision",
           "2026-05-01_gemtek-quectel-wifi8-mwc2026",
           "2026-05-01_qualcomm-wifi8-mwc2026"
-        ],
-        "academic-paper": [
-          "2026-05-25_arxiv-dcf-full-duplex-wlan-hidden-terminals",
-          "2026-05-01_arxiv-25-years-tutorial"
         ],
         "ieee-document": [
           "2026-05-18_ieee-mentor-tgbn-antwerp-digest",
@@ -1981,6 +1988,8 @@ window.KB_DATA = {
         "2026-05-01_arxiv-aiml-csi-feedback-compression"
       ],
       "entries_secondary": [
+        "2026-06-26_arxiv-ml-mac-randomization-privacy",
+        "2026-06-26_arxiv-kom8ndor-wifi8-simulator",
         "2026-06-03_arxiv-cmab-802-11bq-multi-ap-mmwave-throughput",
         "2026-05-29_plume-superproxy-residential-proxyware-media-boxes",
         "2026-05-19_arxiv-composable-agentic-nextg",
@@ -2134,6 +2143,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Security & privacy))\n    Attacks\n      AirSnitch client-isolation (NDSS'26)\n      CSI-RFF microsignals\n      StateFi FSM fingerprinting\n      VWattacker VoWiFi\n      Rural deployment surface\n    Defenses\n      PHY-preamble signatures (CE)\n      Runtime MAC re-randomization\n      Secure FTM (cross to ftm-ranging)\n    Standards activity\n      TGbi EPPKE\n      TGbt post-quantum / crypto agility\n    Patent candidates\n      uhr-sig-ce-preamble-signature\n      mlo-coordinated-mac-rerandomization-ie\n      secure-ftm-anti-downgrade-ie\n    Watch\n      WPA3 successor at IETF/IEEE\n      Sensing-privacy regulation\n      RFF rotation + MAC re-randomization",
       "diagram_mmd_zh": "mindmap\n  root((安全与隐私))\n    攻击\n      AirSnitch 客户端隔离（NDSS'26）\n      CSI-RFF 微信号\n      StateFi FSM 指纹\n      VWattacker VoWiFi\n      乡村部署攻击面\n    防御\n      PHY 前导码签名（CE）\n      运行时 MAC 再随机化\n      安全 FTM（关联 ftm-ranging）\n    标准活动\n      TGbi EPPKE\n      TGbt 后量子 / 加密敏捷\n    专利候选\n      uhr-sig-ce-preamble-signature\n      mlo-coordinated-mac-rerandomization-ie\n      secure-ftm-anti-downgrade-ie\n    关注\n      WPA3 后继在 IETF/IEEE\n      感知隐私监管\n      RFF 轮换 + MAC 再随机化",
       "entries_primary": [
+        "2026-06-26_arxiv-ml-mac-randomization-privacy",
         "2026-06-09_arxiv-ai-native-closed-loop-security-6g-cps",
         "2026-05-29_plume-superproxy-residential-proxyware-media-boxes",
         "2026-05-12_ieee-mentor-tgbt-antwerp-digest",
@@ -2162,6 +2172,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-06-26_arxiv-ml-mac-randomization-privacy",
           "2026-06-09_arxiv-ai-native-closed-loop-security-6g-cps",
           "2026-05-25_arxiv-bfi-attack-wifi-phy-security",
           "2026-05-04_arxiv-rural-wifi-security-piso-pmwani",
@@ -3281,6 +3292,86 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-06-26_arxiv-ml-mac-randomization-privacy",
+      "date_found": "2026-06-26",
+      "technology": "wifi",
+      "date_published": "2026-06-24",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Can Machine Learning Break Wi-Fi Privacy? A Study on MAC Address Randomization",
+      "title_zh": "机器学习能攻破 Wi-Fi 隐私吗？面向 MAC 地址随机化的去匿名研究",
+      "url": "https://arxiv.org/abs/2606.25788",
+      "topics": [
+        "802.11",
+        "security",
+        "privacy",
+        "MAC-randomization",
+        "device-fingerprinting"
+      ],
+      "topic_primary": "security-privacy",
+      "topics_secondary": [
+        "ai-for-wifi"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-06-26_arxiv-ml-mac-randomization-privacy.md",
+      "summary_short_en": "This paper from the UPF Wireless Networking group (Puig, Michaelides, Pintor, Bellalta, Wilhelmi; submitted 24 Jun 2026) shows that MAC address randomization — the standard privacy defence in modern Wi-Fi clients — can be largely defeated by passive, unsupervised machine-learning fingerprinting of Probe Request frames. The attacker model is a passive eavesdropper who never associates: it only collects the unencrypted probe requests devices broadcast during network discovery and tries to re-link the rotating randomized MACs back to the same physical device.",
+      "summary_short_zh": "本文来自 UPF 无线网络组（Puig、Michaelides、Pintor、Bellalta、Wilhelmi，2026 年 6 月 24 日提交），证明现代 Wi-Fi 终端的标准隐私防护——MAC 地址随机化——可被基于探测请求帧（Probe Request）的被动、无监督机器学习指纹大幅攻破。攻击模型为从不关联的被动窃听者：仅收集设备在网络发现阶段广播的未加密探测请求，尝试将不断轮换的随机化 MAC 重新关联回同一台物理设备。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper from the UPF Wireless Networking group (Puig, Michaelides, Pintor, Bellalta, Wilhelmi; submitted 24 Jun 2026) shows that MAC address randomization — the standard privacy defence in modern Wi-Fi clients — can be largely defeated by passive, unsupervised machine-learning fingerprinting of Probe Request frames. The attacker model is a passive eavesdropper who never associates: it only collects the unencrypted probe requests devices broadcast during network discovery and tries to re-link the rotating randomized MACs back to the same physical device.</p>\n<p>The core technical contribution is <strong>bitwise decomposition of the 16-bit HT (High Throughput) capabilities field</strong> into its individual subfields (LDPC, channel width, power-save mode, etc.) instead of treating it as one opaque hex value — this alone materially improves separability. The fingerprint combines three feature families: static information elements (decomposed HT capabilities, vendor OUI, SSID list), the Inter-Probe Frame Arrival Time (IFAT) computed within bursts of frames &lt;1 s apart, and a Simulated RSSI (SRSSI) modelled with log-normal shadowing and distance-dependent variance. Three unsupervised clustering algorithms — K-Means, DBSCAN, OPTICS — are compared, with the Hungarian algorithm mapping unlabeled clusters to ground-truth devices only for scoring.</p>\n<p>On a dataset of <strong>22 devices across 6 manufacturers</strong> (Apple, Samsung, Xiaomi, Huawei, Google, OnePlus), <strong>DBSCAN with decomposed HT capabilities plus three-sniffer RSSI trilateration reaches 89.6% global accuracy</strong>. Even with no spatial information at all (header + timing only), accuracy stays around 88%. The authors are candid about the failure mode: severe class imbalance (devices emitting only 5–7 probe frames) causes minority devices to be absorbed into dominant clusters and score 0%, and the SRSSI coefficients are fitted to a single 15×10 m indoor hall, so spatial generalization is unproven. The conclusion is that current MAC-randomization implementations are insufficient against combined-feature ML fingerprinting.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Bitwise HT-capabilities decomposition</strong> is the headline novelty — splitting the 16-bit field into subfields beats treating it as a single hex token for clustering.</li><li>Three feature families fused: static IEs (HT subfields, OUI, SSID), Inter-Probe Frame Arrival Time (IFAT) within &lt;1 s bursts, and Simulated RSSI (log-normal shadowing, distance-dependent variance).</li><li>Three eavesdropping scenarios: (1) header+timing only, (2) single sniffer / one RSSI, (3) three sniffers in triangular topology (trilateration).</li><li>Unsupervised pipeline (K-Means / DBSCAN / OPTICS); Hungarian assignment used only for scoring — attacker assumed to have no labels.</li><li>22 devices, 6 manufacturers; per-device frame counts 2–1,236 (severe imbalance). Best: <strong>DBSCAN + decomposed HT + 3×RSSI = 89.6%</strong>; no-RSSI ~88%.</li><li>Honest limitations: minority devices (5–7 frames) score 0%; IFAT adds noise to density-based clustering; SRSSI fitted to one room.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This sharpens the security-privacy bin's de-anonymization thread with a concrete, reproducible attack and a new feature-engineering trick (HT-subfield decomposition) that prior probe-fingerprinting work — which mostly exploited single feature categories in isolation — did not use. It is also a direct empirical rebuttal to the assumption that MAC randomization alone protects unassociated clients, and it pairs naturally with the standards-side privacy work in the bin (the EPPKE / TGbi privacy thread and the WPA3-SAE formal analysis). The combined-feature synergy (IEs + timing + spatial) is the part most relevant to designing a real countermeasure: defending against any one signal is insufficient if the three together still reach ~90%.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文来自 UPF 无线网络组（Puig、Michaelides、Pintor、Bellalta、Wilhelmi，2026 年 6 月 24 日提交），证明现代 Wi-Fi 终端的标准隐私防护——MAC 地址随机化——可被基于探测请求帧（Probe Request）的被动、无监督机器学习指纹大幅攻破。攻击模型为从不关联的被动窃听者：仅收集设备在网络发现阶段广播的未加密探测请求，尝试将不断轮换的随机化 MAC 重新关联回同一台物理设备。</p>\n<p>核心技术贡献是将 16 位 HT（高吞吐）能力字段<strong>按位拆解</strong>为各子字段（LDPC、信道带宽、省电模式等），而非作为一个不透明的十六进制值处理——仅此一项即显著提升可分性。指纹融合三类特征：静态信息元素（拆解后的 HT 能力、厂商 OUI、SSID 列表）、在间隔 &lt;1 秒的帧突发内计算的探测帧到达间隔（IFAT），以及用对数正态阴影衰落与随距离变化的方差建模的模拟 RSSI（SRSSI）。比较三种无监督聚类算法——K-Means、DBSCAN、OPTICS，仅在评分时用匈牙利算法将无标签簇映射到真实设备。</p>\n<p>在 <strong>6 个厂商共 22 台设备</strong>（Apple、Samsung、Xiaomi、Huawei、Google、OnePlus）的数据集上，<strong>DBSCAN 配合拆解 HT 能力与三嗅探器 RSSI 三角定位达到 89.6% 全局准确率</strong>；即便完全没有空间信息（仅头部+时序），准确率仍约 88%。作者也坦诚失效模式：严重类别不均衡（仅发出 5–7 帧的设备）使少数设备被吸收进主导簇、准确率为 0%；且 SRSSI 系数拟合于单一 15×10 m 室内大厅，空间泛化性未验证。结论是：当前 MAC 随机化实现不足以抵御组合特征的 ML 指纹。</p>\n<h3>技术要点</h3>\n<ul><li><strong>HT 能力字段按位拆解</strong>为核心创新——将 16 位字段拆为子字段，聚类效果优于单一十六进制 token。</li><li>融合三类特征：静态 IE（HT 子字段、OUI、SSID）、&lt;1 秒突发内的探测帧到达间隔（IFAT）、模拟 RSSI（对数正态阴影、随距离方差）。</li><li>三种窃听场景：(1) 仅头部+时序；(2) 单嗅探器/单 RSSI；(3) 三嗅探器三角拓扑（三角定位）。</li><li>无监督流程（K-Means / DBSCAN / OPTICS）；匈牙利算法仅用于评分，攻击者假定无标签。</li><li>22 台设备、6 个厂商；单设备帧数 2–1236（严重不均衡）。最佳：<strong>DBSCAN + 拆解 HT + 3×RSSI = 89.6%</strong>；无 RSSI 约 88%。</li><li>诚实的局限：少数设备（5–7 帧）准确率 0%；IFAT 给密度聚类引入噪声；SRSSI 仅拟合单一房间。</li></ul>\n<h3>意义与新意</h3>\n<p>本文以一个具体、可复现的攻击与新的特征工程技巧（HT 子字段拆解）强化了 security-privacy 分类中的去匿名线索——以往探测指纹工作多孤立利用单一特征类别，未采用此法。它也直接以实证反驳&quot;仅靠 MAC 随机化即可保护未关联终端&quot;的假设，并与该分类中标准侧隐私工作（EPPKE / TGbi 隐私线索、WPA3-SAE 形式化分析）自然呼应。组合特征的协同效应（IE+时序+空间）对设计真正的对抗措施最具参考价值：若三者合并仍达约 90%，仅防御任一信号都不够。</p>",
+      "images": [],
+      "search_blob": "can machine learning break wi-fi privacy? a study on mac address randomization 机器学习能攻破 wi-fi 隐私吗？面向 mac 地址随机化的去匿名研究 802.11 security privacy mac-randomization device-fingerprinting this paper from the upf wireless networking group (puig, michaelides, pintor, bellalta, wilhelmi; submitted 24 jun 2026) shows that mac address randomization — the standard privacy defence in modern wi-fi clients — can be largely defeated by passive, unsupervised machine-learning fingerprinting of probe request frames. the attacker model is a passive eavesdropper who never associates: it only collects the unencrypted probe requests devices broadcast during network discovery and tries to re-link the rotating randomized macs back to the same physical device. 本文来自 upf 无线网络组（puig、michaelides、pintor、bellalta、wilhelmi，2026 年 6 月 24 日提交），证明现代 wi-fi 终端的标准隐私防护——mac 地址随机化——可被基于探测请求帧（probe request）的被动、无监督机器学习指纹大幅攻破。攻击模型为从不关联的被动窃听者：仅收集设备在网络发现阶段广播的未加密探测请求，尝试将不断轮换的随机化 mac 重新关联回同一台物理设备。 academic-paper wifi"
+    },
+    {
+      "id": "2026-06-26_arxiv-kom8ndor-wifi8-simulator",
+      "date_found": "2026-06-26",
+      "technology": "wifi",
+      "date_published": "2026-06-24",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Kom8ndor: An IEEE 802.11bn-Oriented Simulator for Wi-Fi 8 and Beyond",
+      "title_zh": "Kom8ndor：面向 IEEE 802.11bn 的 Wi-Fi 8 及后续仿真器",
+      "url": "https://arxiv.org/abs/2606.25435",
+      "topics": [
+        "802.11bn",
+        "MAPC",
+        "Co-SR",
+        "Co-BF",
+        "NPCA",
+        "DSO",
+        "simulator",
+        "Wi-Fi-8"
+      ],
+      "topic_primary": "wifi8-uhr",
+      "topics_secondary": [
+        "mapc-cosr",
+        "ai-for-wifi"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-06-26_arxiv-kom8ndor-wifi8-simulator.md",
+      "summary_short_en": "Kom8ndor (Wilhelmi, Barrachina-Muñoz, Bellalta, UPF; submitted 24 Jun 2026) is an open-source discrete-event simulator that extends the established Komondor platform with IEEE 802.11bn / Wi-Fi 8 Ultra-High-Reliability (UHR) features. It is the tooling companion to the group's June 2026 \"Tutorial on 802.11bn Multi-AP Coordination\" (already in the KB) — where the tutorial named Kom8ndor as its evaluation engine, this paper documents the simulator itself and releases it under GNU GPLv3 at github.com/wn-upf/Komondor.",
+      "summary_short_zh": "Kom8ndor（Wilhelmi、Barrachina-Muñoz、Bellalta，UPF，2026 年 6 月 24 日提交）是一款开源离散事件仿真器，在成熟的 Komondor 平台上扩展了 IEEE 802.11bn / Wi-Fi 8 超高可靠性（UHR）特性。它是该组 2026 年 6 月《802.11bn 多 AP 协调教程》（已收录于 KB）的工具配套——教程将 Kom8ndor 列为其评测引擎，而本文记录仿真器本身，并以 GNU GPLv3 发布于 github.com/wn-upf/Komondor。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Kom8ndor (Wilhelmi, Barrachina-Muñoz, Bellalta, UPF; submitted 24 Jun 2026) is an open-source discrete-event simulator that extends the established Komondor platform with IEEE 802.11bn / Wi-Fi 8 Ultra-High-Reliability (UHR) features. It is the tooling companion to the group's June 2026 &quot;Tutorial on 802.11bn Multi-AP Coordination&quot; (already in the KB) — where the tutorial named Kom8ndor as its evaluation engine, this paper documents the simulator itself and releases it under GNU GPLv3 at github.com/wn-upf/Komondor.</p>\n<p>The simulator's headline additions are the full <strong>Multi-AP Coordination (MAPC)</strong> family — Co-TDMA (orthogonal time-slicing of a shared TXOP), Co-SR (coordinated spatial reuse via simultaneous reduced-power transmission), and Co-BF (coordinated beamforming with zero-forcing precoding and ULAs that null peer-BSS receivers) — plus <strong>NPCA</strong> (Non-Primary Channel Access, temporary switching to a pre-configured secondary channel on OBSS detection, via an ICF/ICR exchange) and <strong>DSO</strong> (Dynamic Subband Operation, round-robin allocation of narrow-band STAs onto secondary subchannels during wide-band TXOPs). New MAC states (TRANSMIT_ICF, WAIT_ICR, WAIT_MU-RTS) and a preamble-puncturing bitmap round out the 802.11bn channel-access model on top of the existing EDCA/DCF baseline and a set of deterministic / token-passing backoff variants (deterministic backoff, &quot;It's Your Turn&quot;, ECA, synchronized backoff).</p>\n<p>The second pillar is <strong>native ML integration</strong>. Kom8ndor ships a built-in Multi-Armed Bandit (with ε-greedy exploration) and a new socket-based bridge (POSIX Unix-domain sockets, 32-bit integer headers + feature vectors) that lets external Python models — PyTorch, TensorFlow, scikit-learn DNNs — drive in-simulation decisions across decentralized, coordinated, and centralized agent topologies. Tutorial examples show Co-BF delivering the largest throughput gain among MAPC modes (SINR gains from coordinated nulling) and DSO/NPCA enabling simultaneous scheduling under overlapping spectrum. The paper positions Kom8ndor against ns-3 explicitly: ns-3 is high-fidelity but Wi-Fi-7-only and slow to evolve, whereas Kom8ndor trades PHY/MAC fidelity for rapid 802.11bn prototyping speed and first-class ML hooks.</p>\n<h3>Key technical points</h3>\n<ul><li>Open-source (GNU GPLv3) discrete-event simulator extending Komondor to 802.11bn / Wi-Fi 8 UHR; repo github.com/wn-upf/Komondor.</li><li>Full MAPC family modeled: <strong>Co-TDMA</strong>, <strong>Co-SR</strong> (simultaneous reduced-power), <strong>Co-BF</strong> (zero-forcing + ULA nulling of peer BSS).</li><li><strong>NPCA</strong> (ICF/ICR-triggered secondary-channel switch on OBSS) and <strong>DSO</strong> (round-robin narrow-band STA subchannel allocation) implemented; preamble-puncturing bitmap.</li><li>New MAC FSM states: TRANSMIT_ICF, WAIT_ICR, WAIT_MU-RTS; plus deterministic-backoff / IYT / ECA / synchronized-backoff variants alongside EDCA.</li><li>Native ML: built-in MAB (ε-greedy) + Unix-domain-socket bridge to external PyTorch/TF/sklearn models; decentralized / coordinated / centralized agent topologies.</li><li>Tutorial results: Co-BF gives the largest MAPC throughput gain; DSO/NPCA enable simultaneous scheduling under overlapping spectrum. Positioned as a faster, ML-first alternative to Wi-Fi-7-only ns-3.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB already holds the group's 802.11bn MAPC tutorial (mapc-cosr); this entry completes that thread by documenting and releasing the evaluation engine itself, making the tutorial's numbers reproducible and giving the community a Wi-Fi-8-native, ML-instrumented simulator that ns-3 does not yet match. It is a tooling/infrastructure contribution rather than a new air-interface mechanism — every modeled feature (Co-SR/Co-BF/Co-TDMA, NPCA, DSO) is already in the 802.11bn draft — so its value is in lowering the cost of Wi-Fi 8 + AI-for-Wi-Fi experimentation, not in introducing a novel protocol. Worth watching as the de-facto open simulator the academic MAPC literature standardizes on.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Kom8ndor（Wilhelmi、Barrachina-Muñoz、Bellalta，UPF，2026 年 6 月 24 日提交）是一款开源离散事件仿真器，在成熟的 Komondor 平台上扩展了 IEEE 802.11bn / Wi-Fi 8 超高可靠性（UHR）特性。它是该组 2026 年 6 月《802.11bn 多 AP 协调教程》（已收录于 KB）的工具配套——教程将 Kom8ndor 列为其评测引擎，而本文记录仿真器本身，并以 GNU GPLv3 发布于 github.com/wn-upf/Komondor。</p>\n<p>仿真器的核心新增是完整的<strong>多 AP 协调（MAPC）</strong>族——Co-TDMA（对共享 TXOP 做正交时隙划分）、Co-SR（通过同时降功率发送实现协调空间复用）、Co-BF（基于迫零预编码与均匀线阵、对邻 BSS 接收者置零的协调波束成形）——以及 <strong>NPCA</strong>（非主信道接入：检测到 OBSS 时经 ICF/ICR 交互临时切换到预配置的辅信道）和 <strong>DSO</strong>（动态子带操作：在宽带 TXOP 期间用轮询将窄带 STA 分配到辅子信道）。新增 MAC 状态（TRANSMIT_ICF、WAIT_ICR、WAIT_MU-RTS）与前导码穿孔位图，在既有 EDCA/DCF 基线及一组确定性/令牌传递退避变体（确定性退避、&quot;It's Your Turn&quot;、ECA、同步退避）之上补全了 802.11bn 信道接入模型。</p>\n<p>第二大支柱是<strong>原生 ML 集成</strong>。Kom8ndor 内置多臂赌博机（ε-贪婪探索），并新增基于套接字的桥接（POSIX Unix 域套接字、32 位整型头部+特征向量），使外部 Python 模型（PyTorch、TensorFlow、scikit-learn DNN）能在去中心、协调、集中三类智能体拓扑下驱动仿真内决策。教程示例显示 Co-BF 在各 MAPC 模式中吞吐增益最大（来自协调置零的 SINR 增益），DSO/NPCA 则在重叠频谱下实现并行调度。论文明确将 Kom8ndor 对标 ns-3：ns-3 高保真但仅支持 Wi-Fi 7 且演进慢，而 Kom8ndor 以 PHY/MAC 保真度换取 802.11bn 快速原型速度与一流的 ML 接口。</p>\n<h3>技术要点</h3>\n<ul><li>开源（GNU GPLv3）离散事件仿真器，将 Komondor 扩展至 802.11bn / Wi-Fi 8 UHR；仓库 github.com/wn-upf/Komondor。</li><li>建模完整 MAPC 族：<strong>Co-TDMA</strong>、<strong>Co-SR</strong>（同时降功率）、<strong>Co-BF</strong>（迫零 + ULA 对邻 BSS 置零）。</li><li>实现 <strong>NPCA</strong>（检测 OBSS 时经 ICF/ICR 切换辅信道）与 <strong>DSO</strong>（轮询将窄带 STA 分配到子信道）；前导码穿孔位图。</li><li>新增 MAC 状态机状态：TRANSMIT_ICF、WAIT_ICR、WAIT_MU-RTS；并提供确定性退避 / IYT / ECA / 同步退避等变体及 EDCA。</li><li>原生 ML：内置 MAB（ε-贪婪）+ 经 Unix 域套接字桥接外部 PyTorch/TF/sklearn 模型；去中心/协调/集中三类智能体拓扑。</li><li>教程结果：Co-BF 的 MAPC 吞吐增益最大；DSO/NPCA 在重叠频谱下实现并行调度。定位为比仅支持 Wi-Fi 7 的 ns-3 更快、ML 优先的替代方案。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 已收录该组的 802.11bn MAPC 教程（mapc-cosr）；本条目通过记录并发布评测引擎本身补全了这条线索，使教程数据可复现，并为社区提供一款 ns-3 尚不具备的 Wi-Fi 8 原生、带 ML 仪表的仿真器。它属于工具/基础设施贡献，而非新空口机制——所建模的每项特性（Co-SR/Co-BF/Co-TDMA、NPCA、DSO）均已在 802.11bn 草案中——其价值在于降低 Wi-Fi 8 + AI-for-Wi-Fi 实验成本，而非引入新协议。值得关注它是否会成为学术 MAPC 文献标准化采用的事实开源仿真器。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2606.25435v1/x6.png",
+          "caption_en": "Kom8ndor MAPC scenario: two overlapping 40 MHz BSSs",
+          "caption_zh": "Kom8ndor MAPC 场景：两个重叠的 40 MHz BSS"
+        },
+        {
+          "url": "https://arxiv.org/html/2606.25435v1/x7.png",
+          "caption_en": "MAPC throughput comparison (Co-TDMA / Co-SR / Co-BF)",
+          "caption_zh": "MAPC 吞吐对比（Co-TDMA / Co-SR / Co-BF）"
+        },
+        {
+          "url": "https://arxiv.org/html/2606.25435v1/x9.png",
+          "caption_en": "DSO/NPCA throughput under overlapping spectrum",
+          "caption_zh": "重叠频谱下 DSO/NPCA 吞吐"
+        }
+      ],
+      "search_blob": "kom8ndor: an ieee 802.11bn-oriented simulator for wi-fi 8 and beyond kom8ndor：面向 ieee 802.11bn 的 wi-fi 8 及后续仿真器 802.11bn mapc co-sr co-bf npca dso simulator wi-fi-8 kom8ndor (wilhelmi, barrachina-muñoz, bellalta, upf; submitted 24 jun 2026) is an open-source discrete-event simulator that extends the established komondor platform with ieee 802.11bn / wi-fi 8 ultra-high-reliability (uhr) features. it is the tooling companion to the group's june 2026 \"tutorial on 802.11bn multi-ap coordination\" (already in the kb) — where the tutorial named kom8ndor as its evaluation engine, this paper documents the simulator itself and releases it under gnu gplv3 at github.com/wn-upf/komondor. kom8ndor（wilhelmi、barrachina-muñoz、bellalta，upf，2026 年 6 月 24 日提交）是一款开源离散事件仿真器，在成熟的 komondor 平台上扩展了 ieee 802.11bn / wi-fi 8 超高可靠性（uhr）特性。它是该组 2026 年 6 月《802.11bn 多 ap 协调教程》（已收录于 kb）的工具配套——教程将 kom8ndor 列为其评测引擎，而本文记录仿真器本身，并以 gnu gplv3 发布于 github.com/wn-upf/komondor。 academic-paper wifi"
+    },
     {
       "id": "2026-06-25_arxiv-bravr-ap-assisted-vr-bitrate-wifi",
       "date_found": "2026-06-25",
