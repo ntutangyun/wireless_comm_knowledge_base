@@ -1208,6 +1208,19 @@ window.SOURCES_DATA = {
       "technology": "uwb"
     },
     {
+      "id": "ee-news-europe-uwb",
+      "name": "EE News Europe UWB",
+      "kind": "web-search",
+      "category": "industry",
+      "topics_hint": [
+        "uwb-ranging",
+        "uwb-security",
+        "uwb-fi-ra"
+      ],
+      "notes": "Added 2026-06-27 after yielding the Infineon AIROC TSL100 automotive-safety UWB chip entry. Watch for European semiconductor/product coverage around ASIL-rated UWB, wireless battery management, secure ranging, and automotive digital-key design wins.",
+      "technology": "uwb"
+    },
+    {
       "id": "apple-uwb",
       "name": "Apple UWB",
       "kind": "web-search",
