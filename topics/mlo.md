@@ -9,7 +9,7 @@ last_updated: 2026-05-05
 
 In 2026 MLO crossed from "advertised feature" to "deployed feature." `2026-05-04_cisco-wifi7-breakout-year-2026` argues 2026 is the inflection year, citing 500 M certified Wi-Fi 7 devices shipped (`2026-05-01_wifi7-deployment-milestone-2026`) and Q1 2026 vendor revenue spikes (`2026-05-04_realtek-wifi7-revenue-surge-q1-2026`, Extreme's 37 % Q3 unit-share `2026-05-04_extreme-networks-wifi7-momentum-q3`). Enterprise rollouts are concrete and large — Cisco's 6 000-AP Georgetown deployment (`2026-05-04_cisco-georgetown-wifi7-deployment`), HPE Aruba's 730 Series UTB AP (`2026-05-04_hpe-aruba-730-utb-wifi7-ap`), RUCKUS / Nokia OLAN integration (`2026-05-04_ruckus-nokia-wifi7-fiber-olan`). Academic work has shifted from "does MLO help" to "how to schedule across links" — `2026-05-01_arxiv-mlo-drl-lstm-cross-layer` (DRL + LSTM cross-layer optimisation), `2026-05-02_arxiv-mab-llm-mlo-channel-allocation` (MAB + LLM channel allocation).
 
-Watch for: 802.11bn extensions of MLO (per-link MAC privacy, cf. today's candidate `mlo-coordinated-mac-rerandomization-ie`); NSTR vs STR deployment patterns from real telemetry; MLO-roam mechanisms (the bridge into `roaming-mobility`); per-link energy-tradeoff measurements (bridge into `energy-power-save`).
+Watch for: 802.11bn extensions of MLO (per-link MAC privacy); NSTR vs STR deployment patterns from real telemetry; MLO-roam mechanisms (the bridge into `roaming-mobility`); per-link energy-tradeoff measurements (bridge into `energy-power-save`).
 
 ## Current state (ZH)
 
@@ -17,4 +17,4 @@ Watch for: 802.11bn extensions of MLO (per-link MAC privacy, cf. today's candida
 
 2026 年 MLO 从"宣传特性"跨入"部署特性"。`2026-05-04_cisco-wifi7-breakout-year-2026` 主张 2026 是拐点之年，引用 5 亿台 Wi-Fi 7 认证设备出货量（`2026-05-01_wifi7-deployment-milestone-2026`）以及 2026 年 Q1 的厂商营收激增（`2026-05-04_realtek-wifi7-revenue-surge-q1-2026`、Extreme 在 Q3 的 37% 出货占比 `2026-05-04_extreme-networks-wifi7-momentum-q3`）。企业部署既具体又规模化——Cisco 在 Georgetown 的 6,000 AP 部署（`2026-05-04_cisco-georgetown-wifi7-deployment`）、HPE Aruba 730 系列 UTB AP（`2026-05-04_hpe-aruba-730-utb-wifi7-ap`）、RUCKUS / Nokia OLAN 整合（`2026-05-04_ruckus-nokia-wifi7-fiber-olan`）。学界工作已从"MLO 有效吗"转向"跨链路如何调度"——`2026-05-01_arxiv-mlo-drl-lstm-cross-layer`（DRL + LSTM 跨层优化）、`2026-05-02_arxiv-mab-llm-mlo-channel-allocation`（MAB + LLM 信道分配）。
 
-待关注：802.11bn 对 MLO 的扩展（每链路 MAC 隐私，参考今日候选 `mlo-coordinated-mac-rerandomization-ie`）；来自真实遥测的 NSTR vs STR 部署模式；MLO-roam 机制（与 `roaming-mobility` 的桥梁）；每链路能耗权衡的测量（与 `energy-power-save` 的桥梁）。
+待关注：802.11bn 对 MLO 的扩展（每链路 MAC 隐私）；来自真实遥测的 NSTR vs STR 部署模式；MLO-roam 机制（与 `roaming-mobility` 的桥梁）；每链路能耗权衡的测量（与 `energy-power-save` 的桥梁）。

@@ -51,7 +51,7 @@ Picazo-Martinez 等人（2025 年 7 月，IoT-Journal preprint）提出 MilaGro�
 
 First entry on multiband-fusion Wi-Fi sensing in this KB. Sets a baseline that future sensing work should be compared against.
 
-A separate, currently unstaked direction would be a transmitter-side hint — for example, an IE in Beacon advertising "this AP transmits 5 GHz beacons plus 60 GHz BFT sequences usable as sensing reference signals" — so that passive sensing receivers know which transmissions to listen to. The MilaGro paper is explicit that it operates without such a hint; the question of whether one should be standardized is left open.
+A separate open direction would be a transmitter-side hint — for example, an IE in Beacon advertising "this AP transmits 5 GHz beacons plus 60 GHz BFT sequences usable as sensing reference signals" — so that passive sensing receivers know which transmissions to listen to. The MilaGro paper is explicit that it operates without such a hint; the question of whether one should be standardized is left open.
 
 ## Why it matters / what's new (ZH)
 
