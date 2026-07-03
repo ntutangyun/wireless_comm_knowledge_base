@@ -25,8 +25,8 @@ window.KB_DATA = {
     "network-slicing": 10,
     "NTN": 9,
     "LLM": 8,
+    "UWB": 8,
     "CSI": 8,
-    "UWB": 7,
     "XR": 7,
     "NearLink": 7,
     "SparkLink": 7,
@@ -88,6 +88,7 @@ window.KB_DATA = {
     "AFC": 3,
     "QoS": 3,
     "ranging": 3,
+    "FiRa": 3,
     "LLM-agent": 3,
     "cellular-ai": 3,
     "rApp": 3,
@@ -131,6 +132,7 @@ window.KB_DATA = {
     "LPI": 2,
     "spatial-reuse": 2,
     "IMT-2030": 2,
+    "LE-UWB": 2,
     "sidelink": 2,
     "5G-SA": 2,
     "SLA": 2,
@@ -167,7 +169,6 @@ window.KB_DATA = {
     "NGSO-regulation": 2,
     "narrowband-assist": 2,
     "radar": 2,
-    "FiRa": 2,
     "Rel-19": 2,
     "R-TWT": 2,
     "LDPC": 1,
@@ -297,6 +298,7 @@ window.KB_DATA = {
     "imec": 1,
     "flexible-duplex": 1,
     "deterministic": 1,
+    "interoperability": 1,
     "C-V2X": 1,
     "semantic-communications": 1,
     "cooperative-perception": 1,
@@ -436,7 +438,6 @@ window.KB_DATA = {
     "gossip": 1,
     "ESB": 1,
     "protocol-hybrid": 1,
-    "LE-UWB": 1,
     "low-power": 1,
     "CES": 1,
     "Ambient-IoT": 1,
@@ -658,6 +659,7 @@ window.KB_DATA = {
     "nearlink-slb": 3,
     "bt-location": 3,
     "bt-channel-sounding": 3,
+    "uwb-fi-ra": 2,
     "mmwave-bq": 2,
     "ngso-regulation": 2,
     "bt-le": 2,
@@ -669,12 +671,11 @@ window.KB_DATA = {
     "mec": 1,
     "cellular-spectrum": 1,
     "uwb-radar": 1,
-    "bt-mesh": 1,
-    "uwb-fi-ra": 1
+    "bt-mesh": 1
   },
   "type_counts": {
     "academic-paper": 162,
-    "industry-news": 47,
+    "industry-news": 48,
     "product": 15,
     "ieee-document": 12,
     "proposal": 4,
@@ -684,7 +685,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 162,
-    "industry": 65,
+    "industry": 66,
     "standards": 19
   },
   "technologies_vocab": {
@@ -3212,6 +3213,7 @@ window.KB_DATA = {
         "2026-06-04_calterah-dubhe-uwb-soc-802154ab"
       ],
       "entries_secondary": [
+        "2026-07-03_spark-microsystems-joins-fira",
         "2026-05-24_arxiv-uwb-fat-body-composition",
         "2026-05-21_jcb-uwb-payments-japan"
       ],
@@ -3245,6 +3247,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-03_spark-microsystems-joins-fira",
         "2026-05-21_jcb-uwb-payments-japan"
       ],
       "entries_secondary": [
@@ -3255,6 +3258,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "industry-news": [
+          "2026-07-03_spark-microsystems-joins-fira",
           "2026-05-21_jcb-uwb-payments-japan"
         ]
       }
@@ -5014,6 +5018,35 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Riaz、Coll-Perales、Lucas-Estañ、Gozalvez 与 Sepulcre（UMH Elche 团队；arXiv 2606.11398，2026 年 6 月 9 日提交，IEEE VTC 会议）研究下一代蜂窝网络中时间敏感闭环应用的确定性服务保障，采用灵活双工（FD）——在同一频段内以正交资源同时进行上行与下行传输。</p>\n<p>灵活双工的代价是同时收发带来的交叉链路干扰。论文调度器用两个手段对抗：流量预测（预判即将到来的传输，提前安排上下行资源划分）与空间感知/分集（将同时反向传输在空间上错开，使干扰链路彼此分离）。作者报告传输完成率较基线 FD 调度提升超过 40%。</p>\n<p>该论文的 arXiv HTML 渲染不可用（404），本条目仅基于摘要；后续运行可在全文可获取后回填评估细节（仿真器、场景规模、时延分布等）。</p>\n<h3>技术要点</h3>\n<ul><li>灵活双工：同一频段正交资源上同时上行+下行——闭环工业/车载流量确定性的使能手段。</li><li>预测式调度：流量预测在需求到来前安排上下行划分，保护有截止期约束的传输。</li><li>空间感知：将同时的反向传输在空间上错开布置，抑制交叉链路干扰。</li><li>核心数字：传输完成率较基线 FD 调度提升超过 40%。</li><li>UMH Elche 团队（与 C-V2X 语义通信工作同一实验室）——VTC 会议，车载/确定性方向。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 中首个灵活双工条目。它从两个方向补充确定性通信主线：同一团队的 C-V2X 语义/任务导向可扩展性工作（2026-06-10_arxiv-semantic-task-oriented-v2x-scalability），以及 6G 频谱聚合立场文件中对灵活频谱使用的关注（2026-06-09_arxiv-spectrum-aggregation-6g-ca-vs-dc）。双工方向灵活性加预测式调度是 Rel-20/21 确定性候选工具之一，本文为该方向提供了首个具体调度结果（完成率提升超 40%），目前仅摘要级信息。</p>",
       "images": [],
       "search_blob": "predictive and spatially aware scheduling in flexible duplexing for deterministic communications 面向确定性通信的灵活双工预测式空间感知调度 flexible-duplex deterministic scheduling urllc v2x riaz, coll-perales, lucas-estañ, gozalvez and sepulcre (umh elche group; arxiv 2606.11398, submitted 9 june 2026, ieee vtc venue) tackle deterministic service levels for time-sensitive closed-loop applications in next-generation cellular networks using flexible duplexing (fd) — simultaneous uplink and downlink transmissions over orthogonal resources within the same band. riaz、coll-perales、lucas-estañ、gozalvez 与 sepulcre（umh elche 团队；arxiv 2606.11398，2026 年 6 月 9 日提交，ieee vtc 会议）研究下一代蜂窝网络中时间敏感闭环应用的确定性服务保障，采用灵活双工（fd）——在同一频段内以正交资源同时进行上行与下行传输。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-03_spark-microsystems-joins-fira",
+      "date_found": "2026-07-03",
+      "technology": "uwb",
+      "date_published": "2026-06-08",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "SPARK Microsystems Joins FiRa Consortium — Low-Latency UWB Data Communications Meets the Ranging Ecosystem",
+      "title_zh": "SPARK Microsystems 加入 FiRa 联盟——低时延 UWB 数据通信与测距生态汇合",
+      "url": "https://www.sparkmicro.com/news/spark-microsystems-joins-fira-consortium-for-advancement-of-uwb-wireless-connectivity/",
+      "topics": [
+        "UWB",
+        "FiRa",
+        "LE-UWB",
+        "interoperability"
+      ],
+      "topic_primary": "uwb-fi-ra",
+      "topics_secondary": [
+        "uwb-ranging"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-07-03_spark-microsystems-joins-fira.md",
+      "summary_short_en": "On June 8, 2026, SPARK Microsystems — a Canadian fabless semiconductor company specializing in short-range wireless — announced it has joined the FiRa Consortium as an associate member, and hosted live demonstrations at the FiRa Demo Showcase during the June Members Meeting in Montreal the same evening. SPARK will participate in FiRa working groups and release initiatives aimed at interoperable UWB ranging and positioning.",
+      "summary_short_zh": "2026 年 6 月 8 日，加拿大无晶圆厂半导体公司、短距无线专业厂商 SPARK Microsystems 宣布以准会员（associate member）身份加入 FiRa 联盟，并于当晚在蒙特利尔六月会员大会的 FiRa 演示专场进行了现场演示。SPARK 将参与 FiRa 工作组与版本发布计划，推动 UWB 测距与定位的互操作。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On June 8, 2026, SPARK Microsystems — a Canadian fabless semiconductor company specializing in short-range wireless — announced it has joined the FiRa Consortium as an associate member, and hosted live demonstrations at the FiRa Demo Showcase during the June Members Meeting in Montreal the same evening. SPARK will participate in FiRa working groups and release initiatives aimed at interoperable UWB ranging and positioning.</p>\n<p>The interesting angle is what SPARK brings: its LE-UWB™ technology targets ultra-low-power, high-speed, low-latency <em>data communication</em> (wearables, gaming audio, IoT sensors) rather than the ranging/positioning applications FiRa has historically standardized around. SPARK positioning itself inside FiRa — with CTO Frederic Nabki framing UWB as &quot;the future of location awareness across a wide range of devices&quot; — signals the continuing convergence of UWB's two application families: high-rate low-latency data links and fine ranging on shared silicon and shared certification infrastructure.</p>\n<p>Context from the same meeting cycle: FiRa held its June 2026 hybrid Members Meeting in Montreal and has been seeking a host for its first Plugfest in Asia (call open through June 15) — signs of the certification ecosystem expanding both in membership breadth and geographic reach.</p>\n<h3>Key technical points</h3>\n<ul><li>SPARK Microsystems joins FiRa as associate member (June 8, 2026); active participation in working groups and release initiatives.</li><li>SPARK's LE-UWB™: ultra-low-power, high-speed, interference-robust, minimal-latency UWB for data communication (wearables, IoT, sensors) plus ranging/positioning.</li><li>Live LE-UWB demos at the FiRa Demo Showcase, Montreal Members Meeting (June 8, 7 PM).</li><li>FiRa ecosystem expansion signals: first Asia Plugfest host search (through June 15, 2026); ST joined the FiRa board earlier (automotive Digital Key focus).</li><li>Convergence trend: UWB data-comms vendors aligning with the ranging/positioning certification ecosystem.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first FiRa-ecosystem industry entry. The KB's UWB thread so far tracks the standards/silicon side (802.15.4ab drafts, ST/Infineon/Qorvo SoCs, AB-Sync clock synchronization); FiRa is where interoperability certification actually happens, and membership moves show which application families are converging onto it. A data-comms-first vendor (SPARK) joining the ranging-first consortium is a concrete data point for the &quot;one UWB radio, both ranging and data&quot; direction that 802.15.4ab also encodes.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026 年 6 月 8 日，加拿大无晶圆厂半导体公司、短距无线专业厂商 SPARK Microsystems 宣布以准会员（associate member）身份加入 FiRa 联盟，并于当晚在蒙特利尔六月会员大会的 FiRa 演示专场进行了现场演示。SPARK 将参与 FiRa 工作组与版本发布计划，推动 UWB 测距与定位的互操作。</p>\n<p>值得注意的是 SPARK 带来的能力方向：其 LE-UWB™ 技术主打超低功耗、高速率、低时延的<em>数据通信</em>（可穿戴、游戏音频、IoT 传感器），而非 FiRa 历来标准化的测距/定位应用。SPARK 进入 FiRa——其 CTO Frederic Nabki 称 UWB 是&quot;广泛设备与应用中位置感知的未来&quot;——标志着 UWB 两大应用族的持续汇合：高速低时延数据链路与精细测距共享芯片与认证基础设施。</p>\n<p>同一会议周期的背景：FiRa 于 2026 年 6 月在蒙特利尔举行混合形式会员大会，并在为其首次亚洲 Plugfest 征集主办方（截至 6 月 15 日）——认证生态在成员广度与地理覆盖两方面同步扩张。</p>\n<h3>技术要点</h3>\n<ul><li>SPARK Microsystems 以准会员身份加入 FiRa（2026 年 6 月 8 日）；将积极参与工作组与版本发布计划。</li><li>SPARK 的 LE-UWB™：面向数据通信（可穿戴、IoT、传感器）兼顾测距/定位的超低功耗、高速率、抗干扰、极低时延 UWB。</li><li>在蒙特利尔会员大会 FiRa 演示专场进行 LE-UWB 现场演示（6 月 8 日 19 时）。</li><li>FiRa 生态扩张信号：首次亚洲 Plugfest 主办方征集（截至 2026 年 6 月 15 日）；ST 此前加入 FiRa 董事会（聚焦汽车数字钥匙）。</li><li>汇合趋势：UWB 数据通信厂商向测距/定位认证生态靠拢。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本知识库首条 FiRa 生态产业条目。KB 的 UWB 线索此前聚焦标准/芯片侧（802.15.4ab 草案、ST/英飞凌/Qorvo SoC、AB-Sync 时钟同步）；FiRa 是互操作认证真正发生的地方，成员动向显示哪些应用族正在向其汇聚。数据通信优先的厂商（SPARK）加入测距优先的联盟，是&quot;一颗 UWB 射频同时做测距与数据&quot;方向（802.15.4ab 同样编码了这一方向）的具体佐证。</p>",
+      "images": [],
+      "search_blob": "spark microsystems joins fira consortium — low-latency uwb data communications meets the ranging ecosystem spark microsystems 加入 fira 联盟——低时延 uwb 数据通信与测距生态汇合 uwb fira le-uwb interoperability on june 8, 2026, spark microsystems — a canadian fabless semiconductor company specializing in short-range wireless — announced it has joined the fira consortium as an associate member, and hosted live demonstrations at the fira demo showcase during the june members meeting in montreal the same evening. spark will participate in fira working groups and release initiatives aimed at interoperable uwb ranging and positioning. 2026 年 6 月 8 日，加拿大无晶圆厂半导体公司、短距无线专业厂商 spark microsystems 宣布以准会员（associate member）身份加入 fira 联盟，并于当晚在蒙特利尔六月会员大会的 fira 演示专场进行了现场演示。spark 将参与 fira 工作组与版本发布计划，推动 uwb 测距与定位的互操作。 industry-news uwb"
     },
     {
       "id": "2026-06-10_arxiv-semantic-task-oriented-v2x-scalability",
