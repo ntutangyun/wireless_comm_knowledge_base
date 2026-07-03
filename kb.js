@@ -6,13 +6,13 @@ window.KB_DATA = {
     "MAC-layer": 36,
     "agentic-AI": 35,
     "802.11bn": 34,
+    "6G": 30,
     "scheduling": 30,
     "products": 28,
-    "6G": 27,
     "security": 25,
     "802.11be": 22,
     "WiFi-sensing": 20,
-    "LEO": 17,
+    "LEO": 18,
     "O-RAN": 15,
     "PHY-layer": 15,
     "MLO": 14,
@@ -23,13 +23,13 @@ window.KB_DATA = {
     "802.11ax": 11,
     "network-slicing": 10,
     "Starlink": 9,
-    "NTN": 8,
+    "NTN": 9,
+    "LLM": 8,
     "CSI": 8,
     "UWB": 7,
     "XR": 7,
     "NearLink": 7,
     "SparkLink": 7,
-    "LLM": 7,
     "direct-to-device": 7,
     "energy-efficiency": 7,
     "mmWave": 7,
@@ -39,6 +39,7 @@ window.KB_DATA = {
     "reinforcement-learning": 6,
     "URLLC": 6,
     "802.11bp": 6,
+    "3GPP": 5,
     "802.11": 5,
     "Co-SR": 5,
     "Co-BF": 5,
@@ -51,9 +52,9 @@ window.KB_DATA = {
     "V2X": 5,
     "802.11bq": 5,
     "BLE": 5,
-    "3GPP": 4,
     "edge-AI": 4,
     "mobility": 4,
+    "AI-native": 4,
     "privacy": 4,
     "SLE": 4,
     "handover": 4,
@@ -63,6 +64,8 @@ window.KB_DATA = {
     "FCC": 4,
     "802.11az": 4,
     "Release-21": 3,
+    "intent-based-networking": 3,
+    "orchestration": 3,
     "traffic-prediction": 3,
     "measurement": 3,
     "AMP-IoT": 3,
@@ -92,7 +95,6 @@ window.KB_DATA = {
     "AoA": 3,
     "5G": 3,
     "backscatter": 3,
-    "AI-native": 3,
     "ELR": 3,
     "LB291": 3,
     "802.11bt": 3,
@@ -121,7 +123,6 @@ window.KB_DATA = {
     "IAB": 2,
     "TSN": 2,
     "sub-THz": 2,
-    "orchestration": 2,
     "edge-computing": 2,
     "jamming": 2,
     "Co-TDMA": 2,
@@ -129,7 +130,6 @@ window.KB_DATA = {
     "LPI": 2,
     "spatial-reuse": 2,
     "IMT-2030": 2,
-    "intent-based-networking": 2,
     "sidelink": 2,
     "5G-SA": 2,
     "SLA": 2,
@@ -169,6 +169,7 @@ window.KB_DATA = {
     "Rel-19": 2,
     "R-TWT": 2,
     "LDPC": 1,
+    "TMF": 1,
     "network-orchestration": 1,
     "MEC": 1,
     "container-migration": 1,
@@ -189,6 +190,8 @@ window.KB_DATA = {
     "ASIL-B": 1,
     "wireless-battery-management": 1,
     "secure-ranging": 1,
+    "air-interface": 1,
+    "neural-receiver": 1,
     "optical-burst-switching": 1,
     "all-optical": 1,
     "WDM": 1,
@@ -212,6 +215,8 @@ window.KB_DATA = {
     "airtime-fairness": 1,
     "cross-layer": 1,
     "AP-assisted": 1,
+    "embodied-AI": 1,
+    "memory": 1,
     "星闪": 1,
     "OpenHarmony": 1,
     "open-source": 1,
@@ -626,9 +631,9 @@ window.KB_DATA = {
   "primary_topic_counts": {
     "wifi8-uhr": 20,
     "sensing-csi": 19,
+    "cellular-ai": 16,
+    "6g-vision": 15,
     "wifi7-deployment": 15,
-    "cellular-ai": 15,
-    "6g-vision": 14,
     "security-privacy": 14,
     "5g-nr": 12,
     "mapc-cosr": 11,
@@ -641,11 +646,11 @@ window.KB_DATA = {
     "ai-for-wifi": 6,
     "sat-direct-device": 6,
     "starlink": 5,
+    "ntn": 5,
     "rtwt-latency": 5,
     "sat-ai": 4,
     "cellular-security": 4,
     "network-slicing": 4,
-    "ntn": 4,
     "ftm-ranging": 4,
     "nearlink-slb": 3,
     "bt-location": 3,
@@ -665,7 +670,7 @@ window.KB_DATA = {
     "uwb-fi-ra": 1
   },
   "type_counts": {
-    "academic-paper": 159,
+    "academic-paper": 162,
     "industry-news": 47,
     "product": 15,
     "ieee-document": 12,
@@ -675,7 +680,7 @@ window.KB_DATA = {
     "bluetooth-spec": 1
   },
   "category_counts": {
-    "academia": 159,
+    "academia": 162,
     "industry": 63,
     "standards": 19
   },
@@ -2408,6 +2413,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "",
       "entries_primary": [
         "2026-07-02_3gpp-6g-air-interface-decisions",
+        "2026-07-03_arxiv-ai-native-6g-air-interface-3gpp",
         "2026-06-18_arxiv-atomic-handover-6g-nnpn",
         "2026-06-17_arxiv-6g-computing-network-convergence-hmarl",
         "2026-06-13_arxiv-modular-multidomain-digital-twin-6g",
@@ -2424,6 +2430,7 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-06-30_arxiv-subedge-subscriber-centric-mec-6g",
+        "2026-07-03_arxiv-memntn-memory-native-ntn",
         "2026-06-17_arxiv-hybrid-fiber-iab-fso-backhaul",
         "2026-06-13_arxiv-fr3-terrestrial-ntn-spectrum-sharing",
         "2026-06-11_arxiv-llm-nwdaf-ai-native-6g",
@@ -2449,6 +2456,7 @@ window.KB_DATA = {
           "2026-05-30_ericsson-mwc2026-6g-demos-apple-mediatek"
         ],
         "academic-paper": [
+          "2026-07-03_arxiv-ai-native-6g-air-interface-3gpp",
           "2026-06-18_arxiv-atomic-handover-6g-nnpn",
           "2026-06-17_arxiv-6g-computing-network-convergence-hmarl",
           "2026-06-13_arxiv-modular-multidomain-digital-twin-6g",
@@ -2495,6 +2503,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-03_arxiv-memntn-memory-native-ntn",
         "2026-06-30_arxiv-ris-uav-ntn-oran-marl-6g",
         "2026-06-03_arxiv-gnn-online-beamforming-haps-ntn",
         "2026-05-27_arxiv-tn-ntn-backhaul-potential-game",
@@ -2508,6 +2517,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-07-03_arxiv-memntn-memory-native-ntn",
           "2026-06-30_arxiv-ris-uav-ntn-oran-marl-6g",
           "2026-06-03_arxiv-gnn-online-beamforming-haps-ntn",
           "2026-05-27_arxiv-tn-ntn-backhaul-potential-game",
@@ -2589,6 +2599,7 @@ window.KB_DATA = {
         "2026-05-21_chinamobile-5g-sa-network-slicing"
       ],
       "entries_secondary": [
+        "2026-07-03_arxiv-intent-driven-6g-orchestration",
         "2026-06-26_arxiv-lyapunov-5g-tsn-traffic-shaping",
         "2026-06-23_arxiv-c-l4saas-5g-advanced",
         "2026-06-18_arxiv-atomic-handover-6g-nnpn",
@@ -2655,6 +2666,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-03_arxiv-intent-driven-6g-orchestration",
         "2026-06-26_arxiv-cellular-load-forecast-population-dynamics",
         "2026-06-23_arxiv-lolla-ai-native-link-adaptation",
         "2026-06-23_arxiv-llm-gnb-parameter-configuration",
@@ -2673,6 +2685,7 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-06-30_arxiv-subedge-subscriber-centric-mec-6g",
+        "2026-07-03_arxiv-ai-native-6g-air-interface-3gpp",
         "2026-06-23_arxiv-c-l4saas-5g-advanced",
         "2026-06-17_arxiv-predictive-scheduling-deterministic-b5g",
         "2026-06-17_arxiv-6g-computing-network-convergence-hmarl",
@@ -2699,6 +2712,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-07-03_arxiv-intent-driven-6g-orchestration",
           "2026-06-26_arxiv-cellular-load-forecast-population-dynamics",
           "2026-06-23_arxiv-lolla-ai-native-link-adaptation",
           "2026-06-23_arxiv-llm-gnb-parameter-configuration",
@@ -2963,6 +2977,7 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-06-30_arxiv-leo-latency-region-signatures-starlink",
+        "2026-07-03_arxiv-memntn-memory-native-ntn",
         "2026-06-15_arxiv-aidos-beam-hopping-ngso",
         "2026-06-13_arxiv-score-leo-ground-station-placement",
         "2026-05-26_arxiv-safesabr-starlink-abr-streaming"
@@ -3425,6 +3440,36 @@ window.KB_DATA = {
       "search_blob": "3gpp june 2026 plenary locks first 6g air-interface decisions: cp-ofdm/dft-s-ofdm continuity, ldpc bg3, 400 mhz channels 3gpp 2026 年 6 月全会敲定首批 6g 空口决策：延续 cp-ofdm/dft-s-ofdm、新增 ldpc bg3、400 mhz 信道带宽 6g 3gpp release-21 ofdm ldpc waveform the 3gpp june 2026 ran plenary concluded with the first concrete set of 6g air-interface decisions, turning the release 20 6g study from an open-ended exploration into a defined technical foundation. as summarized by qualcomm's vp of technical standards juan montojo (rcr wireless, july 1, 2026) and corroborated by ericsson's ran standardization team (blog, june 12, 2026), 3gpp agreed to continue cp-ofdm in the downlink and to support both cp-ofdm and dft-s-ofdm in the uplink — with dft-s-ofdm now extended to multi-layer (up to two layers / uplink mimo) transmission, combining its power-efficiency and coverage advantages with higher data rates. channel coding likewise carries forward from 5g: ldpc for data channels and polar codes for control channels, with a new third ldpc base graph (bg3) introduced specifically to improve decoder efficiency at high data rates. 3gpp 2026 年 6 月 ran 全会落幕，敲定了首批具体的 6g 空口技术决策，使 release 20 的 6g 研究从开放式探索转入明确的技术基线。据高通技术标准副总裁 juan montojo 的总结（rcr wireless，2026 年 7 月 1 日）以及爱立信 ran 标准化团队的博客（2026 年 6 月 12 日）相互印证：3gpp 同意下行链路延续 cp-ofdm，上行链路同时支持 cp-ofdm 与 dft-s-ofdm——且 dft-s-ofdm 扩展至多层（最多两层 / 上行 mimo）传输，在保留其功率效率与覆盖优势的同时提升数据速率。信道编码同样从 5g 延续：数据信道用 ldpc、控制信道用 polar 码，并新引入第三个 ldpc 基础图（bg3），专门用于提升高速率场景下的译码器效率。 industry-news cellular"
     },
     {
+      "id": "2026-07-03_arxiv-intent-driven-6g-orchestration",
+      "date_found": "2026-07-03",
+      "technology": "cellular",
+      "date_published": "2026-06-30",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Intent-Driven 6G Service Orchestration: Grounded Translation, Validation, and Decomposition (Ericsson)",
+      "title_zh": "意图驱动的 6G 服务编排：接地翻译、形式化校验与分解（爱立信）",
+      "url": "https://arxiv.org/abs/2606.28348",
+      "topics": [
+        "6G",
+        "intent-based-networking",
+        "LLM",
+        "TMF",
+        "orchestration"
+      ],
+      "topic_primary": "cellular-ai",
+      "topics_secondary": [
+        "network-slicing"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-03_arxiv-intent-driven-6g-orchestration.md",
+      "summary_short_en": "This Ericsson Research paper (Martins, Mokrushin, Orlic, Kumar; accepted at the AI4NextG workshop @ ICML'26) targets the gap between LLM intent-translation demos and production intent-based networking for 6G: existing work translates natural language into intent representations but skips grounding in real service catalogs, formal validation, and cross-layer decomposition. The proposed agentic workflow adds all three as separate layers around the LLM.",
+      "summary_short_zh": "这篇爱立信研究院论文（Martins、Mokrushin、Orlic、Kumar；被 ICML'26 AI4NextG 研讨会接收）针对 LLM 意图翻译演示与生产级 6G 意图网络之间的鸿沟：现有工作把自然语言翻译为意图表示，却缺少三样生产必需能力——在真实服务目录中的接地、形式化校验、跨层分解。提出的智能体工作流把这三者作为独立层包裹在 LLM 周围。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This Ericsson Research paper (Martins, Mokrushin, Orlic, Kumar; accepted at the AI4NextG workshop @ ICML'26) targets the gap between LLM intent-translation demos and production intent-based networking for 6G: existing work translates natural language into intent representations but skips grounding in real service catalogs, formal validation, and cross-layer decomposition. The proposed agentic workflow adds all three as separate layers around the LLM.</p>\n<p>Layer 1 grounds translation in a semantic service catalog of TMF-compliant specifications, using a RequirementCapability ontology with dual <code>provides</code> / <code>requires</code> predicates to match requests against customer-facing service specs (CFSS) with explicit QoS envelopes. Layer 2 validates generated RDF intents against the TMF Intent Ontology using SHACL shapes, catching structural errors before feasibility checking. Layer 3 decomposes: constraint satisfaction selects minimum-cost CFSS profiles meeting all QoS requirements, then a weighted set-cover algorithm picks resource-facing profiles (network slice, edge compute, transport) covering the infrastructure requirements.</p>\n<p>Across 930 benchmark runs on six models (GPT-4.1 and GPT-5 tiers), the workflow hits 97% success in structured &quot;Builder&quot; mode and ~90% on free-text scenarios, with 100% rejection of infeasible QoS requests. The headline empirical finding: injecting catalog metadata (available QoS metric names) into LLM context cut adversarial failures by 26 percentage points — a larger reliability gain than scaling model size, with mini-tier models gaining most (+40/+45 points). Constraint extraction is identified as the remaining bottleneck; structural validation and feasibility reasoning are &quot;essentially solved&quot; by the formal layers. A greedy set-cover heuristic matches the CP-SAT solver at 1.8× speed.</p>\n<h3>Key technical points</h3>\n<ul><li>Three formal layers around the LLM: TMF-catalog grounding (<code>provides</code>/<code>requires</code> ontology), SHACL validation against the TMF Intent Ontology, and constraint-satisfaction + weighted-set-cover decomposition into CFSS/RFSS profiles.</li><li>930 runs, six models (GPT-4.1 / GPT-5 nano-mini-full): Builder mode 97% CFSS / 100% RFSS success; NL constrained 90%; adversarial 87%; infeasible-request rejection 100%.</li><li>Catalog-grounded context beats model scaling: +26 pp on adversarial prompts overall, +40/+45 pp for mini-tier models.</li><li>GPT-5-nano matches GPT-4.1-full on adversarial prompts — smaller next-gen models viable for cost-constrained intent processing.</li><li>Builder (structured) mode: 40% faster, 49% fewer tokens, one LLM call instead of three; greedy P3 heuristic 1.8× faster than CP-SAT at equal satisfaction.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's intent-based-networking thread (LLM gNB configuration, LLM-NWDAF, intent-driven 6G orchestration surveys) has been dominated by translation-quality results. This entry adds the production-engineering counterpoint from a tier-1 vendor: formal ontology grounding + SHACL validation + classical optimization do the heavy lifting, and grounding beats model scaling for hallucination control — a quantified design lesson (26 pp) that transfers to any telco LLM-automation stack. The 100% infeasible-rejection result is the operationally critical number for anyone letting LLMs write orchestration intents.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>这篇爱立信研究院论文（Martins、Mokrushin、Orlic、Kumar；被 ICML'26 AI4NextG 研讨会接收）针对 LLM 意图翻译演示与生产级 6G 意图网络之间的鸿沟：现有工作把自然语言翻译为意图表示，却缺少三样生产必需能力——在真实服务目录中的接地、形式化校验、跨层分解。提出的智能体工作流把这三者作为独立层包裹在 LLM 周围。</p>\n<p>第一层将翻译接地于 TMF 兼容规范的语义服务目录，用带 <code>provides</code> / <code>requires</code> 双谓词的&quot;需求-能力&quot;本体，把请求与带显式 QoS 包络的面向客户服务规范（CFSS）进行机器可操作的匹配。第二层用 SHACL 形状对生成的 RDF 意图做 TMF 意图本体校验，在可行性检查前捕获结构错误。第三层做分解：约束满足选出满足全部 QoS 要求的最低成本 CFSS 组合，再用加权集合覆盖算法选取覆盖基础设施需求的资源侧规范（网络切片、边缘算力、传输）。</p>\n<p>在六个模型（GPT-4.1 与 GPT-5 各档）上的 930 次基准运行中，工作流在结构化&quot;Builder&quot;模式下达 97% 成功率、自由文本场景平均约 90%，对不可行 QoS 请求实现 100% 拒绝。最重要的实证发现：把目录元数据（可用 QoS 指标名）注入 LLM 上下文使对抗场景失败率下降 26 个百分点——比单纯扩大模型规模的可靠性收益更大，小模型档受益最多（+40/+45 点）。约束抽取被认定为剩余瓶颈；结构校验与可行性推理已被形式化层&quot;基本解决&quot;。贪心集合覆盖启发式以 1.8 倍速度达到与 CP-SAT 求解器相同的满足率。</p>\n<h3>技术要点</h3>\n<ul><li>LLM 周围的三个形式化层：TMF 目录接地（<code>provides</code>/<code>requires</code> 本体）、基于 SHACL 的 TMF 意图本体校验、约束满足 + 加权集合覆盖的 CFSS/RFSS 分解。</li><li>930 次运行、六个模型（GPT-4.1 / GPT-5 各档）：Builder 模式 97% CFSS / 100% RFSS 成功率；自然语言受限场景 90%；对抗场景 87%；不可行请求拒绝率 100%。</li><li>目录接地上下文胜过模型扩容：对抗提示整体 +26 个百分点，小模型档 +40/+45 个百分点。</li><li>GPT-5-nano 在对抗提示上追平 GPT-4.1-full——下一代小模型可用于成本受限的意图处理。</li><li>Builder（结构化）模式：快 40%、省 49% token、LLM 调用从三次降为一次；贪心 P3 启发式在同等满足率下比 CP-SAT 快 1.8 倍。</li></ul>\n<h3>意义与新意</h3>\n<p>本知识库的意图网络线索（LLM gNB 配置、LLM-NWDAF、意图驱动 6G 编排综述）此前以翻译质量结果为主。本条目补充了一线厂商的生产工程视角：形式化本体接地 + SHACL 校验 + 经典优化承担了主要工作，且在幻觉控制上&quot;接地胜过扩容&quot;——一条量化的设计经验（26 个百分点），可迁移到任何电信 LLM 自动化栈。对任何让 LLM 编写编排意图的团队而言，100% 不可行请求拒绝率是最关键的运营指标。</p>",
+      "images": [],
+      "search_blob": "intent-driven 6g service orchestration: grounded translation, validation, and decomposition (ericsson) 意图驱动的 6g 服务编排：接地翻译、形式化校验与分解（爱立信） 6g intent-based-networking llm tmf orchestration this ericsson research paper (martins, mokrushin, orlic, kumar; accepted at the ai4nextg workshop @ icml'26) targets the gap between llm intent-translation demos and production intent-based networking for 6g: existing work translates natural language into intent representations but skips grounding in real service catalogs, formal validation, and cross-layer decomposition. the proposed agentic workflow adds all three as separate layers around the llm. 这篇爱立信研究院论文（martins、mokrushin、orlic、kumar；被 icml'26 ai4nextg 研讨会接收）针对 llm 意图翻译演示与生产级 6g 意图网络之间的鸿沟：现有工作把自然语言翻译为意图表示，却缺少三样生产必需能力——在真实服务目录中的接地、形式化校验、跨层分解。提出的智能体工作流把这三者作为独立层包裹在 llm 周围。 academic-paper cellular"
+    },
+    {
       "id": "2026-07-02_arxiv-neo-gnn-leo-orchestration",
       "date_found": "2026-07-02",
       "technology": "satellite",
@@ -3665,6 +3710,36 @@ window.KB_DATA = {
       "search_blob": "infineon launches airoc tsl100 uwb chip for automotive safety and wireless battery management 英飞凌推出 airoc tsl100 uwb 芯片，面向汽车安全与无线电池管理 uwb airoc tsl100 automotive asil-b wireless-battery-management secure-ranging infineon has launched the airoc tsl100, described in the press coverage as the first uwb chip targeted at automotive safety use cases. the reported hook is an **asil-b** safety positioning, which matters because automotive uwb is moving beyond convenience access and digital key toward functions that interact with vehicle safety and battery systems. 英飞凌推出 airoc tsl100，公开报道将其描述为首款面向汽车安全用例的 uwb 芯片。关键点是 **asil-b** 安全定位：这很重要，因为车载 uwb 正从便捷进入、数字车钥匙，延伸到会影响车辆安全与电池系统的功能。 product uwb"
     },
     {
+      "id": "2026-07-03_arxiv-ai-native-6g-air-interface-3gpp",
+      "date_found": "2026-07-03",
+      "technology": "cellular",
+      "date_published": "2026-06-25",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Toward AI-Native 6G Air Interface: A 3GPP Perspective on Protocol Framework",
+      "title_zh": "迈向 AI 原生 6G 空口：3GPP 视角下的协议框架",
+      "url": "https://arxiv.org/abs/2606.27466",
+      "topics": [
+        "6G",
+        "AI-native",
+        "3GPP",
+        "air-interface",
+        "neural-receiver"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-03_arxiv-ai-native-6g-air-interface-3gpp.md",
+      "summary_short_en": "Xingqin Lin's position paper (submitted 25 June 2026, 8 pages) tackles the question of what \"AI-native\" should concretely mean for the 6G air interface from a 3GPP standardization perspective. The core argument: AI-nativeness requires architectural changes beyond bolting ML algorithms onto individual functions — but standardization should *not* prescribe model architectures. Instead, 3GPP should define the protocol machinery around AI-enabled functions: how they are configured, validated, and monitored across vendors, preserving implementation freedom while guaranteeing multi-vendor interoperability.",
+      "summary_short_zh": "Xingqin Lin 的立场论文（2026 年 6 月 25 日提交，8 页）从 3GPP 标准化视角回答一个问题：\"AI 原生\"对 6G 空口具体应当意味着什么。核心论点是：真正的 AI 原生需要超越\"在单个功能上叠加 ML 算法\"的架构性变革——但标准化不应规定模型架构。相反，3GPP 应当定义围绕 AI 功能的协议机制：跨厂商的配置、验证与监控方式，在保证多厂商互操作的同时保留实现自由。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Xingqin Lin's position paper (submitted 25 June 2026, 8 pages) tackles the question of what &quot;AI-native&quot; should concretely mean for the 6G air interface from a 3GPP standardization perspective. The core argument: AI-nativeness requires architectural changes beyond bolting ML algorithms onto individual functions — but standardization should <em>not</em> prescribe model architectures. Instead, 3GPP should define the protocol machinery around AI-enabled functions: how they are configured, validated, and monitored across vendors, preserving implementation freedom while guaranteeing multi-vendor interoperability.</p>\n<p>The paper proposes a protocol framework organized around the life-cycle of AI-enabled air-interface functions — configuration, validation, monitoring — and grounds it in a concrete case study: neural receiver-assisted reference-signal adaptation, showing how a network can adapt reference-signal overhead when the receiver is a learned model rather than a conventional one. A key architectural element is the safe-reversion protocol: an explicitly standardized fallback path to conventional (non-AI) operation when a learned component underperforms or encounters out-of-distribution conditions.</p>\n<p>This is a notable input to the 6G standardization debate because it comes from the 3GPP-protocol angle rather than the algorithm angle that dominates the AI-air-interface literature: the standard defines interfaces, life-cycle states, and reversion guarantees; vendors keep the models. It complements the KB's existing AI-native-RAN thread (protocol-framework view vs. the architecture and RAN-automation views).</p>\n<h3>Key technical points</h3>\n<ul><li>Thesis: AI-nativeness = architectural/protocol change, not per-function ML; standards should avoid prescribing model architectures.</li><li>Proposed 3GPP protocol framework covers configuration, validation, and monitoring of AI-enabled air-interface functions across vendors.</li><li>Case study: neural receiver-assisted reference-signal adaptation — adapting RS overhead to a learned receiver.</li><li>Safe-reversion protocol: standardized fallback to conventional operation when the AI component degrades.</li><li>Single-author work from a prominent 3GPP contributor; 8 pages, 5 figures; framed as input to 6G study-item discussions.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's AI-native 6G thread so far covers architecture-level visions (AI-native closed-loop security, agentic AI-RAN clusters, LLM-based gNB configuration). This paper adds the missing standards-protocol layer: what 3GPP would actually have to specify (life-cycle states, validation hooks, monitoring, safe reversion) for learned air-interface components to interoperate across vendors. The neural-receiver RS-adaptation case study is a concrete preview of the first AI-native feature likely to be standardized in 6G Release discussions.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Xingqin Lin 的立场论文（2026 年 6 月 25 日提交，8 页）从 3GPP 标准化视角回答一个问题：&quot;AI 原生&quot;对 6G 空口具体应当意味着什么。核心论点是：真正的 AI 原生需要超越&quot;在单个功能上叠加 ML 算法&quot;的架构性变革——但标准化不应规定模型架构。相反，3GPP 应当定义围绕 AI 功能的协议机制：跨厂商的配置、验证与监控方式，在保证多厂商互操作的同时保留实现自由。</p>\n<p>论文提出了一个围绕 AI 空口功能生命周期（配置、验证、监控）组织的协议框架，并以具体案例落地：神经接收机辅助的参考信号自适应——当接收端是学习模型而非常规接收机时，网络如何削减参考信号开销。框架的关键要素之一是安全回退协议：当学习组件性能不达标或遇到分布外条件时，显式标准化的回退到常规（非 AI）操作的路径。</p>\n<p>这篇论文对 6G 标准化辩论的价值在于其切入角度：它从 3GPP 协议视角而非主导 AI 空口文献的算法视角出发——标准定义接口、生命周期状态与回退保证，模型归厂商所有。它与本知识库现有的 AI 原生 RAN 线索形成互补（协议框架视角 vs. 架构与 RAN 自动化视角）。</p>\n<h3>技术要点</h3>\n<ul><li>论点：AI 原生 = 架构/协议层面的变革，而非逐功能加 ML；标准应避免规定模型架构。</li><li>提出的 3GPP 协议框架覆盖 AI 空口功能的跨厂商配置、验证与监控。</li><li>案例研究：神经接收机辅助的参考信号自适应——针对学习型接收机削减 RS 开销。</li><li>安全回退协议：AI 组件性能退化时标准化回退到常规操作。</li><li>出自知名 3GPP 贡献者的单作者论文；8 页、5 图；定位为 6G 研究项目讨论的输入。</li></ul>\n<h3>意义与新意</h3>\n<p>本知识库的 AI 原生 6G 线索此前多为架构层愿景（AI 原生闭环安全、智能体化 AI-RAN 集群、基于 LLM 的 gNB 配置）。本文补上了缺失的标准协议层：为使学习型空口组件实现跨厂商互操作，3GPP 实际需要规定什么（生命周期状态、验证钩子、监控、安全回退）。神经接收机参考信号自适应案例是 6G 版本讨论中最可能率先标准化的 AI 原生特性的具体预览。</p>",
+      "images": [],
+      "search_blob": "toward ai-native 6g air interface: a 3gpp perspective on protocol framework 迈向 ai 原生 6g 空口：3gpp 视角下的协议框架 6g ai-native 3gpp air-interface neural-receiver xingqin lin's position paper (submitted 25 june 2026, 8 pages) tackles the question of what \"ai-native\" should concretely mean for the 6g air interface from a 3gpp standardization perspective. the core argument: ai-nativeness requires architectural changes beyond bolting ml algorithms onto individual functions — but standardization should *not* prescribe model architectures. instead, 3gpp should define the protocol machinery around ai-enabled functions: how they are configured, validated, and monitored across vendors, preserving implementation freedom while guaranteeing multi-vendor interoperability. xingqin lin 的立场论文（2026 年 6 月 25 日提交，8 页）从 3gpp 标准化视角回答一个问题：\"ai 原生\"对 6g 空口具体应当意味着什么。核心论点是：真正的 ai 原生需要超越\"在单个功能上叠加 ml 算法\"的架构性变革——但标准化不应规定模型架构。相反，3gpp 应当定义围绕 ai 功能的协议机制：跨厂商的配置、验证与监控方式，在保证多厂商互操作的同时保留实现自由。 academic-paper cellular"
+    },
+    {
       "id": "2026-06-26_arxiv-all-optical-satellite-burst-size",
       "date_found": "2026-06-26",
       "technology": "satellite",
@@ -3866,6 +3941,48 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>本文（Miguel Casasnovas、Francesc Wilhelmi、Boris Bellalta——UPF/Bellalta 团队，2026年6月23日提交）研究 <strong>Wi-Fi 上的交互式 VR 流传输</strong>：渲染码率须实时自适应，以在动态信道与共享、竞争介质下保持低时延、高可靠。作者指出实时码率自适应之所以困难，正是因为客户端<strong>对底层网络状况可见性有限</strong>，且在多用户场景下，朴素的自适应会破坏<strong>空口时间公平性（airtime fairness）</strong>——单条 VR 流可能独占信道。</p>\n<p><strong>BRAVR</strong> 是一种<strong>去中心化、AP 辅助的深度强化学习（DRL）</strong>机制。其核心在于职责拆分：<strong>客户端</strong>采集应用层观测（如自身 QoS/码率状态），而<strong>接入点（AP）</strong>提供<strong>轻量级无线网络统计</strong>（空口时间利用率等客户端自身看不到的链路级信号）。AP 提供的信息被送入客户端的码率决策，把一个&quot;盲眼&quot;的应用层控制器变为<strong>网络感知的在线决策环</strong>。由此 BRAVR 可显式避免<strong>持续的空口时间过度占用</strong>——即在单客户端高码率 VR 饿死他者之前主动退避。</p>\n<p>评估在<strong>真实 Wi-Fi 测试床</strong>上运行真实 VR 流系统，对比启发式基线与<strong>去除 AP 辅助的 BRAVR 消融版</strong>。BRAVR 稳定达成其 QoS 目标并避免持续空口时间过占，优于无 AP 辅助版本——表明 <strong>AP 辅助通道正是在线学习有效性的关键</strong>。摘要未给出具体数值（source_quality: abstract_only）。该工作归入 KB 的 <code>ai-for-wifi</code> 脉络，但以&quot;把 AP 作为客户端跨层控制器的信息源纳入回路&quot;区别于纯客户端或纯 MAC 的优化。</p>\n<h3>技术要点</h3>\n<ul><li><strong>拆分设计</strong>：客户端采集应用层状态；AP 提供轻量无线统计（空口时间利用率）→ 融入客户端码率决策。</li><li><strong>目标</strong>：网络感知的在线码率自适应，保持空口时间公平、避免持续过度占用。</li><li><strong>方法</strong>：去中心化在线 DRL，以 AP 辅助信号为区别性输入。</li><li><strong>评估</strong>：真实 Wi-Fi 测试床 + 真实 VR 流；优于启发式基线与无 AP 辅助消融版。</li><li><strong>来源质量</strong>：abstract_only（摘要无数值结果）。</li></ul>\n<h3>意义与新意</h3>\n<p>多数 Wi-Fi VR/XR 工作仅孤立优化 MAC（如 R-TWT 调度）或应用编码器。BRAVR 则闭合了一个<strong>由 AP 向客户端学习器提供链路级可见性（空口时间）的跨层回路</strong>——以测试床验证、把 AP 作为客户端自适应的信息中介、同时显式保护多用户空口时间公平的具体范例。它与 KB 中 R-TWT/XR 时延条目（在 MAC 层调度）互补，展示了码率侧的调节杠杆，并以去中心化、可部署的设计丰富了 <code>ai-for-wifi</code> 的 DRL 脉络。</p>",
       "images": [],
       "search_blob": "bravr: an ap-assisted online drl mechanism for interactive vr bitrate adaptation over wi-fi bravr：面向wi-fi交互式vr码率自适应的ap辅助在线drl机制 wifi xr vr bitrate-adaptation drl airtime-fairness cross-layer ap-assisted this paper (miguel casasnovas, francesc wilhelmi, boris bellalta — the upf/bellalta group; submitted 23 june 2026) tackles **interactive vr streaming over wi-fi**, where the rendered bitrate must be adapted in real time to keep latency low and reliability high under dynamic channel conditions and a shared, contended medium. the authors frame real-time bitrate adaptation as a hard control problem precisely because the client has **limited visibility of the underlying network conditions**, and in multi-user settings naïve adaptation breaks **airtime fairness** (one vr flow can monopolise the channel). 本文（miguel casasnovas、francesc wilhelmi、boris bellalta——upf/bellalta 团队，2026年6月23日提交）研究 **wi-fi 上的交互式 vr 流传输**：渲染码率须实时自适应，以在动态信道与共享、竞争介质下保持低时延、高可靠。作者指出实时码率自适应之所以困难，正是因为客户端**对底层网络状况可见性有限**，且在多用户场景下，朴素的自适应会破坏**空口时间公平性（airtime fairness）**——单条 vr 流可能独占信道。 academic-paper wifi"
+    },
+    {
+      "id": "2026-07-03_arxiv-memntn-memory-native-ntn",
+      "date_found": "2026-07-03",
+      "technology": "cellular",
+      "date_published": "2026-06-22",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "MemNTN: Memory-Native Non-Terrestrial Networks for Embodied Intelligence",
+      "title_zh": "MemNTN：面向具身智能的记忆原生非地面网络",
+      "url": "https://arxiv.org/abs/2607.00029",
+      "topics": [
+        "NTN",
+        "LEO",
+        "embodied-AI",
+        "memory",
+        "6G"
+      ],
+      "topic_primary": "ntn",
+      "topics_secondary": [
+        "6g-vision",
+        "sat-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-03_arxiv-memntn-memory-native-ntn.md",
+      "summary_short_en": "MemNTN (Li, Wang, He, Wan, Wang, Wu, Wu, Xu, Arslan; submitted 22 June 2026) argues that non-terrestrial networks serving embodied-intelligence workloads — e.g. search-and-rescue robots in wilderness relying on satellite links — should stop being *stateless*. Today's NTN protocols decide from instantaneous channel conditions and service demands; MemNTN makes accumulated context a first-class network resource via a dual-memory architecture: **physical memory** (world state — geometry, object locations, semantic scene descriptions, agent trajectories) and **digital memory** (network experience — historical CSI, spectrum occupancy, link-quality trends, handover records, topology graphs).",
+      "summary_short_zh": "MemNTN（Li、Wang、He、Wan、Wang、Wu、Wu、Xu、Arslan；2026 年 6 月 22 日提交）主张：服务于具身智能负载的非地面网络——如依赖卫星链路的野外搜救机器人——不应再是\"无状态\"的。当前 NTN 协议基于瞬时信道条件与业务需求做决策；MemNTN 通过双记忆架构把累积上下文变为一等网络资源：**物理记忆**（世界状态——几何、目标位置、语义场景描述、智能体轨迹）与**数字记忆**（网络经验——历史 CSI、频谱占用、链路质量趋势、切换记录、拓扑图）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>MemNTN (Li, Wang, He, Wan, Wang, Wu, Wu, Xu, Arslan; submitted 22 June 2026) argues that non-terrestrial networks serving embodied-intelligence workloads — e.g. search-and-rescue robots in wilderness relying on satellite links — should stop being <em>stateless</em>. Today's NTN protocols decide from instantaneous channel conditions and service demands; MemNTN makes accumulated context a first-class network resource via a dual-memory architecture: <strong>physical memory</strong> (world state — geometry, object locations, semantic scene descriptions, agent trajectories) and <strong>digital memory</strong> (network experience — historical CSI, spectrum occupancy, link-quality trends, handover records, topology graphs).</p>\n<p>Memories flow through a five-stage life-cycle (acquisition → compression → valuation → update → utilization) with cross-layer instantiations: channel memory at PHY (historical CSI compensates the delayed feedback caused by satellite dynamics), access memory at MAC (collision histories tune random access under massive connections), trajectory memory at network layer (orbit-driven proactive handover and prefetching), and task memory at application layer. A unified value function scores each memory item on five axes — freshness, coverage, cost, reusability, and quality — where the &quot;agentic QoM&quot; model is the novel piece: a foundation model generates test questions from pilot data samples and checks whether existing global memory can answer them; failure signals a valuable novel observation, success signals redundancy.</p>\n<p>The validation is a Satellite Embodied Question Answering (SEQA) case study: a 400-satellite Walker LEO constellation (550 km, 53°), 10 camera UAVs, Hong Kong ground station, CARLA + LEOPath + OpenNTN simulation. MemNTN improves SEQA answer correctness by 62.6% over throughput-maximizing scheduling and 5.7% over coverage-maximizing scheduling despite delivering less raw data, and scales from 84.0% to 98.7% accuracy as the constellation grows from 100 to 800 satellites. The takeaway: for embodied-AI tasks, what matters is whether delivered bits are novel, reliable, and relevant to downstream reasoning — not the delivered volume. Open challenges: distributed memory consistency and defenses against memory poisoning / inference attacks.</p>\n<h3>Key technical points</h3>\n<ul><li>Dual-memory model: physical memory (world state) + digital memory (network experience) as first-class NTN resources.</li><li>Five-stage memory life-cycle (acquisition, compression, valuation, update, utilization) instantiated per layer: PHY channel memory, MAC access memory, network-layer trajectory memory, app-layer task memory.</li><li>Five-axis memory valuation (freshness / coverage / cost / reusability / quality); agentic QoM uses a foundation model to test whether global memory already &quot;knows&quot; a new observation.</li><li>SEQA evaluation: 400-satellite LEO Walker constellation, 10 UAVs, CARLA + LEOPath + OpenNTN; +62.6% correctness vs. MaxRate, +5.7% vs. MaxCov; 84.0% → 98.7% accuracy scaling 100 → 800 satellites.</li><li>Advantage concentrates when satellite backhaul is constrained — memory substitutes for bandwidth.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's NTN thread covers orchestration (GNN-based LEO orchestration, RIS/UAV MARL) and traffic prediction (LEOSTP), all of which optimize <em>delivery</em>. MemNTN reframes the objective: schedule what the downstream embodied-AI task needs to <em>reason</em>, using memory valuation instead of rate/coverage metrics. The agentic-QoM idea — foundation-model-generated self-tests to price the marginal value of an observation — is a genuinely new scheduling primitive, and the &quot;memory substitutes for constrained backhaul&quot; result is directly relevant to the memory-native / semantic-scheduling debate in 6G NTN.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>MemNTN（Li、Wang、He、Wan、Wang、Wu、Wu、Xu、Arslan；2026 年 6 月 22 日提交）主张：服务于具身智能负载的非地面网络——如依赖卫星链路的野外搜救机器人——不应再是&quot;无状态&quot;的。当前 NTN 协议基于瞬时信道条件与业务需求做决策；MemNTN 通过双记忆架构把累积上下文变为一等网络资源：<strong>物理记忆</strong>（世界状态——几何、目标位置、语义场景描述、智能体轨迹）与<strong>数字记忆</strong>（网络经验——历史 CSI、频谱占用、链路质量趋势、切换记录、拓扑图）。</p>\n<p>记忆经由五阶段生命周期（获取 → 压缩 → 估值 → 更新 → 利用）流转，并在各层落地：物理层信道记忆（历史 CSI 补偿卫星动态导致的反馈时延）、MAC 层接入记忆（碰撞历史调优海量连接下的随机接入）、网络层轨迹记忆（基于轨道预测的主动切换与预取）、应用层任务记忆。统一价值函数从五个维度为记忆项打分——新鲜度、覆盖度、成本、可复用性、质量——其中&quot;智能体化质量评估（agentic QoM）&quot;是新颖之处：由基础模型从导频数据样本生成测试问题，检验现有全局记忆能否回答；答不上说明是有价值的新观测，答得上说明冗余。</p>\n<p>验证采用卫星具身问答（SEQA）案例：400 星 Walker LEO 星座（550 km、53° 倾角）、10 架摄像无人机、香港地面站，CARLA + LEOPath + OpenNTN 仿真。MemNTN 的 SEQA 答案正确率比吞吐最大化调度高 62.6%，比覆盖最大化调度高 5.7%（尽管传输的原始数据更少），并随星座从 100 星扩展到 800 星实现 84.0% → 98.7% 的精度。结论：对具身 AI 任务，重要的不是交付的数据量，而是交付的比特是否新颖、可靠、与下游推理相关。开放挑战：分布式记忆一致性，以及对记忆投毒/推理攻击的防御。</p>\n<h3>技术要点</h3>\n<ul><li>双记忆模型：物理记忆（世界状态）+ 数字记忆（网络经验），作为 NTN 的一等资源。</li><li>五阶段记忆生命周期（获取、压缩、估值、更新、利用），逐层落地：PHY 信道记忆、MAC 接入记忆、网络层轨迹记忆、应用层任务记忆。</li><li>五维记忆估值（新鲜度/覆盖度/成本/可复用性/质量）；agentic QoM 用基础模型测试全局记忆是否已&quot;知道&quot;新观测。</li><li>SEQA 评估：400 星 LEO Walker 星座、10 架无人机、CARLA + LEOPath + OpenNTN；正确率较 MaxRate +62.6%、较 MaxCov +5.7%；100 → 800 星时精度 84.0% → 98.7%。</li><li>优势集中于卫星回传受限场景——记忆替代带宽。</li></ul>\n<h3>意义与新意</h3>\n<p>本知识库的 NTN 线索涵盖编排（基于 GNN 的 LEO 编排、RIS/UAV 多智能体 RL）与流量预测（LEOSTP），它们优化的都是&quot;交付&quot;。MemNTN 重构了目标：按照下游具身 AI 任务的推理需求来调度，用记忆估值取代速率/覆盖指标。agentic QoM 思路——用基础模型生成自测题为观测的边际价值定价——是真正新颖的调度原语；&quot;记忆替代受限回传&quot;的结论与 6G NTN 中记忆原生/语义调度的争论直接相关。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2607.00029v1/x2.png",
+          "caption_en": "MemNTN system framework: dual physical/digital memory with five-stage life-cycle",
+          "caption_zh": "MemNTN 系统框架：物理/数字双记忆与五阶段生命周期"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.00029v1/x4.png",
+          "caption_en": "SEQA verification results across scheduling baselines and constellation sizes",
+          "caption_zh": "不同调度基线与星座规模下的 SEQA 验证结果"
+        }
+      ],
+      "search_blob": "memntn: memory-native non-terrestrial networks for embodied intelligence memntn：面向具身智能的记忆原生非地面网络 ntn leo embodied-ai memory 6g memntn (li, wang, he, wan, wang, wu, wu, xu, arslan; submitted 22 june 2026) argues that non-terrestrial networks serving embodied-intelligence workloads — e.g. search-and-rescue robots in wilderness relying on satellite links — should stop being *stateless*. today's ntn protocols decide from instantaneous channel conditions and service demands; memntn makes accumulated context a first-class network resource via a dual-memory architecture: **physical memory** (world state — geometry, object locations, semantic scene descriptions, agent trajectories) and **digital memory** (network experience — historical csi, spectrum occupancy, link-quality trends, handover records, topology graphs). memntn（li、wang、he、wan、wang、wu、wu、xu、arslan；2026 年 6 月 22 日提交）主张：服务于具身智能负载的非地面网络——如依赖卫星链路的野外搜救机器人——不应再是\"无状态\"的。当前 ntn 协议基于瞬时信道条件与业务需求做决策；memntn 通过双记忆架构把累积上下文变为一等网络资源：**物理记忆**（世界状态——几何、目标位置、语义场景描述、智能体轨迹）与**数字记忆**（网络经验——历史 csi、频谱占用、链路质量趋势、切换记录、拓扑图）。 academic-paper cellular"
     },
     {
       "id": "2026-06-23_nearlink-open-source-openharmony-hdc2026",
