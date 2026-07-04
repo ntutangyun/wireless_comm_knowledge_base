@@ -370,16 +370,6 @@ window.SOURCES_DATA = {
       "technology": "wifi"
     },
     {
-      "id": "networkworld-wireless",
-      "name": "Network World — networking & wireless",
-      "url": "https://www.networkworld.com/networking",
-      "kind": "html",
-      "category": "industry",
-      "topics_hint": [],
-      "notes": "Added 2026-05-04. Major enterprise-networking publication; surfaced multiple Wi-Fi 7 / WiFi 8 / RSPG analysis pieces during the 2026-05-04 scan that the existing carrier-side outlets (Light Reading, RCR) didn't cover. Wi-Fi 8 explainer and Extreme/Wi-Fi 7 momentum both came from here. 2026-05-25: confirmed HEALTHY via WebFetch (fresh content incl. 'Wireless security is a battle of AI vs. AI' May 19) — the prior auto-skip was a Playwright-fallback connection timeout (tooling), not a dead URL. WebFetch html-tier works; reset failure counter. Prefer the html/WebFetch tier; only escalate to Playwright if WebFetch starts failing.",
-      "technology": "wifi"
-    },
-    {
       "id": "siliconangle-networking",
       "name": "SiliconANGLE — networking",
       "url": "https://siliconangle.com/category/networking/",
