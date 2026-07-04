@@ -334,7 +334,7 @@ window.SOURCES_DATA = {
       "kind": "html",
       "category": "industry",
       "topics_hint": [],
-      "notes": "",
+      "notes": "2026-07-03 (user-approved Step 11b): hit cf=3 but KEPT ENABLED with manual cf reset — page fetches fine and carries satellite/cellular-relevant signals (the 06-29 'Starlink raises the stakes' editorial foreshadowed the Starlink Mobile story); its WiFi yield is just currently dry. Reset again if it produces a WiFi hit; disable only if WiFi-dry past ~10 more runs.",
       "technology": "wifi"
     },
     {
@@ -421,6 +421,18 @@ window.SOURCES_DATA = {
         "products"
       ],
       "notes": "Added 2026-05-04. Asia-side chipset competitive intelligence (MediaTek / Qualcomm / Broadcom Wi-Fi market dynamics). Surfaced the 2026-04-10 MediaTek end-to-end challenger piece during the 2026-05-04 scan.",
+      "technology": "wifi"
+    },
+    {
+      "id": "heise-networking",
+      "name": "heise online — networking (EN edition)",
+      "url": "https://www.heise.de/en/",
+      "kind": "html",
+      "category": "industry",
+      "topics_hint": [
+        "products"
+      ],
+      "notes": "Added 2026-07-03 (user-approved Step 11a). Produced the Cisco Live US 2026 9177 outdoor Wi-Fi 7 URWB AP full-body hit via plain WebFetch when US outlets only carried AIOps coverage. Strong European enterprise-networking depth (Catalyst/AP model-level detail). Landing page is html-fetchable; use the query_hint for targeted sweeps.",
       "technology": "wifi"
     },
     {
@@ -680,14 +692,14 @@ window.SOURCES_DATA = {
       "id": "fierce-network",
       "name": "Fierce Network (telecom)",
       "url": "https://www.fierce-network.com/wireless",
-      "kind": "html",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "5g-nr",
         "6g-vision",
         "open-ran"
       ],
-      "notes": "Added 2026-05-30 during the Jan-2026 cellular backfill. Major US telecom-industry publication (formerly FierceWireless); strong MWC / 6G / AI-RAN / O-RAN coverage and 'takeaways' analysis pieces that the vendor-blog web-searches miss. html/WebFetch tier works.",
+      "notes": "Added 2026-05-30 during the Jan-2026 cellular backfill. Major US telecom-industry publication (formerly FierceWireless); strong MWC / 6G / AI-RAN / O-RAN coverage and 'takeaways' analysis pieces that the vendor-blog web-searches miss. 2026-07-03 (user-approved Step 11b): flipped kind html -> browser — WebFetch now 403s the landing page. The query_hint web-search tier still runs first per the cellular tiered strategy, so automated (browser-less) runs keep coverage via search.",
       "technology": "cellular"
     },
     {
