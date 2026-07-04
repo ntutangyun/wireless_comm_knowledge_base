@@ -10,7 +10,7 @@ source_quality: full
 topics: [WiFi-sensing, CSI, machine-learning, jamming]
 topic_primary: sensing-csi
 topics_secondary: [ai-for-wifi, security-privacy]
-novelty_score: 3
+novelty_score: 2
 ---
 
 ## Summary (EN)
