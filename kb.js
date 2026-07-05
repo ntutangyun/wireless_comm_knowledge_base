@@ -12,7 +12,7 @@ window.KB_DATA = {
     "security": 25,
     "802.11be": 22,
     "WiFi-sensing": 21,
-    "LEO": 19,
+    "LEO": 20,
     "O-RAN": 18,
     "PHY-layer": 15,
     "MLO": 14,
@@ -20,8 +20,8 @@ window.KB_DATA = {
     "MAPC": 12,
     "5G-NR": 12,
     "IoT": 12,
+    "Starlink": 11,
     "802.11ax": 11,
-    "Starlink": 10,
     "network-slicing": 10,
     "CSI": 9,
     "NTN": 9,
@@ -59,6 +59,7 @@ window.KB_DATA = {
     "edge-AI": 4,
     "mobility": 4,
     "spectrum": 4,
+    "D2D": 4,
     "5G": 4,
     "AI-native": 4,
     "privacy": 4,
@@ -74,7 +75,6 @@ window.KB_DATA = {
     "orchestration": 3,
     "traffic-prediction": 3,
     "measurement": 3,
-    "D2D": 3,
     "AMP-IoT": 3,
     "inter-satellite-link": 3,
     "deterministic-latency": 3,
@@ -426,6 +426,8 @@ window.KB_DATA = {
     "traffic-steering": 1,
     "RAN-automation": 1,
     "road-safety": 1,
+    "Starship": 1,
+    "constellation-capacity": 1,
     "adaptive-bitrate": 1,
     "video-streaming": 1,
     "DCF": 1,
@@ -665,8 +667,8 @@ window.KB_DATA = {
     "sat-direct-device": 7,
     "uwb-ranging": 7,
     "amp-iot": 7,
+    "starlink": 6,
     "ai-for-wifi": 6,
-    "starlink": 5,
     "ntn": 5,
     "rtwt-latency": 5,
     "sat-ai": 4,
@@ -695,14 +697,14 @@ window.KB_DATA = {
     "industry-news": 52,
     "product": 15,
     "ieee-document": 12,
-    "satellite-news": 4,
+    "satellite-news": 5,
     "proposal": 4,
     "nearlink-spec": 2,
     "bluetooth-spec": 1
   },
   "category_counts": {
     "academia": 165,
-    "industry": 71,
+    "industry": 72,
     "standards": 19
   },
   "technologies_vocab": {
@@ -2870,6 +2872,7 @@ window.KB_DATA = {
         "2026-06-03_arxiv-mapping-storm-weather-leo-starlink",
         "2026-06-01_arxiv-uav-connectivity-cellular-vs-starlink",
         "2026-05-29_arxiv-starlink-queuing-characterization",
+        "2026-07-05_starship-flight12-starlink-v3-test-deploy",
         "2026-05-26_arxiv-safesabr-starlink-abr-streaming"
       ],
       "entries_secondary": [
@@ -2884,6 +2887,9 @@ window.KB_DATA = {
           "2026-06-01_arxiv-uav-connectivity-cellular-vs-starlink",
           "2026-05-29_arxiv-starlink-queuing-characterization",
           "2026-05-26_arxiv-safesabr-starlink-abr-streaming"
+        ],
+        "satellite-news": [
+          "2026-07-05_starship-flight12-starlink-v3-test-deploy"
         ]
       }
     },
@@ -2922,6 +2928,7 @@ window.KB_DATA = {
         "2026-06-13_arxiv-space-data-centers-orbital-computing",
         "2026-06-03_arxiv-mapping-storm-weather-leo-starlink",
         "2026-05-29_arxiv-starlink-queuing-characterization",
+        "2026-07-05_starship-flight12-starlink-v3-test-deploy",
         "2026-05-26_arxiv-safesabr-starlink-abr-streaming",
         "2026-05-24_ast-spacemobile-q1-2026-45-bluebirds",
         "2026-05-26_arxiv-elevation-aware-sul-ds2d",
@@ -6744,6 +6751,36 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>OpenTwin 是一个面向开放 RAN（O-RAN）的数字孪生框架，让运营商先在离线孪生体上训练并验证由 ML 驱动的 xApp/rApp，再下发到真实网络。它针对数据驱动 RAN 控制的两个常见障碍：因 O-RAN 接口时延导致的关键性能指标（KPM）数据稀缺，以及直接在生产网络上验证 AI 模型带来的运行风险。孪生体构建在开源仿真器 ns-O-RAN-flexRIC 之上，部署在 non-RT RIC 内，通过 O1 接口消费 KPM 数据流。</p>\n<p>核心机制是两步学习流水线：先由 XGBoost 模型学习真实网络的时变行为，输出驱动仿真器的配置参数，使孪生体跟随真实部署而非固定场景；再由一个时间感知的递归最小二乘（RLS）调谐器持续校正孪生体 KPM 与实测值之间的残余偏差。一个偏差感知评分机制监控孪生保真度，在检测到网络漂移时自动触发重同步，避免孪生体随时间悄然发散、保持其可信度。</p>\n<p>作者用一个节能 xApp 验证该框架：控制策略先在孪生体上演练，只有验证通过的重配置才下发到物理网络。结果显示孪生体复现真实 KPM 的准确率最高达 96%，节能 xApp 在不中断在网运行的前提下显著降低能耗。</p>\n<h3>技术要点</h3>\n<ul><li>基于 ns-O-RAN-flexRIC；孪生体运行于 <strong>non-RT RIC</strong> 内，经 <strong>O1 接口</strong> 摄取 KPM。</li><li>两步 ML：<strong>XGBoost</strong> 将实时网络状态映射为仿真器配置参数；<strong>时间感知 RLS 调谐器</strong> 持续校正孪生与真实 KPM 的偏差。</li><li><strong>偏差感知评分</strong> 监控保真度，检测到漂移时自动触发重同步。</li><li>用例：在虚拟空间验证 <strong>节能 xApp</strong>，再将重配置下发到真实网络。</li><li>报告 KPM 复现准确率最高 <strong>96%</strong>；节能且不中断在网运行。</li></ul>\n<h3>意义与新意</h3>\n<p>面向 O-RAN 的数字孪生是活跃研究方向，而 OpenTwin 的贡献在于其 <strong>自校正闭环</strong>：不是一次性标定，而是用在线 RLS 调谐器与保真度评分重同步触发器持续校准由 XGBoost 参数化的仿真器。这直接针对限制离线 RAN 验证价值的&quot;孪生体偏离现实&quot;失效模式。它与 KB 中已有的 AI-RAN / 智能体 RAN 条目（如智能体 O-RAN 优化工作）互补——聚焦于这些控制智能体所需的 <strong>安全验证底座</strong>，而非控制策略本身。</p>",
       "images": [],
       "search_blob": "opentwin: digital twin driven closed loop kpm inference and control for open ran opentwin：面向开放 ran 的数字孪生驱动闭环 kpm 推断与控制 o-ran ric digital-twin xapp energy-saving opentwin is a digital-twin framework for open ran that lets operators train and validate ml-driven xapps/rapps offline before touching the live network. it targets two well-known blockers to data-driven ran control: key-performance-metric (kpm) data scarcity caused by o-ran interface latency, and the operational risk of validating ai models directly on a production network. the twin is built on the open-source ns-o-ran-flexric simulator and is deployed inside the non-rt ric, consuming kpm streams over the o1 interface. opentwin 是一个面向开放 ran（o-ran）的数字孪生框架，让运营商先在离线孪生体上训练并验证由 ml 驱动的 xapp/rapp，再下发到真实网络。它针对数据驱动 ran 控制的两个常见障碍：因 o-ran 接口时延导致的关键性能指标（kpm）数据稀缺，以及直接在生产网络上验证 ai 模型带来的运行风险。孪生体构建在开源仿真器 ns-o-ran-flexric 之上，部署在 non-rt ric 内，通过 o1 接口消费 kpm 数据流。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-05_starship-flight12-starlink-v3-test-deploy",
+      "date_found": "2026-07-05",
+      "technology": "satellite",
+      "date_published": "2026-05-22",
+      "type": "satellite-news",
+      "category": "industry",
+      "title_en": "Starship Flight 12 deploys first Starlink V3 test hardware: 20 simulators + 2 modified satellites from the 'Pez dispenser', targeting 10× downlink / 24× uplink over V2 Mini",
+      "title_zh": "星舰第 12 次试飞首次部署 Starlink V3 测试硬件：'Pez 分发器'释放 20 颗模拟器 + 2 颗改装卫星，目标下行 10 倍 / 上行 24 倍于 V2 Mini",
+      "url": "https://www.spacex.com/launches/starship-flight-12",
+      "topics": [
+        "Starlink",
+        "Starship",
+        "LEO",
+        "constellation-capacity",
+        "D2D"
+      ],
+      "topic_primary": "starlink",
+      "topics_secondary": [
+        "leo-constellations"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-05_starship-flight12-starlink-v3-test-deploy.md",
+      "summary_short_en": "On May 22, 2026, SpaceX's Starship Flight 12 — the first flight of the Starship/Super Heavy V3 vehicles, Raptor 3 engines, and Starbase Pad 2 — carried out the first in-space exercise of the **Starlink V3 deployment chain**. During the coast phase, the ship's \"Pez dispenser\" slot successfully released all 20 Starlink mass simulators plus **two modified Starlink satellites carrying hardware planned for the V3 generation**. The two live satellites doubled as inspection assets: they imaged Starship in space and attempted to scan its heat shield, downlinking imagery so operators can develop readiness analysis for future return-to-launch-site flights.",
+      "summary_short_zh": "2026 年 5 月 22 日，SpaceX 星舰第 12 次试飞——星舰/超重 V3 构型、Raptor 3 发动机和星港 2 号发射台的首飞——完成了 **Starlink V3 部署链**的首次在轨演练。滑行阶段，飞船的\"Pez 分发器\"舱口成功释放全部 20 颗 Starlink 质量模拟器以及**两颗搭载 V3 代硬件的改装 Starlink 卫星**。这两颗真星兼作检查平台：在太空中对星舰成像并尝试扫描其隔热瓦，将图像下传给操作人员，用于开发未来返回发射场任务的热防护就绪性分析。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On May 22, 2026, SpaceX's Starship Flight 12 — the first flight of the Starship/Super Heavy V3 vehicles, Raptor 3 engines, and Starbase Pad 2 — carried out the first in-space exercise of the <strong>Starlink V3 deployment chain</strong>. During the coast phase, the ship's &quot;Pez dispenser&quot; slot successfully released all 20 Starlink mass simulators plus <strong>two modified Starlink satellites carrying hardware planned for the V3 generation</strong>. The two live satellites doubled as inspection assets: they imaged Starship in space and attempted to scan its heat shield, downlinking imagery so operators can develop readiness analysis for future return-to-launch-site flights.</p>\n<p>The capacity stakes are what make this a communications milestone rather than just a rocketry one. Starlink V3 satellites are specified at roughly <strong>10× the downlink and 24× the uplink capacity of the V2 Mini</strong> generation — a per-launch capacity jump that only Starship's volume and mass margin can deliver. Getting the dispenser mechanics, satellite separation, and early V3 component operation demonstrated in orbit is the gating step between the ~10,700-satellite V2-era constellation and the V3 build-out.</p>\n<p>The flight was not flawless — one Raptor engine shut down during ascent (the remaining engines compensated), and the upper stage completed its planned Indian Ocean splashdown; the FAA subsequently required a SpaceX-led mishap investigation before further Starship launches (May 27). But the satellite-deployment objective — the part that matters for the constellation roadmap — succeeded in full.</p>\n<h3>Key technical points</h3>\n<ul><li>First orbital test of the Starlink V3 deployment chain: 20 mass simulators + 2 modified satellites released from Starship's Pez-dispenser slot during coast (May 22, 2026).</li><li>The 2 live satellites carry V3-planned hardware and doubled as heat-shield inspection assets (imaging + downlink of Starship scan data).</li><li>V3 capacity target: ~10× downlink and ~24× uplink vs V2 Mini — per-satellite capacity in the terabit class, deployable only via Starship.</li><li>Vehicle firsts stacked on the same flight: Starship V3 + Super Heavy V3, Raptor 3, Pad 2; one Raptor shut down during ascent without preventing mission objectives.</li><li>FAA required a SpaceX-led mishap investigation (May 27, 2026) before the next Starship flight — a schedule risk for the V3 constellation ramp.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Deliberate backfill (event is ~6 weeks old): the KB's Starlink thread tracks constellation scale (10,700+ satellites, ~1,600 launched in H1 2026) and the Starlink Mobile D2D expansion (2026-07-03_starlink-mobile-retail-carrier-plans), but had no entry for the V3 generation or its Starship dependency. This flight is the concrete pivot point: V3's order-of-magnitude capacity jump is what backs both the &quot;&gt;100× Gen-1 D2D capacity&quot; claims and the fixed-broadband density roadmap, and its schedule now hinges on Starship flight cadence (FAA investigation included). Competitors' timelines (Amazon Leo's 396-satellite initial service, AST's 45-satellite target) should be read against this capacity curve.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026 年 5 月 22 日，SpaceX 星舰第 12 次试飞——星舰/超重 V3 构型、Raptor 3 发动机和星港 2 号发射台的首飞——完成了 <strong>Starlink V3 部署链</strong>的首次在轨演练。滑行阶段，飞船的&quot;Pez 分发器&quot;舱口成功释放全部 20 颗 Starlink 质量模拟器以及<strong>两颗搭载 V3 代硬件的改装 Starlink 卫星</strong>。这两颗真星兼作检查平台：在太空中对星舰成像并尝试扫描其隔热瓦，将图像下传给操作人员，用于开发未来返回发射场任务的热防护就绪性分析。</p>\n<p>使这成为通信里程碑而非单纯火箭新闻的是容量意义。Starlink V3 卫星的规格约为 <strong>V2 Mini 的 10 倍下行、24 倍上行容量</strong>——只有星舰的容积与质量余量才能支撑的单次发射容量跃升。在轨验证分发器机构、卫星分离和早期 V3 组件运行，是从约 10700 颗卫星的 V2 时代星座迈向 V3 建设的关键闸门。</p>\n<p>这次飞行并非完美——上升段一台 Raptor 发动机关机（其余发动机补偿），上面级按计划在印度洋溅落；FAA 随后（5 月 27 日）要求 SpaceX 主导的事故调查完成后方可恢复星舰发射。但卫星部署目标——对星座路线图真正重要的部分——完全成功。</p>\n<h3>技术要点</h3>\n<ul><li>Starlink V3 部署链首次在轨测试：滑行段从星舰 Pez 分发器舱口释放 20 颗质量模拟器 + 2 颗改装卫星（2026 年 5 月 22 日）。</li><li>两颗真星搭载 V3 计划硬件，兼作隔热瓦检查平台（成像 + 下传星舰扫描数据）。</li><li>V3 容量目标：约为 V2 Mini 的 10 倍下行、24 倍上行——单星容量达太比特级，只能经星舰部署。</li><li>同一次飞行叠加多项首次：星舰 V3 + 超重 V3、Raptor 3、2 号发射台；上升段一台 Raptor 关机但未影响任务目标。</li><li>FAA 要求完成 SpaceX 主导的事故调查（2026 年 5 月 27 日）后方可进行下次星舰飞行——是 V3 星座扩建节奏的日程风险。</li></ul>\n<h3>意义与新意</h3>\n<p>刻意回填（事件约 6 周前）：KB 的 Starlink 线索已跟踪星座规模（10700+ 颗，2026 上半年发射约 1600 颗）和 Starlink Mobile D2D 扩张（2026-07-03_starlink-mobile-retail-carrier-plans），但缺少 V3 代及其对星舰的依赖这一环。本次飞行是具体的转折点：V3 数量级的容量跃升既支撑 &quot;&gt;100 倍 Gen-1 D2D 容量&quot;的主张，也支撑固定宽带密度路线图，而其日程现在取决于星舰的飞行节奏（含 FAA 调查）。竞争对手的时间表（Amazon Leo 396 颗初始服务、AST 45 颗目标）都应对照这条容量曲线来解读。</p>",
+      "images": [],
+      "search_blob": "starship flight 12 deploys first starlink v3 test hardware: 20 simulators + 2 modified satellites from the 'pez dispenser', targeting 10× downlink / 24× uplink over v2 mini 星舰第 12 次试飞首次部署 starlink v3 测试硬件：'pez 分发器'释放 20 颗模拟器 + 2 颗改装卫星，目标下行 10 倍 / 上行 24 倍于 v2 mini starlink starship leo constellation-capacity d2d on may 22, 2026, spacex's starship flight 12 — the first flight of the starship/super heavy v3 vehicles, raptor 3 engines, and starbase pad 2 — carried out the first in-space exercise of the **starlink v3 deployment chain**. during the coast phase, the ship's \"pez dispenser\" slot successfully released all 20 starlink mass simulators plus **two modified starlink satellites carrying hardware planned for the v3 generation**. the two live satellites doubled as inspection assets: they imaged starship in space and attempted to scan its heat shield, downlinking imagery so operators can develop readiness analysis for future return-to-launch-site flights. 2026 年 5 月 22 日，spacex 星舰第 12 次试飞——星舰/超重 v3 构型、raptor 3 发动机和星港 2 号发射台的首飞——完成了 **starlink v3 部署链**的首次在轨演练。滑行阶段，飞船的\"pez 分发器\"舱口成功释放全部 20 颗 starlink 质量模拟器以及**两颗搭载 v3 代硬件的改装 starlink 卫星**。这两颗真星兼作检查平台：在太空中对星舰成像并尝试扫描其隔热瓦，将图像下传给操作人员，用于开发未来返回发射场任务的热防护就绪性分析。 satellite-news satellite"
     },
     {
       "id": "2026-05-26_arxiv-safesabr-starlink-abr-streaming",
