@@ -12,8 +12,8 @@ window.KB_DATA = {
     "security": 25,
     "802.11be": 23,
     "O-RAN": 22,
+    "LEO": 21,
     "WiFi-sensing": 21,
-    "LEO": 20,
     "PHY-layer": 15,
     "MLO": 14,
     "IoT": 13,
@@ -30,13 +30,13 @@ window.KB_DATA = {
     "direct-to-device": 8,
     "LLM": 8,
     "UWB": 8,
+    "digital-twin": 7,
     "XR": 7,
     "NearLink": 7,
     "SparkLink": 7,
     "energy-efficiency": 7,
     "mmWave": 7,
     "generative-AI": 7,
-    "digital-twin": 6,
     "V2X": 6,
     "3GPP": 6,
     "automotive": 6,
@@ -57,6 +57,7 @@ window.KB_DATA = {
     "802.11bq": 5,
     "beamforming": 4,
     "LLM-agent": 4,
+    "QoS": 4,
     "xApp": 4,
     "OpenAirInterface": 4,
     "Release-21": 4,
@@ -95,7 +96,6 @@ window.KB_DATA = {
     "Co-RTWT": 3,
     "UHR": 3,
     "AFC": 3,
-    "QoS": 3,
     "ranging": 3,
     "FiRa": 3,
     "cellular-ai": 3,
@@ -113,6 +113,8 @@ window.KB_DATA = {
     "ISAC": 3,
     "roaming": 3,
     "FR3": 2,
+    "beam-hopping": 2,
+    "DRL": 2,
     "MEC": 2,
     "autonomous-networks": 2,
     "machine-learning": 2,
@@ -180,6 +182,7 @@ window.KB_DATA = {
     "Rel-19": 2,
     "R-TWT": 2,
     "testbed": 1,
+    "adversarial-robustness": 1,
     "smart-grid": 1,
     "high-density-WiFi": 1,
     "stadium-WiFi": 1,
@@ -241,7 +244,6 @@ window.KB_DATA = {
     "WiFi": 1,
     "VR": 1,
     "bitrate-adaptation": 1,
-    "DRL": 1,
     "airtime-fairness": 1,
     "cross-layer": 1,
     "AP-assisted": 1,
@@ -289,7 +291,6 @@ window.KB_DATA = {
     "HARQ": 1,
     "SDR": 1,
     "DCI": 1,
-    "beam-hopping": 1,
     "PSO": 1,
     "GSO": 1,
     "interference-detection": 1,
@@ -666,8 +667,8 @@ window.KB_DATA = {
     "6g-vision": 16,
     "security-privacy": 14,
     "open-ran": 13,
+    "leo-constellations": 12,
     "5g-nr": 12,
-    "leo-constellations": 11,
     "mapc-cosr": 11,
     "agentic-wifi": 9,
     "spectrum-policy": 8,
@@ -700,7 +701,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 169,
+    "academic-paper": 170,
     "industry-news": 54,
     "product": 16,
     "ieee-document": 12,
@@ -710,7 +711,7 @@ window.KB_DATA = {
     "bluetooth-spec": 1
   },
   "category_counts": {
-    "academia": 169,
+    "academia": 170,
     "industry": 75,
     "standards": 19
   },
@@ -2934,6 +2935,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
         "2026-07-04_amazon-leo-396-sats-initial-service",
         "2026-06-26_arxiv-all-optical-satellite-burst-size",
         "2026-06-23_arxiv-isl-path-selection-walker-delta",
@@ -2962,11 +2964,8 @@ window.KB_DATA = {
         "2026-05-30_arxiv-5g-nr-ntn-survey-roadmap"
       ],
       "by_type_primary": {
-        "satellite-news": [
-          "2026-07-04_amazon-leo-396-sats-initial-service",
-          "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
-        ],
         "academic-paper": [
+          "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
           "2026-06-26_arxiv-all-optical-satellite-burst-size",
           "2026-06-23_arxiv-isl-path-selection-walker-delta",
           "2026-06-17_arxiv-sub-thz-leo-satellite-teralink",
@@ -2975,6 +2974,10 @@ window.KB_DATA = {
           "2026-06-03_arxiv-robust-rb-allocation-satellite",
           "2026-05-29_arxiv-quantum-safe-ike-satellite",
           "2026-05-21_arxiv-leo-mmwave-subthz-relay"
+        ],
+        "satellite-news": [
+          "2026-07-04_amazon-leo-396-sats-initial-service",
+          "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
         ],
         "industry-news": [
           "2026-05-24_amazon-leo-300-satellites-may-2026"
@@ -3064,6 +3067,7 @@ window.KB_DATA = {
         "2026-06-13_arxiv-space-data-centers-orbital-computing"
       ],
       "entries_secondary": [
+        "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
         "2026-06-30_arxiv-leo-latency-region-signatures-starlink",
         "2026-07-03_arxiv-memntn-memory-native-ntn",
         "2026-06-15_arxiv-aidos-beam-hopping-ngso",
@@ -3630,6 +3634,37 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "agentic-v2x: small-llm rapp/xapp policy generation for deadline-aware v2x scheduling — valid, safe, but not universally better agentic-v2x：小模型 rapp/xapp 策略生成用于截止期感知的 v2x 调度——有效、安全，但并非全面更优 v2x 5g 6g llm-agent o-ran scheduling agentic-v2x (papanikolaou-ntais, kaloxylos, kanavos; arxiv 2607.04290, submitted 5 jul 2026) tests whether a locally-deployed small language model can usefully sit in the ran control loop for vehicle-to-everything traffic. the architecture is a two-tier rapp/xapp split borrowed from o-ran: a 7b-parameter qwen2.5 model (via ollama) acts as a non-real-time \"policy creator\" that every 10 seconds reads scenario summaries, service objectives, and telemetry, and emits a structured yaml policy (baseline scheduler weights, weight bounds, priorities, safety constraints); a deterministic xapp-like controller then enforces the validated policy every 100 ms via per-ue scheduler-weight adaptation. a three-layer validator (schema check, deterministic repair, runtime monitoring) keeps the 8.4 s mean llm inference latency out of the critical scheduling path. agentic-v2x（arxiv 2607.04290，2026-07-05 提交）检验本地部署的小语言模型能否在 ran 控制环中对车联网（v2x）流量发挥实际作用。架构借用 o-ran 的 rapp/xapp 两层切分：7b 参数的 qwen2.5 模型（经 ollama）作为非实时\"策略生成器\"，每 10 秒读取场景摘要、业务目标与遥测数据，输出结构化 yaml 策略（基线调度权重、权重上下界、优先级、安全约束）；确定性的 xapp 式控制器每 100 ms 通过逐 ue 调度权重调整来执行经过校验的策略。三层校验器（模式校验、确定性修复、运行时监控）把 llm 平均 8.4 秒的推理时延隔离在关键调度路径之外。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
+      "date_found": "2026-07-07",
+      "technology": "satellite",
+      "date_published": "2026-07-04",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "BRIDGE: Digital-Twin-Aided DRL Beam Hopping for LEO Satellites with Differentiated QoS — and a First Adversarial-Robustness Audit",
+      "title_zh": "BRIDGE：数字孪生辅助的 LEO 卫星跳波束深度强化学习资源分配——差异化 QoS 与首个对抗鲁棒性审计",
+      "url": "https://arxiv.org/abs/2607.03859",
+      "topics": [
+        "LEO",
+        "beam-hopping",
+        "DRL",
+        "digital-twin",
+        "QoS",
+        "adversarial-robustness"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "sat-ai"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-07_arxiv-bridge-beam-hopping-leo-drl.md",
+      "summary_short_en": "BRIDGE (Zheng, Zhang, Sheng, Wang, Wang; arXiv 2607.03859, submitted 4 Jul 2026, 16 pp) tackles joint beam scheduling and power allocation for beam-hopping LEO satellites serving differentiated traffic — two real-time classes (video: 242 kbps / 300 ms budget; voice: 8.4 kbps / 100 ms budget) plus best-effort — across 60 ground users and 8 simultaneously active Ka-band beams. The framework's name comes from its exploration machinery: **Integrated Dirichlet and Gumbel-TopK Exploration** inside a reinforcement-learning agent. Gumbel-TopK sampling handles the exponentially large discrete choice of which K beam positions to activate; a Dirichlet-distribution head allocates the 250 W onboard power budget across active beams while satisfying non-negativity and budget constraints by construction. A QoS-driven priority metric then splits intra-beam subchannels between real-time and best-effort queues using queue depth, delay budget, and TTL loss thresholds.",
+      "summary_short_zh": "BRIDGE（arXiv 2607.03859，2026-07-04 提交，16 页）解决跳波束 LEO 卫星在差异化业务下的波束调度与功率分配联合问题——两类实时业务（视频：242 kbps / 300 ms 预算；语音：8.4 kbps / 100 ms 预算）加尽力而为业务，覆盖 60 个地面用户、8 个同时激活的 Ka 频段波束。框架名称来自其探索机制：强化学习智能体内的 **Dirichlet 与 Gumbel-TopK 集成探索**。Gumbel-TopK 采样处理\"激活哪 K 个波束位置\"这一指数级离散选择；Dirichlet 分布头在激活波束间分配 250 W 星上功率预算，天然满足非负与总量约束。QoS 驱动的优先级度量再按队列深度、时延预算与 TTL 丢包阈值在实时与尽力而为队列间划分波束内子信道。",
+      "body_html_en": "<h3>Summary</h3>\n<p>BRIDGE (Zheng, Zhang, Sheng, Wang, Wang; arXiv 2607.03859, submitted 4 Jul 2026, 16 pp) tackles joint beam scheduling and power allocation for beam-hopping LEO satellites serving differentiated traffic — two real-time classes (video: 242 kbps / 300 ms budget; voice: 8.4 kbps / 100 ms budget) plus best-effort — across 60 ground users and 8 simultaneously active Ka-band beams. The framework's name comes from its exploration machinery: <strong>Integrated Dirichlet and Gumbel-TopK Exploration</strong> inside a reinforcement-learning agent. Gumbel-TopK sampling handles the exponentially large discrete choice of which K beam positions to activate; a Dirichlet-distribution head allocates the 250 W onboard power budget across active beams while satisfying non-negativity and budget constraints by construction. A QoS-driven priority metric then splits intra-beam subchannels between real-time and best-effort queues using queue depth, delay budget, and TTL loss thresholds.</p>\n<p>The second ingredient is a digital twin built on NVIDIA Sionna ray tracing: instead of the usual elevation-angle visibility threshold, user–satellite visibility windows (updated every 2 s at 508 km altitude) are pre-computed with explicit obstruction modeling, feeding the agent high-fidelity state without real-time blockage computation. The actor network stays payload-friendly: 782k parameters, 1.56 MFLOPs per inference, 2.98 MB.</p>\n<p>Against six baselines (queue-length heuristics, genetic algorithm, TopK-DQN, SAC, discrete PPO variants, periodic hopping), BRIDGE improves energy efficiency 16.6% over the strongest learned baseline and ~99% over periodic hopping, reaches ~1.8 Gbps real-time throughput at 4 Gbps offered load (vs ~1.5 Gbps for GA), ~2.4 Gbps total throughput, and tighter fairness (satisfaction std 0.18–0.25 vs 0.25–0.35). Unusually for this literature, the paper closes with an adversarial-robustness audit: FGSM, I-FGSM and PGD perturbations on the state input (ε 0.05–0.15) degrade energy efficiency 8–15% and RT throughput 10–20%, with PGD strongest (~25% gradient deviation) — the policy stays operational but undefended.</p>\n<h3>Key technical points</h3>\n<ul><li>Hybrid action space: Gumbel-TopK for discrete beam-position selection + Dirichlet head for continuous power split — constraints satisfied by construction, no projection step.</li><li>QoS-differentiated intra-beam subchannel allocation via a priority metric over queue depth, delay budget, and TTL loss threshold (RT vs BE weighted differently).</li><li>Sionna ray-tracing digital twin replaces elevation-threshold visibility; windows precomputed every 2 s, removing online blockage computation.</li><li>Payload-feasible model: 782,321 parameters, 1.56 MFLOPs, 2.98 MB.</li><li>Ka-band 20 GHz, 200 MHz / 20 subchannels, 250 W, 508 km, 10 ms slots; 60 users, 8 active beams.</li><li>Results: +16.6% energy efficiency vs QLPDL-BH, +98.7% vs periodic BH; RT throughput ~1.8 Gbps @ 4 Gbps load; fairness std 0.18–0.25.</li><li>Adversarial audit (FGSM / I-FGSM / PGD, ε 0.05–0.15): 8–15% energy-efficiency and 10–20% RT-throughput degradation; PGD strongest; no defense yet.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The leo-constellations bin covers orchestration (2026-07-01 NEO-GNN heterogeneous-graph orchestration), transport (LEOSTP), and ISL path selection, but this is its first <em>beam-hopping resource-allocation</em> entry — the onboard scheduling layer that decides which cells get illuminated and with how much power. Two aspects stand out against the existing sat-ai thread: the digital-twin state pipeline (ray-traced visibility instead of elevation thresholds) mirrors the terrestrial trend seen in the O-RAN entries, and the adversarial-robustness audit is the first in this KB to quantify how a learned satellite scheduler degrades under gradient attacks — a security dimension the sat-ai bin hadn't touched.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>BRIDGE（arXiv 2607.03859，2026-07-04 提交，16 页）解决跳波束 LEO 卫星在差异化业务下的波束调度与功率分配联合问题——两类实时业务（视频：242 kbps / 300 ms 预算；语音：8.4 kbps / 100 ms 预算）加尽力而为业务，覆盖 60 个地面用户、8 个同时激活的 Ka 频段波束。框架名称来自其探索机制：强化学习智能体内的 <strong>Dirichlet 与 Gumbel-TopK 集成探索</strong>。Gumbel-TopK 采样处理&quot;激活哪 K 个波束位置&quot;这一指数级离散选择；Dirichlet 分布头在激活波束间分配 250 W 星上功率预算，天然满足非负与总量约束。QoS 驱动的优先级度量再按队列深度、时延预算与 TTL 丢包阈值在实时与尽力而为队列间划分波束内子信道。</p>\n<p>第二个要素是基于 NVIDIA Sionna 射线追踪的数字孪生：不用常规的仰角门限可见性模型，而是预先计算显式建模遮挡的用户-卫星可见性窗口（508 km 轨道高度，每 2 秒更新），为智能体提供高保真状态且无需实时遮挡计算。Actor 网络对星上载荷友好：78.2 万参数、单次推理 1.56 MFLOPs、2.98 MB 内存。</p>\n<p>对比六个基线（队列长度启发式、遗传算法、TopK-DQN、SAC、离散 PPO 变体、周期跳波束），BRIDGE 能效比最强学习基线高 16.6%、比周期跳波束高约 99%；4 Gbps 负载下实时吞吐约 1.8 Gbps（GA 约 1.5 Gbps）、总吞吐约 2.4 Gbps；公平性更优（满意度标准差 0.18–0.25 对 0.25–0.35）。本文少见地以对抗鲁棒性审计收尾：对状态输入施加 FGSM、I-FGSM、PGD 扰动（ε 0.05–0.15），能效退化 8–15%、实时吞吐降 10–20%，PGD 最强（梯度偏差约 25%）——策略保持可运行但尚无防御机制。</p>\n<h3>技术要点</h3>\n<ul><li>混合动作空间：Gumbel-TopK 做离散波束位置选择 + Dirichlet 头做连续功率分配——约束由构造满足，无需投影步骤。</li><li>通过队列深度、时延预算与 TTL 丢包阈值上的优先级度量做 QoS 差异化波束内子信道分配（实时与尽力而为权重不同）。</li><li>Sionna 射线追踪数字孪生取代仰角门限可见性；可见性窗口每 2 秒预计算，消除在线遮挡计算。</li><li>星上可行的模型规模：782,321 参数、1.56 MFLOPs、2.98 MB。</li><li>Ka 频段 20 GHz、200 MHz / 20 子信道、250 W、508 km、10 ms 时隙；60 用户、8 激活波束。</li><li>结果：能效较 QLPDL-BH 高 16.6%、较周期跳波束高 98.7%；4 Gbps 负载下实时吞吐约 1.8 Gbps；公平性标准差 0.18–0.25。</li><li>对抗审计（FGSM / I-FGSM / PGD，ε 0.05–0.15）：能效退化 8–15%、实时吞吐降 10–20%；PGD 最强；尚无防御。</li></ul>\n<h3>意义与新意</h3>\n<p>leo-constellations 分类已覆盖编排（2026-07-01 NEO-GNN 异构图编排）、传输（LEOSTP）与星间链路路径选择，但本条目是该分类第一个<em>跳波束资源分配</em>条目——即决定哪些小区被照射、用多少功率的星上调度层。相对既有 sat-ai 线索有两个亮点：数字孪生状态管线（射线追踪可见性取代仰角门限）呼应了 O-RAN 条目中的地面侧趋势；对抗鲁棒性审计则是本 KB 首次量化学习型卫星调度器在梯度攻击下的退化——sat-ai 分类此前未触及的安全维度。</p>",
+      "images": [],
+      "search_blob": "bridge: digital-twin-aided drl beam hopping for leo satellites with differentiated qos — and a first adversarial-robustness audit bridge：数字孪生辅助的 leo 卫星跳波束深度强化学习资源分配——差异化 qos 与首个对抗鲁棒性审计 leo beam-hopping drl digital-twin qos adversarial-robustness bridge (zheng, zhang, sheng, wang, wang; arxiv 2607.03859, submitted 4 jul 2026, 16 pp) tackles joint beam scheduling and power allocation for beam-hopping leo satellites serving differentiated traffic — two real-time classes (video: 242 kbps / 300 ms budget; voice: 8.4 kbps / 100 ms budget) plus best-effort — across 60 ground users and 8 simultaneously active ka-band beams. the framework's name comes from its exploration machinery: **integrated dirichlet and gumbel-topk exploration** inside a reinforcement-learning agent. gumbel-topk sampling handles the exponentially large discrete choice of which k beam positions to activate; a dirichlet-distribution head allocates the 250 w onboard power budget across active beams while satisfying non-negativity and budget constraints by construction. a qos-driven priority metric then splits intra-beam subchannels between real-time and best-effort queues using queue depth, delay budget, and ttl loss thresholds. bridge（arxiv 2607.03859，2026-07-04 提交，16 页）解决跳波束 leo 卫星在差异化业务下的波束调度与功率分配联合问题——两类实时业务（视频：242 kbps / 300 ms 预算；语音：8.4 kbps / 100 ms 预算）加尽力而为业务，覆盖 60 个地面用户、8 个同时激活的 ka 频段波束。框架名称来自其探索机制：强化学习智能体内的 **dirichlet 与 gumbel-topk 集成探索**。gumbel-topk 采样处理\"激活哪 k 个波束位置\"这一指数级离散选择；dirichlet 分布头在激活波束间分配 250 w 星上功率预算，天然满足非负与总量约束。qos 驱动的优先级度量再按队列深度、时延预算与 ttl 丢包阈值在实时与尽力而为队列间划分波束内子信道。 academic-paper satellite"
     },
     {
       "id": "2026-07-07_arxiv-5g-mec-powerline-latency-cost",
