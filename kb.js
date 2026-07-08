@@ -1,7 +1,7 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-07-07",
-  "last_scanned": "2026-07-07",
+  "last_updated": "2026-07-08",
+  "last_scanned": "2026-07-08",
   "topic_counts": {
     "MAC-layer": 36,
     "agentic-AI": 35,
@@ -38,6 +38,7 @@ window.KB_DATA = {
     "mmWave": 7,
     "generative-AI": 7,
     "V2X": 6,
+    "802.11": 6,
     "3GPP": 6,
     "automotive": 6,
     "Wi-Fi-8": 6,
@@ -46,7 +47,6 @@ window.KB_DATA = {
     "URLLC": 6,
     "802.11bp": 6,
     "FCC": 5,
-    "802.11": 5,
     "Co-SR": 5,
     "Co-BF": 5,
     "NPCA": 5,
@@ -187,6 +187,11 @@ window.KB_DATA = {
     "high-density-WiFi": 1,
     "stadium-WiFi": 1,
     "directional-antennas": 1,
+    "frame-bursting": 1,
+    "TXOP": 1,
+    "tail-latency": 1,
+    "contention": 1,
+    "SIGCOMM": 1,
     "Amazon-Leo": 1,
     "LEO-broadband": 1,
     "Globalstar": 1,
@@ -675,10 +680,10 @@ window.KB_DATA = {
     "sat-direct-device": 7,
     "uwb-ranging": 7,
     "amp-iot": 7,
+    "rtwt-latency": 6,
     "starlink": 6,
     "ai-for-wifi": 6,
     "ntn": 5,
-    "rtwt-latency": 5,
     "sat-ai": 4,
     "bt-channel-sounding": 4,
     "cellular-security": 4,
@@ -701,7 +706,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 170,
+    "academic-paper": 171,
     "industry-news": 54,
     "product": 16,
     "ieee-document": 12,
@@ -711,7 +716,7 @@ window.KB_DATA = {
     "bluetooth-spec": 1
   },
   "category_counts": {
-    "academia": 170,
+    "academia": 171,
     "industry": 75,
     "standards": 19
   },
@@ -1672,6 +1677,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((R-TWT / Low latency))\n    Standards\n      R-TWT in 802.11be\n      R-TWT extensions in 802.11bn\n      Protected airtime windows\n    Research\n      RTA delay model (rtwt-rta)\n      Deterministic TWT on Wi-Fi 6\n      BLADE adaptive contention\n      NSDI'26 Law link-layer redesign\n    Co-SR axis\n      Wi-Fi 8 latency via Co-SR\n    Bridges\n      mapc-cosr (throughput side)\n      wifi-for-ai (XR / agent traffic)\n      energy-power-save (TWT energy)\n    Watch\n      Vendor XR / cloud-gaming latency\n      R-TWT + MLO link-selection primitives",
       "diagram_mmd_zh": "mindmap\n  root((R-TWT 与低时延))\n    标准化\n      802.11be 中的 R-TWT\n      802.11bn 中的 R-TWT 扩展\n      受保护的空中时间窗\n    研究\n      RTA 时延模型（rtwt-rta）\n      Wi-Fi 6 上的确定性 TWT\n      BLADE 自适应竞争\n      NSDI'26 Law 链路层重构\n    Co-SR 轴\n      Wi-Fi 8 经 Co-SR 降时延\n    桥接\n      mapc-cosr（吞吐侧）\n      wifi-for-ai（XR / 智能体流量）\n      energy-power-save（TWT 能耗）\n    关注\n      厂商 XR / 云游戏时延\n      R-TWT + MLO 链路选择原语",
       "entries_primary": [
+        "2026-07-08_sigcomm26-concord-airtime-contention",
         "2026-06-11_arxiv-wifi6-dynamic-ru-tsn",
         "2026-05-03_nsdi-law-802-11-low-latency-link-layer",
         "2026-05-01_arxiv-blade-adaptive-contention",
@@ -1689,6 +1695,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-07-08_sigcomm26-concord-airtime-contention",
           "2026-06-11_arxiv-wifi6-dynamic-ru-tsn",
           "2026-05-03_nsdi-law-802-11-low-latency-link-layer",
           "2026-05-01_arxiv-blade-adaptive-contention",
@@ -3733,6 +3740,35 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Wi-Fi NOW 于 2026 年 7 月 4 日发表了对 AmpThink 创始人兼 CEO Bill Anderson 的专访。AmpThink 是北美完成高密度体育场 Wi-Fi 项目最多的集成商（自 2011 年与 Cisco 合作的 Lucas Oil 体育场首秀以来已交付 100 多个场馆）。Anderson 的核心论断是：体育场 Wi-Fi 正在经历从&quot;近距离组网&quot;到&quot;超定向组网&quot;的结构性转变，定向高空设计如今&quot;已是我们所有网络设计的必备要素&quot;。</p>\n<p>传统的超高密度方案是把数百到数千台低功率 AP 布置在离观众极近的位置——座椅下、扶手内、地面盒中。这种方式有效，但隐性成本高达数百万美元：混凝土开孔、防水处理、布线工程，以及维护嵌入座椅设施的 AP 的运维负担。超定向模式将其颠倒过来：AP 数量大幅减少，每台设备在软件可配置的高定向天线阵列后集成多个射频单元，安装在观众上方 200 多英尺的检修通道上。每个波束照射一个特定且互不重叠的座位区，通过旁瓣滤除将大规模同频干扰控制在可接受范围。</p>\n<p>AmpThink 当前设计的核心硬件是 Cisco Catalyst 9104 体育场天线平台，配合 AmpThink 自研的可旋转/可俯仰检修通道安装套件，使安装人员能将每个阵列精确对准指定座位区。专访将这一方案定位为正在形成的默认设计而非小众实验：它已从 Allegiant 体育场的首个商用部署走向新建和翻新场馆的标准配置。</p>\n<h3>技术要点</h3>\n<ul><li>架构转变：近距离组网（数百至数千台座椅下/扶手 AP）→ 超定向高空组网（AP 数量更少、单台射频更多，安装在观众上方 200+ 英尺的检修通道）。</li><li>波束由软件配置且高度定向，辐射方向图带旁瓣滤除；每个波束服务一个互不重叠的座位区。</li><li>硬件：Cisco Catalyst 9104 体育场天线 AP，配合 AmpThink 自研可旋转/可俯仰安装套件实现检修通道上的精确指向。</li><li>经济驱动：近距离部署隐藏着数百万美元的安装成本（混凝土开孔、防水、布线）和沉重运维负担；高空定向设计同时削减两者。</li><li>采用信号：Cisco 9104 出货量从 FY2021 的数百台增至 FY2022 的 4000+ 台、FY2023 的 6000+ 台；AmpThink 已将超定向设计视为所有方案的必备要素。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中第一条体育场/超高密度场馆条目——部署桶此前覆盖企业园区、酒店/MDU（2026-07-04_worldvue-openwifi-3500-device-scale）和户外工业（2026-07-03_cisco-9177-outdoor-wifi7-urwb-ap）等垂直场景。技术本身并不新（Catalyst 9104 于 2021 年发布），但这篇文章标志着该趋势的成熟节点：最资深的体育场集成商如今将超定向视为默认方案而非实验。值得关注这种射频架构与面向密集小区设计的 Wi-Fi 7/8 特性如何互动——尤其是 MLO 流量引导和 802.11bn 多 AP 协调，当小区由高空锐利分区时，其协调空间复用的假设将有所不同。</p>",
       "images": [],
       "search_blob": "ampthink ceo: hyper-directional antenna technology is becoming the default design for ultra-high-density stadium wi-fi ampthink ceo：超定向天线技术正成为超高密度体育场 wi-fi 的默认设计 high-density-wifi stadium-wifi directional-antennas deployment wi-fi now published an interview (july 4, 2026) with bill anderson, founder and ceo of ampthink — the integrator behind more high-density stadium wi-fi projects in north america than any other firm (100+ venues since its 2011 lucas oil stadium debut with cisco). anderson's headline claim: stadium wi-fi is undergoing a structural shift from *proximity networking* to *hyper-directional networking*, and directional overhead designs are now \"essential to all our network designs.\" wi-fi now 于 2026 年 7 月 4 日发表了对 ampthink 创始人兼 ceo bill anderson 的专访。ampthink 是北美完成高密度体育场 wi-fi 项目最多的集成商（自 2011 年与 cisco 合作的 lucas oil 体育场首秀以来已交付 100 多个场馆）。anderson 的核心论断是：体育场 wi-fi 正在经历从\"近距离组网\"到\"超定向组网\"的结构性转变，定向高空设计如今\"已是我们所有网络设计的必备要素\"。 industry-news wifi"
+    },
+    {
+      "id": "2026-07-08_sigcomm26-concord-airtime-contention",
+      "date_found": "2026-07-08",
+      "technology": "wifi",
+      "date_published": "2026-07-03",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Concord: Airtime-Aware Contention Control for Taming Tail Latency from Wi-Fi Frame Bursting (SIGCOMM 2026)",
+      "title_zh": "Concord：面向 Wi-Fi 帧突发尾时延的空口时间感知竞争控制（SIGCOMM 2026）",
+      "url": "https://conferences.sigcomm.org/sigcomm/2026/accepted",
+      "topics": [
+        "802.11",
+        "frame-bursting",
+        "TXOP",
+        "tail-latency",
+        "contention",
+        "SIGCOMM"
+      ],
+      "topic_primary": "rtwt-latency",
+      "topics_secondary": [],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-08_sigcomm26-concord-airtime-contention.md",
+      "summary_short_en": "The ACM SIGCOMM 2026 accepted-papers list (posted July 3, 2026; conference August 17-21, Denver) includes one Wi-Fi paper: \"Concord: Airtime-Aware Contention Control for Taming Tail Latency from Wi-Fi Frame Bursting\", by Fengqian Guo, Siqi Wei, Sihao Miao and Hancheng Lu (University of Science and Technology of China) with Xinle Du (Tsinghua University). Only the title and author list are public at this stage — the camera-ready paper will appear closer to the August conference — so this entry records the acceptance signal, not the paper body.",
+      "summary_short_zh": "ACM SIGCOMM 2026 录用论文名单（2026 年 7 月 3 日公布；会议 8 月 17-21 日在丹佛举行）包含一篇 Wi-Fi 论文：\"Concord: Airtime-Aware Contention Control for Taming Tail Latency from Wi-Fi Frame Bursting\"，作者为中国科学技术大学的 Fengqian Guo、Siqi Wei、Sihao Miao、Hancheng Lu 及清华大学的 Xinle Du。目前仅标题和作者名单公开——正式论文将在 8 月会议前后发布——因此本条目记录的是录用信号，而非论文正文内容。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The ACM SIGCOMM 2026 accepted-papers list (posted July 3, 2026; conference August 17-21, Denver) includes one Wi-Fi paper: &quot;Concord: Airtime-Aware Contention Control for Taming Tail Latency from Wi-Fi Frame Bursting&quot;, by Fengqian Guo, Siqi Wei, Sihao Miao and Hancheng Lu (University of Science and Technology of China) with Xinle Du (Tsinghua University). Only the title and author list are public at this stage — the camera-ready paper will appear closer to the August conference — so this entry records the acceptance signal, not the paper body.</p>\n<p>The title identifies a specific and under-addressed latency mechanism: frame bursting. Modern 802.11 stacks aggressively aggregate frames and hold the medium for full TXOP bursts (A-MPDU aggregation inside multi-millisecond TXOPs) to maximise throughput. For every other contender on the channel, a neighbour's long burst is dead air — and when several BSSs burst independently, the contention delay experienced by a latency-sensitive frame becomes highly variable, inflating the tail of the latency distribution even when median latency looks healthy. &quot;Airtime-aware contention control&quot; suggests Concord makes the contention behaviour of a station explicitly conditional on observed airtime occupancy — plausibly adapting contention parameters or burst lengths in response to how much airtime bursting neighbours are consuming — rather than treating each access attempt as independent of the burst structure around it.</p>\n<p>A SIGCOMM acceptance is a strong quality signal (the venue takes few wireless papers in a typical year), and the topic places Concord directly in the same problem space as two entries already in this KB: the NSDI 26 &quot;Law&quot; low-latency link-layer paper (2026-05-03_nsdi-law-802-11-low-latency-link-layer) and the BLADE adaptive contention-control work (2026-05-01_arxiv-blade-adaptive-contention), which showed that transient contention-interval inflation — not average CSMA efficiency — is what breaks real-time flows. Concord appears to attack the complementary cause: the burst-length side of the same tail-latency problem, from a different research group (USTC/Tsinghua).</p>\n<h3>Key technical points</h3>\n<ul><li>Accepted at ACM SIGCOMM 2026 (Denver, August 17-21); accepted-papers list posted July 3, 2026. Only title + authors public so far.</li><li>Authors: Fengqian Guo, Siqi Wei, Sihao Miao, Hancheng Lu (USTC); Xinle Du (Tsinghua University).</li><li>Problem: Wi-Fi frame bursting (A-MPDU aggregation within long TXOPs) inflates tail latency for other contenders — a throughput-vs-tail-latency structural tension in 802.11 channel access.</li><li>Approach (from title): &quot;airtime-aware contention control&quot; — conditioning contention behaviour on observed airtime occupancy rather than treating access attempts independently.</li><li>The only Wi-Fi paper in the SIGCOMM 2026 accepted list; the other wireless-flavoured paper (dual-loop 5G uplink congestion control, Princeton/Buffalo) is cellular-side.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first SIGCOMM 2026 signal and the third distinct research thread on Wi-Fi tail latency this year, after the NSDI 26 Law link-layer redesign (2026-05-03_nsdi-law-802-11-low-latency-link-layer) and BLADE's adaptive contention control (2026-05-01_arxiv-blade-adaptive-contention). Where BLADE targets transient contention-window inflation and Law rebuilds the link layer, Concord's title points at the burst/TXOP dimension — the aggressive aggregation behaviour that makes a neighbour's throughput optimisation your latency problem. Top-venue attention on burst-induced tail latency is also relevant context for 802.11bn UHR's latency-reduction targets (P95 latency -25%) and the R-TWT mechanisms tracked in this bin. Revisit when the camera-ready appears (typically on arxiv or the authors' pages in August) to upgrade this entry from snippet to full.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>ACM SIGCOMM 2026 录用论文名单（2026 年 7 月 3 日公布；会议 8 月 17-21 日在丹佛举行）包含一篇 Wi-Fi 论文：&quot;Concord: Airtime-Aware Contention Control for Taming Tail Latency from Wi-Fi Frame Bursting&quot;，作者为中国科学技术大学的 Fengqian Guo、Siqi Wei、Sihao Miao、Hancheng Lu 及清华大学的 Xinle Du。目前仅标题和作者名单公开——正式论文将在 8 月会议前后发布——因此本条目记录的是录用信号，而非论文正文内容。</p>\n<p>标题指向一个具体且长期被忽视的时延机制：帧突发（frame bursting）。现代 802.11 协议栈为最大化吞吐会激进地聚合帧并在整个 TXOP 内连续占用信道（多毫秒 TXOP 内的 A-MPDU 聚合）。对信道上的其他竞争者而言，邻居的长突发就是不可用的死区——当多个 BSS 各自独立突发时，时延敏感帧经历的竞争时延变得高度不确定，即便中位数时延看起来正常，时延分布的尾部也会被显著拉长。&quot;空口时间感知的竞争控制&quot;表明 Concord 将站点的竞争行为显式地与观测到的空口占用状态关联——可能是根据突发邻居消耗的空口时间自适应调整竞争参数或突发长度——而不是把每次接入尝试视为与周围突发结构无关的独立事件。</p>\n<p>SIGCOMM 录用本身即是很强的质量信号（该会议每年收录的无线论文极少），且该主题使 Concord 直接落入本 KB 已有两个条目的问题空间：NSDI 26 的 Law 低时延链路层论文（2026-05-03_nsdi-law-802-11-low-latency-link-layer）和 BLADE 自适应竞争控制工作（2026-05-01_arxiv-blade-adaptive-contention）。后者证明了破坏实时流的是瞬态竞争区间膨胀而非平均 CSMA 效率。Concord 看起来攻击的是同一尾时延问题的互补成因——突发长度侧——且来自不同的研究团队（中科大/清华）。</p>\n<h3>技术要点</h3>\n<ul><li>被 ACM SIGCOMM 2026（丹佛，8 月 17-21 日）录用；录用名单于 2026 年 7 月 3 日公布。目前仅标题和作者公开。</li><li>作者：Fengqian Guo、Siqi Wei、Sihao Miao、Hancheng Lu（中国科学技术大学）；Xinle Du（清华大学）。</li><li>问题：Wi-Fi 帧突发（长 TXOP 内的 A-MPDU 聚合）拉长了其他竞争者的尾时延——这是 802.11 信道接入中吞吐与尾时延的结构性矛盾。</li><li>方法（据标题推断）：&quot;空口时间感知的竞争控制&quot;——将竞争行为与观测到的空口占用状态关联，而非将每次接入尝试视为独立事件。</li><li>这是 SIGCOMM 2026 录用名单中唯一的 Wi-Fi 论文；另一篇无线相关论文（双环 5G 上行拥塞控制，普林斯顿/布法罗）属于蜂窝侧。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 的第一个 SIGCOMM 2026 信号，也是今年 Wi-Fi 尾时延方向的第三条独立研究线——此前有 NSDI 26 的 Law 链路层重构（2026-05-03_nsdi-law-802-11-low-latency-link-layer）和 BLADE 的自适应竞争控制（2026-05-01_arxiv-blade-adaptive-contention）。BLADE 针对瞬态竞争窗口膨胀，Law 重建链路层，而 Concord 的标题指向突发/TXOP 维度——即让邻居的吞吐优化变成你的时延问题的激进聚合行为。顶会对突发致尾时延的关注，也为 802.11bn UHR 的时延目标（P95 时延降低 25%）和本桶跟踪的 R-TWT 机制提供了相关背景。8 月正式论文（通常在 arxiv 或作者主页）发布后应回访本条目，将其从摘要级升级为全文级。</p>",
+      "images": [],
+      "search_blob": "concord: airtime-aware contention control for taming tail latency from wi-fi frame bursting (sigcomm 2026) concord：面向 wi-fi 帧突发尾时延的空口时间感知竞争控制（sigcomm 2026） 802.11 frame-bursting txop tail-latency contention sigcomm the acm sigcomm 2026 accepted-papers list (posted july 3, 2026; conference august 17-21, denver) includes one wi-fi paper: \"concord: airtime-aware contention control for taming tail latency from wi-fi frame bursting\", by fengqian guo, siqi wei, sihao miao and hancheng lu (university of science and technology of china) with xinle du (tsinghua university). only the title and author list are public at this stage — the camera-ready paper will appear closer to the august conference — so this entry records the acceptance signal, not the paper body. acm sigcomm 2026 录用论文名单（2026 年 7 月 3 日公布；会议 8 月 17-21 日在丹佛举行）包含一篇 wi-fi 论文：\"concord: airtime-aware contention control for taming tail latency from wi-fi frame bursting\"，作者为中国科学技术大学的 fengqian guo、siqi wei、sihao miao、hancheng lu 及清华大学的 xinle du。目前仅标题和作者名单公开——正式论文将在 8 月会议前后发布——因此本条目记录的是录用信号，而非论文正文内容。 academic-paper wifi"
     },
     {
       "id": "2026-07-04_amazon-leo-396-sats-initial-service",
