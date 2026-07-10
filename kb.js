@@ -30,6 +30,8 @@ window.KB_DATA = {
     "6GHz": 8,
     "mmWave": 8,
     "AI-RAN": 8,
+    "NearLink": 8,
+    "SparkLink": 8,
     "direct-to-device": 8,
     "LLM": 8,
     "802.11bp": 7,
@@ -38,8 +40,6 @@ window.KB_DATA = {
     "digital-twin": 7,
     "3GPP": 7,
     "XR": 7,
-    "NearLink": 7,
-    "SparkLink": 7,
     "energy-efficiency": 7,
     "generative-AI": 7,
     "NPCA": 6,
@@ -142,6 +142,7 @@ window.KB_DATA = {
     "HARQ": 2,
     "game-theory": 2,
     "FR3": 2,
+    "HarmonyOS": 2,
     "beam-hopping": 2,
     "DRL": 2,
     "MEC": 2,
@@ -242,6 +243,9 @@ window.KB_DATA = {
     "delay-analysis": 1,
     "queueing-theory": 1,
     "testbed": 1,
+    "E1.0": 1,
+    "E2.0": 1,
+    "NearLink-audio": 1,
     "adversarial-robustness": 1,
     "smart-grid": 1,
     "high-density-WiFi": 1,
@@ -585,7 +589,6 @@ window.KB_DATA = {
     "UWB-radar": 1,
     "vital-sign": 1,
     "dielectric-spectroscopy": 1,
-    "HarmonyOS": 1,
     "ICCE": 1,
     "Release 20": 1,
     "BSR": 1,
@@ -744,6 +747,7 @@ window.KB_DATA = {
     "ftm-ranging": 4,
     "wifi-for-ai": 3,
     "mlo": 3,
+    "nearlink-sle": 3,
     "nearlink-slb": 3,
     "bt-location": 3,
     "mec": 2,
@@ -754,14 +758,13 @@ window.KB_DATA = {
     "bt-le": 2,
     "nearlink-automotive": 2,
     "roaming-mobility": 2,
-    "nearlink-sle": 2,
     "cellular-massive-mimo": 1,
     "cellular-spectrum": 1,
     "bt-mesh": 1
   },
   "type_counts": {
     "academic-paper": 182,
-    "industry-news": 58,
+    "industry-news": 59,
     "ieee-document": 19,
     "product": 17,
     "satellite-news": 5,
@@ -771,7 +774,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 182,
-    "industry": 80,
+    "industry": 81,
     "standards": 26
   },
   "technologies_vocab": {
@@ -3561,6 +3564,7 @@ window.KB_DATA = {
         "2026-05-30_huawei-starlink-e2-audio-lossless"
       ],
       "entries_secondary": [
+        "2026-07-10_nearlink-matepad-matebook-e2-audio-matrix",
         "2026-05-24_sparklink-car-key-device-rollout-2-0",
         "2026-05-21_sparklink-digital-car-key-beijing-autoshow",
         "2026-05-28_sparklink-gbt-46803-national-standards"
@@ -3589,6 +3593,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-10_nearlink-matepad-matebook-e2-audio-matrix",
         "2026-05-28_sparklink-gbt-46803-national-standards",
         "2026-06-05_nearlink-sle-gbt-46803-national-standard"
       ],
@@ -3598,6 +3603,9 @@ window.KB_DATA = {
         "2026-05-30_huawei-starlink-e2-audio-lossless"
       ],
       "by_type_primary": {
+        "industry-news": [
+          "2026-07-10_nearlink-matepad-matebook-e2-audio-matrix"
+        ],
         "nearlink-spec": [
           "2026-05-28_sparklink-gbt-46803-national-standards",
           "2026-06-05_nearlink-sle-gbt-46803-national-standard"
@@ -4352,6 +4360,37 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "a modular o-ran testbed from srs open-source o-cu/o-du and a massive beams fr1/fr2/fr3 modular o-ru 基于 srs 开源 o-cu/o-du 与 massive beams fr1/fr2/fr3 模块化 o-ru 的模块化 o-ran 测试平台 o-ran testbed fr3 beamforming 5g 6g this paper (göttsch, font-bach, benzin, osterland, puschmann, lutz, keusgen, caire — a tu berlin / fraunhofer hhi / srs / massive beams collaboration; arxiv 2607.05146, submitted 6 jul 2026) describes an end-to-end, fully open and o-ran-compliant experimental platform built from three parts: a 5g core, the ocudu open-source o-cu/o-du from software radio systems (a commercial-grade srsran-based stack implementing 3gpp release 17 with the complete l1/l2/l3, up to 100 mhz bandwidth, fr1/fr2 numerologies), and the modrad-sc modular radio unit from massive beams — a category a o-ru with 4t4r antenna ports covering fr1, fr2 and the emerging fr3 (7–24 ghz upper mid-band), with up to 200 mhz instantaneous bandwidth per carrier. 本文（göttsch、font-bach、benzin、osterland、puschmann、lutz、keusgen、caire——柏林工大 / fraunhofer hhi / srs / massive beams 合作；arxiv 2607.05146，2026-07-06 提交）描述了一个端到端、完全开放且符合 o-ran 规范的实验平台，由三部分组成：5g 核心网、software radio systems 的开源 o-cu/o-du 方案 ocudu（基于 srsran 的商用级协议栈，实现 3gpp release 17 完整 l1/l2/l3，最高 100 mhz 带宽，支持 fr1/fr2 参数集），以及 massive beams 的模块化射频单元 modrad-sc——category a o-ru，4t4r 天线端口，覆盖 fr1、fr2 及新兴的 fr3（7–24 ghz 上中频段），每载波瞬时带宽最高 200 mhz。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-10_nearlink-matepad-matebook-e2-audio-matrix",
+      "date_found": "2026-07-10",
+      "technology": "nearlink",
+      "date_published": "2026-07-05",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Huawei publishes NearLink capability matrix for tablets/PCs: E1.0 peripherals everywhere, E2.0 audio only on MatePad Pro Max",
+      "title_zh": "华为公布平板/鸿蒙电脑星闪能力清单：E1.0 外设全线覆盖，E2.0 音频仅 MatePad Pro Max",
+      "url": "https://finance.sina.cn/stock/jdts/2026-07-05/detail-iniftwhz2152473.d.html",
+      "topics": [
+        "NearLink",
+        "SparkLink",
+        "E1.0",
+        "E2.0",
+        "NearLink-audio",
+        "HarmonyOS"
+      ],
+      "topic_primary": "nearlink-sle",
+      "topics_secondary": [
+        "nearlink-slb"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-07-10_nearlink-matepad-matebook-e2-audio-matrix.md",
+      "summary_short_en": "Huawei published (July 5, 2026) an official compatibility matrix disclosing which MatePad tablets and HarmonyOS MateBook computers support NearLink (星闪), and — more interestingly — **which access-layer version each device implements**. The matrix splits the fleet into **E1.0** (peripheral connectivity: stylus, keyboard, mouse) and **E2.0** (adds NearLink audio). E1.0 coverage is broad: MatePad Mini (incl. reading edition), Air 12\" (incl. 2025 models), 11.5\" S, the Pro 11/12.2/13.2 series, Edge, plus MateBook Pro, MateBook Fold Ultimate Design and MateBook 14 HarmonyOS Edition.",
+      "summary_short_zh": "华为于 2026 年 7 月 5 日公布官方兼容清单，披露哪些 MatePad 平板与鸿蒙 MateBook 电脑支持星闪（NearLink），以及——更有意思的——**每台设备实现的接入层版本**。清单将产品线分为 **E1.0**（外设连接：手写笔、键盘、鼠标）与 **E2.0**（增加星闪音频）。E1.0 覆盖面广：MatePad Mini（含阅读版）、Air 12 英寸（含 2025 款）、11.5\"S、Pro 11/12.2/13.2 系列、Edge，以及 MateBook Pro、MateBook Fold 非凡大师、MateBook 14 鸿蒙版。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Huawei published (July 5, 2026) an official compatibility matrix disclosing which MatePad tablets and HarmonyOS MateBook computers support NearLink (星闪), and — more interestingly — <strong>which access-layer version each device implements</strong>. The matrix splits the fleet into <strong>E1.0</strong> (peripheral connectivity: stylus, keyboard, mouse) and <strong>E2.0</strong> (adds NearLink audio). E1.0 coverage is broad: MatePad Mini (incl. reading edition), Air 12&quot; (incl. 2025 models), 11.5&quot; S, the Pro 11/12.2/13.2 series, Edge, plus MateBook Pro, MateBook Fold Ultimate Design and MateBook 14 HarmonyOS Edition.</p>\n<p><strong>E2.0 — and with it NearLink audio — ships on exactly one device: MatePad Pro Max</strong>, which can drive FreeBuds Pro 5 / FreeClip earbuds over NearLink at <strong>48 kHz / 24-bit lossless with a 16 Mbps link</strong> (versus roughly 2 Mbps ceilings for classic Bluetooth audio paths). Every other listed device is peripherals-only.</p>\n<p>The disclosure is consumer-facing but standards-relevant: it is the first vendor document that maps the E1.0/E2.0 access-layer generations onto a real product fleet, showing how thin the E2.0 audio tier still is a year after NearLink audio's commercial debut — and it lands ten days before the July 15 full open-sourcing of the NearLink protocol stack (see 2026-06-23_nearlink-open-source-openharmony-hdc2026).</p>\n<h3>Key technical points</h3>\n<ul><li><strong>E1.0</strong>: stylus / keyboard / mouse peripheral connectivity — implemented across ~12 MatePad/MateBook models.</li><li><strong>E2.0</strong>: adds NearLink audio — currently <strong>MatePad Pro Max only</strong>.</li><li>NearLink audio: <strong>48 kHz / 24-bit lossless, 16 Mbps</strong> transmission to FreeBuds Pro 5 / FreeClip.</li><li>First official device-by-device access-layer-version disclosure for the NearLink fleet.</li><li>Timing: 10 days before the July 15 full protocol-stack open-sourcing announced at HDC 2026.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's NearLink bin tracks the ecosystem top-down (open-sourcing, car keys, chip labs); this is the first bottom-up datapoint showing actual E-version penetration in shipping devices. The E1.0/E2.0 split matters for the coexistence and audio threads: 16 Mbps lossless audio is NearLink's clearest differentiation against LE Audio, but a one-device tier means the audio ecosystem is still in the seeding stage. Watch whether the July 15 open-source drop includes E2.0 audio profiles — that would let third-party silicon enter the tier.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>华为于 2026 年 7 月 5 日公布官方兼容清单，披露哪些 MatePad 平板与鸿蒙 MateBook 电脑支持星闪（NearLink），以及——更有意思的——<strong>每台设备实现的接入层版本</strong>。清单将产品线分为 <strong>E1.0</strong>（外设连接：手写笔、键盘、鼠标）与 <strong>E2.0</strong>（增加星闪音频）。E1.0 覆盖面广：MatePad Mini（含阅读版）、Air 12 英寸（含 2025 款）、11.5&quot;S、Pro 11/12.2/13.2 系列、Edge，以及 MateBook Pro、MateBook Fold 非凡大师、MateBook 14 鸿蒙版。</p>\n<p><strong>E2.0——以及随之而来的星闪音频——目前仅一台设备搭载：MatePad Pro Max</strong>，可经星闪以 <strong>48 kHz / 24-bit 无损、16 Mbps 链路</strong>驱动 FreeBuds Pro 5 / FreeClip 耳机（经典蓝牙音频路径的上限约 2 Mbps）。其余所有列出设备均为仅外设。</p>\n<p>这一披露面向消费者但具标准意义：它是首份将 E1.0/E2.0 接入层代际映射到真实产品阵列的厂商文档，显示星闪音频商用一年后 E2.0 层仍然很薄——且发布时点在 7 月 15 日星闪协议栈全量开源（见 2026-06-23_nearlink-open-source-openharmony-hdc2026）前十天。</p>\n<h3>技术要点</h3>\n<ul><li><strong>E1.0</strong>：手写笔/键盘/鼠标外设连接——覆盖约 12 款 MatePad/MateBook 机型。</li><li><strong>E2.0</strong>：增加星闪音频——目前<strong>仅 MatePad Pro Max</strong>。</li><li>星闪音频：<strong>48 kHz / 24-bit 无损、16 Mbps</strong> 传输至 FreeBuds Pro 5 / FreeClip。</li><li>首份逐设备披露星闪接入层版本的官方文档。</li><li>时点：HDC 2026 宣布的 7 月 15 日协议栈全量开源前十天。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的星闪板块此前自上而下跟踪生态（开源、车钥匙、芯片实验室）；本条是首个自下而上的数据点，展示 E 版本在在售设备中的真实渗透。E1.0/E2.0 之分对共存与音频两条线都重要：16 Mbps 无损音频是星闪对 LE Audio 最清晰的差异化，但&quot;单设备层级&quot;说明音频生态仍处播种期。关注 7 月 15 日开源是否包含 E2.0 音频配置文件——那将允许第三方芯片进入该层级。</p>",
+      "images": [],
+      "search_blob": "huawei publishes nearlink capability matrix for tablets/pcs: e1.0 peripherals everywhere, e2.0 audio only on matepad pro max 华为公布平板/鸿蒙电脑星闪能力清单：e1.0 外设全线覆盖，e2.0 音频仅 matepad pro max nearlink sparklink e1.0 e2.0 nearlink-audio harmonyos huawei published (july 5, 2026) an official compatibility matrix disclosing which matepad tablets and harmonyos matebook computers support nearlink (星闪), and — more interestingly — **which access-layer version each device implements**. the matrix splits the fleet into **e1.0** (peripheral connectivity: stylus, keyboard, mouse) and **e2.0** (adds nearlink audio). e1.0 coverage is broad: matepad mini (incl. reading edition), air 12\" (incl. 2025 models), 11.5\" s, the pro 11/12.2/13.2 series, edge, plus matebook pro, matebook fold ultimate design and matebook 14 harmonyos edition. 华为于 2026 年 7 月 5 日公布官方兼容清单，披露哪些 matepad 平板与鸿蒙 matebook 电脑支持星闪（nearlink），以及——更有意思的——**每台设备实现的接入层版本**。清单将产品线分为 **e1.0**（外设连接：手写笔、键盘、鼠标）与 **e2.0**（增加星闪音频）。e1.0 覆盖面广：matepad mini（含阅读版）、air 12 英寸（含 2025 款）、11.5\"s、pro 11/12.2/13.2 系列、edge，以及 matebook pro、matebook fold 非凡大师、matebook 14 鸿蒙版。 industry-news nearlink"
     },
     {
       "id": "2026-07-07_arxiv-agentic-v2x-slm-scheduling",
