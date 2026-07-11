@@ -1,7 +1,7 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-07-10",
-  "last_scanned": "2026-07-10",
+  "last_updated": "2026-07-11",
+  "last_scanned": "2026-07-11",
   "topic_counts": {
     "802.11bn": 37,
     "MAC-layer": 37,
@@ -50,26 +50,27 @@ window.KB_DATA = {
     "automotive": 6,
     "Wi-Fi-8": 6,
     "BLE": 6,
+    "PQC": 5,
+    "backscatter": 5,
     "802.11bt": 5,
     "privacy": 5,
     "beamforming": 5,
+    "QoS": 5,
     "FCC": 5,
     "Co-SR": 5,
     "Co-BF": 5,
     "OFDMA": 5,
     "RIC": 5,
-    "PQC": 4,
     "AFC": 4,
     "backhaul": 4,
-    "backscatter": 4,
     "LB291": 4,
     "Co-RTWT": 4,
     "Wi-Fi 7": 4,
+    "AI": 4,
     "measurement": 4,
     "ns-3": 4,
     "ISAC": 4,
     "LLM-agent": 4,
-    "QoS": 4,
     "xApp": 4,
     "OpenAirInterface": 4,
     "Release-21": 4,
@@ -84,9 +85,13 @@ window.KB_DATA = {
     "5G-core": 4,
     "802.15.4ab": 4,
     "802.11az": 4,
+    "TGbt": 3,
+    "PASN": 3,
+    "802.1X": 3,
+    "AMP": 3,
+    "ambient-power": 3,
     "GNN": 3,
     "congestion-control": 3,
-    "AI": 3,
     "sidelink": 3,
     "UAV": 3,
     "edge-computing": 3,
@@ -96,6 +101,7 @@ window.KB_DATA = {
     "intent-based-networking": 3,
     "orchestration": 3,
     "traffic-prediction": 3,
+    "latency": 3,
     "AMP-IoT": 3,
     "inter-satellite-link": 3,
     "deterministic-latency": 3,
@@ -103,6 +109,7 @@ window.KB_DATA = {
     "link-adaptation": 3,
     "dApp": 3,
     "L4S": 3,
+    "AQM": 3,
     "Bluetooth": 3,
     "phased-array": 3,
     "radar": 3,
@@ -120,8 +127,12 @@ window.KB_DATA = {
     "WPA3": 3,
     "digital-car-key": 3,
     "roaming": 3,
-    "802.1X": 2,
-    "TGbt": 2,
+    "post-quantum": 2,
+    "OWE": 2,
+    "TGbp": 2,
+    "AI Offload SG": 2,
+    "AI-inference": 2,
+    "computation-offloading": 2,
     "REVmf": 2,
     "coexistence": 2,
     "TGbn": 2,
@@ -131,8 +142,6 @@ window.KB_DATA = {
     "CoMP": 2,
     "LSTM": 2,
     "PAKE": 2,
-    "PASN": 2,
-    "AMP": 2,
     "DSO": 2,
     "802.11bi": 2,
     "BBR": 2,
@@ -149,10 +158,8 @@ window.KB_DATA = {
     "autonomous-networks": 2,
     "machine-learning": 2,
     "OFDM": 2,
-    "latency": 2,
     "direct-to-cell": 2,
     "Wi-Fi-7": 2,
-    "ambient-power": 2,
     "EU": 2,
     "Matter": 2,
     "SLB": 2,
@@ -160,7 +167,6 @@ window.KB_DATA = {
     "OLLA": 2,
     "constellation": 2,
     "NWDAF": 2,
-    "AQM": 2,
     "AST SpaceMobile": 2,
     "BlueBird": 2,
     "configured-grant": 2,
@@ -209,7 +215,8 @@ window.KB_DATA = {
     "narrowband-assist": 2,
     "Rel-19": 2,
     "R-TWT": 2,
-    "OWE": 1,
+    "S1G": 1,
+    "sensing": 1,
     "ETSI-BRAN": 1,
     "WISP": 1,
     "OpenAFC": 1,
@@ -221,7 +228,6 @@ window.KB_DATA = {
     "AI-ML": 1,
     "traffic-forecasting": 1,
     "ambient-IoT": 1,
-    "TGbp": 1,
     "EMLSR": 1,
     "ballot": 1,
     "AI-offload": 1,
@@ -427,6 +433,9 @@ window.KB_DATA = {
     "anomaly-detection": 1,
     "VLM": 1,
     "zero-shot": 1,
+    "CPE": 1,
+    "cloud-gaming": 1,
+    "home-gateway": 1,
     "decision-transformer": 1,
     "prompt-learning": 1,
     "RRM": 1,
@@ -485,7 +494,6 @@ window.KB_DATA = {
     "satellite-security": 1,
     "IKE": 1,
     "IKEv2": 1,
-    "post-quantum": 1,
     "key-exchange": 1,
     "harvest-now-decrypt-later": 1,
     "eBPF": 1,
@@ -581,9 +589,6 @@ window.KB_DATA = {
     "polarization": 1,
     "S1G-coexistence": 1,
     "energizer": 1,
-    "AI Offload SG": 1,
-    "AI-inference": 1,
-    "computation-offloading": 1,
     "PAR": 1,
     "CSD": 1,
     "UWB-radar": 1,
@@ -725,20 +730,20 @@ window.KB_DATA = {
     "cellular-ai": 20,
     "sensing-csi": 20,
     "wifi7-deployment": 19,
-    "security-privacy": 17,
+    "security-privacy": 18,
     "6g-vision": 17,
     "open-ran": 14,
     "5g-nr": 14,
     "mapc-cosr": 12,
     "leo-constellations": 12,
     "spectrum-policy": 11,
-    "agentic-wifi": 9,
-    "amp-iot": 8,
+    "agentic-wifi": 10,
+    "amp-iot": 9,
     "starlink": 7,
     "sat-direct-device": 7,
     "uwb-ranging": 7,
+    "ai-for-wifi": 7,
     "rtwt-latency": 6,
-    "ai-for-wifi": 6,
     "sat-ai": 5,
     "cellular-security": 5,
     "ntn": 5,
@@ -764,8 +769,8 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 182,
-    "industry-news": 59,
-    "ieee-document": 19,
+    "industry-news": 60,
+    "ieee-document": 22,
     "product": 17,
     "satellite-news": 5,
     "proposal": 4,
@@ -774,8 +779,8 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 182,
-    "industry": 81,
-    "standards": 26
+    "industry": 82,
+    "standards": 29
   },
   "technologies_vocab": {
     "technologies": [
@@ -1754,6 +1759,7 @@ window.KB_DATA = {
         "2026-07-09_ieee-mentor-tgbn-preplenary-digest",
         "2026-06-25_arxiv-bravr-ap-assisted-vr-bitrate-wifi",
         "2026-06-15_arxiv-11bn-mapc-tutorial-d14",
+        "2026-07-11_mediatek-ai-aqm-cpe-latency",
         "2026-05-18_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbq-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
@@ -1882,6 +1888,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((AMP-IoT / 20MHz IoT))\n    Standards\n      802.11bp Ambient Power\n      Wi-Fi CERTIFIED 7 at 20MHz\n    Energy harvesting\n      RF\n      Light\n      Vibration\n    TGbp mechanisms\n      AMP UL channel access\n      AMP receive procedure\n      AMP transmit spec\n      AMP triggering\n      AMP WPT control\n    Coexistence\n      BLE / Thread / Zigbee market\n      HPE Aruba 730 BLE 5.4 + Wi-Fi 7\n    Watch\n      TGbp draft progress\n      Coin-cell / no-battery designs\n      AMP-aware Wi-Fi 8 silicon",
       "diagram_mmd_zh": "mindmap\n  root((AMP-IoT / 20 MHz IoT))\n    标准化\n      802.11bp 环境取电\n      Wi-Fi CERTIFIED 7 20 MHz\n    能量收集\n      射频\n      光\n      振动\n    TGbp 机制\n      AMP 上行信道接入\n      AMP 接收过程\n      AMP 发送规范\n      AMP 触发\n      AMP WPT 控制\n    共存\n      BLE / Thread / Zigbee 市场\n      HPE Aruba 730 BLE 5.4 + Wi-Fi 7\n    关注\n      TGbp 草案进度\n      纽扣电池 / 无电池设计\n      AMP 感知的 Wi-Fi 8 硅片",
       "entries_primary": [
+        "2026-07-11_ieee-mentor-tgbp-digest",
         "2026-07-09_ieee-mentor-tgbp-preplenary-digest",
         "2026-05-19_arxiv-janus-hybrid-ambient-iot-radio",
         "2026-05-22_arxiv-halow-field-characterization",
@@ -1900,6 +1907,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "ieee-document": [
+          "2026-07-11_ieee-mentor-tgbp-digest",
           "2026-07-09_ieee-mentor-tgbp-preplenary-digest",
           "2026-05-18_ieee-mentor-tgbp-antwerp-digest",
           "2026-05-12_ieee-mentor-tgbp-antwerp-digest"
@@ -1990,6 +1998,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-25-years-tutorial"
       ],
       "entries_secondary": [
+        "2026-07-11_ieee-mentor-ai-offload-sg-digest",
         "2026-07-10_ieee-mentor-misc-plenary-eve-digest",
         "2026-07-09_ieee-mentor-tgbi-tgm-preplenary-digest",
         "2026-07-09_ieee-mentor-misc-groups-preplenary-digest",
@@ -2170,6 +2179,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "mindmap\n  root((AI 优化 Wi-Fi))\n    动作空间\n      CW 选择\n      调度\n      空间复用决策\n      功率控制\n      链路自适应\n      信道分配\n    方法\n      强化学习\n      多臂老虎机\n      有监督 ML\n      LLM 作编码器\n      基础模型\n    直接主条目\n      LLM-RL 无线优化\n      AIML CSI 反馈压缩\n    邻接\n      mapc-cosr 次要\n      mlo 次要\n      sensing-csi 流水线\n    关注\n      Wi-Fi 专属基准\n      跨 BSS 迁移学习\n      通用 CW + TXOP RL",
       "entries_primary": [
         "2026-06-25_arxiv-bravr-ap-assisted-vr-bitrate-wifi",
+        "2026-07-11_mediatek-ai-aqm-cpe-latency",
         "2026-06-03_arxiv-kiss-slotted-distributed-rl-channel-access",
         "2026-05-22_arxiv-wifi-fault-diagnosis-benchmark",
         "2026-05-18_arxiv-maxlm-wlan-scheduling",
@@ -2223,6 +2233,9 @@ window.KB_DATA = {
           "2026-05-18_arxiv-maxlm-wlan-scheduling",
           "2026-05-01_arxiv-llm-rl-wireless-optimization",
           "2026-05-01_arxiv-aiml-csi-feedback-compression"
+        ],
+        "industry-news": [
+          "2026-07-11_mediatek-ai-aqm-cpe-latency"
         ]
       }
     },
@@ -2245,6 +2258,7 @@ window.KB_DATA = {
         "2026-05-12_arxiv-ncsim-edge-wifi-interference"
       ],
       "entries_secondary": [
+        "2026-07-11_ieee-mentor-ai-offload-sg-digest",
         "2026-06-27_wifinow-helium-spectrumone-ambient-power",
         "2026-05-27_networkworld-wifi8-edge-ai-platform",
         "2026-05-16_arxiv-wireless-sense-llm",
@@ -2281,6 +2295,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Agentic Wi-Fi))\n    Agent shapes\n      Orchestration\n      Troubleshooting\n      Policy code generation\n      Multi-agent collaboration\n    Academic frameworks\n      WirelessBench (3-tier hierarchy)\n      WirelessAgent++ (MCTS workflow)\n      ComAgent multi-LLM PPAR\n      IntelliCISE security threat model\n    Industry\n      HPE Aruba+Mist unified\n      TP-Link Aireal cloud GPT\n    Standards adjacency\n      AI Offload SG (March 2026)\n    Watch\n      AI Offload SG to TG?\n      Safety / hallucination benchmarks\n      Production false-positive landings\n      LLM-controller attack surface",
       "diagram_mmd_zh": "mindmap\n  root((智能体 Wi-Fi))\n    智能体形态\n      编排\n      故障排查\n      策略代码生成\n      多智能体协作\n    学术框架\n      WirelessBench（三层认知）\n      WirelessAgent++（MCTS 工作流）\n      ComAgent 多 LLM PPAR\n      IntelliCISE 安全威胁模型\n    工业\n      HPE Aruba+Mist 统一\n      TP-Link Aireal 云端 GPT\n    标准邻接\n      AI Offload SG（2026-03）\n    关注\n      AI Offload SG 升 TG？\n      安全 / 幻觉基准\n      生产环境误报落地\n      LLM 控制器攻击面",
       "entries_primary": [
+        "2026-07-11_ieee-mentor-ai-offload-sg-digest",
         "2026-05-19_arxiv-composable-agentic-nextg",
         "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest",
         "2026-05-05_arxiv-iterate-ebpf-rate-control",
@@ -2309,6 +2324,10 @@ window.KB_DATA = {
         "2026-05-01_arxiv-on-device-llm-roaming"
       ],
       "by_type_primary": {
+        "ieee-document": [
+          "2026-07-11_ieee-mentor-ai-offload-sg-digest",
+          "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest"
+        ],
         "academic-paper": [
           "2026-05-19_arxiv-composable-agentic-nextg",
           "2026-05-05_arxiv-iterate-ebpf-rate-control",
@@ -2316,9 +2335,6 @@ window.KB_DATA = {
           "2026-05-01_arxiv-wirelessagent-plus-plus",
           "2026-05-01_arxiv-intellicise-agentic-ai-security",
           "2026-05-04_arxiv-comagent-multi-llm-wireless"
-        ],
-        "ieee-document": [
-          "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest"
         ],
         "product": [
           "2026-05-04_tp-link-aireal-ces2026"
@@ -2342,6 +2358,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Security & privacy))\n    Attacks\n      AirSnitch client-isolation (NDSS'26)\n      CSI-RFF microsignals\n      StateFi FSM fingerprinting\n      VWattacker VoWiFi\n      Rural deployment surface\n    Defenses\n      PHY-preamble signatures (CE)\n      Runtime MAC re-randomization\n      Secure FTM (cross to ftm-ranging)\n    Standards activity\n      TGbi EPPKE\n      TGbt post-quantum / crypto agility\n    Watch\n      WPA3 successor at IETF/IEEE\n      Sensing-privacy regulation\n      RFF rotation + MAC re-randomization",
       "diagram_mmd_zh": "mindmap\n  root((安全与隐私))\n    攻击\n      AirSnitch 客户端隔离（NDSS'26）\n      CSI-RFF 微信号\n      StateFi FSM 指纹\n      VWattacker VoWiFi\n      乡村部署攻击面\n    防御\n      PHY 前导码签名（CE）\n      运行时 MAC 再随机化\n      安全 FTM（关联 ftm-ranging）\n    标准活动\n      TGbi EPPKE\n      TGbt 后量子 / 加密敏捷\n    关注\n      WPA3 后继在 IETF/IEEE\n      感知隐私监管\n      RFF 轮换 + MAC 再随机化",
       "entries_primary": [
+        "2026-07-11_ieee-mentor-tgbt-digest",
         "2026-07-10_ieee-mentor-tgbt-plenary-eve-digest",
         "2026-07-09_ieee-mentor-tgbt-preplenary-digest",
         "2026-07-09_ieee-mentor-tgbi-tgm-preplenary-digest",
@@ -2376,6 +2393,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "ieee-document": [
+          "2026-07-11_ieee-mentor-tgbt-digest",
           "2026-07-10_ieee-mentor-tgbt-plenary-eve-digest",
           "2026-07-09_ieee-mentor-tgbt-preplenary-digest",
           "2026-07-09_ieee-mentor-tgbi-tgm-preplenary-digest",
@@ -2447,6 +2465,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "mindmap\n  root((能效与省电))\n    机制\n      TWT 能耗预算\n      R-TWT 能耗侧\n      深睡眠调度\n      电池感知客户端行为\n    交叉引用\n      amp-iot 能量收集\n      rtwt-latency 时延侧\n      mlo 每链路开销\n    今日（次要出现）\n      Wi-Fi 6 上的确定性 TWT\n      20 MHz Wi-Fi 7 IoT 认证\n    分桶规则\n      节省 N% 能耗 - 主在此\n      M ms 内交付 - 主在时延桶\n    关注\n      逐类 MLO 能耗测量\n      AMP-IoT 电池寿命试点\n      Wi-Fi 8 深睡眠电流",
       "entries_primary": [],
       "entries_secondary": [
+        "2026-07-11_ieee-mentor-tgbp-digest",
         "2026-07-09_ieee-mentor-tgbp-preplenary-digest",
         "2026-05-26_arxiv-opentwin-oran-digital-twin",
         "2026-05-21_arxiv-enhanced-ble-esb-hybrid",
@@ -3661,6 +3680,95 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-07-11_ieee-mentor-tgbt-digest",
+      "date_found": "2026-07-11",
+      "technology": "wifi",
+      "date_published": "2026-07-11",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 TGbt Mentor digest — 2026-07-11: Huawei PQC CRs (PASN signaling for OWE, 802.1X privacy, PoW enhancement)",
+      "title_zh": "IEEE 802.11 TGbt Mentor 摘要——2026-07-11：华为 PQC 评论决议（OWE 的 PASN 信令、802.1X 隐私、PoW 增强）",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bt",
+      "topics": [
+        "TGbt",
+        "post-quantum",
+        "PQC",
+        "PASN",
+        "OWE",
+        "802.1X"
+      ],
+      "topic_primary": "security-privacy",
+      "topics_secondary": [],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-07-11_ieee-mentor-tgbt-digest.md",
+      "summary_short_en": "TGbt (post-quantum cryptography) uploaded 3 new contributions on July 10, all from Huawei, all comment resolutions refining the PQC amendment's draft text. Theme: closing signaling-level gaps in how PQC-capable devices negotiate — PASN signaling for unassociated PQC-OWE peers, privacy-protected authentication when PQC runs over 802.1X, and an enhancement to the proof-of-work (PoW) anti-DoS mechanism.",
+      "summary_short_zh": "TGbt（后量子密码）于 7 月 10 日上传 3 份新贡献，均来自华为，均为完善 PQC 修订案草案文本的评论决议。主题：弥合 PQC 能力设备协商中的信令层缺口——未关联 PQC-OWE 对端的 PASN 信令、PQC 走 802.1X 时的隐私保护认证、以及工作量证明（PoW）抗 DoS 机制的增强。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TGbt (post-quantum cryptography) uploaded 3 new contributions on July 10, all from Huawei, all comment resolutions refining the PQC amendment's draft text. Theme: closing signaling-level gaps in how PQC-capable devices negotiate — PASN signaling for unassociated PQC-OWE peers, privacy-protected authentication when PQC runs over 802.1X, and an enhancement to the proof-of-work (PoW) anti-DoS mechanism.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1407-00 · TGbt</strong> — CR for PASN-Signaling for PQC OWE unassociated. Jiawei Wu (Huawei). How an unassociated STA signals PQC-OWE capability/parameters via PASN.</li><li><strong>DCN 11-26-1406-00 · TGbt</strong> — CR for Privacy Protected Authentication with PQC 802.1X. Ming Zhao (Huawei).</li><li><strong>DCN 11-26-1402-00/01 · TGbt</strong> — CR for PoW Enhancement. Ming Zhao (Huawei). r1 same-day revision.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Huawei continues to dominate TGbt's pre-plenary CR stream (see 2026-07-10_ieee-mentor-tgbt-plenary-eve-digest). The PASN-for-unassociated-OWE item is the notable one: it extends PQC negotiation to the pre-association phase, meaning quantum-safe opportunistic encryption parameters get exchanged before a STA ever joins the BSS — a signaling surface the base OWE spec (RFC 8110) never had.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TGbt（后量子密码）于 7 月 10 日上传 3 份新贡献，均来自华为，均为完善 PQC 修订案草案文本的评论决议。主题：弥合 PQC 能力设备协商中的信令层缺口——未关联 PQC-OWE 对端的 PASN 信令、PQC 走 802.1X 时的隐私保护认证、以及工作量证明（PoW）抗 DoS 机制的增强。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1407-00 · TGbt</strong> — 未关联状态下 PQC OWE 的 PASN 信令 CR。Jiawei Wu（华为）。未关联 STA 如何经 PASN 信令传递 PQC-OWE 能力/参数。</li><li><strong>DCN 11-26-1406-00 · TGbt</strong> — PQC 802.1X 隐私保护认证 CR。Ming Zhao（华为）。</li><li><strong>DCN 11-26-1402-00/01 · TGbt</strong> — PoW 增强 CR。Ming Zhao（华为）。r1 为当日修订。</li></ul>\n<h3>意义与新意</h3>\n<p>华为继续主导 TGbt 全会前的 CR 流（见 2026-07-10_ieee-mentor-tgbt-plenary-eve-digest）。未关联 OWE 的 PASN 信令是其中的关键项：它将 PQC 协商扩展到关联前阶段，即 STA 在加入 BSS 之前就交换量子安全的机会加密参数——这是基础 OWE 规范（RFC 8110）从未有过的信令面。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 tgbt mentor digest — 2026-07-11: huawei pqc crs (pasn signaling for owe, 802.1x privacy, pow enhancement) ieee 802.11 tgbt mentor 摘要——2026-07-11：华为 pqc 评论决议（owe 的 pasn 信令、802.1x 隐私、pow 增强） tgbt post-quantum pqc pasn owe 802.1x tgbt (post-quantum cryptography) uploaded 3 new contributions on july 10, all from huawei, all comment resolutions refining the pqc amendment's draft text. theme: closing signaling-level gaps in how pqc-capable devices negotiate — pasn signaling for unassociated pqc-owe peers, privacy-protected authentication when pqc runs over 802.1x, and an enhancement to the proof-of-work (pow) anti-dos mechanism. tgbt（后量子密码）于 7 月 10 日上传 3 份新贡献，均来自华为，均为完善 pqc 修订案草案文本的评论决议。主题：弥合 pqc 能力设备协商中的信令层缺口——未关联 pqc-owe 对端的 pasn 信令、pqc 走 802.1x 时的隐私保护认证、以及工作量证明（pow）抗 dos 机制的增强。 ieee-document wifi"
+    },
+    {
+      "id": "2026-07-11_ieee-mentor-tgbp-digest",
+      "date_found": "2026-07-11",
+      "technology": "wifi",
+      "date_published": "2026-07-11",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 TGbp Mentor digest — 2026-07-11: Huawei AMP PDT cleanup (S1G coexistence, scrambler init, remaining issues)",
+      "title_zh": "IEEE 802.11 TGbp Mentor 摘要——2026-07-11：华为 AMP PDT 收尾（S1G 共存、扰码器初值、遗留问题）",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bp",
+      "topics": [
+        "TGbp",
+        "AMP",
+        "ambient-power",
+        "S1G",
+        "backscatter"
+      ],
+      "topic_primary": "amp-iot",
+      "topics_secondary": [
+        "energy-power-save"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-07-11_ieee-mentor-tgbp-digest.md",
+      "summary_short_en": "TGbp (Ambient Power / AMP IoT) uploaded 3 new contributions on July 10, all from Huawei affiliates, all proposed-draft-text (PDT) work tightening the amendment before Montreal. Theme: coexistence and PHY bookkeeping — how AMP devices coexist with S1G (802.11ah) deployments, the scrambler initial value for AMP PPDUs, and a sweep of remaining PDT issues.",
+      "summary_short_zh": "TGbp（环境供电 / AMP IoT）于 7 月 10 日上传 3 份新贡献，均来自华为系作者，均为在蒙特利尔会议前收紧修订案的提案草案文本（PDT）工作。主题：共存与 PHY 细节——AMP 设备如何与 S1G（802.11ah）部署共存、AMP PPDU 的扰码器初始值、以及遗留 PDT 问题的清理。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TGbp (Ambient Power / AMP IoT) uploaded 3 new contributions on July 10, all from Huawei affiliates, all proposed-draft-text (PDT) work tightening the amendment before Montreal. Theme: coexistence and PHY bookkeeping — how AMP devices coexist with S1G (802.11ah) deployments, the scrambler initial value for AMP PPDUs, and a sweep of remaining PDT issues.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1405-00 · TGbp</strong> — AMP S1G Coexistence — follow up. Rojan Chitrakar (Huawei). Sub-1-GHz band-sharing between AMP backscatter devices and 802.11ah.</li><li><strong>DCN 11-26-1401-00 · TGbp</strong> — PDT SCRAMBLER_INITIAL_VALUE. Lumin Liu (Huawei). PHY-level scrambler seeding for AMP PPDUs.</li><li><strong>DCN 11-26-1399-00 · TGbp</strong> — PDT remaining issues. Panpan Li (Huawei). Issue sweep ahead of the plenary.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Individually these are routine PDT cleanup, but together they show TGbp entering the text-stabilisation phase right as the Montreal plenary opens — the S1G coexistence follow-up in particular continues a thread from the July 8-9 wave (2026-07-09_ieee-mentor-tgbp-preplenary-digest) and matters because sub-1-GHz is where AMP's longest-range energy-harvesting use cases live.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TGbp（环境供电 / AMP IoT）于 7 月 10 日上传 3 份新贡献，均来自华为系作者，均为在蒙特利尔会议前收紧修订案的提案草案文本（PDT）工作。主题：共存与 PHY 细节——AMP 设备如何与 S1G（802.11ah）部署共存、AMP PPDU 的扰码器初始值、以及遗留 PDT 问题的清理。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1405-00 · TGbp</strong> — AMP 与 S1G 共存（后续稿）。Rojan Chitrakar（华为）。AMP 反向散射设备与 802.11ah 的亚 1 GHz 频段共享。</li><li><strong>DCN 11-26-1401-00 · TGbp</strong> — PDT 扰码器初始值。Lumin Liu（华为）。AMP PPDU 的 PHY 层扰码器种子。</li><li><strong>DCN 11-26-1399-00 · TGbp</strong> — PDT 遗留问题。Panpan Li（华为）。全会前的问题清理。</li></ul>\n<h3>意义与新意</h3>\n<p>单独看这些都是例行 PDT 收尾，但合起来表明 TGbp 正好在蒙特利尔全会开幕之际进入文本稳定阶段——其中 S1G 共存后续稿延续了 7 月 8-9 日贡献潮的线索（2026-07-09_ieee-mentor-tgbp-preplenary-digest），其重要性在于亚 1 GHz 正是 AMP 最长距离能量采集用例所在的频段。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 tgbp mentor digest — 2026-07-11: huawei amp pdt cleanup (s1g coexistence, scrambler init, remaining issues) ieee 802.11 tgbp mentor 摘要——2026-07-11：华为 amp pdt 收尾（s1g 共存、扰码器初值、遗留问题） tgbp amp ambient-power s1g backscatter tgbp (ambient power / amp iot) uploaded 3 new contributions on july 10, all from huawei affiliates, all proposed-draft-text (pdt) work tightening the amendment before montreal. theme: coexistence and phy bookkeeping — how amp devices coexist with s1g (802.11ah) deployments, the scrambler initial value for amp ppdus, and a sweep of remaining pdt issues. tgbp（环境供电 / amp iot）于 7 月 10 日上传 3 份新贡献，均来自华为系作者，均为在蒙特利尔会议前收紧修订案的提案草案文本（pdt）工作。主题：共存与 phy 细节——amp 设备如何与 s1g（802.11ah）部署共存、amp ppdu 的扰码器初始值、以及遗留 pdt 问题的清理。 ieee-document wifi"
+    },
+    {
+      "id": "2026-07-11_ieee-mentor-ai-offload-sg-digest",
+      "date_found": "2026-07-11",
+      "technology": "wifi",
+      "date_published": "2026-07-11",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 AI Offload SG Mentor digest — 2026-07-11: OPPO on AI service coordination, UC3M sensing use case",
+      "title_zh": "IEEE 802.11 AI Offload SG Mentor 摘要——2026-07-11：OPPO 谈 AI 服务协调，UC3M 感知用例",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=0aio",
+      "topics": [
+        "AI Offload SG",
+        "AI-inference",
+        "computation-offloading",
+        "sensing"
+      ],
+      "topic_primary": "agentic-wifi",
+      "topics_secondary": [
+        "wifi-for-ai",
+        "wifi8-uhr"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-07-11_ieee-mentor-ai-offload-sg-digest.md",
+      "summary_short_en": "The AI Offload Study Group uploaded 2 new contributions on the eve of the Montreal plenary (July 10-11). Theme: broadening the SG's use-case base beyond raw compute offload — OPPO raises the question of how AI services themselves are coordinated across the WLAN, and UC3M contributes a sensing-driven use case.",
+      "summary_short_zh": "AI Offload 研究组于蒙特利尔全会前夕（7 月 10-11 日）上传 2 份新贡献。主题：将研究组的用例基础从单纯算力卸载拓宽——OPPO 提出 AI 服务本身如何在 WLAN 内协调的问题，UC3M 则贡献了一个感知驱动的用例。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The AI Offload Study Group uploaded 2 new contributions on the eve of the Montreal plenary (July 10-11). Theme: broadening the SG's use-case base beyond raw compute offload — OPPO raises the question of how AI services themselves are coordinated across the WLAN, and UC3M contributes a sensing-driven use case.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1417-00 · AI Offload SG</strong> — Considerations on AI Service Coordination in AI Offload. Sam Shi (OPPO). Uploaded 11-Jul-2026.</li><li><strong>DCN 11-26-1413-00 · AI Offload SG</strong> — Sensing use case. Antonio de la Oliva (UC3M). Uploaded 10-Jul-2026.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>These land days before the Montreal plenary where the SG continues working toward a PAR. The OPPO contribution is the more interesting signal: &quot;AI service coordination&quot; implies the SG is considering not just moving inference bytes over Wi-Fi but negotiating which node runs which AI service — a control-plane question the SG's May PAR draft (2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest) left open. The UC3M sensing use case ties the SG to 802.11bf-adjacent territory, hinting at sensing data as an offload payload class.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>AI Offload 研究组于蒙特利尔全会前夕（7 月 10-11 日）上传 2 份新贡献。主题：将研究组的用例基础从单纯算力卸载拓宽——OPPO 提出 AI 服务本身如何在 WLAN 内协调的问题，UC3M 则贡献了一个感知驱动的用例。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1417-00 · AI Offload SG</strong> — AI Offload 中 AI 服务协调的考量。Sam Shi（OPPO）。2026-07-11 上传。</li><li><strong>DCN 11-26-1413-00 · AI Offload SG</strong> — 感知用例。Antonio de la Oliva（UC3M）。2026-07-10 上传。</li></ul>\n<h3>意义与新意</h3>\n<p>这两份文稿在蒙特利尔全会前几天落地，该研究组将在全会上继续推进 PAR。OPPO 的贡献是更值得注意的信号：&quot;AI 服务协调&quot;意味着研究组考虑的不只是让推理字节流经 Wi-Fi，而是协商哪个节点运行哪个 AI 服务——这是其 5 月 PAR 草案（2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest）留下的控制面问题。UC3M 的感知用例将研究组与 802.11bf 相邻领域联系起来，暗示感知数据可作为一类卸载载荷。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 ai offload sg mentor digest — 2026-07-11: oppo on ai service coordination, uc3m sensing use case ieee 802.11 ai offload sg mentor 摘要——2026-07-11：oppo 谈 ai 服务协调，uc3m 感知用例 ai offload sg ai-inference computation-offloading sensing the ai offload study group uploaded 2 new contributions on the eve of the montreal plenary (july 10-11). theme: broadening the sg's use-case base beyond raw compute offload — oppo raises the question of how ai services themselves are coordinated across the wlan, and uc3m contributes a sensing-driven use case. ai offload 研究组于蒙特利尔全会前夕（7 月 10-11 日）上传 2 份新贡献。主题：将研究组的用例基础从单纯算力卸载拓宽——oppo 提出 ai 服务本身如何在 wlan 内协调的问题，uc3m 则贡献了一个感知驱动的用例。 ieee-document wifi"
+    },
     {
       "id": "2026-07-10_ieee-mentor-tgbt-plenary-eve-digest",
       "date_found": "2026-07-10",
@@ -6950,6 +7058,38 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>DAST 是面向 Open RAN 的零样本、多智能体异常检测框架，将视觉语言模型（VLM）与大语言模型（LLM）结合，用于发现在 O-RAN 解耦接口间级联传播的性能劣化与拒绝服务（DoS）攻击。作者指出，传统时间序列异常检测（TSAD）在 O-RAN 中效果不佳：标注真值稀缺、分布漂移快于重训练周期、且孤立的单接口检测器无法捕捉跨接口级联——而后者约占 O-RAN 威胁的 60%（DoS 与隐蔽性能劣化）。</p>\n<p>框架采用三阶段 VLM→LLM→VLM 流水线。阶段一（视觉画像）将多变量 KPI 流渲染为纵向堆叠折线图，由 VLM 用文本描述其行为（平稳、突发、振荡）。阶段二（领域推理）将文本观测交给 LLM，对照显式的 O-RAN 领域知识进行交叉验证，在无标注数据的情况下为各接口的可疑程度打分。阶段三（定向核验）由第二个 VLM 检查被标记指标（阈值 &gt;0.9）的高分辨率热力图，精确定位异常时间窗，并给出与 WG11 对齐的运行影响评级。输出不仅是二元告警，还包括问题接口、异常区间、影响评级与自然语言推理依据。</p>\n<p>在开源测试床（srsRAN + O-RAN SC + Open5GS，注入时延/丢包劣化，并用 FALCON 模拟商用基站流量）上，覆盖 E2、F1-c、F1-u、A1、O1 接口，DAST 取得 F1 0.910 / 准确率 0.843，而最强基线 TSAD Agents 仅 0.500，远超 TAMA（0.429）、VLM4TS（0.408）与 MSCRED（0.187）。其误差呈非对称——假阳性少、假阴性较多——作者认为这有利于降低 NOC 的告警疲劳。</p>\n<h3>技术要点</h3>\n<ul><li>三阶段 VLM→LLM→VLM 流水线：堆叠 KPI 图的视觉画像 → 对照 O-RAN 知识的 LLM 领域推理 → 第二个 VLM 的热力图核验并给出 WG11 影响评级。</li><li>零样本/无需微调：领域知识以文本形式提供给 LLM 推理，因此可随规范演进更新，而非针对新攻击标签重训练。</li><li>跨接口覆盖：E2、F1-c、F1-u、A1、O1，专门捕捉级联（如以持续的 F1-u 时延为根因、零星丢包为表象）。</li><li>结果：F1 0.910 / 准确率 0.843，较最强基线（TSAD Agents 0.500）提升 0.41 F1；优于 TAMA、VLM4TS、MSCRED。</li><li>作者声称是 O-RAN 中首个用于跨接口异常检测的零样本多智能体 VLM-LLM 架构。</li></ul>\n<h3>意义与新意</h3>\n<p>本条目把 KB 中 O-RAN AI 主线从优化/编排（COSMO <code>2026-06-04_arxiv-cosmo-oran-cross-tech-multitenant-smo</code>、以及 06-03/06-04 的端到端能效测试框架条目）延伸到安全/保障方向，且采用 LLM 推理而非训练分类器的思路。此前的智能体-RAN 条目（GENESIS、AgentxGCore）将智能体置于控制/优化环路，而 DAST 把 VLM+LLM 栈置于监控/异常环路，并以 WG11 威胁分类作为依据。相较需要标注基线的经典 TSAD，零样本是其关键差异——考虑到 O-RAN 攻击模式变化之快，这正是长期痛点。</p>",
       "images": [],
       "search_blob": "dast: a vlm-llm framework for cross-interface anomaly detection in o-ran dast：用于 o-ran 跨接口异常检测的视觉语言-大语言模型框架 o-ran anomaly-detection llm vlm security zero-shot dast is a zero-shot, multi-agent anomaly-detection framework for open ran that combines a vision-language model (vlm) with a large language model (llm) to spot performance-degradation and denial-of-service attacks as they cascade across the disaggregated o-ran interfaces. the authors observe that conventional time-series anomaly detection (tsad) struggles in o-ran because labelled ground truth is scarce, distribution shifts arrive faster than detectors can be retrained, and isolated per-interface detectors miss the cross-interface cascades that make up ~60% of o-ran threats (dos and stealthy performance degradation). dast 是面向 open ran 的零样本、多智能体异常检测框架，将视觉语言模型（vlm）与大语言模型（llm）结合，用于发现在 o-ran 解耦接口间级联传播的性能劣化与拒绝服务（dos）攻击。作者指出，传统时间序列异常检测（tsad）在 o-ran 中效果不佳：标注真值稀缺、分布漂移快于重训练周期、且孤立的单接口检测器无法捕捉跨接口级联——而后者约占 o-ran 威胁的 60%（dos 与隐蔽性能劣化）。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-11_mediatek-ai-aqm-cpe-latency",
+      "date_found": "2026-07-11",
+      "technology": "wifi",
+      "date_published": "2026-06-03",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "MediaTek AI-powered AQM for CPE: edge AI QoS engine cuts cloud-gaming latency up to 10x for NVIDIA GeForce NOW",
+      "title_zh": "联发科面向 CPE 的 AI 主动队列管理：边缘 AI QoS 引擎将云游戏时延最多降低 10 倍（NVIDIA GeForce NOW）",
+      "url": "https://www.mediatek.com/press-room/mediatek-ai-powered-aqm-unveiled-for-cpe-boosting-cloud-gaming-experiences-to-improve-network-latency-for-nvidia-geforce-now",
+      "topics": [
+        "AQM",
+        "QoS",
+        "latency",
+        "CPE",
+        "cloud-gaming",
+        "AI",
+        "home-gateway"
+      ],
+      "topic_primary": "ai-for-wifi",
+      "topics_secondary": [
+        "rtwt-latency"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-11_mediatek-ai-aqm-cpe-latency.md",
+      "summary_short_en": "MediaTek announced (June 3, 2026) what it calls the industry's first comprehensive AI QoS engine for Customer Premises Equipment: an AI-powered Active Queue Management (AQM) service that it claims delivers up to 10x lower network latency for NVIDIA GeForce NOW cloud-gaming members. The feature ships as a firmware upgrade to CPEs built on MediaTek's T930 platform — no operator core-network or RAN changes are required, and no changes are needed on the application or cloud side.",
+      "summary_short_zh": "联发科于 2026 年 6 月 3 日发布其称为业界首个面向 CPE（用户驻地设备）的完整 AI QoS 引擎：AI 驱动的主动队列管理（AQM）服务，宣称可为 NVIDIA GeForce NOW 云游戏用户带来最多 10 倍的网络时延降低。该功能以固件升级形式部署在基于联发科 T930 平台的 CPE 上——无需运营商核心网或 RAN 改动，应用侧与云端亦无需任何修改。",
+      "body_html_en": "<h3>Summary</h3>\n<p>MediaTek announced (June 3, 2026) what it calls the industry's first comprehensive AI QoS engine for Customer Premises Equipment: an AI-powered Active Queue Management (AQM) service that it claims delivers up to 10x lower network latency for NVIDIA GeForce NOW cloud-gaming members. The feature ships as a firmware upgrade to CPEs built on MediaTek's T930 platform — no operator core-network or RAN changes are required, and no changes are needed on the application or cloud side.</p>\n<p>The mechanism couples standards-based AQM with an AI engine that continuously learns from real-time network conditions — radio quality, uplink contention, and household traffic load — and dynamically tunes congestion-avoidance and scheduling policies. Traffic classification is done with privacy-preserving flow metadata rather than Deep Packet Inspection (DPI): the CPE recognises latency-sensitive flows from their metadata signature and applies AQM-driven congestion control plus uplink-optimised scheduling to hold queueing delay and jitter low even when the home network is congested.</p>\n<p>MediaTek positions the solution as ecosystem-agnostic: because it operates entirely at the CPE edge, any latency-sensitive application (cloud gaming, video calls, remote work) benefits without integration work. The GeForce NOW tie-in gives the launch a concrete, measurable consumer use case — faster input response, more consistent frame delivery — and continues the trend of gateway-side intelligence (cf. the RDK-B / prplOS open-source gateway ecosystem MediaTek also leads, 2026-07-06_mediatek-open-source-gateway-rdk-prplos).</p>\n<h3>Key technical points</h3>\n<ul><li>Industry-first claim: comprehensive AI QoS engine for CPE, shipping as firmware on MediaTek T930-based gateways.</li><li>Up to 10x lower network latency claimed for NVIDIA GeForce NOW cloud gaming.</li><li>AI engine learns from radio quality, uplink contention, and household traffic load; dynamically tunes congestion-avoidance and scheduling policies.</li><li>Latency-sensitive flow recognition via privacy-preserving flow metadata — explicitly no DPI.</li><li>Uplink-optimised scheduling plus AQM-driven congestion control at the CPE edge; ecosystem-agnostic (no app / operator / cloud changes).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's ai-for-wifi bin has tracked AI for radio-resource decisions (rate adaptation, channel selection, MAPC policies), but gateway-side AI queue management is a new sub-axis: the intelligence sits above the MAC yet below the application, at the CPE bottleneck where uplink contention and household load meet. The no-DPI flow-metadata classification is a notable design choice — it sidesteps both privacy objections and encrypted-traffic blindness that killed earlier DPI-based QoS products. The 10x latency claim, if it holds up in reviews, sets a competitive bar for Broadcom/Qualcomm gateway platforms.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>联发科于 2026 年 6 月 3 日发布其称为业界首个面向 CPE（用户驻地设备）的完整 AI QoS 引擎：AI 驱动的主动队列管理（AQM）服务，宣称可为 NVIDIA GeForce NOW 云游戏用户带来最多 10 倍的网络时延降低。该功能以固件升级形式部署在基于联发科 T930 平台的 CPE 上——无需运营商核心网或 RAN 改动，应用侧与云端亦无需任何修改。</p>\n<p>其机制将标准化 AQM 与 AI 引擎结合：持续学习实时网络状态（无线链路质量、上行竞争、家庭内流量负载），动态调整拥塞避免与调度策略。流量识别采用保护隐私的流元数据而非深度包检测（DPI）：CPE 通过元数据特征识别时延敏感流，并施加 AQM 拥塞控制与上行优化调度，即使家庭网络拥塞也能将排队时延与抖动保持在低位。</p>\n<p>联发科强调该方案与生态无关：由于完全运行在 CPE 边缘，任何时延敏感应用（云游戏、视频通话、远程办公）均可受益而无需集成工作。与 GeForce NOW 的合作为发布提供了具体可测的消费级用例——更快的输入响应、更稳定的帧交付——并延续了网关侧智能化的趋势（参见 2026-07-06_mediatek-open-source-gateway-rdk-prplos）。</p>\n<h3>技术要点</h3>\n<ul><li>业界首个面向 CPE 的完整 AI QoS 引擎，以固件形式部署于联发科 T930 平台网关。</li><li>宣称为 NVIDIA GeForce NOW 云游戏带来最多 10 倍网络时延降低。</li><li>AI 引擎学习无线链路质量、上行竞争与家庭流量负载；动态调整拥塞避免与调度策略。</li><li>通过保护隐私的流元数据识别时延敏感流——明确不使用 DPI。</li><li>CPE 边缘的上行优化调度 + AQM 拥塞控制；与生态无关（应用/运营商/云端零改动）。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的 ai-for-wifi 板块此前跟踪的是无线资源决策类 AI（速率自适应、信道选择、MAPC 策略），而网关侧 AI 队列管理是一个新的子轴：智能位于 MAC 之上、应用之下，正处于上行竞争与家庭负载交汇的 CPE 瓶颈处。不用 DPI、以流元数据分类是值得注意的设计选择——既回避了隐私争议，也绕开了加密流量对 DPI 类 QoS 产品的致盲问题。若 10 倍时延降低的宣称经得起评测验证，将为博通/高通网关平台树立竞争标杆。</p>",
+      "images": [],
+      "search_blob": "mediatek ai-powered aqm for cpe: edge ai qos engine cuts cloud-gaming latency up to 10x for nvidia geforce now 联发科面向 cpe 的 ai 主动队列管理：边缘 ai qos 引擎将云游戏时延最多降低 10 倍（nvidia geforce now） aqm qos latency cpe cloud-gaming ai home-gateway mediatek announced (june 3, 2026) what it calls the industry's first comprehensive ai qos engine for customer premises equipment: an ai-powered active queue management (aqm) service that it claims delivers up to 10x lower network latency for nvidia geforce now cloud-gaming members. the feature ships as a firmware upgrade to cpes built on mediatek's t930 platform — no operator core-network or ran changes are required, and no changes are needed on the application or cloud side. 联发科于 2026 年 6 月 3 日发布其称为业界首个面向 cpe（用户驻地设备）的完整 ai qos 引擎：ai 驱动的主动队列管理（aqm）服务，宣称可为 nvidia geforce now 云游戏用户带来最多 10 倍的网络时延降低。该功能以固件升级形式部署在基于联发科 t930 平台的 cpe 上——无需运营商核心网或 ran 改动，应用侧与云端亦无需任何修改。 industry-news wifi"
     },
     {
       "id": "2026-06-04_arxiv-prompt-decision-transformer-multitask-rrm",
