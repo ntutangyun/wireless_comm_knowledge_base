@@ -10,7 +10,7 @@ source_quality: full
 topics: [AQM, QoS, latency, CPE, cloud-gaming, AI, home-gateway]
 topic_primary: ai-for-wifi
 topics_secondary: [rtwt-latency]
-novelty_score: 3
+novelty_score: 2
 ---
 
 ## Summary (EN)

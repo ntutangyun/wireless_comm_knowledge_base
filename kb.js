@@ -7082,7 +7082,7 @@ window.KB_DATA = {
       "topics_secondary": [
         "rtwt-latency"
       ],
-      "novelty_score": 3,
+      "novelty_score": 2,
       "entry_path": "entries/2026-07-11_mediatek-ai-aqm-cpe-latency.md",
       "summary_short_en": "MediaTek announced (June 3, 2026) what it calls the industry's first comprehensive AI QoS engine for Customer Premises Equipment: an AI-powered Active Queue Management (AQM) service that it claims delivers up to 10x lower network latency for NVIDIA GeForce NOW cloud-gaming members. The feature ships as a firmware upgrade to CPEs built on MediaTek's T930 platform — no operator core-network or RAN changes are required, and no changes are needed on the application or cloud side.",
       "summary_short_zh": "联发科于 2026 年 6 月 3 日发布其称为业界首个面向 CPE（用户驻地设备）的完整 AI QoS 引擎：AI 驱动的主动队列管理（AQM）服务，宣称可为 NVIDIA GeForce NOW 云游戏用户带来最多 10 倍的网络时延降低。该功能以固件升级形式部署在基于联发科 T930 平台的 CPE 上——无需运营商核心网或 RAN 改动，应用侧与云端亦无需任何修改。",
