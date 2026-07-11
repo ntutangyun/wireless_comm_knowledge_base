@@ -49,6 +49,7 @@ window.KB_DATA = {
     "resource-allocation": 6,
     "V2X": 6,
     "802.11": 6,
+    "FCC": 6,
     "automotive": 6,
     "Wi-Fi-8": 6,
     "BLE": 6,
@@ -57,7 +58,6 @@ window.KB_DATA = {
     "privacy": 5,
     "AI-native": 5,
     "QoS": 5,
-    "FCC": 5,
     "Co-SR": 5,
     "Co-BF": 5,
     "5G-Advanced": 5,
@@ -75,6 +75,7 @@ window.KB_DATA = {
     "LLM-agent": 4,
     "xApp": 4,
     "OpenAirInterface": 4,
+    "NGSO": 4,
     "Release-21": 4,
     "edge-AI": 4,
     "mobility": 4,
@@ -120,7 +121,6 @@ window.KB_DATA = {
     "phased-array": 3,
     "radar": 3,
     "MARL": 3,
-    "NGSO": 3,
     "UHR": 3,
     "ranging": 3,
     "FiRa": 3,
@@ -282,6 +282,11 @@ window.KB_DATA = {
     "AI-agent": 1,
     "guardrails": 1,
     "EU-AI-Act": 1,
+    "licensing": 1,
+    "Part-100": 1,
+    "C-band": 1,
+    "spectrum-auction": 1,
+    "SSA": 1,
     "OpenWiFi": 1,
     "enterprise-WiFi": 1,
     "LDPC": 1,
@@ -773,13 +778,13 @@ window.KB_DATA = {
     "wifi-for-ai": 3,
     "mlo": 3,
     "nearlink-sle": 3,
+    "ngso-regulation": 3,
     "nearlink-slb": 3,
     "bt-location": 3,
     "cellular-massive-mimo": 2,
     "uwb-radar": 2,
     "uwb-fi-ra": 2,
     "mmwave-bq": 2,
-    "ngso-regulation": 2,
     "bt-le": 2,
     "nearlink-automotive": 2,
     "roaming-mobility": 2,
@@ -791,14 +796,14 @@ window.KB_DATA = {
     "industry-news": 62,
     "ieee-document": 22,
     "product": 17,
-    "satellite-news": 5,
+    "satellite-news": 6,
     "proposal": 4,
     "nearlink-spec": 2,
     "bluetooth-spec": 1
   },
   "category_counts": {
     "academia": 186,
-    "industry": 84,
+    "industry": 85,
     "standards": 29
   },
   "technologies_vocab": {
@@ -3147,6 +3152,7 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-07-09_arxiv-bbrv3-starlink-global-study",
+        "2026-07-11_fcc-part100-space-modernization-order",
         "2026-07-02_arxiv-neo-gnn-leo-orchestration",
         "2026-06-30_arxiv-leostp-diffusion-traffic-prediction-leo",
         "2026-06-30_arxiv-leo-latency-region-signatures-starlink",
@@ -3297,6 +3303,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-11_fcc-part100-space-modernization-order",
         "2026-05-28_eu-2ghz-mss-spectrum-three-way-split",
         "2026-05-30_fcc-starlink-gen2-authorization-spectrum"
       ],
@@ -3311,6 +3318,9 @@ window.KB_DATA = {
         "2026-05-30_keysight-samsung-rel19-nr-ntn-sband"
       ],
       "by_type_primary": {
+        "satellite-news": [
+          "2026-07-11_fcc-part100-space-modernization-order"
+        ],
         "industry-news": [
           "2026-05-28_eu-2ghz-mss-spectrum-three-way-split",
           "2026-05-30_fcc-starlink-gen2-authorization-spectrum"
@@ -4989,6 +4999,38 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Inria Lille（Bouferroum、Loscri）与卢森堡大学（Alla、Lenders）的研究者用实证方法推翻了 Wi-Fi 感知研究中一个几乎普遍的假设：可以通过向实测信道估计添加高斯白噪声（AWGN）来生成合成 CSI 训练数据。加性模型隐含假设从天线到信道估计器之间的接收链是线性且增益不变的。他们以射频干扰（jamming）作为功率可控的受控扰动，在 2 个室内环境（受控房间与活跃多径实验室）中对 6 台商用接收机进行测试，结果表明该假设不成立：自动增益控制（AGC）在数字化之前对信道估计进行<em>乘性</em>压缩，产生的幅度分布是任何加性噪声方差都无法复现的。因此用 AWGN 训练的干扰检测器在真实数据上表现接近随机。</p>\n<p>论文提出的修复方案 M_QTC 是一个基于实测校准的仿真模型，包含三个组件：逐子载波分位数映射（无需参数化形式即可学习真实分布变换）、时域滤波、以及基于 Copula（Iman-Conover 秩重排）的跨子载波相关性匹配（严格保持逐子载波边缘分布）。M_QTC 将幅度误差（逐子载波幅度分布的一阶 Wasserstein 距离）降低 8 倍，并在幅度、相位、时域、频谱四个维度上弥合了 89% 的总体保真度差距。</p>\n<p>测试平台明确是 Wi-Fi：树莓派 5 作为 802.11n HT20 接入点（信道 13），ESP32-C6 接收机以约 3 fps 通过 MQTT 提取 K=52 子载波 CSI，HackRF One 发射预生成的干扰波形。下游任务中，用 M_QTC 仿真数据训练的 5 类分类器（LR、SVM-RBF、随机森林、MLP、自编码器）在最难的 10 dB 中频增益设置下恢复了 93% 的真实数据干扰检测性能，而 AWGN 训练的分类器接近随机。在三个公开 Wi-Fi CSI 数据集（ESP32 的 Wallhack1.8k、Intel 5300 的 SignFi 与 Widar 3.0）上的外部验证显示，其幅度保真度大幅优于既有增强方法（如在 Widar 上 Wasserstein 距离比 Strohmayer 等人的方法好 5.7 倍）。作者指出 AGC 引起的失真机制很可能同样存在于 802.11be 与 5G NR 的 CSI 中，但对这些平台的验证留待后续工作。</p>\n<h3>技术要点</h3>\n<ul><li>核心实证发现：商用 Wi-Fi 接收链中的 AGC 使干扰对上报信道估计产生<em>乘性</em>作用 — 信号与噪声被瞬时功率相关的系数一同压缩，因此 CSI 幅度分布的形状与任何加性模型的预测都存在本质差异。</li><li>M_QTC = 逐子载波分位数映射 + 时域滤波 + 基于 Copula（Iman-Conover）的跨子载波秩重排；消融实验表明 Copula 阶段是主导机制。</li><li>幅度 Wasserstein 距离降低 8 倍；幅度/相位/时域/频谱四维总体保真度差距弥合 89%。</li><li>仿真到真实迁移：仅用 M_QTC 合成 CSI 训练的分类器在真实干扰检测上达到 0.9+ AUC（10 dB 中频增益下达到真实数据训练基准的 93%，5 台接收机 × 5 类分类器平均），而 AWGN 训练的分类器接近随机。</li><li>测试平台：树莓派 5 AP（802.11n HT20，信道 13）、1–5 台 ESP32-C6 CSI 接收机（52 子载波，约 3 fps，MQTT 传输）、HackRF One 干扰机；受控房间 + 有环境 Wi-Fi 的活跃实验室。</li><li>在 Wallhack1.8k（ESP32）、SignFi 与 Widar 3.0（Intel 5300）上完成外部验证；先前 Portner 等人的有线耦合测量已证实 AGC 失真的跨平台存在性。</li><li>K=52 子载波配置下计算开销较小；校准按设备进行。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中第一条针对 Wi-Fi 感知<em>仿真有效性</em>层面（而非感知应用层面）的条目。现有 sensing-csi 条目（如 2026-06-01_arxiv-crews-collaborative-edge-sensing 协作边缘感知）都默认 CSI 训练管线是可靠的；本文表明手势识别、行为识别、室内定位和 5G 定位领域广泛使用的标准 AWGN 增强继承了一个商用硬件并不满足的接收链线性假设。其影响很广：任何基于加性增强合成 CSI 训练的 Wi-Fi 感知 ML 结果在重新验证之前都值得怀疑。M_QTC 方案（分位数映射 + Copula 重排，按设备用少量实测数据校准）是一个实用的、无分布假设的修正方法，其他团队可以立即采用；其干扰检测用例也将 sensing-csi 主题与 KB 的安全侧联系起来。</p>",
       "images": [],
       "search_blob": "csi simulation: why additive noise fails and how to fix it — agc breaks awgn-based wi-fi csi augmentation; m_qtc quantile/copula calibration closes the gap csi 仿真：为什么加性噪声不成立及其修复 — agc 破坏基于 awgn 的 wi-fi csi 数据增强；m_qtc 分位数/copula 校准弥合差距 wifi-sensing csi machine-learning jamming researchers from inria lille (bouferroum, loscri) and the university of luxembourg (alla, lenders) empirically demolish a near-universal assumption in wi-fi sensing research: that synthetic csi training data can be produced by adding white gaussian noise (awgn) to recorded channel estimates. the additive model implicitly assumes the receiver chain between antenna and channel estimator is linear and gain-invariant. using rf jamming as a controlled, power-calibrated perturbation on 6 commodity receivers across 2 indoor environments (a controlled room and an active multipath laboratory), they show the assumption does not hold: automatic gain control (agc) compresses the channel estimate *multiplicatively* before digitization, producing amplitude distributions that no additive noise variance can reproduce. awgn-trained jamming detectors consequently perform near random on real data. inria lille（bouferroum、loscri）与卢森堡大学（alla、lenders）的研究者用实证方法推翻了 wi-fi 感知研究中一个几乎普遍的假设：可以通过向实测信道估计添加高斯白噪声（awgn）来生成合成 csi 训练数据。加性模型隐含假设从天线到信道估计器之间的接收链是线性且增益不变的。他们以射频干扰（jamming）作为功率可控的受控扰动，在 2 个室内环境（受控房间与活跃多径实验室）中对 6 台商用接收机进行测试，结果表明该假设不成立：自动增益控制（agc）在数字化之前对信道估计进行*乘性*压缩，产生的幅度分布是任何加性噪声方差都无法复现的。因此用 awgn 训练的干扰检测器在真实数据上表现接近随机。 academic-paper wifi"
+    },
+    {
+      "id": "2026-07-11_fcc-part100-space-modernization-order",
+      "date_found": "2026-07-11",
+      "technology": "satellite",
+      "date_published": "2026-07-01",
+      "type": "satellite-news",
+      "category": "industry",
+      "title_en": "FCC to vote July 22 on Space Modernization Order: Part 25 replaced by Part 100 'licensing assembly line', plus 160 MHz upper C-band auction",
+      "title_zh": "FCC 将于 7 月 22 日表决《太空现代化令》：Part 100 '许可流水线'取代 Part 25，另拍卖 160 MHz 上段 C 频段",
+      "url": "https://spacenews.com/fcc-to-vote-on-satellite-licensing-overhaul-july-22/",
+      "topics": [
+        "FCC",
+        "NGSO",
+        "licensing",
+        "Part-100",
+        "C-band",
+        "spectrum-auction",
+        "SSA"
+      ],
+      "topic_primary": "ngso-regulation",
+      "topics_secondary": [
+        "leo-constellations"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-11_fcc-part100-space-modernization-order.md",
+      "summary_short_en": "The FCC votes July 22 on its **Space Modernization Order**, replacing the decades-old Part 25 space and Earth-station regulations with a new **Part 100** — explicitly designed, in Chairman Brendan Carr's words, to move \"from bespoke reviews to a consistent, predictable, and objective assembly line process\" (SpaceNews, July 1). Key changes: revised processing rounds, license terms and surety-bond requirements; a broader class of minor modifications operators can make without prior authorization; the public-notice window for typical requests cut from 30 to 15 days; and a 30-day completeness-check deadline on the Commission itself. To manage LEO congestion, operators would be required to share tracking data with an approved space-situational-awareness provider. Notably, the order does *not* extend its faster timelines to the pending orbital-data-center mega-constellation applications (e.g. SpaceX's up-to-one-million-satellite AI-compute filing), and the seven-day expedited notice path from October's NPRM was dropped.",
+      "summary_short_zh": "FCC 将于 7 月 22 日表决其**《太空现代化令》**，以全新的 **Part 100** 取代沿用数十年的 Part 25 空间与地球站规则——用主席 Brendan Carr 的话说，即从\"逐案定制审查转向一致、可预测、客观的流水线流程\"（SpaceNews，7 月 1 日）。核心变化：修订处理轮次、许可期限与履约保证金要求；扩大无需事先授权即可进行的次要修改类别；典型申请的公示窗口从 30 天缩至 15 天；并对委员会自身设置 30 天完整性审查期限。为管理 LEO 拥挤，运营商须向经认可的空间态势感知（SSA）服务商共享跟踪数据。值得注意的是，该令的加速时间表*不*适用于待审的轨道数据中心巨型星座申请（如 SpaceX 至多百万颗卫星的 AI 算力申报），10 月 NPRM 中的 7 天加急公示路径也被删去。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The FCC votes July 22 on its <strong>Space Modernization Order</strong>, replacing the decades-old Part 25 space and Earth-station regulations with a new <strong>Part 100</strong> — explicitly designed, in Chairman Brendan Carr's words, to move &quot;from bespoke reviews to a consistent, predictable, and objective assembly line process&quot; (SpaceNews, July 1). Key changes: revised processing rounds, license terms and surety-bond requirements; a broader class of minor modifications operators can make without prior authorization; the public-notice window for typical requests cut from 30 to 15 days; and a 30-day completeness-check deadline on the Commission itself. To manage LEO congestion, operators would be required to share tracking data with an approved space-situational-awareness provider. Notably, the order does <em>not</em> extend its faster timelines to the pending orbital-data-center mega-constellation applications (e.g. SpaceX's up-to-one-million-satellite AI-compute filing), and the seven-day expedited notice path from October's NPRM was dropped.</p>\n<p>The same open meeting votes on auctioning <strong>160 MHz of upper C-band (3.98-4.14 GHz)</strong> next year — the FCC's first new commercial spectrum auction in five years, mainly affecting SES's US TV distribution. Analyst chatter positions SpaceX as a possible bidder after its ~$9M token AWS-3 participation and its multi-billion EchoStar spectrum acquisitions for direct-to-smartphone service; Congress is simultaneously weighing the Satellite and Telecommunications Streamlining Act, which would impose statutory deadlines on FCC satellite licensing.</p>\n<h3>Key technical points</h3>\n<ul><li>Part 25 → Part 100: processing rounds, license terms, surety bonds and filing procedures all revised; &quot;licensing assembly line&quot; framing.</li><li>Public-notice window 30 → 15 days; 30-day completeness-check deadline on the FCC; more minor-modification categories without prior approval.</li><li>Mandatory satellite tracking-data sharing with an approved SSA provider.</li><li>Orbital-data-center mega-constellation applications explicitly excluded from the new timelines; 7-day expedited path dropped from the NPRM.</li><li>Parallel vote: 160 MHz upper C-band (3.98-4.14 GHz) auction for 2027 — first new commercial spectrum auction in 5 years; aviation-altimeter adjacency managed with FAA.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The ngso-regulation bin has tracked per-operator FCC actions (Amazon Leo's deadline waiver, 2026-07-04_amazon-leo-396-sats-initial-service; AST's SCS authorization). This is the structural layer beneath all of them: the first wholesale rewrite of US space licensing in the mega-constellation era. The SSA data-sharing mandate creates a new compliance surface for every LEO operator, and the exclusion of orbital-data-center filings signals the FCC is fencing AI-compute constellations into a separate regulatory track.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>FCC 将于 7 月 22 日表决其<strong>《太空现代化令》</strong>，以全新的 <strong>Part 100</strong> 取代沿用数十年的 Part 25 空间与地球站规则——用主席 Brendan Carr 的话说，即从&quot;逐案定制审查转向一致、可预测、客观的流水线流程&quot;（SpaceNews，7 月 1 日）。核心变化：修订处理轮次、许可期限与履约保证金要求；扩大无需事先授权即可进行的次要修改类别；典型申请的公示窗口从 30 天缩至 15 天；并对委员会自身设置 30 天完整性审查期限。为管理 LEO 拥挤，运营商须向经认可的空间态势感知（SSA）服务商共享跟踪数据。值得注意的是，该令的加速时间表<em>不</em>适用于待审的轨道数据中心巨型星座申请（如 SpaceX 至多百万颗卫星的 AI 算力申报），10 月 NPRM 中的 7 天加急公示路径也被删去。</p>\n<p>同一次公开会议还将表决明年拍卖 <strong>160 MHz 上段 C 频段（3.98-4.14 GHz）</strong>——FCC 五年来首次新商用频谱拍卖，主要影响 SES 在美国的电视分发业务。分析师认为 SpaceX 可能参拍（其 AWS-3 象征性中标约 900 万美元，且已斥资数十亿美元收购 EchoStar 频谱用于直连手机业务）；国会同时在审议《卫星与电信精简法案》，拟对 FCC 卫星许可流程施加法定期限。</p>\n<h3>技术要点</h3>\n<ul><li>Part 25 → Part 100：处理轮次、许可期限、履约保证金与申报程序全面修订；&quot;许可流水线&quot;定位。</li><li>公示窗口 30 → 15 天；FCC 自身承担 30 天完整性审查期限；更多次要修改免事先批准。</li><li>强制向经认可的 SSA 服务商共享卫星跟踪数据。</li><li>轨道数据中心巨型星座申请被明确排除在新时间表之外；NPRM 中的 7 天加急路径被删除。</li><li>并行表决：2027 年拍卖 160 MHz 上段 C 频段（3.98-4.14 GHz）——五年来首次新商用频谱拍卖；与 FAA 协同管理航空高度表邻频问题。</li></ul>\n<h3>意义与新意</h3>\n<p>ngso-regulation 板块此前跟踪的是针对单个运营商的 FCC 行动（Amazon Leo 期限豁免，2026-07-04_amazon-leo-396-sats-initial-service；AST 的 SCS 授权）。本条是它们之下的结构层：巨型星座时代美国太空许可制度的首次整体重写。SSA 数据共享义务为每个 LEO 运营商创造了新的合规面，而将轨道数据中心申报排除在外，表明 FCC 正把 AI 算力星座圈入单独的监管轨道。</p>",
+      "images": [],
+      "search_blob": "fcc to vote july 22 on space modernization order: part 25 replaced by part 100 'licensing assembly line', plus 160 mhz upper c-band auction fcc 将于 7 月 22 日表决《太空现代化令》：part 100 '许可流水线'取代 part 25，另拍卖 160 mhz 上段 c 频段 fcc ngso licensing part-100 c-band spectrum-auction ssa the fcc votes july 22 on its **space modernization order**, replacing the decades-old part 25 space and earth-station regulations with a new **part 100** — explicitly designed, in chairman brendan carr's words, to move \"from bespoke reviews to a consistent, predictable, and objective assembly line process\" (spacenews, july 1). key changes: revised processing rounds, license terms and surety-bond requirements; a broader class of minor modifications operators can make without prior authorization; the public-notice window for typical requests cut from 30 to 15 days; and a 30-day completeness-check deadline on the commission itself. to manage leo congestion, operators would be required to share tracking data with an approved space-situational-awareness provider. notably, the order does *not* extend its faster timelines to the pending orbital-data-center mega-constellation applications (e.g. spacex's up-to-one-million-satellite ai-compute filing), and the seven-day expedited notice path from october's nprm was dropped. fcc 将于 7 月 22 日表决其**《太空现代化令》**，以全新的 **part 100** 取代沿用数十年的 part 25 空间与地球站规则——用主席 brendan carr 的话说，即从\"逐案定制审查转向一致、可预测、客观的流水线流程\"（spacenews，7 月 1 日）。核心变化：修订处理轮次、许可期限与履约保证金要求；扩大无需事先授权即可进行的次要修改类别；典型申请的公示窗口从 30 天缩至 15 天；并对委员会自身设置 30 天完整性审查期限。为管理 leo 拥挤，运营商须向经认可的空间态势感知（ssa）服务商共享跟踪数据。值得注意的是，该令的加速时间表*不*适用于待审的轨道数据中心巨型星座申请（如 spacex 至多百万颗卫星的 ai 算力申报），10 月 nprm 中的 7 天加急公示路径也被删去。 satellite-news satellite"
     },
     {
       "id": "2026-07-04_worldvue-openwifi-3500-device-scale",
