@@ -81,6 +81,7 @@ window.KB_DATA = {
     "mobility": 4,
     "spectrum": 4,
     "D2D": 4,
+    "channel-sounding": 4,
     "SLE": 4,
     "handover": 4,
     "5G-core": 4,
@@ -112,7 +113,6 @@ window.KB_DATA = {
     "AMP-IoT": 3,
     "inter-satellite-link": 3,
     "deterministic-latency": 3,
-    "channel-sounding": 3,
     "link-adaptation": 3,
     "dApp": 3,
     "L4S": 3,
@@ -160,6 +160,7 @@ window.KB_DATA = {
     "beam-hopping": 2,
     "machine-learning": 2,
     "OFDM": 2,
+    "RTT": 2,
     "direct-to-cell": 2,
     "Wi-Fi-7": 2,
     "EU": 2,
@@ -208,6 +209,7 @@ window.KB_DATA = {
     "Wi-Fi 9": 2,
     "healthcare": 2,
     "MRSS": 2,
+    "HCI": 2,
     "AIOps": 2,
     "enterprise": 2,
     "802.11n": 2,
@@ -299,7 +301,6 @@ window.KB_DATA = {
     "diffusion-model": 1,
     "Transformer": 1,
     "spatio-temporal": 1,
-    "RTT": 1,
     "geolocation": 1,
     "TDOA": 1,
     "localization": 1,
@@ -616,8 +617,10 @@ window.KB_DATA = {
     "AI-receivers": 1,
     "D2C": 1,
     "satellite": 1,
+    "Bluetooth-6.3": 1,
+    "LE-Audio": 1,
+    "BR-EDR": 1,
     "BT-Classic": 1,
-    "HCI": 1,
     "BT-6.3": 1,
     "HPE": 1,
     "Aruba": 1,
@@ -770,8 +773,8 @@ window.KB_DATA = {
     "rtwt-latency": 6,
     "sat-ai": 5,
     "cellular-security": 5,
+    "bt-channel-sounding": 5,
     "ntn": 5,
-    "bt-channel-sounding": 4,
     "network-slicing": 4,
     "ftm-ranging": 4,
     "mec": 3,
@@ -798,13 +801,13 @@ window.KB_DATA = {
     "product": 17,
     "satellite-news": 6,
     "proposal": 4,
-    "nearlink-spec": 2,
-    "bluetooth-spec": 1
+    "bluetooth-spec": 2,
+    "nearlink-spec": 2
   },
   "category_counts": {
     "academia": 186,
     "industry": 85,
-    "standards": 29
+    "standards": 30
   },
   "technologies_vocab": {
     "technologies": [
@@ -3348,6 +3351,7 @@ window.KB_DATA = {
         "2026-07-06_nordic-nrf54l15-tag-channel-sounding",
         "2026-05-25_arxiv-ble-doa-missed-detections",
         "2026-05-24_arxiv-connectionless-ble-cs-pawr",
+        "2026-07-11_bluetooth-core-63-release",
         "2026-05-24_bluetooth-core-6-3-spec-release",
         "2026-05-30_arxiv-dual-radio-ble-lora-hierarchical-mesh",
         "2026-05-30_arxiv-bluetooth-phased-array-inertial-nav",
@@ -3377,6 +3381,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "",
       "entries_primary": [],
       "entries_secondary": [
+        "2026-07-11_bluetooth-core-63-release",
         "2026-05-24_bluetooth-core-6-3-spec-release"
       ],
       "by_type_primary": {}
@@ -3421,6 +3426,7 @@ window.KB_DATA = {
         "2026-07-06_nordic-nrf54l15-tag-channel-sounding",
         "2026-05-24_arxiv-connectionless-ble-cs-pawr",
         "2026-05-26_arxiv-toa-ranging-ngd-attack-bt-cs",
+        "2026-07-11_bluetooth-core-63-release",
         "2026-05-24_bluetooth-core-6-3-spec-release"
       ],
       "entries_secondary": [
@@ -3435,6 +3441,7 @@ window.KB_DATA = {
           "2026-05-26_arxiv-toa-ranging-ngd-attack-bt-cs"
         ],
         "bluetooth-spec": [
+          "2026-07-11_bluetooth-core-63-release",
           "2026-05-24_bluetooth-core-6-3-spec-release"
         ]
       }
@@ -9852,6 +9859,38 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>本文首次对两种卫星移动连接竞争范式进行综合技术对比：由SpaceX Starlink和AST SpaceMobile开创的Direct-to-Cell (D2C)，与3GPP标准化（Release 17-19）的非地面网络（NTN）。D2C利用现有地面频谱和未修改的消费级手机以市场驱动的叠加方式提供应急连接，而3GPP NTN提供系统的卫星原生框架，旨在实现长期可扩展性和深度5G/6G集成。</p>\n<p>对比涵盖标准化轨迹、网络架构、物理层创新、安全态势和运营权衡。关键贡献是分析了自动驾驶的混合&quot;三链路&quot;架构：地面5G作为主要宽带、NTN作为高吞吐备份、D2C作为紧急回退——结合两种范式的优势。分析结论认为，虽然D2C通过兼容现有设备实现快速市场进入，但NTN提供更优的性能、安全性和可扩展性，使其成为6G星地融合的基础框架。利用两者优势的混合模式被确定为通向真正全球连接的最实用路径。</p>\n<h3>技术要点</h3>\n<ul><li><strong>两种范式对比</strong>：D2C（Starlink Direct-to-Cell、AST SpaceMobile——未修改手机、地面频谱）vs 3GPP NTN（Release 17-19、卫星原生、5G/6G集成）</li><li><strong>NTN物理层创新</strong>：多普勒预补偿、大传播延迟的定时提前调整、HARQ协议适配</li><li><strong>D2C局限</strong>：与地面运营商的频谱共享约束、每波束容量有限、无切换支持、安全依赖地面核心网</li><li><strong>NTN优势</strong>：更优的性能/可扩展性/安全性；标准化的QoS、切换和认证框架</li><li><strong>混合三链路架构</strong>：地面5G（主链路）+ NTN宽带（备份）+ D2C紧急回退——针对自动驾驶安全关键冗余</li><li><strong>6G融合</strong>：NTN定位为6G星地一体化架构的基础</li></ul>\n<h3>意义与新意</h3>\n<p>这是首篇系统性跨全栈对比D2C和NTN的论文，而非将其视为独立领域。针对自动驾驶的三链路架构是一个具有安全动机的具体设计提案，而非泛泛的综述。随着Starlink D2C已投入商业服务（T-Mobile合作，2025年）且3GPP Release 19 NTN规范持续推进，这一对比具有及时性和实际意义。D2C是中期市场解决方案而NTN是长期架构框架的分析，为卫星通信行业提供了有用的战略视角。</p>",
       "images": [],
       "search_blob": "comparative analysis of direct-to-cell (d2c) and 3gpp non-terrestrial networks (ntn) for global connectivity direct-to-cell (d2c) 与 3gpp 非地面网络 (ntn) 全球连接对比分析 leo ntn d2c satellite 6g starlink this paper presents the first comprehensive technical comparison of two competing paradigms for satellite-enabled mobile connectivity: direct-to-cell (d2c), pioneered by spacex starlink and ast spacemobile, versus 3gpp-standardized non-terrestrial networks (ntn) across releases 17–19. d2c leverages existing terrestrial spectrum and unmodified consumer handsets to provide emergency connectivity as a market-driven overlay, while 3gpp ntn offers a systematic satellite-native framework designed for long-term scalability and deep 5g/6g integration. 本文首次对两种卫星移动连接竞争范式进行综合技术对比：由spacex starlink和ast spacemobile开创的direct-to-cell (d2c)，与3gpp标准化（release 17-19）的非地面网络（ntn）。d2c利用现有地面频谱和未修改的消费级手机以市场驱动的叠加方式提供应急连接，而3gpp ntn提供系统的卫星原生框架，旨在实现长期可扩展性和深度5g/6g集成。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-11_bluetooth-core-63-release",
+      "date_found": "2026-07-11",
+      "technology": "bluetooth",
+      "date_published": "2026-05-06",
+      "type": "bluetooth-spec",
+      "category": "standards",
+      "title_en": "Bluetooth Core 6.3 released: hardware-inline Channel Sounding PCT transfer, per-PHY RTT precision, HCI mask expansion, Classic/LE RF alignment",
+      "title_zh": "蓝牙核心规范 6.3 发布：信道探测 PCT 硬件内联传输、按 PHY 的 RTT 精度声明、HCI 掩码扩容、Classic/LE 射频对齐",
+      "url": "https://audioxpress.com/news/bluetooth-sig-releases-bluetooth-core-6-3",
+      "topics": [
+        "Bluetooth-6.3",
+        "channel-sounding",
+        "RTT",
+        "HCI",
+        "LE-Audio",
+        "BR-EDR"
+      ],
+      "topic_primary": "bt-channel-sounding",
+      "topics_secondary": [
+        "bt-le",
+        "bt-le-audio"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-11_bluetooth-core-63-release.md",
+      "summary_short_en": "The Bluetooth SIG released Core Specification 6.3 on May 6, 2026 (ingested now as backfill — the KB's SIG-news source was in a dry spell in May), the second drop of its bi-annual release cadence. The headline is Channel Sounding maturation: the **Inline PCT Transfer** feature moves phase-aligned tone handling directly into hardware, eliminating bulk phase-data reports over HCI — cutting processing overhead and latency for centimetre-class ranging in \"find my earbuds\" and secure-pairing use cases. Alongside it, **per-PHY RTT precision declarations** let a device state its round-trip-timing accuracy separately for 1M, 2M and 2M 2BT PHYs, so multi-mode systems can pick the PHY that meets a ranging or isochronous-audio synchronisation target.",
+      "summary_short_zh": "蓝牙 SIG 于 2026 年 5 月 6 日发布核心规范 6.3（现作为回填收录——KB 的 SIG 新闻源 5 月正处枯水期），是其半年节奏的第二次发布。头条是信道探测（Channel Sounding）的成熟化：**内联 PCT 传输**特性将相位对齐音调处理直接下沉到硬件，取消经 HCI 的批量相位数据上报——降低处理开销与时延，服务于\"查找耳机\"、LE Audio 设备安全配对等厘米级测距场景。与之配套，**按 PHY 的 RTT 精度声明**允许设备分别声明 1M、2M、2M 2BT PHY 下的往返时延精度，多模系统可据此选择满足测距或等时音频同步目标的 PHY。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The Bluetooth SIG released Core Specification 6.3 on May 6, 2026 (ingested now as backfill — the KB's SIG-news source was in a dry spell in May), the second drop of its bi-annual release cadence. The headline is Channel Sounding maturation: the <strong>Inline PCT Transfer</strong> feature moves phase-aligned tone handling directly into hardware, eliminating bulk phase-data reports over HCI — cutting processing overhead and latency for centimetre-class ranging in &quot;find my earbuds&quot; and secure-pairing use cases. Alongside it, <strong>per-PHY RTT precision declarations</strong> let a device state its round-trip-timing accuracy separately for 1M, 2M and 2M 2BT PHYs, so multi-mode systems can pick the PHY that meets a ranging or isochronous-audio synchronisation target.</p>\n<p>Two plumbing changes round out the release: the &quot;Running Out of Bits&quot; <strong>HCI command/event mask expansion</strong> gives future features (LE Audio evolutions, HDT) addressing room without breaking legacy stacks, and <strong>ACP / C/I limit relaxation</strong> harmonises RF requirements between Classic (BR/EDR) and LE — simplifying dual-mode radio design for premium audio hardware. The SIG also repeated its guidance that members should market capabilities, not spec version numbers. High Data Throughput (HDT) remains the flagship still in the pipeline, confirmed for 2026 among 50+ active enhancement projects.</p>\n<h3>Key technical points</h3>\n<ul><li>Inline PCT Transfer: phase-aligned tone processing in hardware; no bulk phase reports over HCI; lower CS latency/overhead.</li><li>Per-PHY RTT precision declaration (1M / 2M / 2M 2BT) for mode-aware ranging and iso-audio sync.</li><li>HCI command/event mask expansion (&quot;Running Out of Bits&quot;) — forward headroom for LE Audio / HDT features.</li><li>ACP and C/I limit relaxation aligns Classic and LE RF targets; simpler dual-mode chips.</li><li>Bi-annual cadence confirmed; HDT confirmed for 2026 among 50+ enhancement projects.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The bt-channel-sounding bin tracks CS from the 6.0 debut through academic ranging work (e.g. 2026-05-24_arxiv-connectionless-ble-cs-pawr); 6.3 is the moment CS goes from &quot;specified&quot; to &quot;hardware-optimised&quot; — inline PCT transfer is exactly the change that lets earbud-class silicon do centimetre ranging without an HCI bottleneck. The per-PHY RTT declaration also quietly creates a new interop surface (accuracy becomes a queryable, PHY-specific capability), which ranging-dependent features like digital key and Auracast proximity will build on.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>蓝牙 SIG 于 2026 年 5 月 6 日发布核心规范 6.3（现作为回填收录——KB 的 SIG 新闻源 5 月正处枯水期），是其半年节奏的第二次发布。头条是信道探测（Channel Sounding）的成熟化：<strong>内联 PCT 传输</strong>特性将相位对齐音调处理直接下沉到硬件，取消经 HCI 的批量相位数据上报——降低处理开销与时延，服务于&quot;查找耳机&quot;、LE Audio 设备安全配对等厘米级测距场景。与之配套，<strong>按 PHY 的 RTT 精度声明</strong>允许设备分别声明 1M、2M、2M 2BT PHY 下的往返时延精度，多模系统可据此选择满足测距或等时音频同步目标的 PHY。</p>\n<p>两项底层改动补齐本次发布：&quot;比特告急&quot;<strong>HCI 命令/事件掩码扩容</strong>为未来特性（LE Audio 演进、HDT）预留寻址空间且不破坏既有协议栈；<strong>ACP 与 C/I 限值放宽</strong>协调了 Classic（BR/EDR）与 LE 的射频要求——简化高端音频硬件的双模射频设计。SIG 还重申成员应营销能力而非规范版本号。高数据吞吐（HDT）仍是管线中的旗舰，确认 2026 年推出，位列 50 余个进行中的增强项目之中。</p>\n<h3>技术要点</h3>\n<ul><li>内联 PCT 传输：相位对齐音调硬件化处理；不再经 HCI 批量上报相位；CS 时延/开销更低。</li><li>按 PHY 的 RTT 精度声明（1M / 2M / 2M 2BT），支持模式感知测距与等时音频同步。</li><li>HCI 命令/事件掩码扩容（&quot;比特告急&quot;）——为 LE Audio / HDT 特性预留前向空间。</li><li>ACP 与 C/I 限值放宽对齐 Classic 与 LE 射频目标；双模芯片设计更简。</li><li>半年发布节奏确认；HDT 确认 2026 年推出，位列 50 余个增强项目。</li></ul>\n<h3>意义与新意</h3>\n<p>bt-channel-sounding 板块从 6.0 首发一路跟踪 CS 到学术测距工作（如 2026-05-24_arxiv-connectionless-ble-cs-pawr）；6.3 是 CS 从&quot;已规范&quot;走向&quot;硬件优化&quot;的节点——内联 PCT 传输正是让耳机级芯片摆脱 HCI 瓶颈实现厘米级测距的关键改动。按 PHY 的 RTT 声明还悄然创造了新的互操作面（精度成为可查询、按 PHY 区分的能力），数字钥匙、Auracast 邻近感知等依赖测距的特性将在其上构建。</p>",
+      "images": [],
+      "search_blob": "bluetooth core 6.3 released: hardware-inline channel sounding pct transfer, per-phy rtt precision, hci mask expansion, classic/le rf alignment 蓝牙核心规范 6.3 发布：信道探测 pct 硬件内联传输、按 phy 的 rtt 精度声明、hci 掩码扩容、classic/le 射频对齐 bluetooth-6.3 channel-sounding rtt hci le-audio br-edr the bluetooth sig released core specification 6.3 on may 6, 2026 (ingested now as backfill — the kb's sig-news source was in a dry spell in may), the second drop of its bi-annual release cadence. the headline is channel sounding maturation: the **inline pct transfer** feature moves phase-aligned tone handling directly into hardware, eliminating bulk phase-data reports over hci — cutting processing overhead and latency for centimetre-class ranging in \"find my earbuds\" and secure-pairing use cases. alongside it, **per-phy rtt precision declarations** let a device state its round-trip-timing accuracy separately for 1m, 2m and 2m 2bt phys, so multi-mode systems can pick the phy that meets a ranging or isochronous-audio synchronisation target. 蓝牙 sig 于 2026 年 5 月 6 日发布核心规范 6.3（现作为回填收录——kb 的 sig 新闻源 5 月正处枯水期），是其半年节奏的第二次发布。头条是信道探测（channel sounding）的成熟化：**内联 pct 传输**特性将相位对齐音调处理直接下沉到硬件，取消经 hci 的批量相位数据上报——降低处理开销与时延，服务于\"查找耳机\"、le audio 设备安全配对等厘米级测距场景。与之配套，**按 phy 的 rtt 精度声明**允许设备分别声明 1m、2m、2m 2bt phy 下的往返时延精度，多模系统可据此选择满足测距或等时音频同步目标的 phy。 bluetooth-spec bluetooth"
     },
     {
       "id": "2026-05-24_bluetooth-core-6-3-spec-release",
