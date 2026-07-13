@@ -40,6 +40,7 @@ window.KB_DATA = {
     "URLLC": 7,
     "reinforcement-learning": 7,
     "3GPP": 7,
+    "BLE": 7,
     "XR": 7,
     "energy-efficiency": 7,
     "generative-AI": 7,
@@ -54,12 +55,12 @@ window.KB_DATA = {
     "FCC": 6,
     "automotive": 6,
     "Wi-Fi-8": 6,
-    "BLE": 6,
     "backscatter": 5,
     "AI-native": 5,
     "QoS": 5,
     "Co-SR": 5,
     "Co-BF": 5,
+    "channel-sounding": 5,
     "5G-Advanced": 5,
     "OFDMA": 5,
     "RIC": 5,
@@ -85,7 +86,6 @@ window.KB_DATA = {
     "mobility": 4,
     "spectrum": 4,
     "D2D": 4,
-    "channel-sounding": 4,
     "SLE": 4,
     "handover": 4,
     "5G-core": 4,
@@ -213,6 +213,7 @@ window.KB_DATA = {
     "healthcare": 2,
     "MRSS": 2,
     "HCI": 2,
+    "LE-Audio": 2,
     "AIOps": 2,
     "enterprise": 2,
     "802.11n": 2,
@@ -622,7 +623,6 @@ window.KB_DATA = {
     "D2C": 1,
     "satellite": 1,
     "Bluetooth-6.3": 1,
-    "LE-Audio": 1,
     "BR-EDR": 1,
     "BT-Classic": 1,
     "BT-6.3": 1,
@@ -698,6 +698,8 @@ window.KB_DATA = {
     "JCB": 1,
     "Resona": 1,
     "digital-wallet": 1,
+    "HDT": 1,
+    "test-equipment": 1,
     "FDD": 1,
     "mid-band": 1,
     "KT": 1,
@@ -787,11 +789,11 @@ window.KB_DATA = {
     "ngso-regulation": 3,
     "nearlink-slb": 3,
     "bt-location": 3,
+    "bt-le": 3,
     "cellular-massive-mimo": 2,
     "uwb-radar": 2,
     "uwb-fi-ra": 2,
     "mmwave-bq": 2,
-    "bt-le": 2,
     "nearlink-automotive": 2,
     "roaming-mobility": 2,
     "cellular-spectrum": 1,
@@ -799,7 +801,7 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 188,
-    "industry-news": 62,
+    "industry-news": 63,
     "ieee-document": 23,
     "product": 17,
     "satellite-news": 7,
@@ -809,7 +811,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 188,
-    "industry": 86,
+    "industry": 87,
     "standards": 31
   },
   "technologies_vocab": {
@@ -3365,6 +3367,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "",
       "entries_primary": [
         "2026-05-21_arxiv-enhanced-ble-esb-hybrid",
+        "2026-07-13_rohde-realtek-first-ble-hdt-test-solution",
         "2026-05-30_nordic-nrf54lm20b-npu-ble-soc"
       ],
       "entries_secondary": [
@@ -3380,6 +3383,9 @@ window.KB_DATA = {
       "by_type_primary": {
         "academic-paper": [
           "2026-05-21_arxiv-enhanced-ble-esb-hybrid"
+        ],
+        "industry-news": [
+          "2026-07-13_rohde-realtek-first-ble-hdt-test-solution"
         ],
         "product": [
           "2026-05-30_nordic-nrf54lm20b-npu-ble-soc"
@@ -3402,7 +3408,8 @@ window.KB_DATA = {
       "entries_primary": [],
       "entries_secondary": [
         "2026-07-11_bluetooth-core-63-release",
-        "2026-05-24_bluetooth-core-6-3-spec-release"
+        "2026-05-24_bluetooth-core-6-3-spec-release",
+        "2026-07-13_rohde-realtek-first-ble-hdt-test-solution"
       ],
       "by_type_primary": {}
     },
@@ -3450,6 +3457,7 @@ window.KB_DATA = {
         "2026-05-24_bluetooth-core-6-3-spec-release"
       ],
       "entries_secondary": [
+        "2026-07-13_rohde-realtek-first-ble-hdt-test-solution",
         "2026-05-30_nordic-nrf54lm20b-npu-ble-soc"
       ],
       "by_type_primary": {
@@ -11820,6 +11828,37 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>日本主要卡组织与支付网络 JCB 株式会社与 Resona Holdings 合作，推动基于 UWB 的非接触支付商用化。JCB 计划于 2027 年启动小规模商业运营，2028 年实现全面商用。这是首个由主要支付网络制定的 UWB 支付部署具体时间表。</p>\n<p>UWB 支付利用短距离无线通信实现精确设备定位和高速数据交换。JCB 指出，具备 UWB 功能的智能手机在日本已广泛普及——这是采用的关键前提。UWB 目前已用于数字车钥匙、家庭门禁、室内导航、资产标签及部分无闸机公交系统。JCB 将与多家技术合作伙伴及合作商户共同演示该支付技术并开展用户体验试点。</p>\n<p>这延续了 FiRa 联盟将 UWB 从门禁控制扩展到支付的更广泛推动——该用例需要 UWB 的安全测距（基于 STS 的距离界定）来防止中继攻击，这是相对 NFC 在高价值交易中的关键优势。</p>\n<h3>技术要点</h3>\n<ul><li><strong>UWB 支付时间表</strong>：2027 年小规模商用，2028 年全面商用——首个主要支付网络的具体时间表</li><li><strong>合作方</strong>：JCB（支付网络）+ Resona Holdings（金融集团）+ 多家技术合作伙伴及商户</li><li><strong>UWB 支付优势</strong>：基于 STS 的安全测距可防止 NFC 易受的中继攻击；精确距离测量实现&quot;在此终端支付&quot;保障</li><li><strong>日本生态就绪</strong>：具备 UWB 的智能手机已在日本广泛普及——Pixel、iPhone 及国内 Android 机型</li><li><strong>已引用 UWB 用例</strong>：数字车钥匙（CCC）、家庭门禁（Aliro）、室内导航、资产标签、无闸机公交</li></ul>",
       "images": [],
       "search_blob": "jcb and resona partner to commercialize uwb contactless payments in japan jcb 与 resona 合作在日本推动 uwb 非接触支付商用化 uwb payments fira jcb resona digital-wallet jcb co., ltd., japan's major card and payment network provider, has partnered with resona holdings to commercialize uwb-based contactless payments. jcb plans small-scale commercial operations by 2027 and full-scale commercialization by 2028. the announcement marks the first concrete timeline for uwb payment deployment by a major payment network. 日本主要卡组织与支付网络 jcb 株式会社与 resona holdings 合作，推动基于 uwb 的非接触支付商用化。jcb 计划于 2027 年启动小规模商业运营，2028 年实现全面商用。这是首个由主要支付网络制定的 uwb 支付部署具体时间表。 industry-news uwb"
+    },
+    {
+      "id": "2026-07-13_rohde-realtek-first-ble-hdt-test-solution",
+      "date_found": "2026-07-13",
+      "technology": "bluetooth",
+      "date_published": "2026-03-03",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Rohde & Schwarz and Realtek demonstrate first test solution for Bluetooth LE High Data Throughput (HDT)",
+      "title_zh": "罗德与施瓦茨联合瑞昱演示首个蓝牙 LE 高数据吞吐（HDT）测试方案",
+      "url": "https://www.rohde-schwarz.com/us/about-us/news-press/all-news/rohde-schwarz-and-realtek-demonstrate-first-test-solution-for-bluetooth-le-high-data-throughput-hdt_229356-1611918.html",
+      "topics": [
+        "BLE",
+        "HDT",
+        "LE-Audio",
+        "channel-sounding",
+        "test-equipment"
+      ],
+      "topic_primary": "bt-le",
+      "topics_secondary": [
+        "bt-le-audio",
+        "bt-channel-sounding"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-13_rohde-realtek-first-ble-hdt-test-solution.md",
+      "summary_short_en": "Rohde & Schwarz and Realtek announced (March 3, 2026) the industry's first validated test solution for Bluetooth LE High Data Throughput (HDT) — the upcoming SIG feature that raises the LE maximum data rate from 2 Mbps to 7.5 Mbps. The demonstration ran on the R&S CMP180 radio communication tester (two analyzers, two generators, 2×8 RF ports; also covers Wi-Fi 8 and 5G NR FR1 to 8 GHz at up to 500 MHz bandwidth) against two Realtek devices: the RTL8922D, a Wi-Fi/Bluetooth combo chip integrating HDT, Channel Sounding, and IEEE 802.15.4 (simultaneous Wi-Fi, dual Bluetooth, and Zigbee/Thread), and the RTL8773J, a dedicated Bluetooth audio SoC supporting BT Classic, LE, LE Audio, and HDT.",
+      "summary_short_zh": "罗德与施瓦茨（Rohde & Schwarz）与瑞昱（Realtek）于 2026 年 3 月 3 日宣布验证了业界首个蓝牙 LE 高数据吞吐（HDT）测试方案——HDT 是蓝牙 SIG 即将推出的特性，将 LE 最大数据速率从 2 Mbps 提升到 7.5 Mbps。演示基于 R&S CMP180 无线电综测仪（双分析仪、双信号发生器、2×8 射频端口；同时覆盖 Wi-Fi 8 与 5G NR FR1 至 8 GHz、带宽最高 500 MHz），被测器件为两款瑞昱芯片：RTL8922D——集成 HDT、信道探测（Channel Sounding）与 IEEE 802.15.4 的 Wi-Fi/蓝牙组合芯片（可同时运行 Wi-Fi、双蓝牙与 Zigbee/Thread）；RTL8773J——支持经典蓝牙、LE、LE Audio 与 HDT 的专用蓝牙音频 SoC。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Rohde &amp; Schwarz and Realtek announced (March 3, 2026) the industry's first validated test solution for Bluetooth LE High Data Throughput (HDT) — the upcoming SIG feature that raises the LE maximum data rate from 2 Mbps to 7.5 Mbps. The demonstration ran on the R&amp;S CMP180 radio communication tester (two analyzers, two generators, 2×8 RF ports; also covers Wi-Fi 8 and 5G NR FR1 to 8 GHz at up to 500 MHz bandwidth) against two Realtek devices: the RTL8922D, a Wi-Fi/Bluetooth combo chip integrating HDT, Channel Sounding, and IEEE 802.15.4 (simultaneous Wi-Fi, dual Bluetooth, and Zigbee/Thread), and the RTL8773J, a dedicated Bluetooth audio SoC supporting BT Classic, LE, LE Audio, and HDT.</p>\n<p>HDT's PHY defines five data rates from 2 to 7.5 Mbps, combining three new modulation schemes with multiple forward-error-correction levels; the SIG positions it as delivering roughly 4× capacity, better energy and spectrum efficiency, and higher reliability. Target use cases are low-latency/high-quality audio streaming, fast media sharing, and accelerated OTA firmware updates. This is a backfill entry: the announcement predates the KB's HDT coverage, and it is the first public evidence of both HDT silicon and HDT test tooling — the two ecosystem prerequisites for the feature's commercial rollout expected around Core 6.x/2026.</p>\n<h3>Key technical points</h3>\n<ul><li>HDT raises BLE max rate 2 → 7.5 Mbps; five PHY rates via three new modulation schemes + multiple FEC levels; ~4× capacity claim.</li><li>First validated HDT test solution: R&amp;S CMP180 (2 analyzers / 2 generators / 2×8 RF ports; Wi-Fi 8 + 5G NR FR1 ≤8 GHz, ≤500 MHz BW).</li><li>RTL8922D: combo Wi-Fi + dual BT + 802.15.4 with HDT and Channel Sounding — HDT and CS landing in the same mainstream silicon.</li><li>RTL8773J: dedicated audio SoC with Classic + LE + LE Audio + HDT — the low-latency audio-streaming target made concrete.</li><li>Use cases: low-latency audio, fast media sharing, accelerated OTA updates.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's Bluetooth thread has tracked HDT as a spec-side promise (Core 6.3 refinements, HDT confirmed for 2026 — see 2026-07-11's Core 6.3 entry); this backfill adds the missing ecosystem half: named commercial silicon (RTL8922D/RTL8773J) and calibrated test equipment are what turn a spec feature into shippable products. The RTL8922D is also a notable convergence data point — HDT, Channel Sounding, and 802.15.4 in one combo chip alongside Wi-Fi — suggesting vendors will ship ranging and high-throughput LE as a bundle rather than as separate feature waves.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>罗德与施瓦茨（Rohde &amp; Schwarz）与瑞昱（Realtek）于 2026 年 3 月 3 日宣布验证了业界首个蓝牙 LE 高数据吞吐（HDT）测试方案——HDT 是蓝牙 SIG 即将推出的特性，将 LE 最大数据速率从 2 Mbps 提升到 7.5 Mbps。演示基于 R&amp;S CMP180 无线电综测仪（双分析仪、双信号发生器、2×8 射频端口；同时覆盖 Wi-Fi 8 与 5G NR FR1 至 8 GHz、带宽最高 500 MHz），被测器件为两款瑞昱芯片：RTL8922D——集成 HDT、信道探测（Channel Sounding）与 IEEE 802.15.4 的 Wi-Fi/蓝牙组合芯片（可同时运行 Wi-Fi、双蓝牙与 Zigbee/Thread）；RTL8773J——支持经典蓝牙、LE、LE Audio 与 HDT 的专用蓝牙音频 SoC。</p>\n<p>HDT 的 PHY 定义了 2 至 7.5 Mbps 的五档速率，组合三种新调制方案与多级前向纠错；SIG 称其带来约 4 倍容量、更优的能效与频谱效率以及更高可靠性。目标场景为低时延/高音质音频流、快速媒体分享与加速 OTA 固件升级。本条目为回填：该公告早于 KB 现有 HDT 报道，是 HDT 芯片与 HDT 测试工具链的首个公开证据——这两者是该特性商用落地（预计随 Core 6.x / 2026 年）的生态前提。</p>\n<h3>技术要点</h3>\n<ul><li>HDT 将 BLE 最大速率从 2 提升至 7.5 Mbps；通过三种新调制 + 多级 FEC 定义五档 PHY 速率；宣称约 4 倍容量。</li><li>首个验证的 HDT 测试方案：R&amp;S CMP180（双分析仪/双发生器/2×8 射频端口；兼测 Wi-Fi 8 与 5G NR FR1 ≤8 GHz、带宽 ≤500 MHz）。</li><li>RTL8922D：Wi-Fi + 双蓝牙 + 802.15.4 组合芯片，同时集成 HDT 与信道探测——HDT 与 CS 落入同一主流硅片。</li><li>RTL8773J：专用音频 SoC，支持经典蓝牙 + LE + LE Audio + HDT——低时延音频流场景落地。</li><li>用例：低时延音频、快速媒体分享、加速 OTA 升级。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的蓝牙线索此前从规范侧跟踪 HDT（Core 6.3 的改进、HDT 确认 2026 年落地——见 2026-07-11 的 Core 6.3 条目）；本回填补上了缺失的生态另一半：有名有姓的商用硅片（RTL8922D/RTL8773J）与校准测试设备，是规范特性变成可出货产品的前提。RTL8922D 也是一个值得注意的融合数据点——HDT、信道探测与 802.15.4 集成于同一颗与 Wi-Fi 共存的组合芯片，预示厂商将把测距与高吞吐 LE 作为捆绑能力一起出货，而非分波次推出。</p>",
+      "images": [],
+      "search_blob": "rohde & schwarz and realtek demonstrate first test solution for bluetooth le high data throughput (hdt) 罗德与施瓦茨联合瑞昱演示首个蓝牙 le 高数据吞吐（hdt）测试方案 ble hdt le-audio channel-sounding test-equipment rohde & schwarz and realtek announced (march 3, 2026) the industry's first validated test solution for bluetooth le high data throughput (hdt) — the upcoming sig feature that raises the le maximum data rate from 2 mbps to 7.5 mbps. the demonstration ran on the r&s cmp180 radio communication tester (two analyzers, two generators, 2×8 rf ports; also covers wi-fi 8 and 5g nr fr1 to 8 ghz at up to 500 mhz bandwidth) against two realtek devices: the rtl8922d, a wi-fi/bluetooth combo chip integrating hdt, channel sounding, and ieee 802.15.4 (simultaneous wi-fi, dual bluetooth, and zigbee/thread), and the rtl8773j, a dedicated bluetooth audio soc supporting bt classic, le, le audio, and hdt. 罗德与施瓦茨（rohde & schwarz）与瑞昱（realtek）于 2026 年 3 月 3 日宣布验证了业界首个蓝牙 le 高数据吞吐（hdt）测试方案——hdt 是蓝牙 sig 即将推出的特性，将 le 最大数据速率从 2 mbps 提升到 7.5 mbps。演示基于 r&s cmp180 无线电综测仪（双分析仪、双信号发生器、2×8 射频端口；同时覆盖 wi-fi 8 与 5g nr fr1 至 8 ghz、带宽最高 500 mhz），被测器件为两款瑞昱芯片：rtl8922d——集成 hdt、信道探测（channel sounding）与 ieee 802.15.4 的 wi-fi/蓝牙组合芯片（可同时运行 wi-fi、双蓝牙与 zigbee/thread）；rtl8773j——支持经典蓝牙、le、le audio 与 hdt 的专用蓝牙音频 soc。 industry-news bluetooth"
     },
     {
       "id": "2026-05-01_gemtek-quectel-wifi8-mwc2026",
