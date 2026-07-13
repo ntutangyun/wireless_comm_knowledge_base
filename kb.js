@@ -12,7 +12,7 @@ window.KB_DATA = {
     "security": 29,
     "O-RAN": 25,
     "802.11be": 25,
-    "LEO": 23,
+    "LEO": 24,
     "WiFi-sensing": 21,
     "MAPC": 15,
     "MLO": 15,
@@ -26,6 +26,7 @@ window.KB_DATA = {
     "802.11ax": 11,
     "LLM": 9,
     "mmWave": 9,
+    "direct-to-device": 9,
     "CSI": 9,
     "UWB": 9,
     "NTN": 9,
@@ -35,7 +36,6 @@ window.KB_DATA = {
     "AI-RAN": 8,
     "NearLink": 8,
     "SparkLink": 8,
-    "direct-to-device": 8,
     "802.11bq": 7,
     "URLLC": 7,
     "reinforcement-learning": 7,
@@ -174,6 +174,7 @@ window.KB_DATA = {
     "OLLA": 2,
     "constellation": 2,
     "NWDAF": 2,
+    "broadband": 2,
     "AST SpaceMobile": 2,
     "BlueBird": 2,
     "configured-grant": 2,
@@ -361,6 +362,8 @@ window.KB_DATA = {
     "ECN": 1,
     "Wi-Fi-Alliance": 1,
     "unlicensed-spectrum": 1,
+    "India": 1,
+    "IN-SPACe": 1,
     "Block-2": 1,
     "NPN": 1,
     "spectrum-management": 1,
@@ -638,7 +641,6 @@ window.KB_DATA = {
     "Xn-interface": 1,
     "Amazon": 1,
     "Kuiper": 1,
-    "broadband": 1,
     "Beijing-Auto-Show": 1,
     "interference-mitigation": 1,
     "near-RT-RIC": 1,
@@ -762,8 +764,8 @@ window.KB_DATA = {
     "security-privacy": 18,
     "open-ran": 15,
     "5g-nr": 15,
+    "leo-constellations": 13,
     "mapc-cosr": 12,
-    "leo-constellations": 12,
     "spectrum-policy": 11,
     "agentic-wifi": 10,
     "amp-iot": 9,
@@ -800,14 +802,14 @@ window.KB_DATA = {
     "industry-news": 62,
     "ieee-document": 23,
     "product": 17,
-    "satellite-news": 6,
+    "satellite-news": 7,
     "proposal": 4,
     "bluetooth-spec": 2,
     "nearlink-spec": 2
   },
   "category_counts": {
     "academia": 188,
-    "industry": 85,
+    "industry": 86,
     "standards": 31
   },
   "technologies_vocab": {
@@ -3158,6 +3160,7 @@ window.KB_DATA = {
         "2026-07-04_amazon-leo-396-sats-initial-service",
         "2026-06-26_arxiv-all-optical-satellite-burst-size",
         "2026-06-23_arxiv-isl-path-selection-walker-delta",
+        "2026-07-13_reliance-jio-sovereign-leo-constellation",
         "2026-06-17_arxiv-sub-thz-leo-satellite-teralink",
         "2026-06-15_arxiv-aidos-beam-hopping-ngso",
         "2026-06-13_arxiv-score-leo-ground-station-placement",
@@ -3198,6 +3201,7 @@ window.KB_DATA = {
         ],
         "satellite-news": [
           "2026-07-04_amazon-leo-396-sats-initial-service",
+          "2026-07-13_reliance-jio-sovereign-leo-constellation",
           "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
         ],
         "industry-news": [
@@ -3248,6 +3252,7 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-07-04_amazon-leo-396-sats-initial-service",
+        "2026-07-13_reliance-jio-sovereign-leo-constellation",
         "2026-06-17_arxiv-sub-thz-leo-satellite-teralink",
         "2026-05-28_eu-2ghz-mss-spectrum-three-way-split",
         "2026-06-01_arxiv-uav-connectivity-cellular-vs-starlink"
@@ -3327,6 +3332,7 @@ window.KB_DATA = {
       "entries_secondary": [
         "2026-07-04_amazon-leo-396-sats-initial-service",
         "2026-07-03_starlink-mobile-retail-carrier-plans",
+        "2026-07-13_reliance-jio-sovereign-leo-constellation",
         "2026-06-15_arxiv-agon-satellite-interference-detection",
         "2026-05-24_ast-spacemobile-q1-2026-45-bluebirds",
         "2026-05-24_amazon-leo-300-satellites-may-2026",
@@ -6070,6 +6076,37 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Wi-Fi 联盟与蓝牙技术联盟（Bluetooth SIG）宣布（2026 年 6 月 19 日，德州奥斯汀 / 华盛顿州柯克兰）<strong>启动 Wi-Fi 与蓝牙公平共存的正式联合工作，首先聚焦 6 GHz 频段</strong>。动因是两大生态中高性能用例与设备密度的持续增长；双方将共同识别实用的共存机制，并评估各非授权频段上的共存表现。</p>\n<p>公告未给出协议细节，但信号意义重大：这是两大组织之间首个正式、常设的共存工作计划，其 6 GHz 焦点实际上确认了<strong>蓝牙向 6 GHz 频段扩展</strong>（蓝牙 SIG 高频段研究项目）已足够临近，需要在设备出货前建立跨标准组织的框架。Wi-Fi 联盟 CEO Kevin Robinson 以两大技术合计每年近 100 亿台设备出货量强调&quot;负责任的频谱管理&quot;；蓝牙 SIG CEO Neville Meijers 强调为不断扩张的无线生态带来更丰富的体验。</p>\n<h3>技术要点</h3>\n<ul><li><strong>Wi-Fi 联盟与蓝牙 SIG 的首个正式共存联合计划</strong>；2026 年 6 月 19 日宣布。</li><li><strong>首要焦点：6 GHz 频段</strong>——预备蓝牙在 5925–7125 MHz 与 Wi-Fi 6E/7/8 并存运行。</li><li>范围：识别实用共存机制，评估各非授权频段（含 2.4 GHz 的延伸影响）的共存。</li><li>两大技术合计每年约 100 亿台设备出货。</li><li>尚未公布技术交付物或时间表——属于框架/工作流启动。</li></ul>\n<h3>意义与新意</h3>\n<p>二十年来，2.4 GHz 的 Wi-Fi/蓝牙共存一直靠设备内厂商机制（分组流量仲裁）解决，从无常设的跨标准组织计划——6 GHz 在蓝牙尚未进入该频段<em>之前</em>就先建立共存计划，这是新事物。对本 KB 的 6 GHz 脉络（2026-05-21_fcc-6ghz-rule-changes、2026-05-04_eu-rspg-upper-6ghz-decision、2026-07-10_south-africa-standard-power-6ghz-afc）而言，这为该频段引入了 Wi-Fi 与许可移动之外的<em>第三种技术</em>竞争者。这对 IEEE 802 Coex SC 也有直接意义（见 Mentor 摘要）：预计 ETSI BRAN 与 802.11 共存文档将开始纳入&quot;蓝牙进入 6 GHz&quot;场景。对蓝牙读者，这是 SIG 高频段项目趋于产品化的最强公开信号。</p>",
       "images": [],
       "search_blob": "wi-fi alliance and bluetooth sig initiate joint coexistence work, starting with the 6 ghz band wi-fi 联盟与蓝牙 sig 启动共存联合工作，首先聚焦 6 ghz 频段 6ghz coexistence bluetooth wi-fi-alliance unlicensed-spectrum wi-fi alliance and the bluetooth special interest group announced (june 19, 2026; austin, tx and kirkland, wa) that they are **initiating formal joint work on fair coexistence between wi-fi and bluetooth, with an initial focus on the 6 ghz band**. the stated driver is the growth of high-performance use cases and device density across both ecosystems; the two organizations will jointly identify practical mechanisms and evaluate coexistence across unlicensed spectrum bands. wi-fi 联盟与蓝牙技术联盟（bluetooth sig）宣布（2026 年 6 月 19 日，德州奥斯汀 / 华盛顿州柯克兰）**启动 wi-fi 与蓝牙公平共存的正式联合工作，首先聚焦 6 ghz 频段**。动因是两大生态中高性能用例与设备密度的持续增长；双方将共同识别实用的共存机制，并评估各非授权频段上的共存表现。 industry-news wifi"
+    },
+    {
+      "id": "2026-07-13_reliance-jio-sovereign-leo-constellation",
+      "date_found": "2026-07-13",
+      "technology": "satellite",
+      "date_published": "2026-06-18",
+      "type": "satellite-news",
+      "category": "industry",
+      "title_en": "Reliance Jio announces India's first sovereign LEO constellation: 1,600–1,650 satellites at ~650 km",
+      "title_zh": "信实 Jio 宣布印度首个主权低轨星座：约 650 公里轨道部署 1600–1650 颗卫星",
+      "url": "https://www.businesstoday.in/latest/corporate/story/reliance-jio-plans-1650-satellite-network-for-broadband-services-537732-2026-06-18",
+      "topics": [
+        "LEO",
+        "direct-to-device",
+        "broadband",
+        "India",
+        "IN-SPACe"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "sat-direct-device",
+        "ngso-regulation"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-13_reliance-jio-sovereign-leo-constellation.md",
+      "summary_short_en": "At Reliance Industries' 49th Annual General Meeting (June 18, 2026), Akash Ambani announced that Jio Platforms will build India's first sovereign low-Earth-orbit satellite constellation: 1,600–1,650 satellites at an altitude of roughly 650 km, deployed over the next two to three years, with authorization through IN-SPACe (Indian National Space Promotion and Authorisation Centre). Jio is the first Indian entity to enter the LEO broadband segment as an operator rather than a reseller.",
+      "summary_short_zh": "在信实工业第 49 届年度股东大会上（2026 年 6 月 18 日），Akash Ambani 宣布 Jio Platforms 将建设印度首个主权低轨卫星星座：约 1600–1650 颗卫星，轨道高度约 650 公里，计划在未来两到三年内部署，由印度国家航天促进与授权中心（IN-SPACe）授权。Jio 成为首个以运营商（而非转售商）身份进入低轨宽带领域的印度实体。",
+      "body_html_en": "<h3>Summary</h3>\n<p>At Reliance Industries' 49th Annual General Meeting (June 18, 2026), Akash Ambani announced that Jio Platforms will build India's first sovereign low-Earth-orbit satellite constellation: 1,600–1,650 satellites at an altitude of roughly 650 km, deployed over the next two to three years, with authorization through IN-SPACe (Indian National Space Promotion and Authorisation Centre). Jio is the first Indian entity to enter the LEO broadband segment as an operator rather than a reseller.</p>\n<p>The strategy is explicitly dual-track: lease capacity from existing global constellation operators to get service available quickly, while building long-term sovereign capability in parallel. The stated goal is bridging connectivity gaps in regions hard to serve with terrestrial telecom infrastructure — with direct-to-device connectivity named among the ambitions alongside fixed broadband.</p>\n<h3>Key technical points</h3>\n<ul><li>1,600–1,650 satellites planned at ~650 km altitude; 2–3 year deployment window; IN-SPACe regulatory pathway.</li><li>Dual strategy: near-term capacity leasing from global LEO operators + long-term sovereign constellation build.</li><li>First Indian-owned LEO broadband constellation; enters a segment where Starlink operates ~10,000 satellites.</li><li>Target markets: rural/remote broadband and direct-to-device connectivity across India.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first India-sovereign-constellation entry, adding a fourth national/regional bloc to the LEO race the KB already tracks (Starlink/Amazon Leo in the US — see 2026-07-04_amazon-leo-396-sats-initial-service; Eutelsat-OneWeb in Europe — see 2026-07-03_eutelsat-airbus-340-oneweb-satellites; plus China's Guowang/Qianfan). Strategically it mirrors the EU's sovereignty argument (IRIS²) but from a single private operator with a captive billion-user telecom base. The 650 km / ~1,650-satellite shell and the lease-first-build-later model are the concrete parameters to watch as IN-SPACe filings and vendor selections emerge.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>在信实工业第 49 届年度股东大会上（2026 年 6 月 18 日），Akash Ambani 宣布 Jio Platforms 将建设印度首个主权低轨卫星星座：约 1600–1650 颗卫星，轨道高度约 650 公里，计划在未来两到三年内部署，由印度国家航天促进与授权中心（IN-SPACe）授权。Jio 成为首个以运营商（而非转售商）身份进入低轨宽带领域的印度实体。</p>\n<p>其战略明确为双轨制：一方面向现有全球星座运营商租赁容量以尽快提供服务，另一方面并行建设长期主权能力。宣称目标是弥合传统地面电信基础设施难以覆盖地区的连接鸿沟——除固定宽带外，直连设备（D2D）也被列入愿景。</p>\n<h3>技术要点</h3>\n<ul><li>计划 1600–1650 颗卫星，轨道高度约 650 公里；部署周期 2–3 年；走 IN-SPACe 监管路径。</li><li>双轨战略：近期向全球低轨运营商租赁容量 + 长期自建主权星座。</li><li>首个印度自有的低轨宽带星座；进入 Starlink 已有约 1 万颗在轨卫星的市场。</li><li>目标市场：印度农村/偏远地区宽带与直连设备（D2D）连接。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 首个印度主权星座条目，为已跟踪的低轨竞赛（美国 Starlink/Amazon Leo——见 2026-07-04_amazon-leo-396-sats-initial-service；欧洲 Eutelsat-OneWeb——见 2026-07-03_eutelsat-airbus-340-oneweb-satellites；以及中国国网/千帆）增加了第四个国家/地区阵营。战略上它呼应了欧盟的主权论述（IRIS²），但主体是一家拥有十亿级用户电信基础的私营运营商。650 公里轨道、约 1650 颗卫星的星座壳层，以及&quot;先租赁、后自建&quot;模式，是后续 IN-SPACe 备案与供应商选择中值得跟踪的具体参数。</p>",
+      "images": [],
+      "search_blob": "reliance jio announces india's first sovereign leo constellation: 1,600–1,650 satellites at ~650 km 信实 jio 宣布印度首个主权低轨星座：约 650 公里轨道部署 1600–1650 颗卫星 leo direct-to-device broadband india in-space at reliance industries' 49th annual general meeting (june 18, 2026), akash ambani announced that jio platforms will build india's first sovereign low-earth-orbit satellite constellation: 1,600–1,650 satellites at an altitude of roughly 650 km, deployed over the next two to three years, with authorization through in-space (indian national space promotion and authorisation centre). jio is the first indian entity to enter the leo broadband segment as an operator rather than a reseller. 在信实工业第 49 届年度股东大会上（2026 年 6 月 18 日），akash ambani 宣布 jio platforms 将建设印度首个主权低轨卫星星座：约 1600–1650 颗卫星，轨道高度约 650 公里，计划在未来两到三年内部署，由印度国家航天促进与授权中心（in-space）授权。jio 成为首个以运营商（而非转售商）身份进入低轨宽带领域的印度实体。 satellite-news satellite"
     },
     {
       "id": "2026-06-18_ast-spacemobile-bluebird-block2-launch",
