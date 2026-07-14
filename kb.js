@@ -37,11 +37,11 @@ window.KB_DATA = {
     "AI-RAN": 8,
     "NearLink": 8,
     "SparkLink": 8,
+    "BLE": 8,
     "802.11": 7,
     "802.11bq": 7,
     "URLLC": 7,
     "reinforcement-learning": 7,
-    "BLE": 7,
     "XR": 7,
     "energy-efficiency": 7,
     "generative-AI": 7,
@@ -88,6 +88,7 @@ window.KB_DATA = {
     "spectrum": 4,
     "D2D": 4,
     "SLE": 4,
+    "AoA": 4,
     "handover": 4,
     "5G-core": 4,
     "802.15.4ab": 4,
@@ -110,6 +111,7 @@ window.KB_DATA = {
     "sidelink": 3,
     "edge-computing": 3,
     "deployment": 3,
+    "machine-learning": 3,
     "jamming": 3,
     "waveform": 3,
     "orchestration": 3,
@@ -132,7 +134,6 @@ window.KB_DATA = {
     "rApp": 3,
     "spectrum-policy": 3,
     "802.11ac": 3,
-    "AoA": 3,
     "ELR": 3,
     "WPA3": 3,
     "digital-car-key": 3,
@@ -164,7 +165,6 @@ window.KB_DATA = {
     "FR3": 2,
     "HarmonyOS": 2,
     "beam-hopping": 2,
-    "machine-learning": 2,
     "OFDM": 2,
     "RTT": 2,
     "direct-to-cell": 2,
@@ -177,6 +177,8 @@ window.KB_DATA = {
     "constellation": 2,
     "NWDAF": 2,
     "broadband": 2,
+    "direction-finding": 2,
+    "CTE": 2,
     "AST SpaceMobile": 2,
     "BlueBird": 2,
     "configured-grant": 2,
@@ -380,6 +382,7 @@ window.KB_DATA = {
     "unlicensed-spectrum": 1,
     "India": 1,
     "IN-SPACe": 1,
+    "NLOS": 1,
     "Block-2": 1,
     "NPN": 1,
     "spectrum-management": 1,
@@ -561,7 +564,6 @@ window.KB_DATA = {
     "Bianchi-model": 1,
     "saturation-throughput": 1,
     "bt-location": 1,
-    "direction-finding": 1,
     "DoA": 1,
     "RSSI": 1,
     "maximum-likelihood": 1,
@@ -741,7 +743,6 @@ window.KB_DATA = {
     "GNSS-denied": 1,
     "OSSDM": 1,
     "RF-chain": 1,
-    "CTE": 1,
     "channel-model": 1,
     "indoor-positioning": 1,
     "L-moments": 1,
@@ -795,6 +796,7 @@ window.KB_DATA = {
     "sat-ai": 5,
     "bt-channel-sounding": 5,
     "ntn": 5,
+    "bt-location": 4,
     "ftm-ranging": 4,
     "mec": 3,
     "wifi-for-ai": 3,
@@ -802,7 +804,6 @@ window.KB_DATA = {
     "nearlink-sle": 3,
     "ngso-regulation": 3,
     "nearlink-slb": 3,
-    "bt-location": 3,
     "bt-le": 3,
     "cellular-massive-mimo": 2,
     "uwb-radar": 2,
@@ -814,7 +815,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 191,
+    "academic-paper": 192,
     "industry-news": 63,
     "ieee-document": 24,
     "product": 17,
@@ -824,7 +825,7 @@ window.KB_DATA = {
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 191,
+    "academia": 192,
     "industry": 87,
     "standards": 32
   },
@@ -3403,6 +3404,7 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-07-06_nordic-nrf54l15-tag-channel-sounding",
+        "2026-07-14_arxiv-ble-nlos-detection-ml-direction-finding",
         "2026-05-25_arxiv-ble-doa-missed-detections",
         "2026-05-24_arxiv-connectionless-ble-cs-pawr",
         "2026-07-11_bluetooth-core-63-release",
@@ -3538,6 +3540,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-14_arxiv-ble-nlos-detection-ml-direction-finding",
         "2026-05-25_arxiv-ble-doa-missed-detections",
         "2026-05-30_arxiv-bluetooth-phased-array-inertial-nav",
         "2026-05-30_arxiv-lmoment-ble-cte-los-nlos"
@@ -3548,6 +3551,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-07-14_arxiv-ble-nlos-detection-ml-direction-finding",
           "2026-05-25_arxiv-ble-doa-missed-detections",
           "2026-05-30_arxiv-bluetooth-phased-array-inertial-nav",
           "2026-05-30_arxiv-lmoment-ble-cte-los-nlos"
@@ -6275,6 +6279,37 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在信实工业第 49 届年度股东大会上（2026 年 6 月 18 日），Akash Ambani 宣布 Jio Platforms 将建设印度首个主权低轨卫星星座：约 1600–1650 颗卫星，轨道高度约 650 公里，计划在未来两到三年内部署，由印度国家航天促进与授权中心（IN-SPACe）授权。Jio 成为首个以运营商（而非转售商）身份进入低轨宽带领域的印度实体。</p>\n<p>其战略明确为双轨制：一方面向现有全球星座运营商租赁容量以尽快提供服务，另一方面并行建设长期主权能力。宣称目标是弥合传统地面电信基础设施难以覆盖地区的连接鸿沟——除固定宽带外，直连设备（D2D）也被列入愿景。</p>\n<h3>技术要点</h3>\n<ul><li>计划 1600–1650 颗卫星，轨道高度约 650 公里；部署周期 2–3 年；走 IN-SPACe 监管路径。</li><li>双轨战略：近期向全球低轨运营商租赁容量 + 长期自建主权星座。</li><li>首个印度自有的低轨宽带星座；进入 Starlink 已有约 1 万颗在轨卫星的市场。</li><li>目标市场：印度农村/偏远地区宽带与直连设备（D2D）连接。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 首个印度主权星座条目，为已跟踪的低轨竞赛（美国 Starlink/Amazon Leo——见 2026-07-04_amazon-leo-396-sats-initial-service；欧洲 Eutelsat-OneWeb——见 2026-07-03_eutelsat-airbus-340-oneweb-satellites；以及中国国网/千帆）增加了第四个国家/地区阵营。战略上它呼应了欧盟的主权论述（IRIS²），但主体是一家拥有十亿级用户电信基础的私营运营商。650 公里轨道、约 1650 颗卫星的星座壳层，以及&quot;先租赁、后自建&quot;模式，是后续 IN-SPACe 备案与供应商选择中值得跟踪的具体参数。</p>",
       "images": [],
       "search_blob": "reliance jio announces india's first sovereign leo constellation: 1,600–1,650 satellites at ~650 km 信实 jio 宣布印度首个主权低轨星座：约 650 公里轨道部署 1600–1650 颗卫星 leo direct-to-device broadband india in-space at reliance industries' 49th annual general meeting (june 18, 2026), akash ambani announced that jio platforms will build india's first sovereign low-earth-orbit satellite constellation: 1,600–1,650 satellites at an altitude of roughly 650 km, deployed over the next two to three years, with authorization through in-space (indian national space promotion and authorisation centre). jio is the first indian entity to enter the leo broadband segment as an operator rather than a reseller. 在信实工业第 49 届年度股东大会上（2026 年 6 月 18 日），akash ambani 宣布 jio platforms 将建设印度首个主权低轨卫星星座：约 1600–1650 颗卫星，轨道高度约 650 公里，计划在未来两到三年内部署，由印度国家航天促进与授权中心（in-space）授权。jio 成为首个以运营商（而非转售商）身份进入低轨宽带领域的印度实体。 satellite-news satellite"
+    },
+    {
+      "id": "2026-07-14_arxiv-ble-nlos-detection-ml-direction-finding",
+      "date_found": "2026-07-14",
+      "technology": "bluetooth",
+      "date_published": "2026-06-17",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Lightweight Non-Line-of-Sight Channel Detection for ML-assisted Bluetooth Direction Finding",
+      "title_zh": "面向 ML 辅助蓝牙测向的轻量级非视距信道检测",
+      "url": "https://arxiv.org/abs/2606.19497",
+      "topics": [
+        "BLE",
+        "direction-finding",
+        "AoA",
+        "CTE",
+        "NLOS",
+        "machine-learning"
+      ],
+      "topic_primary": "bt-location",
+      "topics_secondary": [
+        "bt-le"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-14_arxiv-ble-nlos-detection-ml-direction-finding.md",
+      "summary_short_en": "Bluetooth direction finding (AoA/AoD) degrades badly under non-line-of-sight (NLOS) conditions — multipath corrupts the phase measurements that angle estimation relies on. This paper (Talebian, Mahmood, et al., Mid Sweden University group) tackles the upstream problem: **classifying whether a BLE link is LOS or NLOS** so a positioning system can discount or reweight bad measurements, and doing it cheaply enough to run on resource-constrained anchors. The contribution is a lightweight ML pipeline built around a kernel approximation rather than a deep network.",
+      "summary_short_zh": "蓝牙测向（AoA/AoD）在非视距（NLOS）条件下急剧劣化——多径破坏了角度估计所依赖的相位测量。本文（Talebian、Mahmood 等，中瑞典大学团队）着手解决上游问题：**判定 BLE 链路是 LOS 还是 NLOS**，使定位系统能够剔除或重新加权劣质测量，且要足够轻量以在资源受限的锚点上运行。其贡献是一条围绕核近似（而非深度网络）构建的轻量 ML 流水线。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Bluetooth direction finding (AoA/AoD) degrades badly under non-line-of-sight (NLOS) conditions — multipath corrupts the phase measurements that angle estimation relies on. This paper (Talebian, Mahmood, et al., Mid Sweden University group) tackles the upstream problem: <strong>classifying whether a BLE link is LOS or NLOS</strong> so a positioning system can discount or reweight bad measurements, and doing it cheaply enough to run on resource-constrained anchors. The contribution is a lightweight ML pipeline built around a kernel approximation rather than a deep network.</p>\n<p>The pipeline takes BLE <strong>Constant Tone Extension (CTE) IQ samples</strong> as raw input, applies <strong>quantile-based standardization</strong> to tame outliers and heavy-tailed distributions in the channel features, and uses PCA + Adaptive Kernel Density Estimation for the statistical analysis. The classifier core is a <strong>Nyström Kernel Approximation (NKA)</strong> — a low-rank nonlinear feature map — feeding a Support Vector Classifier, benchmarked against Random Forest and MLP baselines. The Nyström map lifts accuracy by roughly 7–14% over the raw baseline.</p>\n<p>The headline argument is about the trade-off, not peak accuracy: although an MLP reaches higher absolute accuracy, the <strong>Nyström-SVC wins on the combination of training complexity, inference cost, and memory footprint</strong> — the metrics that matter for on-anchor deployment. The pipeline also produces calibrated posterior probabilities, which lets a system pick a cost-aware decision threshold (e.g. only trust an AoA fix when NLOS probability is below some operating point). Evaluation is on a controlled BLE measurement dataset spanning two distinct propagation environments.</p>\n<h3>Key technical points</h3>\n<ul><li>Problem: classify LOS vs NLOS on BLE links so AoA/AoD positioning can discount multipath-corrupted measurements.</li><li>Input: BLE CTE IQ features; quantile-based standardization for outlier/heavy-tail robustness; PCA + AKDE analysis.</li><li>Model: Nyström Kernel Approximation → SVC; vs Random Forest / MLP baselines. NKA gives +7–14% over raw baseline.</li><li>Trade-off finding: Nyström-SVC beats MLP on training complexity + inference cost + memory, despite MLP's higher absolute accuracy — the right choice for on-anchor deployment.</li><li>Calibrated posteriors enable cost-aware threshold selection; dataset spans two propagation environments.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's <code>bt-location</code> bin has centered on Channel Sounding (Core 6.0/6.3), PAwR-based connectionless ranging (<code>2026-05-24_arxiv-connectionless-ble-cs-pawr</code>), and phased-array/inertial fusion. This entry adds the complementary <strong>NLOS-integrity</strong> angle: a positioning fix is only as good as its knowledge of whether the link was line-of-sight, and prior work mostly assumed clean channels. The specific novelty is choosing a Nyström kernel approximation to hit a deployable compute/memory budget on anchors — an explicit engineering trade-off argument rather than an accuracy-maximization result, which is what makes it relevant to real BLE-location silicon.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>蓝牙测向（AoA/AoD）在非视距（NLOS）条件下急剧劣化——多径破坏了角度估计所依赖的相位测量。本文（Talebian、Mahmood 等，中瑞典大学团队）着手解决上游问题：<strong>判定 BLE 链路是 LOS 还是 NLOS</strong>，使定位系统能够剔除或重新加权劣质测量，且要足够轻量以在资源受限的锚点上运行。其贡献是一条围绕核近似（而非深度网络）构建的轻量 ML 流水线。</p>\n<p>该流水线以 BLE <strong>恒定音调扩展（CTE）IQ 采样</strong>为原始输入，采用<strong>分位数标准化</strong>以抑制信道特征中的离群值与重尾分布，并用 PCA + 自适应核密度估计做统计分析。分类核心为 <strong>Nyström 核近似（NKA）</strong>——一种低秩非线性特征映射——馈入支持向量分类器，并与随机森林和 MLP 基线比较。Nyström 映射较原始基线提升约 7–14% 的准确率。</p>\n<p>核心论点关乎权衡而非峰值准确率：尽管 MLP 绝对准确率更高，<strong>Nyström-SVC 在训练复杂度、推理开销与内存占用的组合上取胜</strong>——这些正是锚点部署所关心的指标。流水线还给出校准后的后验概率，使系统可选取代价感知的判决阈值（例如仅当 NLOS 概率低于某工作点时才信任 AoA 定位）。评估基于跨两种不同传播环境的受控 BLE 测量数据集。</p>\n<h3>技术要点</h3>\n<ul><li>问题：判定 BLE 链路 LOS/NLOS，使 AoA/AoD 定位可剔除多径污染的测量。</li><li>输入：BLE CTE IQ 特征；分位数标准化增强对离群值/重尾的鲁棒性；PCA + AKDE 分析。</li><li>模型：Nyström 核近似 → SVC；对比随机森林/MLP。NKA 较原始基线 +7–14%。</li><li>权衡结论：Nyström-SVC 在训练复杂度 + 推理开销 + 内存上胜过 MLP（尽管 MLP 绝对准确率更高）——更适合锚点部署。</li><li>校准后验支持代价感知阈值选择；数据集覆盖两种传播环境。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的 <code>bt-location</code> 分箱此前聚焦于信道探测（Core 6.0/6.3）、基于 PAwR 的无连接测距（<code>2026-05-24_arxiv-connectionless-ble-cs-pawr</code>）与相控阵/惯性融合。本条目补上互补的 <strong>NLOS 完整性</strong>视角：定位精度取决于系统是否知晓链路为视距，而以往工作多假设信道干净。其具体新意在于选用 Nyström 核近似以命中锚点上可部署的算力/内存预算——这是一个显式的工程权衡论断而非准确率最大化结果，正因如此它与真实 BLE 定位芯片相关。</p>",
+      "images": [],
+      "search_blob": "lightweight non-line-of-sight channel detection for ml-assisted bluetooth direction finding 面向 ml 辅助蓝牙测向的轻量级非视距信道检测 ble direction-finding aoa cte nlos machine-learning bluetooth direction finding (aoa/aod) degrades badly under non-line-of-sight (nlos) conditions — multipath corrupts the phase measurements that angle estimation relies on. this paper (talebian, mahmood, et al., mid sweden university group) tackles the upstream problem: **classifying whether a ble link is los or nlos** so a positioning system can discount or reweight bad measurements, and doing it cheaply enough to run on resource-constrained anchors. the contribution is a lightweight ml pipeline built around a kernel approximation rather than a deep network. 蓝牙测向（aoa/aod）在非视距（nlos）条件下急剧劣化——多径破坏了角度估计所依赖的相位测量。本文（talebian、mahmood 等，中瑞典大学团队）着手解决上游问题：**判定 ble 链路是 los 还是 nlos**，使定位系统能够剔除或重新加权劣质测量，且要足够轻量以在资源受限的锚点上运行。其贡献是一条围绕核近似（而非深度网络）构建的轻量 ml 流水线。 academic-paper bluetooth"
     },
     {
       "id": "2026-06-18_ast-spacemobile-bluebird-block2-launch",
