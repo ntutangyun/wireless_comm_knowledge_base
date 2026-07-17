@@ -1,13 +1,13 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-07-14",
-  "last_scanned": "2026-07-14",
+  "last_updated": "2026-07-17",
+  "last_scanned": "2026-07-17",
   "topic_counts": {
     "6G": 42,
-    "802.11bn": 38,
+    "802.11bn": 39,
     "MAC-layer": 37,
     "agentic-AI": 36,
-    "products": 31,
+    "products": 33,
     "scheduling": 31,
     "security": 29,
     "O-RAN": 25,
@@ -25,6 +25,7 @@ window.KB_DATA = {
     "network-slicing": 11,
     "802.11ax": 11,
     "LLM": 9,
+    "6GHz": 9,
     "mmWave": 9,
     "direct-to-device": 9,
     "CSI": 9,
@@ -32,12 +33,13 @@ window.KB_DATA = {
     "NTN": 9,
     "802.11bp": 8,
     "3GPP": 8,
-    "6GHz": 8,
     "digital-twin": 8,
     "AI-RAN": 8,
     "NearLink": 8,
     "SparkLink": 8,
     "BLE": 8,
+    "802.11bt": 7,
+    "privacy": 7,
     "802.11": 7,
     "802.11bq": 7,
     "URLLC": 7,
@@ -45,9 +47,8 @@ window.KB_DATA = {
     "XR": 7,
     "energy-efficiency": 7,
     "generative-AI": 7,
-    "802.11bt": 6,
+    "Wi-Fi 7": 6,
     "PQC": 6,
-    "privacy": 6,
     "NPCA": 6,
     "beamforming": 6,
     "resource-allocation": 6,
@@ -64,6 +65,7 @@ window.KB_DATA = {
     "5G-Advanced": 5,
     "OFDMA": 5,
     "RIC": 5,
+    "802.11bi": 4,
     "TGbt": 4,
     "MEC": 4,
     "UAV": 4,
@@ -73,7 +75,6 @@ window.KB_DATA = {
     "backhaul": 4,
     "LB291": 4,
     "Co-RTWT": 4,
-    "Wi-Fi 7": 4,
     "AI": 4,
     "measurement": 4,
     "ns-3": 4,
@@ -93,6 +94,7 @@ window.KB_DATA = {
     "5G-core": 4,
     "802.15.4ab": 4,
     "802.11az": 4,
+    "REVmf": 3,
     "TGm": 3,
     "TGbp": 3,
     "802.11br": 3,
@@ -138,6 +140,7 @@ window.KB_DATA = {
     "WPA3": 3,
     "digital-car-key": 3,
     "roaming": 3,
+    "standards-process": 2,
     "WNG": 2,
     "AI-offload": 2,
     "UCM": 2,
@@ -146,15 +149,14 @@ window.KB_DATA = {
     "OWE": 2,
     "AI Offload SG": 2,
     "AI-inference": 2,
-    "REVmf": 2,
     "coexistence": 2,
     "TGbn": 2,
     "spectrum-regulation": 2,
+    "standard-power": 2,
     "CoMP": 2,
     "LSTM": 2,
     "PAKE": 2,
     "DSO": 2,
-    "802.11bi": 2,
     "PPO": 2,
     "BBR": 2,
     "contention": 2,
@@ -228,6 +230,8 @@ window.KB_DATA = {
     "Ericsson": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "directional-antenna": 1,
+    "high-density": 1,
     "TGbr": 1,
     "Coex": 1,
     "liaison": 1,
@@ -250,7 +254,6 @@ window.KB_DATA = {
     "inference-time-scaling": 1,
     "WISP": 1,
     "OpenAFC": 1,
-    "standard-power": 1,
     "coordinated-beamforming": 1,
     "StemGNN": 1,
     "concept-drift": 1,
@@ -773,12 +776,12 @@ window.KB_DATA = {
     "TWS": 1
   },
   "primary_topic_counts": {
-    "wifi8-uhr": 24,
+    "wifi8-uhr": 25,
+    "wifi7-deployment": 21,
     "cellular-ai": 21,
     "6g-vision": 20,
     "sensing-csi": 20,
-    "wifi7-deployment": 19,
-    "security-privacy": 18,
+    "security-privacy": 19,
     "open-ran": 15,
     "5g-nr": 15,
     "leo-constellations": 13,
@@ -816,8 +819,8 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 192,
-    "industry-news": 63,
-    "ieee-document": 24,
+    "industry-news": 65,
+    "ieee-document": 26,
     "product": 17,
     "satellite-news": 7,
     "proposal": 4,
@@ -826,8 +829,8 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 192,
-    "industry": 87,
-    "standards": 32
+    "industry": 89,
+    "standards": 34
   },
   "technologies_vocab": {
     "technologies": [
@@ -1803,6 +1806,7 @@ window.KB_DATA = {
         "2026-05-03_arxiv-rtwt-rta-delay-model"
       ],
       "entries_secondary": [
+        "2026-07-17_ieee-mentor-montreal-plenary-closing-digest",
         "2026-07-09_ieee-mentor-tgbn-preplenary-digest",
         "2026-06-25_arxiv-bravr-ap-assisted-vr-bitrate-wifi",
         "2026-06-15_arxiv-11bn-mapc-tutorial-d14",
@@ -2024,6 +2028,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Wi-Fi 8 / 802.11bn / UHR))\n    Schedule 2026\n      D1.3 approved Jan Victoria\n      March plenary - no D2.0 ratify\n      D2.0 ballot slipped May to Jul\n      Ratify target May 2028\n    Study groups\n      AIML TIG/SC\n      AI Offload SG\n      WNG SC\n    Vendor positioning\n      Qualcomm AI-Native MWC 2026\n      Broadcom unified CES 2026\n      MediaTek Filogic 8000\n      Intel four-pillar WWC\n      Gemtek / Quectel\n    Background reading\n      25-year Wi-Fi tutorial\n      AIML CSI feedback survey\n    Watch\n      July 2026 D2.0 ballot\n      AI Offload SG charter\n      Wi-Fi 9 / WNG contributions",
       "diagram_mmd_zh": "mindmap\n  root((Wi-Fi 8 / 802.11bn / UHR))\n    2026 进度\n      D1.3 于 Jan Victoria 批准\n      3 月全会未通过 D2.0\n      D2.0 投票从 5 月推迟至 7 月\n      批准目标 2028-05\n    研究组\n      AIML TIG/SC\n      AI Offload SG\n      WNG SC\n    厂商站位\n      Qualcomm AI-Native（MWC 2026）\n      Broadcom 统一栈（CES 2026）\n      MediaTek Filogic 8000\n      Intel 四支柱（WWC）\n      Gemtek / Quectel\n    背景阅读\n      Wi-Fi 25 年综述\n      AIML CSI 反馈综述\n    关注\n      2026-07 D2.0 投票\n      AI Offload SG 立项\n      Wi-Fi 9 / WNG 贡献",
       "entries_primary": [
+        "2026-07-17_ieee-mentor-montreal-plenary-closing-digest",
         "2026-07-14_ieee-mentor-montreal-plenary-midweek-digest",
         "2026-07-13_ieee-mentor-montreal-plenary-opening-digest",
         "2026-07-09_ieee-mentor-tgbn-preplenary-digest",
@@ -2057,6 +2062,7 @@ window.KB_DATA = {
         "2026-07-06_mediatek-open-source-gateway-rdk-prplos",
         "2026-06-15_arxiv-11bn-mapc-tutorial-d14",
         "2026-05-30_tplink-wifi8-archer8-roadmap",
+        "2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion",
         "2026-05-18_arxiv-maxlm-wlan-scheduling",
         "2026-05-12_ieee-mentor-tgbt-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbq-antwerp-digest",
@@ -2069,6 +2075,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "ieee-document": [
+          "2026-07-17_ieee-mentor-montreal-plenary-closing-digest",
           "2026-07-14_ieee-mentor-montreal-plenary-midweek-digest",
           "2026-07-13_ieee-mentor-montreal-plenary-opening-digest",
           "2026-07-09_ieee-mentor-tgbn-preplenary-digest",
@@ -2118,6 +2125,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-17_cambium-directional-wifi7-high-density-ap",
         "2026-07-09_zyxel-outdoor-wifi7-wbe665s",
         "2026-07-05_ampthink-hyper-directional-stadium-wifi",
         "2026-07-04_worldvue-openwifi-3500-device-scale",
@@ -2126,6 +2134,7 @@ window.KB_DATA = {
         "2026-07-03_espressif-esp32-e22-wifi6e-certified",
         "2026-07-03_cisco-9177-outdoor-wifi7-urwb-ap",
         "2026-05-30_tplink-wifi8-archer8-roadmap",
+        "2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion",
         "2026-05-12_hpe-self-driving-networks-723h",
         "2026-05-12_extreme-connect-platform-one-agentone",
         "2026-05-05_belden-acquires-ruckus-1-85b",
@@ -2143,20 +2152,14 @@ window.KB_DATA = {
         "2026-05-21_fcc-6ghz-rule-changes"
       ],
       "by_type_primary": {
-        "product": [
-          "2026-07-09_zyxel-outdoor-wifi7-wbe665s",
-          "2026-07-03_espressif-esp32-e22-wifi6e-certified",
-          "2026-07-03_cisco-9177-outdoor-wifi7-urwb-ap",
-          "2026-05-12_hpe-self-driving-networks-723h",
-          "2026-05-12_extreme-connect-platform-one-agentone",
-          "2026-05-04_hpe-aruba-730-utb-wifi7-ap"
-        ],
         "industry-news": [
+          "2026-07-17_cambium-directional-wifi7-high-density-ap",
           "2026-07-05_ampthink-hyper-directional-stadium-wifi",
           "2026-07-04_worldvue-openwifi-3500-device-scale",
           "2026-07-06_mediatek-open-source-gateway-rdk-prplos",
           "2026-06-27_wifinow-helium-spectrumone-ambient-power",
           "2026-05-30_tplink-wifi8-archer8-roadmap",
+          "2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion",
           "2026-05-05_belden-acquires-ruckus-1-85b",
           "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
           "2026-05-04_rcr-mdu-wifi-msp-vs-carriers",
@@ -2165,6 +2168,14 @@ window.KB_DATA = {
           "2026-05-04_ruckus-nokia-wifi7-fiber-olan",
           "2026-05-04_cisco-georgetown-wifi7-deployment",
           "2026-05-04_cisco-wifi7-breakout-year-2026"
+        ],
+        "product": [
+          "2026-07-09_zyxel-outdoor-wifi7-wbe665s",
+          "2026-07-03_espressif-esp32-e22-wifi6e-certified",
+          "2026-07-03_cisco-9177-outdoor-wifi7-urwb-ap",
+          "2026-05-12_hpe-self-driving-networks-723h",
+          "2026-05-12_extreme-connect-platform-one-agentone",
+          "2026-05-04_hpe-aruba-730-utb-wifi7-ap"
         ]
       }
     },
@@ -2196,7 +2207,8 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-07-10_ieee-mentor-misc-plenary-eve-digest",
-        "2026-07-03_espressif-esp32-e22-wifi6e-certified"
+        "2026-07-03_espressif-esp32-e22-wifi6e-certified",
+        "2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion"
       ],
       "by_type_primary": {
         "industry-news": [
@@ -2413,6 +2425,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Security & privacy))\n    Attacks\n      AirSnitch client-isolation (NDSS'26)\n      CSI-RFF microsignals\n      StateFi FSM fingerprinting\n      VWattacker VoWiFi\n      Rural deployment surface\n    Defenses\n      PHY-preamble signatures (CE)\n      Runtime MAC re-randomization\n      Secure FTM (cross to ftm-ranging)\n    Standards activity\n      TGbi EPPKE\n      TGbt post-quantum / crypto agility\n    Watch\n      WPA3 successor at IETF/IEEE\n      Sensing-privacy regulation\n      RFF rotation + MAC re-randomization",
       "diagram_mmd_zh": "mindmap\n  root((安全与隐私))\n    攻击\n      AirSnitch 客户端隔离（NDSS'26）\n      CSI-RFF 微信号\n      StateFi FSM 指纹\n      VWattacker VoWiFi\n      乡村部署攻击面\n    防御\n      PHY 前导码签名（CE）\n      运行时 MAC 再随机化\n      安全 FTM（关联 ftm-ranging）\n    标准活动\n      TGbi EPPKE\n      TGbt 后量子 / 加密敏捷\n    关注\n      WPA3 后继在 IETF/IEEE\n      感知隐私监管\n      RFF 轮换 + MAC 再随机化",
       "entries_primary": [
+        "2026-07-17_ieee-80211bi-conditional-approval-milestone",
         "2026-07-11_ieee-mentor-tgbt-digest",
         "2026-07-10_ieee-mentor-tgbt-plenary-eve-digest",
         "2026-07-09_ieee-mentor-tgbt-preplenary-digest",
@@ -2433,6 +2446,7 @@ window.KB_DATA = {
         "2026-05-05_arxiv-mac-rerandomization-runtime"
       ],
       "entries_secondary": [
+        "2026-07-17_ieee-mentor-montreal-plenary-closing-digest",
         "2026-07-14_ieee-mentor-montreal-plenary-midweek-digest",
         "2026-07-13_ieee-mentor-montreal-plenary-opening-digest",
         "2026-07-09_ieee-mentor-tgbp-preplenary-digest",
@@ -2450,6 +2464,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "ieee-document": [
+          "2026-07-17_ieee-80211bi-conditional-approval-milestone",
           "2026-07-11_ieee-mentor-tgbt-digest",
           "2026-07-10_ieee-mentor-tgbt-plenary-eve-digest",
           "2026-07-09_ieee-mentor-tgbt-preplenary-digest",
@@ -3799,6 +3814,90 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-07-17_ieee-mentor-montreal-plenary-closing-digest",
+      "date_found": "2026-07-17",
+      "technology": "wifi",
+      "date_published": "2026-07-17",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 Mentor digest — Montreal plenary closing wave (2026-07-17)",
+      "title_zh": "IEEE 802.11 Mentor 摘要 — 蒙特利尔全会闭幕批次（2026-07-17）",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026",
+      "topics": [
+        "802.11bn",
+        "802.11bt",
+        "802.11bi",
+        "REVmf",
+        "standards-process"
+      ],
+      "topic_primary": "wifi8-uhr",
+      "topics_secondary": [
+        "security-privacy",
+        "rtwt-latency"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-07-17_ieee-mentor-montreal-plenary-closing-digest.md",
+      "summary_short_en": "The Montreal plenary (July 12–17) closed with a wave of ~18 new Mentor uploads past DCN 11-26/1448 (new high-water mark: 11-26/1473). The bulk are closing reports and minutes — TGbi, TGbt, TGbq, TGbr, REVmf, WNG SC, AIML SC, ARC SC, Editors, and the 802.15 liaison — marking the formal end of the session. Three uploads are substantive: Intel's TGbn P-EDCA comment-resolution document, HPE's TGbt PAKE contribution, and Ruckus's REVmf LB194 MAC comments compilation. TGbi's conditional-approval report is covered in a dedicated entry (2026-07-17_ieee-80211bi-conditional-approval-milestone).",
+      "summary_short_zh": "蒙特利尔全会（7 月 12–17 日）以一波约 18 份新 Mentor 上传收尾，DCN 越过 11-26/1448（新水位线：11-26/1473）。大部分是闭幕报告和会议纪要——TGbi、TGbt、TGbq、TGbr、REVmf、WNG SC、AIML SC、ARC SC、编辑组以及 802.15 联络报告——标志着会期正式结束。三份上传具有实质内容：Intel 的 TGbn P-EDCA 意见处理文稿、HPE 的 TGbt PAKE 贡献、以及 Ruckus 的 REVmf LB194 MAC 意见汇编。TGbi 的有条件批准报告在专门条目中介绍（2026-07-17_ieee-80211bi-conditional-approval-milestone）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The Montreal plenary (July 12–17) closed with a wave of ~18 new Mentor uploads past DCN 11-26/1448 (new high-water mark: 11-26/1473). The bulk are closing reports and minutes — TGbi, TGbt, TGbq, TGbr, REVmf, WNG SC, AIML SC, ARC SC, Editors, and the 802.15 liaison — marking the formal end of the session. Three uploads are substantive: Intel's TGbn P-EDCA comment-resolution document, HPE's TGbt PAKE contribution, and Ruckus's REVmf LB194 MAC comments compilation. TGbi's conditional-approval report is covered in a dedicated entry (2026-07-17_ieee-80211bi-conditional-approval-milestone).</p>\n<p>Notably absent from the visible listing at scrape time: the TGbn closing report and any explicit D2.0 ballot-result announcement — the P-EDCA &quot;remaining CIDs&quot; document (uploaded July 15) indicates D1.x comment resolution was still active in the final days, so the D2.0 recirculation status will need confirmation from the session report or the late-July Ofinno readout.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26/1459-00 · TGbn</strong> — &quot;p-edca remaining CIDs&quot;. Dmitry Akhmetov (Intel), 15-Jul. Priority-EDCA comment resolution for the UHR draft.</li><li><strong>DCN 11-26/1452-00 · TGbt</strong> — &quot;pake-c-and-c&quot;. Dan Harkins (HPE), 15-Jul. PAKE (password-authenticated key exchange) contribution in the post-quantum task group.</li><li><strong>DCN 11-26/1457-01 · TGbt</strong> — &quot;Draft liaison response to WAA&quot;. Stephen Orr (Cisco), 15-Jul.</li><li><strong>DCN 11-26/1461-00 · TGm</strong> — &quot;REVmf LB194 MAC comments FYI&quot;. Mark Hamilton (Ruckus), 16-Jul.</li><li><strong>DCN 11-26/1456-01 · TGbn</strong> — &quot;TGbn PHY ad hoc minutes Montreal f2f&quot;. Tianyu Wu (Apple), 14-Jul.</li><li>Closing reports: 1462/1458 TGbr (FTH/Sony), 1460 WNG SC (DeepSig), 1463-01 REVmf (Huawei), 1465 UCM TIG minutes (Sony), 1466 TGbi (Cox), 1468 AIML SC (InterDigital), 1469 TGbt (Cisco), 1470 TGbq (Huawei), 1471 Editors (Huawei), 1472 ARC SC (Ruckus), 1473 802.15 liaison (BCA).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The closing wave fixes the session's outcome picture: TGbi exits Montreal at the publication gate, TGbt is actively working PAKE alongside its PQC agenda (Harkins authored SAE — his PAKE contribution is worth watching when the docx becomes readable), and TGbn's P-EDCA thread ran to the wire without a visible D2.0 ballot announcement. Next signals to watch: the Session 218 report on ieee802.org/11/Reports (resets the long-idle source), TGbn closing report DCNs past 1473, and the Ofinno post-Montreal readout expected late July.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>蒙特利尔全会（7 月 12–17 日）以一波约 18 份新 Mentor 上传收尾，DCN 越过 11-26/1448（新水位线：11-26/1473）。大部分是闭幕报告和会议纪要——TGbi、TGbt、TGbq、TGbr、REVmf、WNG SC、AIML SC、ARC SC、编辑组以及 802.15 联络报告——标志着会期正式结束。三份上传具有实质内容：Intel 的 TGbn P-EDCA 意见处理文稿、HPE 的 TGbt PAKE 贡献、以及 Ruckus 的 REVmf LB194 MAC 意见汇编。TGbi 的有条件批准报告在专门条目中介绍（2026-07-17_ieee-80211bi-conditional-approval-milestone）。</p>\n<p>抓取时可见列表中明显缺席的：TGbn 闭幕报告以及任何明确的 D2.0 投票结果公告——P-EDCA“剩余 CID”文稿（7 月 15 日上传）表明 D1.x 意见处理在会期最后几天仍在进行，D2.0 再循环状态需等会议报告或七月底 Ofinno readout 确认。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26/1459-00 · TGbn</strong> —《p-edca remaining CIDs》。Dmitry Akhmetov（Intel），7 月 15 日。UHR 草案的优先级 EDCA 意见处理。</li><li><strong>DCN 11-26/1452-00 · TGbt</strong> —《pake-c-and-c》。Dan Harkins（HPE），7 月 15 日。后量子任务组中的 PAKE（口令认证密钥交换）贡献。</li><li><strong>DCN 11-26/1457-01 · TGbt</strong> —《对 WAA 的联络回复草案》。Stephen Orr（Cisco），7 月 15 日。</li><li><strong>DCN 11-26/1461-00 · TGm</strong> —《REVmf LB194 MAC 意见 FYI》。Mark Hamilton（Ruckus），7 月 16 日。</li><li><strong>DCN 11-26/1456-01 · TGbn</strong> —《TGbn PHY ad hoc 蒙特利尔现场会议纪要》。Tianyu Wu（Apple），7 月 14 日。</li><li>闭幕报告：1462/1458 TGbr（FTH/Sony）、1460 WNG SC（DeepSig）、1463-01 REVmf（Huawei）、1465 UCM TIG 纪要（Sony）、1466 TGbi（Cox）、1468 AIML SC（InterDigital）、1469 TGbt（Cisco）、1470 TGbq（Huawei）、1471 编辑组（Huawei）、1472 ARC SC（Ruckus）、1473 802.15 联络（BCA）。</li></ul>\n<h3>意义与新意</h3>\n<p>闭幕批次确定了本次会期的成果图景：TGbi 以出版关口的姿态离开蒙特利尔；TGbt 在其后量子议程之外正在积极推进 PAKE（Harkins 是 SAE 的作者——其 PAKE 贡献在 docx 可读后值得关注）；TGbn 的 P-EDCA 线程一直忙到最后、且未见明确的 D2.0 投票公告。下一步关注信号：ieee802.org/11/Reports 上的第 218 次会议报告（将重置长期闲置的信息源）、DCN 1473 之后的 TGbn 闭幕报告、以及预计七月底发布的 Ofinno 蒙特利尔会后 readout。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 mentor digest — montreal plenary closing wave (2026-07-17) ieee 802.11 mentor 摘要 — 蒙特利尔全会闭幕批次（2026-07-17） 802.11bn 802.11bt 802.11bi revmf standards-process the montreal plenary (july 12–17) closed with a wave of ~18 new mentor uploads past dcn 11-26/1448 (new high-water mark: 11-26/1473). the bulk are closing reports and minutes — tgbi, tgbt, tgbq, tgbr, revmf, wng sc, aiml sc, arc sc, editors, and the 802.15 liaison — marking the formal end of the session. three uploads are substantive: intel's tgbn p-edca comment-resolution document, hpe's tgbt pake contribution, and ruckus's revmf lb194 mac comments compilation. tgbi's conditional-approval report is covered in a dedicated entry (2026-07-17_ieee-80211bi-conditional-approval-milestone). 蒙特利尔全会（7 月 12–17 日）以一波约 18 份新 mentor 上传收尾，dcn 越过 11-26/1448（新水位线：11-26/1473）。大部分是闭幕报告和会议纪要——tgbi、tgbt、tgbq、tgbr、revmf、wng sc、aiml sc、arc sc、编辑组以及 802.15 联络报告——标志着会期正式结束。三份上传具有实质内容：intel 的 tgbn p-edca 意见处理文稿、hpe 的 tgbt pake 贡献、以及 ruckus 的 revmf lb194 mac 意见汇编。tgbi 的有条件批准报告在专门条目中介绍（2026-07-17_ieee-80211bi-conditional-approval-milestone）。 ieee-document wifi"
+    },
+    {
+      "id": "2026-07-17_ieee-80211bi-conditional-approval-milestone",
+      "date_found": "2026-07-17",
+      "technology": "wifi",
+      "date_published": "2026-07-16",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11bi reaches conditional-approval milestone at the Montreal plenary",
+      "title_zh": "IEEE 802.11bi 在蒙特利尔全会达成有条件批准里程碑",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bi",
+      "topics": [
+        "802.11bi",
+        "privacy",
+        "standards-process"
+      ],
+      "topic_primary": "security-privacy",
+      "topics_secondary": [],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-17_ieee-80211bi-conditional-approval-milestone.md",
+      "summary_short_en": "On the closing day of the July 2026 IEEE 802 plenary in Montreal (July 12–17), TGbi chair Carol Ansley (Cox) uploaded DCN 11-26/1453r1, \"Report to LMSC on Conditional Approval\", alongside the TGbi July Plenary Closing Report (11-26/1466). Conditional approval is the IEEE 802 LMSC procedure by which a draft that has completed its Working Group and SA recirculation ballots is authorized to proceed toward RevCom submission conditioned on the outcome of the final recirculation — in practice, it is the last procedural gate before publication.",
+      "summary_short_zh": "在 2026 年 7 月蒙特利尔 IEEE 802 全会（7 月 12–17 日）的闭幕日，TGbi 主席 Carol Ansley（Cox）上传了 DCN 11-26/1453r1《Report to LMSC on Conditional Approval》（提交 LMSC 的有条件批准报告），并同时提交了 TGbi 七月全会闭幕报告（11-26/1466）。“有条件批准”是 IEEE 802 LMSC 的一项程序：当草案已完成工作组投票和 SA 再循环投票后，可在最终再循环结果满足条件的前提下获准推进至 RevCom 提交——实际上这是出版发布前的最后一道程序关口。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On the closing day of the July 2026 IEEE 802 plenary in Montreal (July 12–17), TGbi chair Carol Ansley (Cox) uploaded DCN 11-26/1453r1, &quot;Report to LMSC on Conditional Approval&quot;, alongside the TGbi July Plenary Closing Report (11-26/1466). Conditional approval is the IEEE 802 LMSC procedure by which a draft that has completed its Working Group and SA recirculation ballots is authorized to proceed toward RevCom submission conditioned on the outcome of the final recirculation — in practice, it is the last procedural gate before publication.</p>\n<p>The milestone matches the working group's published timeline exactly: the 802.11 Timelines page (updated 2026-07-08) listed 802.11bi at D5.00 with SA recirculation results of 92% and &quot;final WG approval&quot; predicted for July 2026. 802.11bi (Enhanced Data Privacy) standardizes mechanisms that reduce the trackability of Wi-Fi devices — randomized/changing MAC addresses with session continuity, encrypted or protected identifiers in management frames, and reduced information leakage in probe/association exchanges. With conditional approval requested at Montreal, publication of the amendment is on track for late 2026 or early 2027.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26/1453r1 · TGbi</strong> — &quot;Report to LMSC on Conditional Approval&quot;. Carol Ansley (Cox), uploaded 2026-07-16.</li><li><strong>DCN 11-26/1466 · TGbi</strong> — &quot;TGbi July Plenary Closing Report&quot;. Carol Ansley (Cox), uploaded 2026-07-16.</li><li>802.11bi status at plenary start: D5.00, WG letter ballots D1.0–D4.0 complete (D4.0 at 98%), SA ballots D4.0–D5.0 complete at 92%.</li><li>Conditional approval authorizes RevCom submission conditioned on the final recirculation outcome — the last procedural step before publication.</li><li>802.11bi scope: enhanced data privacy — MAC address randomization with continuity, protected identifiers, reduced management-frame information leakage.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the first of the current wave of 802.11 amendments to reach the publication gate: 802.11bi finishing ahead of 802.11bn (D1.50, SA ballot still pending) makes privacy the next shipped Wi-Fi capability rather than throughput or latency. For the KB this closes the &quot;watch for TGbi final WG approval in July&quot; item tracked since the June entries — device and AP vendors now have a stable normative target for implementing enhanced-privacy features. Related entries: 2026-07-10_ieee-mentor-tgbt-plenary-eve-digest (the privacy/PQC context in the same week), 2026-07-13_ieee-mentor-montreal-plenary-opening-digest.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>在 2026 年 7 月蒙特利尔 IEEE 802 全会（7 月 12–17 日）的闭幕日，TGbi 主席 Carol Ansley（Cox）上传了 DCN 11-26/1453r1《Report to LMSC on Conditional Approval》（提交 LMSC 的有条件批准报告），并同时提交了 TGbi 七月全会闭幕报告（11-26/1466）。“有条件批准”是 IEEE 802 LMSC 的一项程序：当草案已完成工作组投票和 SA 再循环投票后，可在最终再循环结果满足条件的前提下获准推进至 RevCom 提交——实际上这是出版发布前的最后一道程序关口。</p>\n<p>这一里程碑与工作组公布的时间表完全吻合：802.11 Timelines 页面（2026-07-08 更新）显示 802.11bi 处于 D5.00，SA 再循环投票结果为 92%，且“最终工作组批准”预计在 2026 年 7 月完成。802.11bi（增强数据隐私）标准化了降低 Wi-Fi 设备可追踪性的机制——带会话连续性的随机化/可变 MAC 地址、管理帧中加密或受保护的标识符，以及减少探测/关联交互中的信息泄露。随着蒙特利尔全会提出有条件批准请求，该修正案有望在 2026 年底或 2027 年初正式出版。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26/1453r1 · TGbi</strong> —《Report to LMSC on Conditional Approval》。Carol Ansley（Cox），2026-07-16 上传。</li><li><strong>DCN 11-26/1466 · TGbi</strong> —《TGbi 七月全会闭幕报告》。Carol Ansley（Cox），2026-07-16 上传。</li><li>全会开始时 802.11bi 状态：D5.00，工作组投票 D1.0–D4.0 完成（D4.0 达 98%），SA 投票 D4.0–D5.0 完成、结果 92%。</li><li>有条件批准授权在最终再循环结果满足条件的前提下提交 RevCom——这是出版前的最后一个程序步骤。</li><li>802.11bi 范围：增强数据隐私——带连续性的 MAC 地址随机化、受保护标识符、减少管理帧信息泄露。</li></ul>\n<h3>意义与新意</h3>\n<p>这是当前一波 802.11 修正案中第一个到达出版关口的：802.11bi 先于 802.11bn（D1.50，SA 投票尚未开始）完成，意味着下一个落地的 Wi-Fi 能力是隐私而非吞吐或时延。对本知识库而言，这关闭了自六月条目以来跟踪的“关注 TGbi 七月最终工作组批准”事项——设备和 AP 厂商现在有了实现增强隐私特性的稳定规范目标。相关条目：2026-07-10_ieee-mentor-tgbt-plenary-eve-digest（同一周的隐私/后量子密码背景）、2026-07-13_ieee-mentor-montreal-plenary-opening-digest。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11bi reaches conditional-approval milestone at the montreal plenary ieee 802.11bi 在蒙特利尔全会达成有条件批准里程碑 802.11bi privacy standards-process on the closing day of the july 2026 ieee 802 plenary in montreal (july 12–17), tgbi chair carol ansley (cox) uploaded dcn 11-26/1453r1, \"report to lmsc on conditional approval\", alongside the tgbi july plenary closing report (11-26/1466). conditional approval is the ieee 802 lmsc procedure by which a draft that has completed its working group and sa recirculation ballots is authorized to proceed toward revcom submission conditioned on the outcome of the final recirculation — in practice, it is the last procedural gate before publication. 在 2026 年 7 月蒙特利尔 ieee 802 全会（7 月 12–17 日）的闭幕日，tgbi 主席 carol ansley（cox）上传了 dcn 11-26/1453r1《report to lmsc on conditional approval》（提交 lmsc 的有条件批准报告），并同时提交了 tgbi 七月全会闭幕报告（11-26/1466）。“有条件批准”是 ieee 802 lmsc 的一项程序：当草案已完成工作组投票和 sa 再循环投票后，可在最终再循环结果满足条件的前提下获准推进至 revcom 提交——实际上这是出版发布前的最后一道程序关口。 ieee-document wifi"
+    },
+    {
+      "id": "2026-07-17_cambium-directional-wifi7-high-density-ap",
+      "date_found": "2026-07-17",
+      "technology": "wifi",
+      "date_published": "2026-07-16",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Cambium Networks launches a directional Wi-Fi 7 AP for high-density, high-ceiling venues",
+      "title_zh": "Cambium Networks 推出面向高密度、高天花板场馆的定向 Wi-Fi 7 接入点",
+      "url": "https://wifinowglobal.com/news-and-blog/tech-watch-using-ai-for-better-wi-fi-in-the-home-with-james-chen-of-mediatek/",
+      "topics": [
+        "Wi-Fi 7",
+        "directional-antenna",
+        "high-density",
+        "products"
+      ],
+      "topic_primary": "wifi7-deployment",
+      "topics_secondary": [],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-07-17_cambium-directional-wifi7-high-density-ap.md",
+      "summary_short_en": "Wi-Fi NOW's TECH WATCH feature (July 16, 2026, Claus Hetting, with Maurice Dini of Cambium Networks) covers Cambium's release of a new directional access point delivering high-density Wi-Fi 7 performance for large public venues. The design premise: \"Directional APs are essential when covering public spaces with high ceilings — or any venue where Wi-Fi users are far from typical AP deployment surfaces.\" Instead of the conventional omnidirectional ceiling-mount pattern, the AP shapes coverage downward/outward from distant mounting points, keeping per-AP cell sizes controlled in dense crowds.",
+      "summary_short_zh": "Wi-Fi NOW 的 TECH WATCH 专栏（2026 年 7 月 16 日，Claus Hetting 对话 Cambium Networks 的 Maurice Dini）报道了 Cambium 发布的一款新定向接入点，为大型公共场馆提供高密度 Wi-Fi 7 性能。其设计前提是：“覆盖高天花板的公共空间——或任何用户远离常规 AP 安装面的场馆——定向 AP 是必不可少的。” 与传统的全向吸顶安装模式不同，该 AP 从较远的安装点向下/向外塑形覆盖，在密集人群中保持每 AP 小区尺寸可控。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Wi-Fi NOW's TECH WATCH feature (July 16, 2026, Claus Hetting, with Maurice Dini of Cambium Networks) covers Cambium's release of a new directional access point delivering high-density Wi-Fi 7 performance for large public venues. The design premise: &quot;Directional APs are essential when covering public spaces with high ceilings — or any venue where Wi-Fi users are far from typical AP deployment surfaces.&quot; Instead of the conventional omnidirectional ceiling-mount pattern, the AP shapes coverage downward/outward from distant mounting points, keeping per-AP cell sizes controlled in dense crowds.</p>\n<p>The piece is interview-driven (embedded video) with limited published specs, but it is the second major directional-AP data point this month: it lines up with AmpThink's July 4 assessment that hyper-directional overhead networking is becoming the default design for ultra-high-density stadium Wi-Fi. Cambium productizing a dedicated directional Wi-Fi 7 SKU moves that trend from integrator practice (repurposed Cisco 9104 sector antennas) to vendor portfolio.</p>\n<h3>Key technical points</h3>\n<ul><li>New Cambium Networks directional AP, Wi-Fi 7, targeted at high-density large public venues.</li><li>Use case: high-ceiling spaces and venues where users are far from typical AP mounting surfaces.</li><li>Directional coverage shaping replaces omnidirectional ceiling-mount placement for cell-size control in dense crowds.</li><li>Interview format (Maurice Dini, Cambium); detailed radio specs not yet published in the article.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Second vendor-side confirmation of the directional-AP trend within two weeks — see 2026-07-05_ampthink-hyper-directional-stadium-wifi, where the integrator side predicted exactly this product category. If directional sectorization becomes standard in venue Wi-Fi, it changes interference geometry assumptions that 802.11bn multi-AP coordination (Co-SR power control in particular) implicitly makes about omnidirectional neighbors — a thread worth tracking as MAPC evaluation scenarios firm up.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Wi-Fi NOW 的 TECH WATCH 专栏（2026 年 7 月 16 日，Claus Hetting 对话 Cambium Networks 的 Maurice Dini）报道了 Cambium 发布的一款新定向接入点，为大型公共场馆提供高密度 Wi-Fi 7 性能。其设计前提是：“覆盖高天花板的公共空间——或任何用户远离常规 AP 安装面的场馆——定向 AP 是必不可少的。” 与传统的全向吸顶安装模式不同，该 AP 从较远的安装点向下/向外塑形覆盖，在密集人群中保持每 AP 小区尺寸可控。</p>\n<p>这篇报道以访谈为主（内嵌视频），公开规格有限，但它是本月第二个重要的定向 AP 信号：与 AmpThink 7 月 4 日的判断一致——超定向高空组网正在成为超高密度体育场 Wi-Fi 的默认设计。Cambium 将专用定向 Wi-Fi 7 SKU 产品化，使这一趋势从集成商实践（改用 Cisco 9104 扇区天线）走向厂商产品组合。</p>\n<h3>技术要点</h3>\n<ul><li>Cambium Networks 新定向 AP，Wi-Fi 7，面向高密度大型公共场馆。</li><li>应用场景：高天花板空间、以及用户远离常规 AP 安装面的场馆。</li><li>以定向覆盖塑形取代全向吸顶部署，在密集人群中控制小区尺寸。</li><li>访谈形式（Cambium 的 Maurice Dini）；文章尚未公布详细射频规格。</li></ul>\n<h3>意义与新意</h3>\n<p>两周内来自厂商侧对定向 AP 趋势的第二次确认——参见 2026-07-05_ampthink-hyper-directional-stadium-wifi，集成商侧当时预测的正是这一产品品类。若定向扇区化成为场馆 Wi-Fi 的标准做法，它将改变 802.11bn 多 AP 协调（尤其是 Co-SR 功率控制）隐含假设的全向邻居干扰几何——随着 MAPC 评估场景逐步固化，这一线索值得持续跟踪。</p>",
+      "images": [],
+      "search_blob": "cambium networks launches a directional wi-fi 7 ap for high-density, high-ceiling venues cambium networks 推出面向高密度、高天花板场馆的定向 wi-fi 7 接入点 wi-fi 7 directional-antenna high-density products wi-fi now's tech watch feature (july 16, 2026, claus hetting, with maurice dini of cambium networks) covers cambium's release of a new directional access point delivering high-density wi-fi 7 performance for large public venues. the design premise: \"directional aps are essential when covering public spaces with high ceilings — or any venue where wi-fi users are far from typical ap deployment surfaces.\" instead of the conventional omnidirectional ceiling-mount pattern, the ap shapes coverage downward/outward from distant mounting points, keeping per-ap cell sizes controlled in dense crowds. wi-fi now 的 tech watch 专栏（2026 年 7 月 16 日，claus hetting 对话 cambium networks 的 maurice dini）报道了 cambium 发布的一款新定向接入点，为大型公共场馆提供高密度 wi-fi 7 性能。其设计前提是：“覆盖高天花板的公共空间——或任何用户远离常规 ap 安装面的场馆——定向 ap 是必不可少的。” 与传统的全向吸顶安装模式不同，该 ap 从较远的安装点向下/向外塑形覆盖，在密集人群中保持每 ap 小区尺寸可控。 industry-news wifi"
+    },
     {
       "id": "2026-07-14_ieee-mentor-montreal-plenary-midweek-digest",
       "date_found": "2026-07-14",
@@ -9193,6 +9292,42 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>这篇来自KAUST的短文报告了Wi-Fi HaLow (IEEE 802.11ah) 在长距离监测应用中的实际现场表征。作者使用商用HaLow dongle级节点（sub-1 GHz频段），在三种部署驱动的场景下测量应用层吞吐量和监测更新延迟：点对点非视距（NLoS）、点对点视距（LoS，数百米距离）、以及带固定中继节点的LoS mesh组网。</p>\n<p>关键实证结果：(a) 明确的带宽-距离权衡，NLoS覆盖边界约120米；(b) LoS条件下单跳最远814米时吞吐量逐渐衰减，最远点达0.15 Mbps；(c) 使用固定中继实现公里级距离扩展——2个中继达901米，3个中继达1110米。测试负载为代表性监测数据（约30秒视频文件），使测量结果与实用IoT监测部署直接相关。</p>\n<h3>技术要点</h3>\n<ul><li><strong>三种部署场景测试</strong>：NLoS点对点、LoS点对点（数百米）、带固定中继的LoS mesh</li><li><strong>商用硬件</strong>：dongle级HaLow节点（非实验室设备），结果代表真实部署性能</li><li><strong>NLoS边界</strong>：非视距条件下覆盖约120米</li><li><strong>单跳LoS距离</strong>：最远814米，最远点0.15 Mbps——足以满足间歇性传感器日志上传</li><li><strong>Mesh扩展</strong>：LoS条件下2个中继达901米，3个中继达1110米，实现公里级覆盖</li><li><strong>测试负载</strong>：约30秒视频文件传输作为代表性&quot;重型&quot;监测数据</li></ul>\n<h3>意义与新意</h3>\n<p>虽然未引入新的协议机制，但本文提供了罕见的商用HaLow在真实室内外边缘条件下的公开现场数据。现有HaLow性能数据多来自仿真或受控实验室环境。具体的距离数据（NLoS 120米、LoS单跳814米、3中继mesh 1110米）为系统设计者提供了实用的部署规划基准。简单固定中继mesh可将HaLow推至1公里以上这一发现，对农业监测、园区级物联网和基础设施监测等场景具有参考意义。论文确认了HaLow作为sub-1 GHz频段LoRa/LoRaWAN替代方案的可行性，适用于需要更高吞吐量进行偶尔视频或图像上传的监测应用。</p>",
       "images": [],
       "search_blob": "wi-fi halow (ieee 802.11ah) for long-range monitoring links: point-to-point nlos/los and los mesh field characterization wi-fi halow (ieee 802.11ah) 长距离监测链路：点对点nlos/los与los mesh现场表征 802.11ah halow iot long-range this short paper from kaust reports a practical field characterization of wi-fi halow (ieee 802.11ah) for long-range monitoring applications. using commodity halow dongle-class nodes operating in the sub-1 ghz band, the authors measure application-layer goodput and monitoring-centric update latency across three deployment-driven regimes: point-to-point non-line-of-sight (nlos), point-to-point line-of-sight (los) over several hundred meters, and los mesh networking with fixed relay nodes. 这篇来自kaust的短文报告了wi-fi halow (ieee 802.11ah) 在长距离监测应用中的实际现场表征。作者使用商用halow dongle级节点（sub-1 ghz频段），在三种部署驱动的场景下测量应用层吞吐量和监测更新延迟：点对点非视距（nlos）、点对点视距（los，数百米距离）、以及带固定中继节点的los mesh组网。 academic-paper wifi"
+    },
+    {
+      "id": "2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion",
+      "date_found": "2026-07-17",
+      "technology": "wifi",
+      "date_published": "2026-05-16",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Extreme Networks completes its Wi-Fi 7 AP portfolio: outdoor stadium APs, standard-power 6 GHz, edge control plane",
+      "title_zh": "Extreme Networks 补齐 Wi-Fi 7 AP 产品组合：户外体育场 AP、标准功率 6 GHz、边缘控制面",
+      "url": "https://wifinowglobal.com/news-and-blog/tech-watch-extreme-networks-expands-wi-fi-strategy-and-ap-portfolio/",
+      "topics": [
+        "Wi-Fi 7",
+        "6GHz",
+        "standard-power",
+        "products"
+      ],
+      "topic_primary": "wifi7-deployment",
+      "topics_secondary": [
+        "spectrum-policy",
+        "wifi8-uhr"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion.md",
+      "summary_short_en": "Wi-Fi NOW's TECH WATCH interview (May 16, 2026, Claus Hetting with David Coleman, Director of Wireless at Extreme Networks) details Extreme's expanded AP portfolio: completion of its Wi-Fi 7 line including new outdoor Wi-Fi 7 APs aimed at stadium deployments. Coleman's framing — \"Hardware differentiation is hard, but we've done it\" — rests on three strategy points beyond the SKUs themselves: standard-power 6 GHz operation (AFC-coordinated) is now treated as operationally critical for outdoor/venue coverage rather than a niche option; the control-plane architecture is shifting toward the edge; and on-AP AI processors are identified as a potential differentiator for the Wi-Fi 8 generation.",
+      "summary_short_zh": "Wi-Fi NOW 的 TECH WATCH 访谈（2026 年 5 月 16 日，Claus Hetting 对话 Extreme Networks 无线总监 David Coleman）详述了 Extreme 扩充后的 AP 产品组合：补齐 Wi-Fi 7 产品线，包括面向体育场部署的新户外 Wi-Fi 7 AP。Coleman 的表述——“硬件差异化很难，但我们做到了”——背后有三个超出 SKU 本身的战略要点：标准功率 6 GHz 运行（AFC 协调）如今被视为户外/场馆覆盖的运营关键而非小众选项；控制面架构正向边缘迁移；AP 上的 AI 处理器被认为是 Wi-Fi 8 时代的潜在差异化点。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Wi-Fi NOW's TECH WATCH interview (May 16, 2026, Claus Hetting with David Coleman, Director of Wireless at Extreme Networks) details Extreme's expanded AP portfolio: completion of its Wi-Fi 7 line including new outdoor Wi-Fi 7 APs aimed at stadium deployments. Coleman's framing — &quot;Hardware differentiation is hard, but we've done it&quot; — rests on three strategy points beyond the SKUs themselves: standard-power 6 GHz operation (AFC-coordinated) is now treated as operationally critical for outdoor/venue coverage rather than a niche option; the control-plane architecture is shifting toward the edge; and on-AP AI processors are identified as a potential differentiator for the Wi-Fi 8 generation.</p>\n<p>Ingested as a deliberate catch-up (published May 16, collected July 17): the KB's existing Extreme coverage (2026-05-04_extreme-networks-wifi7-momentum-q3) captured the business momentum — 37% of unit shipments on Wi-Fi 7 — but not this portfolio/architecture detail, and the outdoor-stadium + standard-power-6-GHz angle connects directly to this week's venue-Wi-Fi entries.</p>\n<h3>Key technical points</h3>\n<ul><li>Extreme completes its Wi-Fi 7 AP portfolio; new outdoor Wi-Fi 7 APs target stadium deployments.</li><li>Standard-power 6 GHz (AFC-coordinated) described as operationally critical, not optional, for outdoor/venue Wi-Fi.</li><li>Control-plane architecture shifting toward edge deployment.</li><li>On-AP AI processors flagged as a candidate Wi-Fi 8 hardware differentiator.</li><li>Speaker: David Coleman, Director of Wireless (interview with embedded video).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Adds the product/architecture layer on top of the existing momentum entry (2026-05-04_extreme-networks-wifi7-momentum-q3): the vendor race in venue Wi-Fi is now explicitly about outdoor Wi-Fi 7 + standard-power 6 GHz + AFC, the same combination surfacing in the South Africa OpenAFC entry (2026-07-10_south-africa-standard-power-6ghz-afc) and the directional-AP trend (2026-07-05_ampthink-hyper-directional-stadium-wifi, 2026-07-17_cambium-directional-wifi7-high-density-ap). The on-AP AI processor remark is an early marker for how enterprise vendors intend to differentiate Wi-Fi 8 hardware beyond the radio.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Wi-Fi NOW 的 TECH WATCH 访谈（2026 年 5 月 16 日，Claus Hetting 对话 Extreme Networks 无线总监 David Coleman）详述了 Extreme 扩充后的 AP 产品组合：补齐 Wi-Fi 7 产品线，包括面向体育场部署的新户外 Wi-Fi 7 AP。Coleman 的表述——“硬件差异化很难，但我们做到了”——背后有三个超出 SKU 本身的战略要点：标准功率 6 GHz 运行（AFC 协调）如今被视为户外/场馆覆盖的运营关键而非小众选项；控制面架构正向边缘迁移；AP 上的 AI 处理器被认为是 Wi-Fi 8 时代的潜在差异化点。</p>\n<p>作为有意的补录采集（5 月 16 日发表，7 月 17 日收录）：知识库现有的 Extreme 条目（2026-05-04_extreme-networks-wifi7-momentum-q3）记录了其商业势头——Wi-Fi 7 占出货量 37%——但未覆盖本文的产品组合/架构细节，且户外体育场 + 标准功率 6 GHz 的角度与本周的场馆 Wi-Fi 条目直接相关。</p>\n<h3>技术要点</h3>\n<ul><li>Extreme 补齐 Wi-Fi 7 AP 产品组合；新户外 Wi-Fi 7 AP 面向体育场部署。</li><li>标准功率 6 GHz（AFC 协调）被描述为户外/场馆 Wi-Fi 的运营关键，而非可选项。</li><li>控制面架构向边缘部署迁移。</li><li>AP 上的 AI 处理器被视为 Wi-Fi 8 时代的候选硬件差异化点。</li><li>受访者：无线总监 David Coleman（含内嵌视频访谈）。</li></ul>\n<h3>意义与新意</h3>\n<p>在既有势头条目（2026-05-04_extreme-networks-wifi7-momentum-q3）之上补充了产品/架构层：场馆 Wi-Fi 的厂商竞赛如今明确围绕户外 Wi-Fi 7 + 标准功率 6 GHz + AFC 展开，与南非 OpenAFC 条目（2026-07-10_south-africa-standard-power-6ghz-afc）和定向 AP 趋势（2026-07-05_ampthink-hyper-directional-stadium-wifi、2026-07-17_cambium-directional-wifi7-high-density-ap）呈现同一组合。关于 AP 上 AI 处理器的表态，是企业级厂商打算如何在射频之外实现 Wi-Fi 8 硬件差异化的早期信号。</p>",
+      "images": [
+        {
+          "url": "https://wifinowevents.s3.amazonaws.com/uploads/2026/05/Banner_TECH-WATCH_2200x510px-1024x237.jpg",
+          "caption_en": "Wi-Fi NOW TECH WATCH banner",
+          "caption_zh": "Wi-Fi NOW TECH WATCH 栏目题图"
+        }
+      ],
+      "search_blob": "extreme networks completes its wi-fi 7 ap portfolio: outdoor stadium aps, standard-power 6 ghz, edge control plane extreme networks 补齐 wi-fi 7 ap 产品组合：户外体育场 ap、标准功率 6 ghz、边缘控制面 wi-fi 7 6ghz standard-power products wi-fi now's tech watch interview (may 16, 2026, claus hetting with david coleman, director of wireless at extreme networks) details extreme's expanded ap portfolio: completion of its wi-fi 7 line including new outdoor wi-fi 7 aps aimed at stadium deployments. coleman's framing — \"hardware differentiation is hard, but we've done it\" — rests on three strategy points beyond the skus themselves: standard-power 6 ghz operation (afc-coordinated) is now treated as operationally critical for outdoor/venue coverage rather than a niche option; the control-plane architecture is shifting toward the edge; and on-ap ai processors are identified as a potential differentiator for the wi-fi 8 generation. wi-fi now 的 tech watch 访谈（2026 年 5 月 16 日，claus hetting 对话 extreme networks 无线总监 david coleman）详述了 extreme 扩充后的 ap 产品组合：补齐 wi-fi 7 产品线，包括面向体育场部署的新户外 wi-fi 7 ap。coleman 的表述——“硬件差异化很难，但我们做到了”——背后有三个超出 sku 本身的战略要点：标准功率 6 ghz 运行（afc 协调）如今被视为户外/场馆覆盖的运营关键而非小众选项；控制面架构正向边缘迁移；ap 上的 ai 处理器被认为是 wi-fi 8 时代的潜在差异化点。 industry-news wifi"
     },
     {
       "id": "2026-05-24_arxiv-connectionless-ble-cs-pawr",
