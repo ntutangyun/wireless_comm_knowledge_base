@@ -10,7 +10,7 @@ window.KB_DATA = {
     "products": 33,
     "scheduling": 31,
     "security": 29,
-    "O-RAN": 25,
+    "O-RAN": 26,
     "802.11be": 25,
     "LEO": 24,
     "WiFi-sensing": 21,
@@ -24,6 +24,7 @@ window.KB_DATA = {
     "5G-NR": 12,
     "network-slicing": 11,
     "802.11ax": 11,
+    "AI-RAN": 9,
     "LLM": 9,
     "6GHz": 9,
     "mmWave": 9,
@@ -34,7 +35,6 @@ window.KB_DATA = {
     "802.11bp": 8,
     "3GPP": 8,
     "digital-twin": 8,
-    "AI-RAN": 8,
     "NearLink": 8,
     "SparkLink": 8,
     "BLE": 8,
@@ -58,6 +58,7 @@ window.KB_DATA = {
     "automotive": 6,
     "Wi-Fi-8": 6,
     "ISAC": 5,
+    "massive-MIMO": 5,
     "backscatter": 5,
     "QoS": 5,
     "Co-SR": 5,
@@ -68,7 +69,6 @@ window.KB_DATA = {
     "RIC": 5,
     "computation-offloading": 4,
     "802.11bi": 4,
-    "massive-MIMO": 4,
     "TGbt": 4,
     "MEC": 4,
     "UAV": 4,
@@ -238,6 +238,9 @@ window.KB_DATA = {
     "deep-learning": 1,
     "formal-verification": 1,
     "power-control": 1,
+    "dApps": 1,
+    "E3-interface": 1,
+    "NVIDIA": 1,
     "TGbr": 1,
     "Coex": 1,
     "liaison": 1,
@@ -782,9 +785,9 @@ window.KB_DATA = {
   },
   "primary_topic_counts": {
     "wifi8-uhr": 25,
+    "cellular-ai": 22,
     "wifi7-deployment": 21,
     "6g-vision": 21,
-    "cellular-ai": 21,
     "sensing-csi": 20,
     "security-privacy": 19,
     "open-ran": 15,
@@ -824,7 +827,7 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 194,
-    "industry-news": 65,
+    "industry-news": 66,
     "ieee-document": 27,
     "product": 17,
     "satellite-news": 7,
@@ -834,7 +837,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 194,
-    "industry": 89,
+    "industry": 90,
     "standards": 35
   },
   "technologies_vocab": {
@@ -2767,6 +2770,7 @@ window.KB_DATA = {
         "2026-07-11_ericsson-kt-midband-fdd-massive-mimo"
       ],
       "entries_secondary": [
+        "2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps",
         "2026-07-11_arxiv-bessel-beam-thz-ue-uncertainty",
         "2026-06-04_arxiv-flexlink-delay-phased-array-6g",
         "2026-06-03_arxiv-gnn-online-beamforming-haps-ntn"
@@ -2848,6 +2852,7 @@ window.KB_DATA = {
         "2026-07-11_oran-security-update-2026"
       ],
       "entries_secondary": [
+        "2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps",
         "2026-07-14_arxiv-gnss-spoofing-detection-tdd-3gpp",
         "2026-07-14_arxiv-3gpp-6g-ran-architecture-overview",
         "2026-07-14_arxiv-jepa-ai-native-6g",
@@ -2987,6 +2992,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps",
         "2026-07-14_arxiv-jepa-ai-native-6g",
         "2026-07-08_arxiv-hype-uav-6g-qoais",
         "2026-07-07_arxiv-agentic-v2x-slm-scheduling",
@@ -3051,6 +3057,12 @@ window.KB_DATA = {
         "2026-05-30_arxiv-semantic-waveforms-ossdm-6g"
       ],
       "by_type_primary": {
+        "industry-news": [
+          "2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps",
+          "2026-07-05_ericsson-ai-in-ran-software-launch",
+          "2026-05-21_tmobile-ericsson-ai-ran-scheduler",
+          "2026-05-21_kddi-ericsson-ai-uplink-ropt"
+        ],
         "academic-paper": [
           "2026-07-14_arxiv-jepa-ai-native-6g",
           "2026-07-08_arxiv-hype-uav-6g-qoais",
@@ -3070,11 +3082,6 @@ window.KB_DATA = {
           "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
           "2026-05-25_arxiv-fedcritic-serverless-federated-ofdma",
           "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator"
-        ],
-        "industry-news": [
-          "2026-07-05_ericsson-ai-in-ran-software-launch",
-          "2026-05-21_tmobile-ericsson-ai-ran-scheduler",
-          "2026-05-21_kddi-ericsson-ai-uplink-ropt"
         ]
       }
     },
@@ -4001,6 +4008,44 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Thanh Le、松村武、Yusheng Ji 与 John C.S. Lui（2026-07-16 提交）将形式化验证——对鲁棒性给出数学证明而非经验测试——引入大规模 MIMO 的深度学习功率分配。作者声明这是首次在带非线性输出约束的<em>回归</em>场景下对深度神经网络进行形式化验证：此前的神经网络验证工作绝大多数针对分类器，而无线功率控制是带约束的回归问题（发射功率必须满足总功率与每天线限制）。</p>\n<p>该框架使用基于抽象的界传播（DeepPoly）在对抗性输入扰动下为网络输出定界。核心结果：训练良好的功率控制模型可以在用户位置 ±1 米扰动下<em>保证</em>局部鲁棒性，同时最优性损失不超过 1%——即攻击者（或 GPS 误差）轻推输入位置无法使分配违反约束或造成显著性能损失，且这一点是被证明而非采样得出的。评估基于公开的大规模 MIMO 数据集。</p>\n<h3>技术要点</h3>\n<ul><li>首次在带非线性输出约束的回归场景（无线功率控制）对 DNN 做形式化验证。</li><li>方法：适配约束回归输出的基于抽象的界传播（DeepPoly）。</li><li>保证：±1 米用户位置扰动下的局部鲁棒性，最优性损失 ≤1%。</li><li>动机：经验性对抗测试不提供保证；电信级 AI-RAN 组件需要可证明的安全包络。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库的 AI-RAN 线索（如 2026-06-23 LOLLA 链路自适应、2026-07-10_arxiv-adorn-oran-drift-retraining）此前跟踪的是学习型 RAN 组件的<em>性能</em>；本文打开了<em>保障</em>维度——运营商如何认证一个学习型控制器不会被推出其安全包络。形式化鲁棒性证明有可能成为 O-RAN/3GPP AI 模型生命周期讨论中的未来要求，且该约束回归验证方法可推广到其他学习型分配器（调度、波束管理）。</p>",
       "images": [],
       "search_blob": "formal verification for deep learning-based power control in massive mimo 面向大规模 mimo 深度学习功率控制的形式化验证 massive-mimo deep-learning formal-verification power-control thanh le, takeshi matsumura, yusheng ji and john c.s. lui (submitted 2026-07-16) bring formal verification — mathematical proof of robustness, rather than empirical testing — to deep-learning-based power allocation in massive mimo. the authors state this is the first attempt to formally verify deep neural networks in a *regression* setting with non-linear output constraints: prior neural-network verification work overwhelmingly targets classifiers, while wireless power control is a constrained regression problem (transmit powers must satisfy sum-power and per-antenna limits). thanh le、松村武、yusheng ji 与 john c.s. lui（2026-07-16 提交）将形式化验证——对鲁棒性给出数学证明而非经验测试——引入大规模 mimo 的深度学习功率分配。作者声明这是首次在带非线性输出约束的*回归*场景下对深度神经网络进行形式化验证：此前的神经网络验证工作绝大多数针对分类器，而无线功率控制是带约束的回归问题（发射功率必须满足总功率与每天线限制）。 academic-paper wifi"
+    },
+    {
+      "id": "2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps",
+      "date_found": "2026-07-19",
+      "technology": "cellular",
+      "date_published": "2026-07-15",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Nokia launches first commercial GPU-based AI-RAN platform — anyRAN + NVIDIA ARC-Pro, with O-RAN E3 dApps as the differentiator",
+      "title_zh": "诺基亚发布首个商用 GPU AI-RAN 平台——anyRAN + 英伟达 ARC-Pro，以 O-RAN E3 dApps 为差异化关键",
+      "url": "https://the-mobile-network.com/2026/07/when-it-comes-to-nokias-new-ai-ran-keep-your-eye-on-the-dapps/",
+      "topics": [
+        "AI-RAN",
+        "O-RAN",
+        "dApps",
+        "E3-interface",
+        "NVIDIA",
+        "massive-MIMO"
+      ],
+      "topic_primary": "cellular-ai",
+      "topics_secondary": [
+        "open-ran",
+        "cellular-massive-mimo"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps.md",
+      "summary_short_en": "On July 15, 2026 Nokia announced what it calls the industry's first **commercial AI-RAN platform**, pairing its anyRAN software with NVIDIA's GPU-accelerated Aerial / ARC-Pro foundation. The headline claim: more than 100% spectral-efficiency gain by 2028 — effectively doubling mobile traffic capacity from licensed spectrum — under optimal conditions (highly congested TDD massive-MIMO sites). Pilot deployments begin by end-2026 (SK Telecom named in coverage), with full commercial availability targeted for 2027. GPU-hosted functions include multi-user MIMO pairing, non-linear channel estimation, and carrier aggregation with deep-learning transmitters/receivers, while remaining O-RAN compliant (fronthaul splits, O1/O2 interfaces).",
+      "summary_short_zh": "2026 年 7 月 15 日，诺基亚宣布推出其所称的业界首个**商用 AI-RAN 平台**，将 anyRAN 软件与英伟达 GPU 加速的 Aerial / ARC-Pro 基础设施结合。核心宣称：到 2028 年频谱效率提升超过 100%——即在最优条件下（高负载 TDD 大规模 MIMO 站点）将现有授权频谱的移动流量容量翻倍。试点部署 2026 年底启动（报道点名 SK 电讯），2027 年全面商用。GPU 承载的功能包括多用户 MIMO 配对、非线性信道估计、以及采用深度学习收发机的载波聚合，同时保持 O-RAN 合规（前传切分、O1/O2 接口）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On July 15, 2026 Nokia announced what it calls the industry's first <strong>commercial AI-RAN platform</strong>, pairing its anyRAN software with NVIDIA's GPU-accelerated Aerial / ARC-Pro foundation. The headline claim: more than 100% spectral-efficiency gain by 2028 — effectively doubling mobile traffic capacity from licensed spectrum — under optimal conditions (highly congested TDD massive-MIMO sites). Pilot deployments begin by end-2026 (SK Telecom named in coverage), with full commercial availability targeted for 2027. GPU-hosted functions include multi-user MIMO pairing, non-linear channel estimation, and carrier aggregation with deep-learning transmitters/receivers, while remaining O-RAN compliant (fronthaul splits, O1/O2 interfaces).</p>\n<p>The most architecturally significant element, per The Mobile Network's July 16 analysis, is Nokia's adoption of the <strong>O-RAN-proposed E3 interface</strong> enabling <strong>dApps (distributed applications)</strong> — applications that interact directly with the O-DU and O-CU at low latency, overcoming the control-loop limitations of xApps/rApps. E3 dApps enable closed-loop control for dynamic spectrum allocation, positioning, and sensing-assisted mobility (ISAC), plus geolocation and robotics use cases, with NVIDIA's CUDA developer ecosystem as the third-party innovation surface.</p>\n<p>This crystallizes a fundamental architectural divergence with Ericsson, which began selling a CPU-based AI-in-RAN software subscription in June 2026 (up to 20% downlink throughput, ~10% spectral-efficiency gain, 15+ live deployments) that runs on existing baseband silicon with no GPUs. Nokia is betting the RAN becomes a GPU-hosted software platform; Ericsson is optimizing within installed hardware. Meanwhile Qualcomm's reported small-cell exit narrows the vendor field as Nokia positions NVIDIA silicon for 6G radio networks.</p>\n<h3>Key technical points</h3>\n<ul><li>First commercial AI-RAN platform: Nokia anyRAN + NVIDIA Aerial/ARC-Pro GPU compute; pilots end-2026 (SK Telecom), commercial 2027.</li><li>Claim: &gt;100% spectral-efficiency gain by 2028 on congested TDD massive-MIMO sites (vs Ericsson's shipped 10–15% CPU-based gains).</li><li>GPU-hosted L1/L2 functions: MU-MIMO pairing, non-linear channel estimation, CA with deep-learning transceivers.</li><li><strong>E3 interface + dApps</strong>: O-RAN-proposed low-latency control plane directly at O-DU/O-CU — beyond xApp (near-RT) and rApp (non-RT) loops; use cases: dynamic spectrum allocation, positioning, sensing-assisted mobility, ISAC, robotics.</li><li>O-RAN compliance retained: standard fronthaul splits, O1/O2 management interfaces; CUDA ecosystem opens the RAN to third-party dApp developers.</li><li>Vendor divergence: Ericsson AI-in-RAN = software on existing silicon (in KB: 2026-07-05_ericsson-ai-in-ran-software-launch); Nokia = GPU platform bet; Qualcomm reportedly exiting small cells.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB has tracked AI-RAN as research (2026-05-29_ariadne-airan-link-adaptation-digital-twin, 2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator) and as Ericsson's incremental software product (2026-07-05_ericsson-ai-in-ran-software-launch). Nokia's launch is the first <em>commercial platform</em> commitment to the GPU-native architecture — and the first commercial adoption signal for the E3 interface/dApps concept, which until now existed only in O-RAN Alliance proposal papers. If E3 hardens into an O-RAN spec, it becomes the standardized low-latency hook for third-party AI at the DU/CU — a structural change in who can program the RAN. Watch: E3's formal status in the O-RAN Alliance, SK Telecom pilot results, and whether the 2028 &quot;double efficiency&quot; claim survives contact with non-optimal sites.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026 年 7 月 15 日，诺基亚宣布推出其所称的业界首个<strong>商用 AI-RAN 平台</strong>，将 anyRAN 软件与英伟达 GPU 加速的 Aerial / ARC-Pro 基础设施结合。核心宣称：到 2028 年频谱效率提升超过 100%——即在最优条件下（高负载 TDD 大规模 MIMO 站点）将现有授权频谱的移动流量容量翻倍。试点部署 2026 年底启动（报道点名 SK 电讯），2027 年全面商用。GPU 承载的功能包括多用户 MIMO 配对、非线性信道估计、以及采用深度学习收发机的载波聚合，同时保持 O-RAN 合规（前传切分、O1/O2 接口）。</p>\n<p>据 The Mobile Network 7 月 16 日的分析，架构上最重要的元素是诺基亚采用 <strong>O-RAN 提议的 E3 接口</strong>以支持 <strong>dApps（分布式应用）</strong>——可低时延直接与 O-DU、O-CU 交互的应用，突破 xApp/rApp 控制环路的局限。E3 dApps 可为动态频谱分配、定位、感知辅助移动性（ISAC）提供闭环控制，并支持地理定位与机器人等用例；英伟达 CUDA 开发者生态是第三方创新的入口。</p>\n<p>这使与爱立信的根本性架构分歧清晰化：爱立信 2026 年 6 月开始销售基于 CPU 的 AI-in-RAN 软件订阅（下行吞吐最高 +20%、频谱效率约 +10%，15+ 现网部署），无需 GPU、运行于现有基带芯片。诺基亚押注 RAN 演变为 GPU 承载的软件平台；爱立信则在既有硬件内做优化。同时，高通据报道退出小基站市场，使诺基亚为 6G 无线网络布局英伟达芯片时的厂商格局进一步收窄。</p>\n<h3>技术要点</h3>\n<ul><li>首个商用 AI-RAN 平台：诺基亚 anyRAN + 英伟达 Aerial/ARC-Pro GPU 算力；2026 年底试点（SK 电讯），2027 年商用。</li><li>宣称：到 2028 年在高负载 TDD 大规模 MIMO 站点频谱效率提升 &gt;100%（对比爱立信已交付的 10–15% CPU 方案增益）。</li><li>GPU 承载的 L1/L2 功能：MU-MIMO 配对、非线性信道估计、深度学习收发机的载波聚合。</li><li><strong>E3 接口 + dApps</strong>：O-RAN 提议的低时延控制面，直达 O-DU/O-CU——超越 xApp（近实时）与 rApp（非实时）环路；用例：动态频谱分配、定位、感知辅助移动性、ISAC、机器人。</li><li>保持 O-RAN 合规：标准前传切分、O1/O2 管理接口；CUDA 生态向第三方 dApp 开发者开放 RAN。</li><li>厂商分歧：爱立信 AI-in-RAN = 既有芯片上的软件（KB 条目 2026-07-05_ericsson-ai-in-ran-software-launch）；诺基亚 = GPU 平台押注；高通据报道退出小基站。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 此前对 AI-RAN 的追踪停留在研究侧（2026-05-29_ariadne-airan-link-adaptation-digital-twin、2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator）与爱立信的渐进式软件产品（2026-07-05_ericsson-ai-in-ran-software-launch）。诺基亚此次发布是对 GPU 原生架构的首个<em>商用平台</em>承诺——也是 E3 接口/dApps 概念的首个商用采纳信号（此前仅存在于 O-RAN 联盟提案文件中）。若 E3 固化为 O-RAN 规范，它将成为第三方 AI 接入 DU/CU 的标准化低时延挂点——改变&quot;谁能对 RAN 编程&quot;的格局。关注：E3 在 O-RAN 联盟的正式地位、SK 电讯试点结果、以及&quot;2028 年效率翻倍&quot;的宣称能否在非理想站点成立。</p>",
+      "images": [
+        {
+          "url": "assets/2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps/gpu-based-ran.webp",
+          "caption_en": "GPU-based RAN architecture",
+          "caption_zh": "GPU 化 RAN 架构示意"
+        }
+      ],
+      "search_blob": "nokia launches first commercial gpu-based ai-ran platform — anyran + nvidia arc-pro, with o-ran e3 dapps as the differentiator 诺基亚发布首个商用 gpu ai-ran 平台——anyran + 英伟达 arc-pro，以 o-ran e3 dapps 为差异化关键 ai-ran o-ran dapps e3-interface nvidia massive-mimo on july 15, 2026 nokia announced what it calls the industry's first **commercial ai-ran platform**, pairing its anyran software with nvidia's gpu-accelerated aerial / arc-pro foundation. the headline claim: more than 100% spectral-efficiency gain by 2028 — effectively doubling mobile traffic capacity from licensed spectrum — under optimal conditions (highly congested tdd massive-mimo sites). pilot deployments begin by end-2026 (sk telecom named in coverage), with full commercial availability targeted for 2027. gpu-hosted functions include multi-user mimo pairing, non-linear channel estimation, and carrier aggregation with deep-learning transmitters/receivers, while remaining o-ran compliant (fronthaul splits, o1/o2 interfaces). 2026 年 7 月 15 日，诺基亚宣布推出其所称的业界首个**商用 ai-ran 平台**，将 anyran 软件与英伟达 gpu 加速的 aerial / arc-pro 基础设施结合。核心宣称：到 2028 年频谱效率提升超过 100%——即在最优条件下（高负载 tdd 大规模 mimo 站点）将现有授权频谱的移动流量容量翻倍。试点部署 2026 年底启动（报道点名 sk 电讯），2027 年全面商用。gpu 承载的功能包括多用户 mimo 配对、非线性信道估计、以及采用深度学习收发机的载波聚合，同时保持 o-ran 合规（前传切分、o1/o2 接口）。 industry-news cellular"
     },
     {
       "id": "2026-07-14_ieee-mentor-montreal-plenary-midweek-digest",
