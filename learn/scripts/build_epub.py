@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Build an EPUB 3 ebook of the Learn Wi-Fi course.
 
-Reads curriculum.json + lessons/*.json plus the pre-rendered diagram cache
-(learn/build/diagrams/, produced by render_diagrams.mjs) and writes
+Reads curriculum.json + lessons/*.json plus the pre-rendered PNG image cache
+(learn/build/images/, produced by render_images.mjs) and writes
 learn/build/learn-wifi-<lang>.epub. Stdlib only.
+
+All visuals ship as PNG <img> in plain div/p markup: several mobile reader
+engines (e.g. Huawei 阅读) silently drop inline SVG, SVG images, and
+HTML5-only tags like <figure>.
 
 Usage: python build_epub.py [--lang zh|en]
 """
@@ -20,7 +24,7 @@ import xml.etree.ElementTree as ET
 
 LEARN_DIR = Path(__file__).resolve().parent.parent
 BUILD_DIR = LEARN_DIR / "build"
-DIAGRAM_DIR = BUILD_DIR / "diagrams"
+IMAGE_DIR = BUILD_DIR / "images"
 SITE_URL = "https://ntutangyun.github.io/wireless_comm_knowledge_base/learn/"
 AUTHOR = "ntutangyun"
 
@@ -66,7 +70,7 @@ def pick(obj, lang: str, ctx: str) -> str:
     return obj.get("en", "")
 
 
-def render_block(b: dict, lang: str, track_id: str, lesson_id: str, used_diagrams: set) -> str:
+def render_block(b: dict, lang: str, track_id: str, lesson_id: str, used_images: set) -> str:
     t = b.get("type")
     ctx = f"{lesson_id}/{t}"
     if t == "prose":
@@ -78,21 +82,21 @@ def render_block(b: dict, lang: str, track_id: str, lesson_id: str, used_diagram
                 f"<p>{esc(pick(b, lang, ctx))}</p></div>")
     if t == "figure":
         cap = esc(pick(b.get("caption", {}), lang, ctx))
-        svg = b.get("svg", "")
-        try:
-            ET.fromstring(svg)
-        except ET.ParseError as e:
-            warn(f"{ctx}: figure SVG not well-formed ({e}); emitting caption only")
-            return f"<figure><figcaption>{cap}</figcaption></figure>"
-        return f"<figure>{svg}<figcaption>{cap}</figcaption></figure>"
+        h = sha1(b.get("svg", ""))
+        if not (IMAGE_DIR / f"f-{h}.png").exists():
+            raise SystemExit(
+                f"ERROR {ctx}: image f-{h}.png not in cache - run: node render_images.mjs --lang {lang}")
+        used_images.add(("f", h))
+        return (f'<div class="figure"><img src="../images/f-{h}.png" alt=""/>'
+                f'<p class="figcaption">{cap}</p></div>')
     if t == "diagram":
         src = pick(b, lang, ctx)
         h = sha1(src)
-        if not (DIAGRAM_DIR / f"{h}.svg").exists():
+        if not (IMAGE_DIR / f"d-{h}.png").exists():
             raise SystemExit(
-                f"ERROR {ctx}: diagram {h}.svg not in cache - run: node render_diagrams.mjs --lang {lang}")
-        used_diagrams.add(h)
-        return f'<figure class="diagram"><img src="../diagrams/{h}.svg" alt=""/></figure>'
+                f"ERROR {ctx}: image d-{h}.png not in cache - run: node render_images.mjs --lang {lang}")
+        used_images.add(("d", h))
+        return f'<div class="figure"><img src="../images/d-{h}.png" alt=""/></div>'
     if t == "deepdive":
         summary = esc(pick(b.get("summary", {}), lang, ctx))
         body = esc(pick(b, lang, ctx))
@@ -120,7 +124,7 @@ XHTML_HEAD = (
 )
 
 
-def lesson_xhtml(lesson: dict, track_id: str, lang: str, used_diagrams: set) -> str:
+def lesson_xhtml(lesson: dict, track_id: str, lang: str, used_images: set) -> str:
     title = pick(lesson["title"], lang, lesson["id"])
     parts = [XHTML_HEAD.format(lang=lang, title=esc(title), css="../style.css"),
              f"<h1>{esc(title)}</h1>"]
@@ -128,7 +132,7 @@ def lesson_xhtml(lesson: dict, track_id: str, lang: str, used_diagrams: set) -> 
     if est:
         parts.append(f'<p class="meta">{UI[lang]["minutes"].format(n=est)}</p>')
     for b in lesson.get("blocks", []):
-        parts.append(render_block(b, lang, track_id, lesson["id"], used_diagrams))
+        parts.append(render_block(b, lang, track_id, lesson["id"], used_images))
     cites = lesson.get("cites") or []
     if cites:
         items = []
@@ -151,31 +155,11 @@ def part_xhtml(track: dict, index: int, lang: str) -> str:
             + "</body>\n</html>\n")
 
 
-def cover_svg(lang: str) -> str:
-    subtitle = {"zh": "IEEE 802 无线标准课程", "en": "An IEEE 802 Standards Course"}[lang]
-    waves = "".join(
-        f'<path d="M {300 - r} 620 A {r} {r} 0 0 1 {300 + r} 620" '
-        f'fill="none" stroke="#4a7ab5" stroke-width="6" opacity="{o}"/>'
-        for r, o in ((60, 0.9), (110, 0.65), (160, 0.4), (210, 0.2)))
-    return (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">'
-        '<rect width="600" height="800" fill="#12263f"/>'
-        f"{waves}"
-        '<circle cx="300" cy="620" r="14" fill="#e8b84b"/>'
-        '<text x="300" y="200" text-anchor="middle" font-family="sans-serif" '
-        'font-size="64" font-weight="bold" fill="#ffffff">Learn Wi-Fi</text>'
-        f'<text x="300" y="270" text-anchor="middle" font-family="sans-serif" '
-        f'font-size="30" fill="#c8d6e8">{esc(subtitle)}</text>'
-        f'<text x="300" y="330" text-anchor="middle" font-family="sans-serif" '
-        f'font-size="24" fill="#8aa3c0">{esc(UI[lang]["subtitle"])} · {AUTHOR}</text>'
-        "</svg>")
-
-
 COVER_XHTML = (
     '<?xml version="1.0" encoding="utf-8"?>\n'
     '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Cover</title></head>'
     '<body style="margin:0;text-align:center;">'
-    '<img src="cover.svg" alt="Learn Wi-Fi" style="max-width:100%;max-height:100%;"/>'
+    '<img src="cover.png" alt="Learn Wi-Fi" style="max-width:100%;max-height:100%;"/>'
     "</body></html>\n")
 
 STYLE_CSS = """\
@@ -184,9 +168,9 @@ h1 { font-size: 1.4em; line-height: 1.3; }
 p.meta, p.part-number { color: #777; font-size: 0.85em; }
 p.part-number { text-transform: uppercase; letter-spacing: 0.1em; }
 p.part-blurb { font-style: italic; color: #555; }
-figure { margin: 1em 0; text-align: center; }
-figure svg, figure img { max-width: 100%; }
-figcaption { font-size: 0.85em; color: #666; margin-top: 0.4em; text-align: center; }
+.figure { margin: 1em 0; text-align: center; }
+.figure img { max-width: 100%; }
+.figcaption { font-size: 0.85em; color: #666; margin-top: 0.4em; text-align: center; }
 .box-label { font-weight: bold; margin: 0 0 0.3em 0; }
 .callout, .deepdive, .widget-note, .cites { border: 1px solid #bbb; border-radius: 6px;
   padding: 0.6em 0.9em; margin: 0.9em 0; }
@@ -210,7 +194,12 @@ def build(lang: str) -> Path:
         raise SystemExit(f"ERROR curriculum/lessons mismatch: missing files {missing[:5]}, "
                          f"orphan files {orphans[:5]}")
 
-    used_diagrams: set[str] = set()
+    cover_png = IMAGE_DIR / f"cover-{lang}.png"
+    if not cover_png.exists():
+        raise SystemExit(
+            f"ERROR: {cover_png.name} not in cache - run: node render_images.mjs --lang {lang}")
+
+    used_images: set[tuple[str, str]] = set()
     docs: dict[str, str] = {}          # zip arcname -> XHTML text
     spine: list[str] = []              # manifest item ids in reading order
     manifest: list[str] = []           # manifest <item> XML lines
@@ -234,7 +223,7 @@ def build(lang: str) -> Path:
         for entry in track["lessons"]:
             lid = entry["id"]
             lesson = json.loads((lesson_dir / f"{lid}.json").read_text(encoding="utf-8"))
-            docs[f"OEBPS/lessons/{lid}.xhtml"] = lesson_xhtml(lesson, tid, lang, used_diagrams)
+            docs[f"OEBPS/lessons/{lid}.xhtml"] = lesson_xhtml(lesson, tid, lang, used_images)
             item = f"l-{lid}"
             manifest.append(f'<item id="{item}" href="lessons/{lid}.xhtml" '
                             f'media-type="application/xhtml+xml"/>')
@@ -256,8 +245,8 @@ def build(lang: str) -> Path:
 
     title = BOOK_TITLE[lang]
     modified = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    for h in sorted(used_diagrams):
-        manifest.append(f'<item id="d-{h}" href="diagrams/{h}.svg" media-type="image/svg+xml"/>')
+    for kind, h in sorted(used_images):
+        manifest.append(f'<item id="{kind}-{h}" href="images/{kind}-{h}.png" media-type="image/png"/>')
 
     nav = (XHTML_HEAD.replace('<html xmlns="http://www.w3.org/1999/xhtml"',
                               '<html xmlns="http://www.w3.org/1999/xhtml" '
@@ -286,7 +275,7 @@ def build(lang: str) -> Path:
         '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>'
         '<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>'
         '<item id="css" href="style.css" media-type="text/css"/>'
-        '<item id="cover-img" href="cover.svg" media-type="image/svg+xml" properties="cover-image"/>'
+        '<item id="cover-img" href="cover.png" media-type="image/png" properties="cover-image"/>'
         '<item id="cover" href="cover.xhtml" media-type="application/xhtml+xml"/>'
         + "".join(manifest)
         + '</manifest><spine toc="ncx"><itemref idref="cover" linear="yes"/>'
@@ -307,19 +296,19 @@ def build(lang: str) -> Path:
         z.writestr("OEBPS/nav.xhtml", nav, zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/toc.ncx", ncx, zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/style.css", STYLE_CSS, zipfile.ZIP_DEFLATED)
-        z.writestr("OEBPS/cover.svg", cover_svg(lang), zipfile.ZIP_DEFLATED)
+        z.writestr("OEBPS/cover.png", cover_png.read_bytes(), zipfile.ZIP_STORED)
         z.writestr("OEBPS/cover.xhtml", COVER_XHTML, zipfile.ZIP_DEFLATED)
         for name, text in docs.items():
             z.writestr(name, text, zipfile.ZIP_DEFLATED)
-        for h in sorted(used_diagrams):
-            z.writestr(f"OEBPS/diagrams/{h}.svg",
-                       (DIAGRAM_DIR / f"{h}.svg").read_text(encoding="utf-8"),
-                       zipfile.ZIP_DEFLATED)
+        for kind, h in sorted(used_images):
+            z.writestr(f"OEBPS/images/{kind}-{h}.png",
+                       (IMAGE_DIR / f"{kind}-{h}.png").read_bytes(),
+                       zipfile.ZIP_STORED)
 
     n_lessons = len(curriculum_ids)
     n_tracks = len(curriculum["tracks"])
     print(f"built {out.name}: {n_tracks} parts, {n_lessons} lessons, "
-          f"{len(used_diagrams)} diagrams, {len(warnings)} warnings, "
+          f"{len(used_images)} images, {len(warnings)} warnings, "
           f"{out.stat().st_size / 1e6:.1f} MB")
     for w in warnings:
         print(f"  warning: {w}")

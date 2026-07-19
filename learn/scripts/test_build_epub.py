@@ -32,40 +32,57 @@ class RenderBlockTests(unittest.TestCase):
         out = self.rb({"type": "callout", "variant": "mystery", "en": "e", "zh": "中"})
         self.assertIn("提示", out)
 
-    def test_figure_valid_svg_passes_through(self):
+    def test_figure_renders_png_when_cached(self):
         svg = "<svg xmlns='http://www.w3.org/2000/svg'><rect/></svg>"
-        out = self.rb({"type": "figure", "svg": svg, "caption": {"en": "c", "zh": "图"}})
-        self.assertIn(svg, out)
-        self.assertIn("<figcaption>图</figcaption>", out)
-
-    def test_figure_invalid_svg_degrades_to_caption(self):
-        out = self.rb({"type": "figure", "svg": "<svg><oops>", "caption": {"en": "c", "zh": "图"}})
-        self.assertNotIn("<svg", out)
-        self.assertIn("图", out)
-        self.assertTrue(any("not well-formed" in w for w in be.warnings))
-
-    def test_diagram_renders_img_when_cached(self):
         with tempfile.TemporaryDirectory() as td:
-            old = be.DIAGRAM_DIR
-            be.DIAGRAM_DIR = Path(td)
+            old = be.IMAGE_DIR
+            be.IMAGE_DIR = Path(td)
+            try:
+                h = be.sha1(svg)
+                (Path(td) / f"f-{h}.png").write_bytes(b"png")
+                out = self.rb({"type": "figure", "svg": svg, "caption": {"en": "c", "zh": "图"}})
+                self.assertIn(f"../images/f-{h}.png", out)
+                self.assertIn("图", out)
+                self.assertIn(("f", h), self.used)
+                # compatibility: no HTML5-only tags, no inline svg
+                for banned in ("<svg", "<figure", "<figcaption"):
+                    self.assertNotIn(banned, out)
+            finally:
+                be.IMAGE_DIR = old
+
+    def test_figure_missing_cache_is_fatal(self):
+        with tempfile.TemporaryDirectory() as td:
+            old = be.IMAGE_DIR
+            be.IMAGE_DIR = Path(td)
+            try:
+                with self.assertRaises(SystemExit):
+                    self.rb({"type": "figure", "svg": "<svg/>", "caption": {"en": "c", "zh": "图"}})
+            finally:
+                be.IMAGE_DIR = old
+
+    def test_diagram_renders_png_when_cached(self):
+        with tempfile.TemporaryDirectory() as td:
+            old = be.IMAGE_DIR
+            be.IMAGE_DIR = Path(td)
             try:
                 h = be.sha1("graph TD; A-->B")
-                (Path(td) / f"{h}.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>")
+                (Path(td) / f"d-{h}.png").write_bytes(b"png")
                 out = self.rb({"type": "diagram", "en": "x", "zh": "graph TD; A-->B"})
-                self.assertIn(f"../diagrams/{h}.svg", out)
-                self.assertIn(h, self.used)
+                self.assertIn(f"../images/d-{h}.png", out)
+                self.assertIn(("d", h), self.used)
+                self.assertNotIn("<figure", out)
             finally:
-                be.DIAGRAM_DIR = old
+                be.IMAGE_DIR = old
 
     def test_diagram_missing_cache_is_fatal(self):
         with tempfile.TemporaryDirectory() as td:
-            old = be.DIAGRAM_DIR
-            be.DIAGRAM_DIR = Path(td)
+            old = be.IMAGE_DIR
+            be.IMAGE_DIR = Path(td)
             try:
                 with self.assertRaises(SystemExit):
                     self.rb({"type": "diagram", "en": "x", "zh": "graph TD; C-->D"})
             finally:
-                be.DIAGRAM_DIR = old
+                be.IMAGE_DIR = old
 
     def test_deepdive_has_label_summary_body_cite(self):
         out = self.rb({
