@@ -3,10 +3,10 @@ window.KB_DATA = {
   "last_updated": "2026-07-22",
   "last_scanned": "2026-07-22",
   "topic_counts": {
-    "6G": 43,
+    "6G": 44,
     "802.11bn": 40,
+    "agentic-AI": 37,
     "MAC-layer": 37,
-    "agentic-AI": 36,
     "products": 33,
     "scheduling": 31,
     "security": 29,
@@ -23,11 +23,11 @@ window.KB_DATA = {
     "6GHz": 12,
     "5G": 12,
     "5G-NR": 12,
+    "AI-RAN": 11,
     "direct-to-device": 11,
     "network-slicing": 11,
     "802.11ax": 11,
-    "AI-RAN": 9,
-    "LLM": 9,
+    "LLM": 10,
     "mmWave": 9,
     "CSI": 9,
     "UWB": 9,
@@ -59,6 +59,7 @@ window.KB_DATA = {
     "V2X": 6,
     "automotive": 6,
     "Wi-Fi-8": 6,
+    "UAV": 5,
     "measurement": 5,
     "ISAC": 5,
     "massive-MIMO": 5,
@@ -71,12 +72,12 @@ window.KB_DATA = {
     "OFDMA": 5,
     "RIC": 5,
     "regulation": 4,
+    "congestion-control": 4,
     "UHR": 4,
     "computation-offloading": 4,
     "802.11bi": 4,
     "TGbt": 4,
     "MEC": 4,
-    "UAV": 4,
     "MARL": 4,
     "intent-based-networking": 4,
     "backhaul": 4,
@@ -98,6 +99,7 @@ window.KB_DATA = {
     "5G-core": 4,
     "802.15.4ab": 4,
     "802.11az": 4,
+    "energy-saving": 3,
     "standards-process": 3,
     "AI Offload SG": 3,
     "AI-inference": 3,
@@ -113,7 +115,6 @@ window.KB_DATA = {
     "GNN": 3,
     "IAB": 3,
     "DRL": 3,
-    "congestion-control": 3,
     "autonomous-networks": 3,
     "sidelink": 3,
     "edge-computing": 3,
@@ -145,7 +146,9 @@ window.KB_DATA = {
     "digital-car-key": 3,
     "roaming": 3,
     "Ofcom": 2,
+    "SIGCOMM": 2,
     "high-density": 2,
+    "standardization": 2,
     "PAR": 2,
     "WNG": 2,
     "Starship": 2,
@@ -199,7 +202,6 @@ window.KB_DATA = {
     "spatial-reuse": 2,
     "IMT-2030": 2,
     "carrier-aggregation": 2,
-    "energy-saving": 2,
     "O-Cloud": 2,
     "LE-UWB": 2,
     "5G-SA": 2,
@@ -235,9 +237,14 @@ window.KB_DATA = {
     "Ericsson": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "world-model": 1,
+    "cell-sleep": 1,
+    "NOMS": 1,
+    "RAN-configuration": 1,
     "WiFi-6E": 1,
     "band-steering": 1,
     "WiFi-9": 1,
+    "survey": 1,
     "802.11bu": 1,
     "directional-antenna": 1,
     "evaluation-methodology": 1,
@@ -316,7 +323,6 @@ window.KB_DATA = {
     "frame-bursting": 1,
     "TXOP": 1,
     "tail-latency": 1,
-    "SIGCOMM": 1,
     "Amazon-Leo": 1,
     "LEO-broadband": 1,
     "Globalstar": 1,
@@ -778,7 +784,6 @@ window.KB_DATA = {
     "GB/T-46803": 1,
     "China-national-standard": 1,
     "short-range-wireless": 1,
-    "standardization": 1,
     "GB/T": 1,
     "national-standard": 1,
     "polar-codes": 1,
@@ -791,8 +796,8 @@ window.KB_DATA = {
   },
   "primary_topic_counts": {
     "wifi8-uhr": 26,
+    "cellular-ai": 25,
     "wifi7-deployment": 22,
-    "cellular-ai": 22,
     "6g-vision": 21,
     "sensing-csi": 20,
     "security-privacy": 19,
@@ -832,7 +837,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 195,
+    "academic-paper": 198,
     "industry-news": 69,
     "ieee-document": 28,
     "product": 17,
@@ -842,7 +847,7 @@ window.KB_DATA = {
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 195,
+    "academia": 198,
     "industry": 94,
     "standards": 36
   },
@@ -2618,6 +2623,7 @@ window.KB_DATA = {
         "2026-05-27_arxiv-encor-anchorless-cellular-core"
       ],
       "entries_secondary": [
+        "2026-07-22_sigcomm26-cellular-systems-papers",
         "2026-07-14_arxiv-gnss-spoofing-detection-tdd-3gpp",
         "2026-06-26_arxiv-cellular-load-forecast-population-dynamics",
         "2026-06-23_arxiv-lolla-ai-native-link-adaptation",
@@ -2722,6 +2728,7 @@ window.KB_DATA = {
         "2026-05-30_arxiv-semantic-waveforms-ossdm-6g"
       ],
       "entries_secondary": [
+        "2026-07-22_arxiv-llm-agentic-ai-5g6g-tutorial",
         "2026-07-14_arxiv-jepa-ai-native-6g",
         "2026-07-08_arxiv-rcs-nrv2x-sidelink",
         "2026-07-08_arxiv-hype-uav-6g-qoais",
@@ -3014,6 +3021,9 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-22_arxiv-ericsson-world-model-network-control",
+        "2026-07-22_sigcomm26-cellular-systems-papers",
+        "2026-07-22_arxiv-llm-agentic-ai-5g6g-tutorial",
         "2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps",
         "2026-07-14_arxiv-jepa-ai-native-6g",
         "2026-07-08_arxiv-hype-uav-6g-qoais",
@@ -3079,13 +3089,10 @@ window.KB_DATA = {
         "2026-05-30_arxiv-semantic-waveforms-ossdm-6g"
       ],
       "by_type_primary": {
-        "industry-news": [
-          "2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps",
-          "2026-07-05_ericsson-ai-in-ran-software-launch",
-          "2026-05-21_tmobile-ericsson-ai-ran-scheduler",
-          "2026-05-21_kddi-ericsson-ai-uplink-ropt"
-        ],
         "academic-paper": [
+          "2026-07-22_arxiv-ericsson-world-model-network-control",
+          "2026-07-22_sigcomm26-cellular-systems-papers",
+          "2026-07-22_arxiv-llm-agentic-ai-5g6g-tutorial",
           "2026-07-14_arxiv-jepa-ai-native-6g",
           "2026-07-08_arxiv-hype-uav-6g-qoais",
           "2026-07-07_arxiv-agentic-v2x-slm-scheduling",
@@ -3104,6 +3111,12 @@ window.KB_DATA = {
           "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
           "2026-05-25_arxiv-fedcritic-serverless-federated-ofdma",
           "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator"
+        ],
+        "industry-news": [
+          "2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps",
+          "2026-07-05_ericsson-ai-in-ran-software-launch",
+          "2026-05-21_tmobile-ericsson-ai-ran-scheduler",
+          "2026-05-21_kddi-ericsson-ai-uplink-ropt"
         ]
       }
     },
@@ -3891,6 +3904,80 @@ window.KB_DATA = {
       "search_blob": "uk ofcom adopts full-band 6 ghz wi-fi framework: priority-split upper band with afc-controlled sharing 英国 ofcom 正式采纳全频段 6 ghz wi-fi 框架：上段优先级分割 + afc 受控共享 6ghz spectrum afc ofcom regulation uk regulator ofcom has formally adopted the regulation that opens the **entire 6 ghz band (5925–7125 mhz) to wi-fi**, making the uk the first country in europe to enable full-band 6 ghz wi-fi operation. the july 2026 decision concludes the process that began with the february 2025 consultation and the january 2026 statement-plus-further-consultation which defined the split-priority concept. in the **lower 6 ghz** (5925–6425 mhz), higher-power wi-fi is now authorised both indoors and outdoors on a licence-exempt basis, provided devices operate under an automated frequency coordination (afc) system — mirroring the us/canada standard-power model. 英国监管机构 ofcom 正式通过法规，将**整个 6 ghz 频段（5925–7125 mhz）向 wi-fi 开放**，使英国成为欧洲首个实现全频段 6 ghz wi-fi 运行的国家。2026 年 7 月的这一决定为始于 2025 年 2 月咨询、经 2026 年 1 月\"声明+进一步咨询\"（提出优先级分割概念）的整个进程画上句号。在**下 6 ghz**（5925–6425 mhz），高功率 wi-fi 现已获准在室内外以免许可方式运行，前提是设备受自动频率协调（afc）系统控制——与美国/加拿大的标准功率模式一致。 industry-news wifi"
     },
     {
+      "id": "2026-07-22_arxiv-ericsson-world-model-network-control",
+      "date_found": "2026-07-22",
+      "technology": "cellular",
+      "date_published": "2026-07-21",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Mobile Network Control with a World Model (Ericsson Research): plan-with-predictions replaces retrain-the-policy",
+      "title_zh": "Ericsson 研究院：用世界模型控制移动网络——以预测规划取代策略重训",
+      "url": "https://arxiv.org/abs/2607.17747",
+      "topics": [
+        "world-model",
+        "energy-saving",
+        "cell-sleep",
+        "AI-RAN",
+        "NOMS"
+      ],
+      "topic_primary": "cellular-ai",
+      "topics_secondary": [],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-22_arxiv-ericsson-world-model-network-control.md",
+      "summary_short_en": "Ericsson Research (Stockholm) proposes replacing reinforcement-learning policies for mobile-network configuration control with a **data-driven world model (WM)**: a sequence-to-sequence transformer (GPT-2 backbone, RevIn normalization, separate state/action embeddings) that predicts how candidate configuration actions will affect future network KPIs, paired with a **cross-entropy-method (CEM) planner** that samples action sequences, scores them against the WM's stochastic predictions, and picks the lowest-cost plan. Because the model is decoupled from the controller, changing the optimization objective (e.g. a throughput constraint) requires no retraining — the constraint is simply edited in the planner's cost function. The paper is accepted at IEEE/IFIP NOMS 2026.",
+      "summary_short_zh": "Ericsson 斯德哥尔摩研究院提出用**数据驱动的世界模型（WM）**取代移动网络配置控制中的强化学习策略：一个序列到序列 Transformer（GPT-2 主干、RevIn 归一化、独立的状态/动作嵌入）预测候选配置动作对未来网络 KPI 的影响，配合**交叉熵方法（CEM）规划器**采样动作序列、依据 WM 的随机预测打分并选出最低代价方案。由于模型与控制器解耦，更改优化目标（如吞吐约束）无需重训——只需修改规划器代价函数中的约束项。论文已被 IEEE/IFIP NOMS 2026 接收。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Ericsson Research (Stockholm) proposes replacing reinforcement-learning policies for mobile-network configuration control with a <strong>data-driven world model (WM)</strong>: a sequence-to-sequence transformer (GPT-2 backbone, RevIn normalization, separate state/action embeddings) that predicts how candidate configuration actions will affect future network KPIs, paired with a <strong>cross-entropy-method (CEM) planner</strong> that samples action sequences, scores them against the WM's stochastic predictions, and picks the lowest-cost plan. Because the model is decoupled from the controller, changing the optimization objective (e.g. a throughput constraint) requires no retraining — the constraint is simply edited in the planner's cost function. The paper is accepted at IEEE/IFIP NOMS 2026.</p>\n<p>Two design choices carry the technical novelty. First, <strong>multi-task output heads for heterogeneous network features</strong>: continuous resource utilization (MSE), binary sleep states (cross-entropy), and semi-continuous throughput (masked MSE, active-cells only) are modeled jointly instead of forcing everything into a single regression. Second, <strong>ensemble uncertainty</strong>: five independently trained models separate aleatoric from epistemic uncertainty, letting the planner act conservatively where the model is unsure.</p>\n<p>Trained on 100 synthetic 9-day scenarios plus <strong>six months of live 4G/5G data from 150 sectors</strong>, the system was evaluated closed-loop in a calibrated 5G simulator (4-day episodes, 10 unseen scenarios) for a capacity-cell sleep use case. WM-based control achieved ~18 sleep-hours/day versus 4.5 for a threshold heuristic at a 50 Mbit/s throughput constraint with &lt;5% violations, Pareto-dominating both the heuristic and a Soft Actor-Critic RL agent trained on 20,000 steps. On live data, counterfactual analysis proposed 11–18 sleep hours/day depending on constraint tightness.</p>\n<h3>Key technical points</h3>\n<ul><li>World model: seq2seq transformer (GPT-2 backbone), RevIn normalization, separate state/action embeddings; controller = CEM sampling planner over WM rollouts.</li><li>Multi-task heads: MSE (utilization) + BCE (sleep state) + masked MSE (throughput when active) — explicit handling of mixed feature types.</li><li>5-model ensemble separates aleatoric vs epistemic uncertainty; stochastic variants plan more conservatively.</li><li>Training data: 100 synthetic 9-day scenarios + 6 months of live 4G/5G data across 150 sectors.</li><li>Results: ~18 sleep-h/day vs 4.5 (heuristic) at 50 Mbit/s constraint, &lt;5% violations; Pareto-dominates SAC RL; objective changes need no retraining.</li><li>Live-network counterfactual evaluation (no deployment): 11–18 sleep-h/day proposals; accepted at NOMS 2026.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first world-model-based network-control entry and a notable philosophical break from the RL lineage running through the cellular-ai bin (LOLLA link adaptation, RANPilot's model-survival focus, the SD-RAN slice-management MARL work): instead of baking the objective into a trained policy, Ericsson trains a reusable predictive model and moves the objective into a planner — directly attacking RL's retraining cost and constraint-fragility, with uncertainty quantification as a first-class citizen. That a tier-1 vendor validated this on six months of live-network data (not just simulation) signals world models are entering the operator toolchain conversation for energy saving, the highest-volume RAN automation use case.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Ericsson 斯德哥尔摩研究院提出用<strong>数据驱动的世界模型（WM）</strong>取代移动网络配置控制中的强化学习策略：一个序列到序列 Transformer（GPT-2 主干、RevIn 归一化、独立的状态/动作嵌入）预测候选配置动作对未来网络 KPI 的影响，配合<strong>交叉熵方法（CEM）规划器</strong>采样动作序列、依据 WM 的随机预测打分并选出最低代价方案。由于模型与控制器解耦，更改优化目标（如吞吐约束）无需重训——只需修改规划器代价函数中的约束项。论文已被 IEEE/IFIP NOMS 2026 接收。</p>\n<p>技术新颖性有两处。其一，<strong>面向异构网络特征的多任务输出头</strong>：连续的资源利用率（MSE）、二值的休眠状态（交叉熵）、半连续的吞吐量（仅活跃小区的掩码 MSE）联合建模，而非强行统一回归。其二，<strong>集成不确定性</strong>：五个独立训练的模型区分偶然与认知不确定性，使规划器在模型不确定处保守行动。</p>\n<p>系统在 100 个合成 9 天场景加<strong>150 个扇区六个月的真实 4G/5G 数据</strong>上训练，并在校准的 5G 仿真器中对容量小区休眠用例做闭环评估（4 天回合、10 个未见场景）。在 50 Mbit/s 吞吐约束下，WM 控制实现约 18 小时/天休眠（阈值启发式为 4.5 小时），违约率 &lt;5%，帕累托优于启发式与训练 2 万步的 SAC 智能体。在真实数据上，反事实分析按约束松紧建议 11–18 小时/天休眠。</p>\n<h3>技术要点</h3>\n<ul><li>世界模型：seq2seq Transformer（GPT-2 主干）、RevIn 归一化、独立状态/动作嵌入；控制器为基于 WM 推演的 CEM 采样规划器。</li><li>多任务输出头：MSE（利用率）+ BCE（休眠态）+ 掩码 MSE（活跃期吞吐）——显式处理混合特征类型。</li><li>五模型集成区分偶然/认知不确定性；随机版本规划更保守。</li><li>训练数据：100 个合成 9 天场景 + 150 扇区六个月真实 4G/5G 数据。</li><li>结果：50 Mbit/s 约束下约 18 小时/天休眠对启发式 4.5 小时，违约 &lt;5%；帕累托优于 SAC；目标变更无需重训。</li><li>真实网络反事实评估（不实际部署）：建议 11–18 小时/天休眠；NOMS 2026 接收。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本 KB 首个基于世界模型的网络控制条目，与 cellular-ai 主题中的 RL 谱系（LOLLA 链路自适应、RANPilot 的模型存活性、SD-RAN 切片管理 MARL）形成鲜明的路线分野：Ericsson 不再把目标固化进训练好的策略，而是训练可复用的预测模型、把目标移入规划器——直击 RL 的重训成本与约束脆弱性，并将不确定性量化作为一等公民。头部设备商用六个月真实网络数据（而非仅仿真）验证该路线，标志着世界模型正进入运营商能耗节省（RAN 自动化中体量最大的用例）工具链讨论。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2607.17747v1/x1.png",
+          "caption_en": "World-model capacity cell sleep control architecture",
+          "caption_zh": "世界模型容量小区休眠控制架构"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.17747v1/x3.png",
+          "caption_en": "Closed-loop sleep vs violation trade-off",
+          "caption_zh": "闭环休眠时长与违约率权衡"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.17747v1/x7.png",
+          "caption_en": "CEM policy on live data with uncertainty envelope",
+          "caption_zh": "真实数据上带不确定性包络的 CEM 策略"
+        }
+      ],
+      "search_blob": "mobile network control with a world model (ericsson research): plan-with-predictions replaces retrain-the-policy ericsson 研究院：用世界模型控制移动网络——以预测规划取代策略重训 world-model energy-saving cell-sleep ai-ran noms ericsson research (stockholm) proposes replacing reinforcement-learning policies for mobile-network configuration control with a **data-driven world model (wm)**: a sequence-to-sequence transformer (gpt-2 backbone, revin normalization, separate state/action embeddings) that predicts how candidate configuration actions will affect future network kpis, paired with a **cross-entropy-method (cem) planner** that samples action sequences, scores them against the wm's stochastic predictions, and picks the lowest-cost plan. because the model is decoupled from the controller, changing the optimization objective (e.g. a throughput constraint) requires no retraining — the constraint is simply edited in the planner's cost function. the paper is accepted at ieee/ifip noms 2026. ericsson 斯德哥尔摩研究院提出用**数据驱动的世界模型（wm）**取代移动网络配置控制中的强化学习策略：一个序列到序列 transformer（gpt-2 主干、revin 归一化、独立的状态/动作嵌入）预测候选配置动作对未来网络 kpi 的影响，配合**交叉熵方法（cem）规划器**采样动作序列、依据 wm 的随机预测打分并选出最低代价方案。由于模型与控制器解耦，更改优化目标（如吞吐约束）无需重训——只需修改规划器代价函数中的约束项。论文已被 ieee/ifip noms 2026 接收。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-22_sigcomm26-cellular-systems-papers",
+      "date_found": "2026-07-22",
+      "technology": "cellular",
+      "date_published": "2026-07-20",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "SIGCOMM 2026 accepted-papers digest — cellular systems: SAGE, CausalTune, dual-loop 5G uplink CC, low-altitude UAV 5G",
+      "title_zh": "SIGCOMM 2026 录用论文摘要——蜂窝系统方向：SAGE、CausalTune、5G 上行双环拥塞控制、低空无人机 5G",
+      "url": "https://conferences.sigcomm.org/sigcomm/2026/accepted/",
+      "topics": [
+        "SIGCOMM",
+        "congestion-control",
+        "RAN-configuration",
+        "UAV",
+        "AI-RAN"
+      ],
+      "topic_primary": "cellular-ai",
+      "topics_secondary": [
+        "5g-nr"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-22_sigcomm26-cellular-systems-papers.md",
+      "summary_short_en": "The full ACM SIGCOMM 2026 accepted-papers list (110 papers) is now public, and four cellular-systems papers stand out beyond the already-covered RANPilot. **SAGE** (EPFL + Pavonis LLC) is \"a real-time AI system for reducing latency in NextG cellular networks.\" **CausalTune** (University of Edinburgh + AT&T) applies causal learning to automated cellular RAN configuration tuning — notable for pairing an academic causal-inference framework with an operator's production configuration problem. **\"Synchronizing with the Scheduler\"** (University at Buffalo + Princeton) proposes dual-loop congestion control for the 5G uplink on commodity devices — attacking the uplink bottleneck that recent measurement studies (including this week's stadium characterization) keep flagging as cellular's weakest direction. **\"Unveiling Low-Altitude 5G Performance\"** (SCUT + Pengcheng Laboratory) links 5G KPIs to UAV flight parameters for the emerging low-altitude economy.",
+      "summary_short_zh": "ACM SIGCOMM 2026 录用论文全名单（110 篇）已公开，除已收录的 RANPilot 外有四篇蜂窝系统论文值得关注。**SAGE**（EPFL + Pavonis LLC）：面向下一代蜂窝网络降低时延的实时 AI 系统。**CausalTune**（爱丁堡大学 + AT&T）：将因果学习用于蜂窝 RAN 配置自动调优——学术因果推断框架与运营商生产配置问题的结合值得注意。**《Synchronizing with the Scheduler》**（布法罗大学 + 普林斯顿）：在商用设备上实现 5G 上行双环拥塞控制——直击近期测量研究（包括本周的体育场测量）反复指出的蜂窝最弱方向：上行。**《Unveiling Low-Altitude 5G Performance》**（华南理工 + 鹏城实验室）：将 5G KPI 与无人机飞行参数关联，服务低空经济。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The full ACM SIGCOMM 2026 accepted-papers list (110 papers) is now public, and four cellular-systems papers stand out beyond the already-covered RANPilot. <strong>SAGE</strong> (EPFL + Pavonis LLC) is &quot;a real-time AI system for reducing latency in NextG cellular networks.&quot; <strong>CausalTune</strong> (University of Edinburgh + AT&amp;T) applies causal learning to automated cellular RAN configuration tuning — notable for pairing an academic causal-inference framework with an operator's production configuration problem. <strong>&quot;Synchronizing with the Scheduler&quot;</strong> (University at Buffalo + Princeton) proposes dual-loop congestion control for the 5G uplink on commodity devices — attacking the uplink bottleneck that recent measurement studies (including this week's stadium characterization) keep flagging as cellular's weakest direction. <strong>&quot;Unveiling Low-Altitude 5G Performance&quot;</strong> (SCUT + Pengcheng Laboratory) links 5G KPIs to UAV flight parameters for the emerging low-altitude economy.</p>\n<p>Only titles and author lists are public; camera-ready PDFs land around the conference (September 2026). Each paper is a candidate for a dedicated entry when its preprint appears.</p>\n<h3>Key technical points</h3>\n<ul><li>SAGE (EPFL/Pavonis): real-time AI latency reduction for NextG cellular.</li><li>CausalTune (Edinburgh/AT&amp;T): causal-learning-based automated RAN configuration tuning on operator data.</li><li>Dual-loop 5G uplink congestion control (Buffalo/Princeton): commodity-device uplink CC synchronized with the gNB scheduler.</li><li>Low-altitude 5G (SCUT/Pengcheng): KPI vs UAV flight-parameter characterization.</li><li>RANPilot (PolyU/Buffalo) also accepted — already covered as 2026-07-07_arxiv-ranpilot-proactive-oran-ai-adaptation.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>SIGCOMM acceptance is a strong signal of systems maturity, and the 2026 cellular cluster shows two clear currents: AI moving from offline optimization into real-time RAN loops (SAGE, CausalTune — with AT&amp;T co-authorship marking operator buy-in), and the 5G uplink emerging as the community's next bottleneck target (dual-loop CC), consistent with the uplink-collapse findings in 2026-07-22_wintech-stadium-wifi-cellular-measurement. Follow-up trigger: fetch camera-ready PDFs when they post (~September 2026).</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>ACM SIGCOMM 2026 录用论文全名单（110 篇）已公开，除已收录的 RANPilot 外有四篇蜂窝系统论文值得关注。<strong>SAGE</strong>（EPFL + Pavonis LLC）：面向下一代蜂窝网络降低时延的实时 AI 系统。<strong>CausalTune</strong>（爱丁堡大学 + AT&amp;T）：将因果学习用于蜂窝 RAN 配置自动调优——学术因果推断框架与运营商生产配置问题的结合值得注意。<strong>《Synchronizing with the Scheduler》</strong>（布法罗大学 + 普林斯顿）：在商用设备上实现 5G 上行双环拥塞控制——直击近期测量研究（包括本周的体育场测量）反复指出的蜂窝最弱方向：上行。<strong>《Unveiling Low-Altitude 5G Performance》</strong>（华南理工 + 鹏城实验室）：将 5G KPI 与无人机飞行参数关联，服务低空经济。</p>\n<p>目前仅公开标题与作者；正式版论文约于会议期（2026 年 9 月）发布。各篇预印本出现时均可考虑单独立条。</p>\n<h3>技术要点</h3>\n<ul><li>SAGE（EPFL/Pavonis）：下一代蜂窝网络的实时 AI 降时延系统。</li><li>CausalTune（爱丁堡/AT&amp;T）：基于因果学习、在运营商数据上的 RAN 配置自动调优。</li><li>5G 上行双环拥塞控制（布法罗/普林斯顿）：与 gNB 调度器同步的商用设备上行 CC。</li><li>低空 5G（华南理工/鹏城）：5G KPI 与无人机飞行参数的关联刻画。</li><li>RANPilot（理大/布法罗）同获录用——已收录为 2026-07-07_arxiv-ranpilot-proactive-oran-ai-adaptation。</li></ul>\n<h3>意义与新意</h3>\n<p>SIGCOMM 录用本身即是系统成熟度的强信号，2026 年蜂窝论文群呈现两条主线：AI 从离线优化走向实时 RAN 闭环（SAGE、CausalTune——AT&amp;T 参与署名标志运营商入场），以及 5G 上行成为学界下一个瓶颈目标（双环 CC），与 2026-07-22_wintech-stadium-wifi-cellular-measurement 的上行崩塌发现一致。后续触发点：正式版 PDF 发布（约 2026 年 9 月）时抓取。</p>",
+      "images": [],
+      "search_blob": "sigcomm 2026 accepted-papers digest — cellular systems: sage, causaltune, dual-loop 5g uplink cc, low-altitude uav 5g sigcomm 2026 录用论文摘要——蜂窝系统方向：sage、causaltune、5g 上行双环拥塞控制、低空无人机 5g sigcomm congestion-control ran-configuration uav ai-ran the full acm sigcomm 2026 accepted-papers list (110 papers) is now public, and four cellular-systems papers stand out beyond the already-covered ranpilot. **sage** (epfl + pavonis llc) is \"a real-time ai system for reducing latency in nextg cellular networks.\" **causaltune** (university of edinburgh + at&t) applies causal learning to automated cellular ran configuration tuning — notable for pairing an academic causal-inference framework with an operator's production configuration problem. **\"synchronizing with the scheduler\"** (university at buffalo + princeton) proposes dual-loop congestion control for the 5g uplink on commodity devices — attacking the uplink bottleneck that recent measurement studies (including this week's stadium characterization) keep flagging as cellular's weakest direction. **\"unveiling low-altitude 5g performance\"** (scut + pengcheng laboratory) links 5g kpis to uav flight parameters for the emerging low-altitude economy. acm sigcomm 2026 录用论文全名单（110 篇）已公开，除已收录的 ranpilot 外有四篇蜂窝系统论文值得关注。**sage**（epfl + pavonis llc）：面向下一代蜂窝网络降低时延的实时 ai 系统。**causaltune**（爱丁堡大学 + at&t）：将因果学习用于蜂窝 ran 配置自动调优——学术因果推断框架与运营商生产配置问题的结合值得注意。**《synchronizing with the scheduler》**（布法罗大学 + 普林斯顿）：在商用设备上实现 5g 上行双环拥塞控制——直击近期测量研究（包括本周的体育场测量）反复指出的蜂窝最弱方向：上行。**《unveiling low-altitude 5g performance》**（华南理工 + 鹏城实验室）：将 5g kpi 与无人机飞行参数关联，服务低空经济。 academic-paper cellular"
+    },
+    {
       "id": "2026-07-22_costa-rica-full-band-6ghz-afc",
       "date_found": "2026-07-22",
       "technology": "wifi",
@@ -3976,6 +4063,36 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在 2026 年 7 月 12–17 日于蒙特利尔举行的 IEEE 802 全会上，802.11 工作组批准了 <strong>802.11bn Draft 2.0</strong> —— 这正是任务组时间表预测的 2026 年 7 月里程碑。TGbn 在会议周内召开了十场会议，处理了约 1,200 条来自 CC50 意见征集的评论，最终形成新草案。行业报道（Wi-Fi NOW，7 月 20 日）认为该批准为 Wi-Fi 8 产品的加速开发扫清了道路，预计在 2028 年标准正式发布前&quot;仅剩少量标准修改&quot;。D2.0 随后将进入工作组信函投票；此前 D1.0 的 LB291（2025 年 8–10 月）仅获 61% 赞成，并经历了两轮大规模评论处理（3 月约 1,800 条、5 月约 670 条）。</p>\n<p>同一周，工作组还<strong>成立了面向 802.11bn 之后下一代标准的研究组</strong>（非正式称为&quot;Wi-Fi 9&quot;），明确聚焦吞吐量、时延可预测性，以及对 AI 流量等新兴应用需求的适配。这使春季以来在 WNG SC 酝酿的后 UHR 探索工作正式化，并与单独跟踪的 P802.11bu AI 卸载 PAR 草案（DCN 11-26/1477，全会闭幕日上传）并行推进。</p>\n<p>ieee802.org 官方状态页面滞后于该事件：tgbn_update.htm 仍显示 D1.5/安特卫普状态，LetterBallots 页面最新仍为 LB294。Session 218 报告（11-26-1140-02）已发布在 Reports 页面；D2.0 的投票公告预计数周内出现。</p>\n<h3>技术要点</h3>\n<ul><li>802.11bn Draft 2.0 于 2026 年 7 月蒙特利尔全会（Session 218，7 月 12–17 日）获批，与 TGbn 时间表&quot;D2.0 工作组信函投票：2026 年 7 月&quot;的预测一致。</li><li>全会周内 TGbn 十场会议处理了约 1,200 条 CC50 评论。</li><li>投票历史：D1.0 首轮信函投票 LB291 仅 61% 赞成（308/198/8）——此后两轮评论处理（约 1,800 + 约 670 条）先后产出 D1.5 与 D2.0。</li><li>新研究组面向 802.11bn 之后的下一代（&quot;Wi-Fi 9&quot;）：明确聚焦吞吐量、时延可预测性与 AI 流量适配。</li><li>TGbn 后续里程碑：D3.0 信函投票 2027 年 1 月，工作组最终批准 2028 年 3 月，IEEE 完成 2028 年 5 月。</li><li>截至 7 月 22 日官方状态页面（tgbn_update.htm、LetterBallots.shtml）尚未更新；Session 218 报告已发布为 DCN 11-26-1140-02。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本 KB 今夏最受关注的标准事件：D2.0 获批将数月以来&quot;预计 7 月&quot;的状态性条目（参见同周 TGbi 的平行里程碑 2026-07-17_ieee-80211bi-conditional-approval-milestone）转化为确认事实，并将 Wi-Fi 8 的节奏推向 D3.0/2027 年 1 月的下一个检查点。Wi-Fi 9 研究组的成立是更具前瞻性的信号：与 P802.11bu PAR 草案（2026-07-19_ieee-p802-11bu-draft-par-ai-offload）一起，表明工作组正式将&quot;下一代吞吐/时延&quot;与&quot;AI 卸载&quot;拆分为两条后 bn 轨道，且两者的范围均点名 AI 流量。</p>",
       "images": [],
       "search_blob": "ieee 802.11bn draft 2.0 approved at montreal plenary; wi-fi 9 study group established ieee 802.11bn draft 2.0 在蒙特利尔全会获批；wi-fi 9 研究组成立 802.11bn uhr wifi-9 standards-process at the july 12–17, 2026 ieee 802 plenary in montreal, the 802.11 working group approved **802.11bn draft 2.0** — the milestone the task group's timeline had predicted for july 2026. tgbn ran ten sessions during the week and resolved on the order of 1,200 comments from comment collection cc50 en route to the new draft. industry coverage (wi-fi now, july 20) frames the approval as clearing the way for faster wi-fi 8 product development, with \"only minor remaining standard changes expected\" before the ratification target of 2028. d2.0 now proceeds to its working-group letter ballot, following d1.0's bruising 61%-approve lb291 (august–october 2025) and two heavy comment-resolution cycles (~1,800 comments in march, ~670 in may). 在 2026 年 7 月 12–17 日于蒙特利尔举行的 ieee 802 全会上，802.11 工作组批准了 **802.11bn draft 2.0** —— 这正是任务组时间表预测的 2026 年 7 月里程碑。tgbn 在会议周内召开了十场会议，处理了约 1,200 条来自 cc50 意见征集的评论，最终形成新草案。行业报道（wi-fi now，7 月 20 日）认为该批准为 wi-fi 8 产品的加速开发扫清了道路，预计在 2028 年标准正式发布前\"仅剩少量标准修改\"。d2.0 随后将进入工作组信函投票；此前 d1.0 的 lb291（2025 年 8–10 月）仅获 61% 赞成，并经历了两轮大规模评论处理（3 月约 1,800 条、5 月约 670 条）。 ieee-document wifi"
+    },
+    {
+      "id": "2026-07-22_arxiv-llm-agentic-ai-5g6g-tutorial",
+      "date_found": "2026-07-22",
+      "technology": "cellular",
+      "date_published": "2026-07-17",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "LLM-Powered Agentic AI for 5G/6G Networks: A Tutorial and Survey on Architectures, Protocols, and Standardization",
+      "title_zh": "面向 5G/6G 网络的 LLM 智能体 AI：架构、协议与标准化的教程与综述",
+      "url": "https://arxiv.org/abs/2607.16066",
+      "topics": [
+        "LLM",
+        "agentic-AI",
+        "6G",
+        "standardization",
+        "survey"
+      ],
+      "topic_primary": "cellular-ai",
+      "topics_secondary": [
+        "6g-vision"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-22_arxiv-llm-agentic-ai-5g6g-tutorial.md",
+      "summary_short_en": "A 35-page tutorial-and-survey (Ameur, Mekrache, Brik, Ksentini — the EURECOM lineage behind several agentic-networking works; submitted July 17, 2026) that systematizes the intersection of LLM-based agentic AI and cellular network control. Part I formalizes the **control, management, and AI-native planes** of 5G/6G networks and the core agentic capability stack — reasoning, planning, tool use, multi-agent coordination, and evaluation. Part II maps those capabilities onto concrete 5G/6G control surfaces, aligns them with ongoing standardization, surveys the major 6G initiatives, and catalogs open challenges for autonomous telecom operation.",
+      "summary_short_zh": "一篇 35 页的教程+综述（Ameur、Mekrache、Brik、Ksentini——EURECOM 系多篇智能体网络工作的作者脉络；2026 年 7 月 17 日提交），系统化梳理 LLM 智能体 AI 与蜂窝网络控制的交叉领域。第一部分形式化 5G/6G 网络的**控制面、管理面与 AI 原生面**，以及智能体核心能力栈——推理、规划、工具调用、多智能体协同与评估。第二部分将这些能力映射到具体的 5G/6G 控制面，对齐进行中的标准化工作，综述主要 6G 计划，并归纳自治电信运营的开放挑战。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A 35-page tutorial-and-survey (Ameur, Mekrache, Brik, Ksentini — the EURECOM lineage behind several agentic-networking works; submitted July 17, 2026) that systematizes the intersection of LLM-based agentic AI and cellular network control. Part I formalizes the <strong>control, management, and AI-native planes</strong> of 5G/6G networks and the core agentic capability stack — reasoning, planning, tool use, multi-agent coordination, and evaluation. Part II maps those capabilities onto concrete 5G/6G control surfaces, aligns them with ongoing standardization, surveys the major 6G initiatives, and catalogs open challenges for autonomous telecom operation.</p>\n<p>The authors position the work as bridging two previously siloed literatures: agentic-AI papers that ignore telecom protocol reality, and network-automation papers that treat LLM agents as black boxes. The declared gap-fill — protocol integration, evaluation methodology, and standardization alignment — is precisely the terrain where 3GPP Rel-20/21 AI-native discussions, O-RAN's RIC evolution, and the ETSI/ITU 6G groups are currently converging.</p>\n<h3>Key technical points</h3>\n<ul><li>Part I: formal model of control/management/AI-native planes; agentic capability stack (reasoning, planning, tool use, multi-agent coordination, evaluation).</li><li>Part II: capability-to-control-surface mapping; standardization alignment (3GPP / O-RAN / 6G initiatives); evaluation and open challenges.</li><li>35 pages, under review; submitted 2026-07-17.</li><li>Complements deployed-system papers (RANPilot, SAGE) with the missing conceptual/standards scaffolding.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The cellular-ai bin has accumulated system-level agentic entries (RANPilot's reconfiguration-robust AI, LLM gNB configuration, WirelessAgent++) but lacked a canonical tutorial tying agent capabilities to the actual 5G/6G control planes and to standardization state — the role 2606.13759 plays for 802.11bn MAPC on the WiFi side. This survey is the likely citation anchor for that discussion; its standardization-alignment section is the part to watch as 3GPP Rel-21 scoping matures.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>一篇 35 页的教程+综述（Ameur、Mekrache、Brik、Ksentini——EURECOM 系多篇智能体网络工作的作者脉络；2026 年 7 月 17 日提交），系统化梳理 LLM 智能体 AI 与蜂窝网络控制的交叉领域。第一部分形式化 5G/6G 网络的<strong>控制面、管理面与 AI 原生面</strong>，以及智能体核心能力栈——推理、规划、工具调用、多智能体协同与评估。第二部分将这些能力映射到具体的 5G/6G 控制面，对齐进行中的标准化工作，综述主要 6G 计划，并归纳自治电信运营的开放挑战。</p>\n<p>作者将该工作定位为弥合两个割裂的文献群：忽视电信协议现实的智能体 AI 论文，与把 LLM 智能体当黑盒的网络自动化论文。其声明的空白填补——协议集成、评估方法与标准化对齐——正是 3GPP Rel-20/21 AI 原生讨论、O-RAN RIC 演进与 ETSI/ITU 6G 组当前汇聚的地带。</p>\n<h3>技术要点</h3>\n<ul><li>第一部分：控制/管理/AI 原生面的形式化模型；智能体能力栈（推理、规划、工具调用、多智能体协同、评估）。</li><li>第二部分：能力到控制面的映射；标准化对齐（3GPP / O-RAN / 6G 计划）；评估与开放挑战。</li><li>35 页，在审；2026-07-17 提交。</li><li>与系统实现类论文（RANPilot、SAGE）互补，补上概念与标准化脚手架。</li></ul>\n<h3>意义与新意</h3>\n<p>cellular-ai 主题已积累了系统级智能体条目（RANPilot 的重配置鲁棒 AI、LLM gNB 配置、WirelessAgent++），但一直缺少将智能体能力与真实 5G/6G 控制面及标准化状态挂钩的权威教程——即 2606.13759 在 WiFi 侧对 802.11bn MAPC 所扮演的角色。本综述很可能成为该讨论的引用锚点；其标准化对齐章节值得随 3GPP Rel-21 范围成熟而持续关注。</p>",
+      "images": [],
+      "search_blob": "llm-powered agentic ai for 5g/6g networks: a tutorial and survey on architectures, protocols, and standardization 面向 5g/6g 网络的 llm 智能体 ai：架构、协议与标准化的教程与综述 llm agentic-ai 6g standardization survey a 35-page tutorial-and-survey (ameur, mekrache, brik, ksentini — the eurecom lineage behind several agentic-networking works; submitted july 17, 2026) that systematizes the intersection of llm-based agentic ai and cellular network control. part i formalizes the **control, management, and ai-native planes** of 5g/6g networks and the core agentic capability stack — reasoning, planning, tool use, multi-agent coordination, and evaluation. part ii maps those capabilities onto concrete 5g/6g control surfaces, aligns them with ongoing standardization, surveys the major 6g initiatives, and catalogs open challenges for autonomous telecom operation. 一篇 35 页的教程+综述（ameur、mekrache、brik、ksentini——eurecom 系多篇智能体网络工作的作者脉络；2026 年 7 月 17 日提交），系统化梳理 llm 智能体 ai 与蜂窝网络控制的交叉领域。第一部分形式化 5g/6g 网络的**控制面、管理面与 ai 原生面**，以及智能体核心能力栈——推理、规划、工具调用、多智能体协同与评估。第二部分将这些能力映射到具体的 5g/6g 控制面，对齐进行中的标准化工作，综述主要 6g 计划，并归纳自治电信运营的开放挑战。 academic-paper cellular"
     },
     {
       "id": "2026-07-19_ieee-p802-11bu-draft-par-ai-offload",
