@@ -1,21 +1,21 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-07-22",
-  "last_scanned": "2026-07-22",
+  "last_updated": "2026-07-24",
+  "last_scanned": "2026-07-24",
   "topic_counts": {
     "6G": 44,
-    "802.11bn": 40,
+    "802.11bn": 41,
     "agentic-AI": 37,
     "MAC-layer": 37,
     "products": 33,
     "scheduling": 31,
     "security": 29,
+    "802.11be": 26,
     "O-RAN": 26,
     "LEO": 25,
-    "802.11be": 25,
     "WiFi-sensing": 21,
+    "MAPC": 16,
     "Starlink": 15,
-    "MAPC": 15,
     "MLO": 15,
     "PHY-layer": 15,
     "IoT": 14,
@@ -27,33 +27,34 @@ window.KB_DATA = {
     "AI-RAN": 11,
     "network-slicing": 11,
     "802.11ax": 11,
+    "mmWave": 10,
     "LLM": 10,
-    "mmWave": 9,
     "CSI": 9,
     "UWB": 9,
     "NTN": 9,
+    "802.11bq": 8,
     "802.11bp": 8,
     "3GPP": 8,
     "digital-twin": 8,
     "NearLink": 8,
     "SparkLink": 8,
     "BLE": 8,
+    "NPCA": 7,
     "spectrum": 7,
     "802.11bt": 7,
     "privacy": 7,
     "FCC": 7,
     "802.11": 7,
-    "802.11bq": 7,
     "URLLC": 7,
     "reinforcement-learning": 7,
     "XR": 7,
     "energy-efficiency": 7,
     "generative-AI": 7,
     "AFC": 6,
+    "OFDMA": 6,
     "Wi-Fi 7": 6,
     "AI-native": 6,
     "PQC": 6,
-    "NPCA": 6,
     "beamforming": 6,
     "resource-allocation": 6,
     "V2X": 6,
@@ -69,8 +70,8 @@ window.KB_DATA = {
     "Co-BF": 5,
     "channel-sounding": 5,
     "5G-Advanced": 5,
-    "OFDMA": 5,
     "RIC": 5,
+    "ELR": 4,
     "regulation": 4,
     "congestion-control": 4,
     "UHR": 4,
@@ -99,6 +100,8 @@ window.KB_DATA = {
     "5G-core": 4,
     "802.15.4ab": 4,
     "802.11az": 4,
+    "P-EDCA": 3,
+    "DRU": 3,
     "energy-saving": 3,
     "SIGCOMM": 3,
     "standards-process": 3,
@@ -143,11 +146,11 @@ window.KB_DATA = {
     "rApp": 3,
     "spectrum-policy": 3,
     "802.11ac": 3,
-    "ELR": 3,
     "WPA3": 3,
     "digital-car-key": 3,
     "roaming": 3,
     "Ofcom": 2,
+    "power-control": 2,
     "high-density": 2,
     "standardization": 2,
     "PAR": 2,
@@ -223,8 +226,6 @@ window.KB_DATA = {
     "BT-LE": 2,
     "Channel-Sounding": 2,
     "seamless-roaming": 2,
-    "P-EDCA": 2,
-    "DRU": 2,
     "MU-MIMO": 2,
     "Wi-Fi 9": 2,
     "healthcare": 2,
@@ -245,6 +246,7 @@ window.KB_DATA = {
     "world-model": 1,
     "cell-sleep": 1,
     "NOMS": 1,
+    "UORA": 1,
     "SAR": 1,
     "RAN-configuration": 1,
     "WiFi-6E": 1,
@@ -256,7 +258,6 @@ window.KB_DATA = {
     "evaluation-methodology": 1,
     "deep-learning": 1,
     "formal-verification": 1,
-    "power-control": 1,
     "Part-15": 1,
     "New-Glenn": 1,
     "Falcon-9": 1,
@@ -799,7 +800,7 @@ window.KB_DATA = {
     "TWS": 1
   },
   "primary_topic_counts": {
-    "wifi8-uhr": 26,
+    "wifi8-uhr": 27,
     "cellular-ai": 25,
     "wifi7-deployment": 22,
     "6g-vision": 21,
@@ -814,10 +815,10 @@ window.KB_DATA = {
     "sat-direct-device": 9,
     "amp-iot": 9,
     "starlink": 8,
+    "rtwt-latency": 7,
     "cellular-security": 7,
     "uwb-ranging": 7,
     "ai-for-wifi": 7,
-    "rtwt-latency": 6,
     "network-slicing": 5,
     "sat-ai": 5,
     "bt-channel-sounding": 5,
@@ -842,7 +843,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 199,
+    "academic-paper": 201,
     "industry-news": 69,
     "ieee-document": 28,
     "product": 17,
@@ -852,7 +853,7 @@ window.KB_DATA = {
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 199,
+    "academia": 201,
     "industry": 96,
     "standards": 36
   },
@@ -1775,6 +1776,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-ma-mab-spatial-reuse"
       ],
       "entries_secondary": [
+        "2026-07-24_arxiv-wifi8-uhr-mechanisms-verification",
         "2026-07-09_ieee-mentor-tgbn-preplenary-digest",
         "2026-06-26_arxiv-kom8ndor-wifi8-simulator",
         "2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence",
@@ -1822,6 +1824,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((R-TWT / Low latency))\n    Standards\n      R-TWT in 802.11be\n      R-TWT extensions in 802.11bn\n      Protected airtime windows\n    Research\n      RTA delay model (rtwt-rta)\n      Deterministic TWT on Wi-Fi 6\n      BLADE adaptive contention\n      NSDI'26 Law link-layer redesign\n    Co-SR axis\n      Wi-Fi 8 latency via Co-SR\n    Bridges\n      mapc-cosr (throughput side)\n      wifi-for-ai (XR / agent traffic)\n      energy-power-save (TWT energy)\n    Watch\n      Vendor XR / cloud-gaming latency\n      R-TWT + MLO link-selection primitives",
       "diagram_mmd_zh": "mindmap\n  root((R-TWT 与低时延))\n    标准化\n      802.11be 中的 R-TWT\n      802.11bn 中的 R-TWT 扩展\n      受保护的空中时间窗\n    研究\n      RTA 时延模型（rtwt-rta）\n      Wi-Fi 6 上的确定性 TWT\n      BLADE 自适应竞争\n      NSDI'26 Law 链路层重构\n    Co-SR 轴\n      Wi-Fi 8 经 Co-SR 降时延\n    桥接\n      mapc-cosr（吞吐侧）\n      wifi-for-ai（XR / 智能体流量）\n      energy-power-save（TWT 能耗）\n    关注\n      厂商 XR / 云游戏时延\n      R-TWT + MLO 链路选择原语",
       "entries_primary": [
+        "2026-07-24_arxiv-uora-power-control-capture-fairness",
         "2026-07-08_sigcomm26-concord-airtime-contention",
         "2026-06-11_arxiv-wifi6-dynamic-ru-tsn",
         "2026-05-03_nsdi-law-802-11-low-latency-link-layer",
@@ -1845,6 +1848,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-07-24_arxiv-uora-power-control-capture-fairness",
           "2026-07-08_sigcomm26-concord-airtime-contention",
           "2026-06-11_arxiv-wifi6-dynamic-ru-tsn",
           "2026-05-03_nsdi-law-802-11-low-latency-link-layer",
@@ -2021,6 +2025,7 @@ window.KB_DATA = {
         "2026-05-12_ieee-mentor-tgbq-antwerp-digest"
       ],
       "entries_secondary": [
+        "2026-07-24_arxiv-wifi8-uhr-mechanisms-verification",
         "2026-07-14_ieee-mentor-montreal-plenary-midweek-digest",
         "2026-07-13_ieee-mentor-montreal-plenary-opening-digest",
         "2026-07-09_ieee-mentor-misc-groups-preplenary-digest",
@@ -2054,6 +2059,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Wi-Fi 8 / 802.11bn / UHR))\n    Schedule 2026\n      D1.3 approved Jan Victoria\n      March plenary - no D2.0 ratify\n      D2.0 ballot slipped May to Jul\n      Ratify target May 2028\n    Study groups\n      AIML TIG/SC\n      AI Offload SG\n      WNG SC\n    Vendor positioning\n      Qualcomm AI-Native MWC 2026\n      Broadcom unified CES 2026\n      MediaTek Filogic 8000\n      Intel four-pillar WWC\n      Gemtek / Quectel\n    Background reading\n      25-year Wi-Fi tutorial\n      AIML CSI feedback survey\n    Watch\n      July 2026 D2.0 ballot\n      AI Offload SG charter\n      Wi-Fi 9 / WNG contributions",
       "diagram_mmd_zh": "mindmap\n  root((Wi-Fi 8 / 802.11bn / UHR))\n    2026 进度\n      D1.3 于 Jan Victoria 批准\n      3 月全会未通过 D2.0\n      D2.0 投票从 5 月推迟至 7 月\n      批准目标 2028-05\n    研究组\n      AIML TIG/SC\n      AI Offload SG\n      WNG SC\n    厂商站位\n      Qualcomm AI-Native（MWC 2026）\n      Broadcom 统一栈（CES 2026）\n      MediaTek Filogic 8000\n      Intel 四支柱（WWC）\n      Gemtek / Quectel\n    背景阅读\n      Wi-Fi 25 年综述\n      AIML CSI 反馈综述\n    关注\n      2026-07 D2.0 投票\n      AI Offload SG 立项\n      Wi-Fi 9 / WNG 贡献",
       "entries_primary": [
+        "2026-07-24_arxiv-wifi8-uhr-mechanisms-verification",
         "2026-07-22_ieee-80211bn-d2-approval-wifi9-sg",
         "2026-07-17_ieee-mentor-montreal-plenary-closing-digest",
         "2026-07-14_ieee-mentor-montreal-plenary-midweek-digest",
@@ -2102,6 +2108,13 @@ window.KB_DATA = {
         "2026-05-01_arxiv-aiml-csi-feedback-compression"
       ],
       "by_type_primary": {
+        "academic-paper": [
+          "2026-07-24_arxiv-wifi8-uhr-mechanisms-verification",
+          "2026-06-26_arxiv-kom8ndor-wifi8-simulator",
+          "2026-05-25_arxiv-dcf-full-duplex-wlan-hidden-terminals",
+          "2026-07-09_springer-towards-wifi9-vision",
+          "2026-05-01_arxiv-25-years-tutorial"
+        ],
         "ieee-document": [
           "2026-07-22_ieee-80211bn-d2-approval-wifi9-sg",
           "2026-07-17_ieee-mentor-montreal-plenary-closing-digest",
@@ -2114,12 +2127,6 @@ window.KB_DATA = {
           "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
           "2026-05-03_ieee-mentor-may-2026-pre-interim-digest",
           "2026-05-01_ieee-tgbn-d2-schedule"
-        ],
-        "academic-paper": [
-          "2026-06-26_arxiv-kom8ndor-wifi8-simulator",
-          "2026-05-25_arxiv-dcf-full-duplex-wlan-hidden-terminals",
-          "2026-07-09_springer-towards-wifi9-vision",
-          "2026-05-01_arxiv-25-years-tutorial"
         ],
         "product": [
           "2026-06-08_asus-rog-gt-bn98-pro-wifi8-router",
@@ -2581,6 +2588,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "mindmap\n  root((能效与省电))\n    机制\n      TWT 能耗预算\n      R-TWT 能耗侧\n      深睡眠调度\n      电池感知客户端行为\n    交叉引用\n      amp-iot 能量收集\n      rtwt-latency 时延侧\n      mlo 每链路开销\n    今日（次要出现）\n      Wi-Fi 6 上的确定性 TWT\n      20 MHz Wi-Fi 7 IoT 认证\n    分桶规则\n      节省 N% 能耗 - 主在此\n      M ms 内交付 - 主在时延桶\n    关注\n      逐类 MLO 能耗测量\n      AMP-IoT 电池寿命试点\n      Wi-Fi 8 深睡眠电流",
       "entries_primary": [],
       "entries_secondary": [
+        "2026-07-24_arxiv-uora-power-control-capture-fairness",
         "2026-07-11_ieee-mentor-tgbp-digest",
         "2026-07-09_ieee-mentor-tgbp-preplenary-digest",
         "2026-05-26_arxiv-opentwin-oran-digital-twin",
@@ -3895,6 +3903,61 @@ window.KB_DATA = {
   },
   "entries": [
     {
+      "id": "2026-07-24_arxiv-wifi8-uhr-mechanisms-verification",
+      "date_found": "2026-07-24",
+      "technology": "wifi",
+      "date_published": "2026-07-22",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Towards Ultra-High Reliability in Wi-Fi 8: IEEE 802.11bn Core Mechanisms, mmWave Integration, and Performance Verification",
+      "title_zh": "迈向 Wi-Fi 8 超高可靠：IEEE 802.11bn 核心机制、毫米波集成与系统级性能验证",
+      "url": "https://arxiv.org/abs/2607.19931",
+      "topics": [
+        "802.11bn",
+        "802.11bq",
+        "NPCA",
+        "P-EDCA",
+        "MAPC",
+        "DRU",
+        "ELR",
+        "mmWave"
+      ],
+      "topic_primary": "wifi8-uhr",
+      "topics_secondary": [
+        "mmwave-bq",
+        "mapc-cosr"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-24_arxiv-wifi8-uhr-mechanisms-verification.md",
+      "summary_short_en": "A 16-page review-plus-verification paper (arxiv 2607.19931, submitted 2026-07-22) from the Chinese University of Hong Kong, Huawei's Wireless Technology Lab (Ming Gan, a long-standing TGbn contributor), and Tsinghua Shenzhen International Graduate School. The paper frames Wi-Fi 8 / IEEE 802.11bn as the generation that pivots from peak throughput to \"highly reliable intelligent connectivity\" for industrial IoT, immersive communications, and collaborative robotics, then does two things: (1) a systematic walkthrough of the 802.11bn core mechanism suite — DRU (distributed resource units that scatter non-adjacent subcarriers to overcome PSD limits), ELR (enhanced long range via four-fold frequency-domain duplication with BPSK/QPSK), IM (interference mitigation pilots enabling receive-beamforming suppression), P-EDCA (prioritized EDCA granting exclusive access to voice frames after retransmission failures via DS-CTS), NPCA (non-primary channel access), IDC/PUO/DUO unavailability reporting, MAPC (Co-SR / Co-BF), and MLO-framework seamless roaming; and (2) system-level simulation verification of each mechanism against the 802.11bn PAR targets.",
+      "summary_short_zh": "这是一篇 16 页的\"综述 + 验证\"论文（arxiv 2607.19931，2026-07-22 提交），作者来自香港中文大学、华为无线技术实验室（Ming Gan，TGbn 长期贡献者）与清华大学深圳国际研究生院。论文将 Wi-Fi 8 / IEEE 802.11bn 定位为从追求峰值吞吐转向\"高可靠智能连接\"的一代，面向工业物联网、沉浸式通信与协作机器人，并完成两件事：（1）系统梳理 802.11bn 核心机制 —— DRU（分布式资源单元，将非相邻子载波散布到更宽带宽以突破 PSD 功率限制）、ELR（四重频域复制 + BPSK/QPSK 稳健调制的增强远距）、IM（干扰抑制导频，使多天线接收机可波束抑制干扰）、P-EDCA（语音帧重传失败后通过 DS-CTS 获得独占信道接入）、NPCA（非主信道接入）、IDC/PUO/DUO 设备不可用上报、MAPC（Co-SR / Co-BF 多 AP 协调）以及基于 MLO 框架的无缝漫游；（2）针对 802.11bn PAR 指标逐一进行系统级仿真验证。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A 16-page review-plus-verification paper (arxiv 2607.19931, submitted 2026-07-22) from the Chinese University of Hong Kong, Huawei's Wireless Technology Lab (Ming Gan, a long-standing TGbn contributor), and Tsinghua Shenzhen International Graduate School. The paper frames Wi-Fi 8 / IEEE 802.11bn as the generation that pivots from peak throughput to &quot;highly reliable intelligent connectivity&quot; for industrial IoT, immersive communications, and collaborative robotics, then does two things: (1) a systematic walkthrough of the 802.11bn core mechanism suite — DRU (distributed resource units that scatter non-adjacent subcarriers to overcome PSD limits), ELR (enhanced long range via four-fold frequency-domain duplication with BPSK/QPSK), IM (interference mitigation pilots enabling receive-beamforming suppression), P-EDCA (prioritized EDCA granting exclusive access to voice frames after retransmission failures via DS-CTS), NPCA (non-primary channel access), IDC/PUO/DUO unavailability reporting, MAPC (Co-SR / Co-BF), and MLO-framework seamless roaming; and (2) system-level simulation verification of each mechanism against the 802.11bn PAR targets.</p>\n<p>The mmWave section covers the 802.11bq (IMMW) integration approach: reusing the sub-7 GHz PHY architecture through upclocking (no standalone control PHY), keeping control/management on sub-7 GHz while offloading data to 60 GHz via MLO, with 320/640 MHz channels and 1.25 MHz subcarrier spacing chosen for robustness against phase noise and PA non-linearity.</p>\n<p>Headline verification numbers: NPCA delivers &gt;25% throughput gain in partial-overlap scenarios (40%+ with asymmetric bandwidth) and 27–71% latency reduction depending on load; P-EDCA cuts 95th-percentile latency &gt;30% in congested networks; DUO reduces packet loss &gt;30%; IM sustains higher MCS under interference; and the 1.25 MHz IMMW subcarrier spacing yields 1.3–2.0 dB SNR gain under modeled hardware impairments. The authors position the work as the first to go beyond protocol description into quantified, system-level validation that the 11bn feature set actually meets its 25% PAR improvement targets.</p>\n<h3>Key technical points</h3>\n<ul><li>Full 802.11bn mechanism suite reviewed with per-mechanism verification: DRU, ELR, IM, P-EDCA, NPCA, IDC/PUO/DUO, MAPC (Co-SR/Co-BF), seamless roaming (SMD/MLO make-before-break).</li><li>NPCA: &gt;25% throughput gain (partial overlap), 40%+ (asymmetric bandwidth), 27–71% latency reduction by load.</li><li>P-EDCA: &gt;30% reduction in 95th-percentile latency in congested BSSs via DS-CTS exclusive access.</li><li>DUO in-device-coexistence reporting: &gt;30% packet-loss reduction vs EHT baseline.</li><li>IMMW/802.11bq: upclocked sub-7 GHz PHY at 60 GHz, no standalone control PHY, control plane stays sub-7 GHz via MLO; 1.25 MHz SCS gives 1.3–2.0 dB SNR gain under phase noise + PA non-linearity.</li><li>Co-BF CSI acquisition compared under sequential vs joint sounding schemes.</li><li>Author mix (Huawei Wireless Lab + CUHK + Tsinghua SIGS) signals vendor-side consolidation of the TGbn D2.0-era feature set.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB already holds the UPF/Bellalta MAPC tutorial (2026-06-15_arxiv-11bn-mapc-tutorial-d14, MAPC-only) and the Khorov-group &quot;Towards Wi-Fi 9&quot; synthesis (2026-07-09), but this is the first entry that quantitatively verifies the whole 11bn reliability mechanism suite — including the P-EDCA, NPCA, and DUO numbers — against the PAR targets, and the first with a concrete 802.11bq IMMW subcarrier-spacing result. Landing one week after TGbn D2.0 approval at the Montreal plenary (2026-07-22_ieee-80211bn-d2-approval-wifi9-sg), it effectively documents the vendor-side evidence base behind the D2.0 feature freeze. The Huawei co-authorship makes it a useful proxy for which mechanisms the largest TGbn contributor considers settled.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>这是一篇 16 页的&quot;综述 + 验证&quot;论文（arxiv 2607.19931，2026-07-22 提交），作者来自香港中文大学、华为无线技术实验室（Ming Gan，TGbn 长期贡献者）与清华大学深圳国际研究生院。论文将 Wi-Fi 8 / IEEE 802.11bn 定位为从追求峰值吞吐转向&quot;高可靠智能连接&quot;的一代，面向工业物联网、沉浸式通信与协作机器人，并完成两件事：（1）系统梳理 802.11bn 核心机制 —— DRU（分布式资源单元，将非相邻子载波散布到更宽带宽以突破 PSD 功率限制）、ELR（四重频域复制 + BPSK/QPSK 稳健调制的增强远距）、IM（干扰抑制导频，使多天线接收机可波束抑制干扰）、P-EDCA（语音帧重传失败后通过 DS-CTS 获得独占信道接入）、NPCA（非主信道接入）、IDC/PUO/DUO 设备不可用上报、MAPC（Co-SR / Co-BF 多 AP 协调）以及基于 MLO 框架的无缝漫游；（2）针对 802.11bn PAR 指标逐一进行系统级仿真验证。</p>\n<p>毫米波部分给出 802.11bq（IMMW）的集成路线：通过上时钟（upclocking）复用 sub-7 GHz PHY 架构、不设独立控制 PHY，控制/管理面留在 sub-7 GHz，数据经 MLO 卸载到 60 GHz，支持 320/640 MHz 信道并采用 1.25 MHz 子载波间隔以对抗相位噪声与功放非线性。</p>\n<p>关键验证数据：NPCA 在部分重叠场景吞吐提升 &gt;25%（非对称带宽下 40%+），时延随负载降低 27–71%；P-EDCA 在拥塞网络将 95 分位时延降低 &gt;30%；DUO 丢包降低 &gt;30%；IM 在干扰下维持更高 MCS；IMMW 的 1.25 MHz 子载波间隔在硬件损伤模型下带来 1.3–2.0 dB SNR 增益。作者定位：这是首个超越协议描述、以系统级仿真定量确认 11bn 特性达成 25% PAR 改进目标的工作。</p>\n<h3>技术要点</h3>\n<ul><li>覆盖 802.11bn 全机制族并逐一验证：DRU、ELR、IM、P-EDCA、NPCA、IDC/PUO/DUO、MAPC（Co-SR/Co-BF）、无缝漫游（SMD/MLO 先建后断）。</li><li>NPCA：吞吐提升 &gt;25%（部分重叠）、40%+（非对称带宽），时延随负载降低 27–71%。</li><li>P-EDCA：拥塞 BSS 中 95 分位时延降低 &gt;30%（DS-CTS 独占接入）。</li><li>DUO 设备内共存上报：相对 EHT 基线丢包降低 &gt;30%。</li><li>IMMW/802.11bq：60 GHz 上时钟复用 sub-7 GHz PHY、无独立控制 PHY、控制面经 MLO 留在 sub-7 GHz；1.25 MHz 子载波间隔在相噪 + 功放非线性下增益 1.3–2.0 dB。</li><li>Co-BF 信道信息获取比较了顺序探测与联合探测两种方案。</li><li>作者组合（华为无线实验室 + 港中文 + 清华深研院）体现厂商侧对 TGbn D2.0 时代特性集的整合。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 中已有 UPF/Bellalta 的 MAPC 教程（2026-06-15_arxiv-11bn-mapc-tutorial-d14，仅覆盖 MAPC）与 Khorov 团队的&quot;迈向 Wi-Fi 9&quot;综述（2026-07-09），但本条目是首个对 11bn 全部可靠性机制族做定量验证（含 P-EDCA、NPCA、DUO 数据）并对照 PAR 指标的工作，也是首个给出 802.11bq IMMW 子载波间隔具体结论的条目。论文发布于蒙特利尔全会 TGbn D2.0 获批（2026-07-22_ieee-80211bn-d2-approval-wifi9-sg）一周后，实际上记录了 D2.0 特性冻结背后的厂商侧证据基础。华为参与署名使其成为判断最大 TGbn 贡献者认为哪些机制已&quot;尘埃落定&quot;的有用参照。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2607.19931v1/x2.png",
+          "caption_en": "DRU vs regular RU subcarrier allocation",
+          "caption_zh": "DRU 与常规 RU 子载波分配对比"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.19931v1/x5.png",
+          "caption_en": "P-EDCA operational procedure with DS-CTS",
+          "caption_zh": "P-EDCA 操作流程（DS-CTS）"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.19931v1/x6.png",
+          "caption_en": "NPCA channel switching procedure",
+          "caption_zh": "NPCA 信道切换流程"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.19931v1/x9.png",
+          "caption_en": "Co-SR and Co-BF operating principles",
+          "caption_zh": "Co-SR 与 Co-BF 工作原理"
+        }
+      ],
+      "search_blob": "towards ultra-high reliability in wi-fi 8: ieee 802.11bn core mechanisms, mmwave integration, and performance verification 迈向 wi-fi 8 超高可靠：ieee 802.11bn 核心机制、毫米波集成与系统级性能验证 802.11bn 802.11bq npca p-edca mapc dru elr mmwave a 16-page review-plus-verification paper (arxiv 2607.19931, submitted 2026-07-22) from the chinese university of hong kong, huawei's wireless technology lab (ming gan, a long-standing tgbn contributor), and tsinghua shenzhen international graduate school. the paper frames wi-fi 8 / ieee 802.11bn as the generation that pivots from peak throughput to \"highly reliable intelligent connectivity\" for industrial iot, immersive communications, and collaborative robotics, then does two things: (1) a systematic walkthrough of the 802.11bn core mechanism suite — dru (distributed resource units that scatter non-adjacent subcarriers to overcome psd limits), elr (enhanced long range via four-fold frequency-domain duplication with bpsk/qpsk), im (interference mitigation pilots enabling receive-beamforming suppression), p-edca (prioritized edca granting exclusive access to voice frames after retransmission failures via ds-cts), npca (non-primary channel access), idc/puo/duo unavailability reporting, mapc (co-sr / co-bf), and mlo-framework seamless roaming; and (2) system-level simulation verification of each mechanism against the 802.11bn par targets. 这是一篇 16 页的\"综述 + 验证\"论文（arxiv 2607.19931，2026-07-22 提交），作者来自香港中文大学、华为无线技术实验室（ming gan，tgbn 长期贡献者）与清华大学深圳国际研究生院。论文将 wi-fi 8 / ieee 802.11bn 定位为从追求峰值吞吐转向\"高可靠智能连接\"的一代，面向工业物联网、沉浸式通信与协作机器人，并完成两件事：（1）系统梳理 802.11bn 核心机制 —— dru（分布式资源单元，将非相邻子载波散布到更宽带宽以突破 psd 功率限制）、elr（四重频域复制 + bpsk/qpsk 稳健调制的增强远距）、im（干扰抑制导频，使多天线接收机可波束抑制干扰）、p-edca（语音帧重传失败后通过 ds-cts 获得独占信道接入）、npca（非主信道接入）、idc/puo/duo 设备不可用上报、mapc（co-sr / co-bf 多 ap 协调）以及基于 mlo 框架的无缝漫游；（2）针对 802.11bn par 指标逐一进行系统级仿真验证。 academic-paper wifi"
+    },
+    {
       "id": "2026-07-22_uk-ofcom-full-band-6ghz-adoption",
       "date_found": "2026-07-22",
       "technology": "wifi",
@@ -3965,6 +4028,46 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "mobile network control with a world model (ericsson research): plan-with-predictions replaces retrain-the-policy ericsson 研究院：用世界模型控制移动网络——以预测规划取代策略重训 world-model energy-saving cell-sleep ai-ran noms ericsson research (stockholm) proposes replacing reinforcement-learning policies for mobile-network configuration control with a **data-driven world model (wm)**: a sequence-to-sequence transformer (gpt-2 backbone, revin normalization, separate state/action embeddings) that predicts how candidate configuration actions will affect future network kpis, paired with a **cross-entropy-method (cem) planner** that samples action sequences, scores them against the wm's stochastic predictions, and picks the lowest-cost plan. because the model is decoupled from the controller, changing the optimization objective (e.g. a throughput constraint) requires no retraining — the constraint is simply edited in the planner's cost function. the paper is accepted at ieee/ifip noms 2026. ericsson 斯德哥尔摩研究院提出用**数据驱动的世界模型（wm）**取代移动网络配置控制中的强化学习策略：一个序列到序列 transformer（gpt-2 主干、revin 归一化、独立的状态/动作嵌入）预测候选配置动作对未来网络 kpi 的影响，配合**交叉熵方法（cem）规划器**采样动作序列、依据 wm 的随机预测打分并选出最低代价方案。由于模型与控制器解耦，更改优化目标（如吞吐约束）无需重训——只需修改规划器代价函数中的约束项。论文已被 ieee/ifip noms 2026 接收。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-24_arxiv-uora-power-control-capture-fairness",
+      "date_found": "2026-07-24",
+      "technology": "wifi",
+      "date_published": "2026-07-20",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Evaluating Power Control Strategies for UORA in IEEE 802.11be Systems with Capture Effect",
+      "title_zh": "802.11be UORA 随机接入中功率控制策略与捕获效应的评估及空间公平性分析",
+      "url": "https://arxiv.org/abs/2607.18543",
+      "topics": [
+        "802.11be",
+        "UORA",
+        "OFDMA",
+        "power-control"
+      ],
+      "topic_primary": "rtwt-latency",
+      "topics_secondary": [
+        "energy-power-save"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-24_arxiv-uora-power-control-capture-fairness.md",
+      "summary_short_en": "A simulation study (arxiv 2607.18543, submitted 2026-07-20, accepted at ICMIC 2026) from National Taiwan University of Science and Technology (Ray-Guang Cheng's group) on UORA — the uplink OFDMA-based random access mechanism carried from 802.11ax into 802.11be. Prior UORA work optimized the OCW backoff or applied reinforcement learning; this paper instead exploits the power domain: if two STAs collide on the same random-access RU, the capture effect lets the AP decode the stronger one, so deliberately diversifying transmit power turns some collisions into successes.",
+      "summary_short_zh": "这是台湾科技大学（Ray-Guang Cheng 团队）的仿真研究（arxiv 2607.18543，2026-07-20 提交，ICMIC 2026 录用），研究对象是从 802.11ax 延续到 802.11be 的上行 OFDMA 随机接入机制 UORA。既有 UORA 工作集中在 OCW 退避优化或强化学习；本文转向功率域：当两个 STA 在同一随机接入 RU 上碰撞时，捕获效应使 AP 仍能解出较强信号，因此有意让发射功率多样化可把部分碰撞转化为成功接入。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A simulation study (arxiv 2607.18543, submitted 2026-07-20, accepted at ICMIC 2026) from National Taiwan University of Science and Technology (Ray-Guang Cheng's group) on UORA — the uplink OFDMA-based random access mechanism carried from 802.11ax into 802.11be. Prior UORA work optimized the OCW backoff or applied reinforcement learning; this paper instead exploits the power domain: if two STAs collide on the same random-access RU, the capture effect lets the AP decode the stronger one, so deliberately diversifying transmit power turns some collisions into successes.</p>\n<p>Two strategies are evaluated against baseline UORA: (1) random power-level selection — each STA independently picks one of five discrete levels between 10 and 250 mW per attempt; and (2) stepwise power ramping — start at 10 mW and escalate after each failure up to 250 mW. With 18 RA-RUs per trigger frame, a 3 dB capture threshold, a 10 m service radius, and 10^5 samples per point, random power selection achieves the highest access-success probability and lowest delay, while stepwise ramping is the most power-efficient under light load.</p>\n<p>The distinctive contribution is the spatial-fairness analysis: dividing the coverage circle into five equal-area rings and computing Jain's index shows that capture-aware power control systematically favors STAs closer to the AP. Baseline UORA stays near-perfectly fair (J ≈ 1), while both power strategies — especially stepwise ramping — degrade fairness under moderate-to-heavy load. The authors state this is the first study to quantify the fairness cost of capture-aware power control in UORA.</p>\n<h3>Key technical points</h3>\n<ul><li>Power-domain collision resolution for UORA: exploit capture effect (3 dB threshold) so unequal received powers rescue RA-RU collisions.</li><li>Strategy 1 — random selection over five discrete levels (10–250 mW) per attempt: best success probability and delay.</li><li>Strategy 2 — stepwise ramping 10→250 mW across attempts: best power efficiency at light-to-moderate load.</li><li>Spatial fairness quantified via five equal-area concentric rings + Jain's index: baseline UORA J ≈ 1; both strategies degrade fairness under load, ramping worst.</li><li>Setup: 18 RA-RUs per trigger frame, 10 m radius, 10^5 samples per point; metrics = success probability, delay, resource utilization, power efficiency.</li><li>First quantification of the fairness implications of capture-aware power control in UORA.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's OFDMA/RU coverage so far is scheduler-side (2026-05-04_arxiv-proxyselect-ofdma-mu-mimo-scheduling; 2026-06-11_arxiv-wifi6-dynamic-ru-tsn) — this is the first entry on the random-access (UORA) side, and the first to treat transmit power as the contention-resolution knob rather than backoff parameters. The near/far unfairness it quantifies is the classic capture-effect trade-off, now mapped concretely onto 802.11be RA-RUs; any deployment or future amendment adopting power-diverse UORA would need a compensating mechanism (e.g., distance- or path-loss-aware power caps), which the paper identifies as future work.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>这是台湾科技大学（Ray-Guang Cheng 团队）的仿真研究（arxiv 2607.18543，2026-07-20 提交，ICMIC 2026 录用），研究对象是从 802.11ax 延续到 802.11be 的上行 OFDMA 随机接入机制 UORA。既有 UORA 工作集中在 OCW 退避优化或强化学习；本文转向功率域：当两个 STA 在同一随机接入 RU 上碰撞时，捕获效应使 AP 仍能解出较强信号，因此有意让发射功率多样化可把部分碰撞转化为成功接入。</p>\n<p>论文对比基线 UORA 评估两种策略：（1）随机功率档选择 —— 每个 STA 每次尝试从 10–250 mW 五个离散档位中独立随机选取；（2）逐步功率爬升 —— 从 10 mW 起步，每次失败后升档直至 250 mW。在每触发帧 18 个 RA-RU、3 dB 捕获门限、10 m 服务半径、每数据点 10^5 次采样的设置下：随机功率选择获得最高接入成功率与最低时延；逐步爬升在轻负载下功率效率最优。</p>\n<p>论文的特色贡献是空间公平性分析：把覆盖圆划分为五个等面积同心环并计算 Jain 公平指数，结果显示捕获感知的功率控制系统性偏向靠近 AP 的 STA。基线 UORA 几乎完全公平（J ≈ 1），而两种功率策略在中重负载下都会损害公平性，逐步爬升尤甚。作者称这是首个量化 UORA 捕获感知功率控制公平性代价的研究。</p>\n<h3>技术要点</h3>\n<ul><li>UORA 功率域碰撞消解：利用捕获效应（3 dB 门限），接收功率差异使 RA-RU 碰撞仍可解码。</li><li>策略一 —— 每次尝试在 10–250 mW 五档中随机选取：成功率与时延最优。</li><li>策略二 —— 失败后 10→250 mW 逐步升档：轻中负载下功率效率最优。</li><li>空间公平性：五个等面积同心环 + Jain 指数；基线 UORA J ≈ 1，两种策略在负载下均损害公平，爬升策略最严重。</li><li>设置：每触发帧 18 个 RA-RU、10 m 半径、每点 10^5 采样；指标为成功率、时延、资源利用率、功率效率。</li><li>首次量化 UORA 捕获感知功率控制的公平性代价。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 现有 OFDMA/RU 条目均为调度侧（2026-05-04_arxiv-proxyselect-ofdma-mu-mimo-scheduling；2026-06-11_arxiv-wifi6-dynamic-ru-tsn）—— 本条目首次覆盖随机接入（UORA）侧，并首次把发射功率而非退避参数作为碰撞消解手段。其量化的远近不公平是经典捕获效应权衡在 802.11be RA-RU 上的具体呈现；任何采用功率多样化 UORA 的部署或未来修订都需要补偿机制（如基于距离/路损的功率上限），论文将其列为后续工作。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2607.18543v1/images/Circle.png",
+          "caption_en": "Network topology: AP at center, uniformly distributed STAs",
+          "caption_zh": "网络拓扑：AP 居中，STA 均匀分布"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.18543v1/images/time.png",
+          "caption_en": "UORA access procedure timing structure",
+          "caption_zh": "UORA 接入过程时序结构"
+        }
+      ],
+      "search_blob": "evaluating power control strategies for uora in ieee 802.11be systems with capture effect 802.11be uora 随机接入中功率控制策略与捕获效应的评估及空间公平性分析 802.11be uora ofdma power-control a simulation study (arxiv 2607.18543, submitted 2026-07-20, accepted at icmic 2026) from national taiwan university of science and technology (ray-guang cheng's group) on uora — the uplink ofdma-based random access mechanism carried from 802.11ax into 802.11be. prior uora work optimized the ocw backoff or applied reinforcement learning; this paper instead exploits the power domain: if two stas collide on the same random-access ru, the capture effect lets the ap decode the stronger one, so deliberately diversifying transmit power turns some collisions into successes. 这是台湾科技大学（ray-guang cheng 团队）的仿真研究（arxiv 2607.18543，2026-07-20 提交，icmic 2026 录用），研究对象是从 802.11ax 延续到 802.11be 的上行 ofdma 随机接入机制 uora。既有 uora 工作集中在 ocw 退避优化或强化学习；本文转向功率域：当两个 sta 在同一随机接入 ru 上碰撞时，捕获效应使 ap 仍能解出较强信号，因此有意让发射功率多样化可把部分碰撞转化为成功接入。 academic-paper wifi"
     },
     {
       "id": "2026-07-22_sigcomm26-satellite-papers",
