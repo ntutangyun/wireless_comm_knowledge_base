@@ -30,14 +30,14 @@ window.KB_DATA = {
     "mmWave": 10,
     "NTN": 10,
     "LLM": 10,
+    "NearLink": 9,
+    "SparkLink": 9,
     "CSI": 9,
     "UWB": 9,
     "802.11bq": 8,
     "802.11bp": 8,
     "3GPP": 8,
     "digital-twin": 8,
-    "NearLink": 8,
-    "SparkLink": 8,
     "BLE": 8,
     "NPCA": 7,
     "spectrum": 7,
@@ -60,6 +60,7 @@ window.KB_DATA = {
     "V2X": 6,
     "automotive": 6,
     "Wi-Fi-8": 6,
+    "SLE": 5,
     "xApp": 5,
     "OpenAirInterface": 5,
     "UAV": 5,
@@ -94,12 +95,12 @@ window.KB_DATA = {
     "Release-21": 4,
     "edge-AI": 4,
     "mobility": 4,
-    "SLE": 4,
     "AoA": 4,
     "handover": 4,
     "5G-core": 4,
     "802.15.4ab": 4,
     "802.11az": 4,
+    "SLB": 3,
     "P-EDCA": 3,
     "DRU": 3,
     "energy-saving": 3,
@@ -151,6 +152,8 @@ window.KB_DATA = {
     "WPA3": 3,
     "digital-car-key": 3,
     "roaming": 3,
+    "OpenHarmony": 2,
+    "open-source": 2,
     "Ofcom": 2,
     "power-control": 2,
     "Q-learning": 2,
@@ -192,7 +195,6 @@ window.KB_DATA = {
     "Wi-Fi-7": 2,
     "EU": 2,
     "Matter": 2,
-    "SLB": 2,
     "MCS": 2,
     "OLLA": 2,
     "constellation": 2,
@@ -403,8 +405,6 @@ window.KB_DATA = {
     "embodied-AI": 1,
     "memory": 1,
     "星闪": 1,
-    "OpenHarmony": 1,
-    "open-source": 1,
     "iSLA": 1,
     "routing": 1,
     "Walker-Delta": 1,
@@ -826,6 +826,7 @@ window.KB_DATA = {
     "network-slicing": 5,
     "sat-ai": 5,
     "bt-channel-sounding": 5,
+    "nearlink-slb": 4,
     "wifi-for-ai": 4,
     "bt-location": 4,
     "ftm-ranging": 4,
@@ -834,7 +835,6 @@ window.KB_DATA = {
     "mlo": 3,
     "nearlink-sle": 3,
     "ngso-regulation": 3,
-    "nearlink-slb": 3,
     "bt-le": 3,
     "uwb-radar": 2,
     "uwb-fi-ra": 2,
@@ -847,7 +847,7 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 204,
-    "industry-news": 69,
+    "industry-news": 70,
     "ieee-document": 28,
     "product": 17,
     "satellite-news": 11,
@@ -857,7 +857,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 204,
-    "industry": 97,
+    "industry": 98,
     "standards": 36
   },
   "technologies_vocab": {
@@ -3816,6 +3816,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-24_nearlink-stack-opensource-landing",
         "2026-06-23_nearlink-open-source-openharmony-hdc2026",
         "2026-05-21_sparklink-ecosystem-2026-overview",
         "2026-05-30_huawei-starlink-e2-audio-lossless"
@@ -3828,6 +3829,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "industry-news": [
+          "2026-07-24_nearlink-stack-opensource-landing",
           "2026-06-23_nearlink-open-source-openharmony-hdc2026",
           "2026-05-21_sparklink-ecosystem-2026-overview"
         ],
@@ -3855,6 +3857,7 @@ window.KB_DATA = {
         "2026-06-05_nearlink-sle-gbt-46803-national-standard"
       ],
       "entries_secondary": [
+        "2026-07-24_nearlink-stack-opensource-landing",
         "2026-06-23_nearlink-open-source-openharmony-hdc2026",
         "2026-05-21_sparklink-ecosystem-2026-overview",
         "2026-05-30_huawei-starlink-e2-audio-lossless"
@@ -3918,6 +3921,37 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-07-24_nearlink-stack-opensource-landing",
+      "date_found": "2026-07-24",
+      "technology": "nearlink",
+      "date_published": "2026-07-22",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "NearLink stack open-source drop confirmed landed: 100k+ lines in OpenHarmony via AtomGit, OpenAtom Foundation announcement",
+      "title_zh": "星闪协议栈开源正式落地：10 万余行代码经 AtomGit 并入 OpenHarmony，开放原子基金会官宣",
+      "url": "https://dt.zol.com.cn/1219/12198835.html",
+      "topics": [
+        "NearLink",
+        "SparkLink",
+        "OpenHarmony",
+        "open-source",
+        "SLB",
+        "SLE"
+      ],
+      "topic_primary": "nearlink-slb",
+      "topics_secondary": [
+        "nearlink-sle"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-24_nearlink-stack-opensource-landing.md",
+      "summary_short_en": "The NearLink open-source promise made at HDC 2026 (KB entry 2026-06-23_nearlink-open-source-openharmony-hdc2026, which committed to a July 15 code drop) has now verifiably landed. On July 22, 2026, the OpenAtom Open Source Foundation announced that the NearLink (星闪) protocol stack — over 100,000 lines of core protocol-stack code (some coverage cites 150,000+ including tooling) — has been fully open-sourced and formally incorporated into the OpenHarmony community, hosted on the AtomGit platform. The drop occurred on July 15 as scheduled, per Huawei's Gong Ti.",
+      "summary_short_zh": "HDC 2026 上做出的星闪开源承诺（KB 条目 2026-06-23_nearlink-open-source-openharmony-hdc2026，承诺 7 月 15 日代码落地）现已得到可验证的兑现。2026 年 7 月 22 日，开放原子开源基金会宣布星闪协议栈 —— 超过 10 万行核心协议栈代码（部分报道计入工具链后称 15 万行以上）—— 已全面开源并正式并入 OpenHarmony 社区，托管于 AtomGit 平台。按华为龚体的说法，代码于 7 月 15 日如期落地。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The NearLink open-source promise made at HDC 2026 (KB entry 2026-06-23_nearlink-open-source-openharmony-hdc2026, which committed to a July 15 code drop) has now verifiably landed. On July 22, 2026, the OpenAtom Open Source Foundation announced that the NearLink (星闪) protocol stack — over 100,000 lines of core protocol-stack code (some coverage cites 150,000+ including tooling) — has been fully open-sourced and formally incorporated into the OpenHarmony community, hosted on the AtomGit platform. The drop occurred on July 15 as scheduled, per Huawei's Gong Ti.</p>\n<p>The release is structured as modular protocol-stack components with unified APIs explicitly aimed at cross-chip interoperability — applications reach NearLink functionality through standard interfaces without vendor lock-in, so non-Huawei silicon vendors can implement compatible chips against the same stack. Coverage frames the strategic shift: a short-range technology previously confined to Huawei's device ecosystem is now available to any manufacturer, developer, or researcher, with the stated integration axis spanning industry standards, chip R&amp;D, and the open-source system ecosystem. Analyst pieces (Leiphone's &quot;last meter of IoT&quot; essay) read the move as NearLink's bid to escape the single-vendor trap that limits its challenge to Bluetooth.</p>\n<h3>Key technical points</h3>\n<ul><li>100,000+ lines of core protocol-stack code (150k+ in some counts) open-sourced July 15, 2026; OpenAtom Foundation formal announcement July 22.</li><li>Hosted on AtomGit; incorporated into the OpenHarmony community — the landing the 2026-06-23 announcement promised.</li><li>Modular stack with unified APIs for cross-chip interoperability; explicit no-vendor-lock-in framing.</li><li>Integration spans standards development, chip R&amp;D, and the open-source OS ecosystem; HarmonyOS and OpenHarmony applications share the API surface.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This closes the loop opened by 2026-06-23_nearlink-open-source-openharmony-hdc2026: the 2026-07-19 scan explicitly declined to write a landing entry because no verifiable artifact existed — that verification now exists (OpenAtom announcement + AtomGit hosting + dated post-landing coverage). For the nearlink-slb/sle bins the substantive change is third-party implementability: the unified-API stack is the first path for non-Huawei chips (beyond licensees) to target NearLink compatibility, which is the precondition for the technology competing with Bluetooth outside Huawei's ecosystem. Next signals: first non-Huawei chip vendor announcing stack adoption, and whether the SparkLink Alliance aligns its certification program to the open stack.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>HDC 2026 上做出的星闪开源承诺（KB 条目 2026-06-23_nearlink-open-source-openharmony-hdc2026，承诺 7 月 15 日代码落地）现已得到可验证的兑现。2026 年 7 月 22 日，开放原子开源基金会宣布星闪协议栈 —— 超过 10 万行核心协议栈代码（部分报道计入工具链后称 15 万行以上）—— 已全面开源并正式并入 OpenHarmony 社区，托管于 AtomGit 平台。按华为龚体的说法，代码于 7 月 15 日如期落地。</p>\n<p>本次发布以模块化协议栈组件 + 统一 API 的形式组织，明确面向跨芯片互操作 —— 应用通过标准接口调用星闪能力、无厂商锁定，非华为芯片厂商可以基于同一协议栈实现兼容芯片。报道普遍将其解读为战略转向：此前局限于华为设备生态的短距技术，现向任何厂商、开发者与研究者开放，整合轴线覆盖行业标准、芯片研发与开源系统生态三个层面。分析文章（雷峰网&quot;万物互联最后一米&quot;）认为此举是星闪摆脱单一厂商困境、正面挑战蓝牙的关键一步。</p>\n<h3>技术要点</h3>\n<ul><li>10 万余行核心协议栈代码（部分口径 15 万行以上）于 2026-07-15 开源；开放原子基金会 7 月 22 日正式官宣。</li><li>托管于 AtomGit；并入 OpenHarmony 社区 —— 兑现 2026-06-23 条目所记录的承诺。</li><li>模块化协议栈 + 统一 API 实现跨芯片互操作；明确&quot;无厂商锁定&quot;。</li><li>整合覆盖标准制定、芯片研发与开源操作系统生态；HarmonyOS 与 OpenHarmony 应用共享同一 API 面。</li></ul>\n<h3>意义与新意</h3>\n<p>本条目闭合了 2026-06-23_nearlink-open-source-openharmony-hdc2026 打开的环：2026-07-19 的扫描因缺乏可验证的落地证据而明确不写条目 —— 如今验证已具备（开放原子基金会官宣 + AtomGit 托管 + 落地后带日期的报道）。对 nearlink-slb/sle 主题而言，实质变化在于第三方可实现性：统一 API 协议栈是非华为芯片（授权厂商之外）实现星闪兼容的首条路径，也是该技术走出华为生态、与蓝牙竞争的前提条件。后续信号：首个宣布采用该协议栈的非华为芯片厂商，以及星闪联盟是否将认证体系对齐开源协议栈。</p>",
+      "images": [],
+      "search_blob": "nearlink stack open-source drop confirmed landed: 100k+ lines in openharmony via atomgit, openatom foundation announcement 星闪协议栈开源正式落地：10 万余行代码经 atomgit 并入 openharmony，开放原子基金会官宣 nearlink sparklink openharmony open-source slb sle the nearlink open-source promise made at hdc 2026 (kb entry 2026-06-23_nearlink-open-source-openharmony-hdc2026, which committed to a july 15 code drop) has now verifiably landed. on july 22, 2026, the openatom open source foundation announced that the nearlink (星闪) protocol stack — over 100,000 lines of core protocol-stack code (some coverage cites 150,000+ including tooling) — has been fully open-sourced and formally incorporated into the openharmony community, hosted on the atomgit platform. the drop occurred on july 15 as scheduled, per huawei's gong ti. hdc 2026 上做出的星闪开源承诺（kb 条目 2026-06-23_nearlink-open-source-openharmony-hdc2026，承诺 7 月 15 日代码落地）现已得到可验证的兑现。2026 年 7 月 22 日，开放原子开源基金会宣布星闪协议栈 —— 超过 10 万行核心协议栈代码（部分报道计入工具链后称 15 万行以上）—— 已全面开源并正式并入 openharmony 社区，托管于 atomgit 平台。按华为龚体的说法，代码于 7 月 15 日如期落地。 industry-news nearlink"
+    },
     {
       "id": "2026-07-24_arxiv-wifi8-uhr-mechanisms-verification",
       "date_found": "2026-07-24",
