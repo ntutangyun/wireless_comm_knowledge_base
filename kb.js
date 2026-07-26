@@ -1,13 +1,13 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-07-24",
-  "last_scanned": "2026-07-24",
+  "last_updated": "2026-07-26",
+  "last_scanned": "2026-07-26",
   "topic_counts": {
     "6G": 46,
     "802.11bn": 41,
     "agentic-AI": 38,
     "MAC-layer": 37,
-    "products": 33,
+    "products": 34,
     "scheduling": 31,
     "security": 29,
     "O-RAN": 27,
@@ -35,6 +35,7 @@ window.KB_DATA = {
     "CSI": 9,
     "UWB": 9,
     "802.11bq": 8,
+    "Wi-Fi 7": 8,
     "802.11bp": 8,
     "3GPP": 8,
     "digital-twin": 8,
@@ -52,7 +53,6 @@ window.KB_DATA = {
     "generative-AI": 7,
     "AFC": 6,
     "OFDMA": 6,
-    "Wi-Fi 7": 6,
     "AI-native": 6,
     "PQC": 6,
     "beamforming": 6,
@@ -91,6 +91,7 @@ window.KB_DATA = {
     "AI": 4,
     "ns-3": 4,
     "LLM-agent": 4,
+    "deployment": 4,
     "NGSO": 4,
     "Release-21": 4,
     "edge-AI": 4,
@@ -126,7 +127,6 @@ window.KB_DATA = {
     "autonomous-networks": 3,
     "sidelink": 3,
     "edge-computing": 3,
-    "deployment": 3,
     "machine-learning": 3,
     "jamming": 3,
     "waveform": 3,
@@ -152,6 +152,7 @@ window.KB_DATA = {
     "WPA3": 3,
     "digital-car-key": 3,
     "roaming": 3,
+    "Apple": 3,
     "OpenHarmony": 2,
     "open-source": 2,
     "Ofcom": 2,
@@ -243,7 +244,6 @@ window.KB_DATA = {
     "self-supervised": 2,
     "PRB-allocation": 2,
     "NGSO-regulation": 2,
-    "Apple": 2,
     "narrowband-assist": 2,
     "Ericsson": 2,
     "Rel-19": 2,
@@ -492,6 +492,8 @@ window.KB_DATA = {
     "C-V2X": 1,
     "semantic-communications": 1,
     "cooperative-perception": 1,
+    "6 GHz": 1,
+    "market-data": 1,
     "user-association": 1,
     "contextual-bandit": 1,
     "blockage": 1,
@@ -800,12 +802,13 @@ window.KB_DATA = {
     "L2HC": 1,
     "lossless-audio": 1,
     "Kirin-A3": 1,
-    "TWS": 1
+    "TWS": 1,
+    "chipset": 1
   },
   "primary_topic_counts": {
     "wifi8-uhr": 27,
     "cellular-ai": 26,
-    "wifi7-deployment": 22,
+    "wifi7-deployment": 24,
     "6g-vision": 21,
     "sensing-csi": 20,
     "security-privacy": 19,
@@ -847,9 +850,9 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 204,
-    "industry-news": 70,
+    "industry-news": 71,
     "ieee-document": 28,
-    "product": 17,
+    "product": 18,
     "satellite-news": 11,
     "proposal": 4,
     "bluetooth-spec": 2,
@@ -857,7 +860,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 204,
-    "industry": 98,
+    "industry": 100,
     "standards": 36
   },
   "technologies_vocab": {
@@ -2172,6 +2175,7 @@ window.KB_DATA = {
         "2026-07-06_mediatek-open-source-gateway-rdk-prplos",
         "2026-06-27_wifinow-helium-spectrumone-ambient-power",
         "2026-07-03_espressif-esp32-e22-wifi6e-certified",
+        "2026-07-26_ookla-global-state-of-wifi-2026",
         "2026-07-03_cisco-9177-outdoor-wifi7-urwb-ap",
         "2026-05-30_tplink-wifi8-archer8-roadmap",
         "2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion",
@@ -2185,7 +2189,8 @@ window.KB_DATA = {
         "2026-05-04_hpe-aruba-730-utb-wifi7-ap",
         "2026-05-04_ruckus-nokia-wifi7-fiber-olan",
         "2026-05-04_cisco-georgetown-wifi7-deployment",
-        "2026-05-04_cisco-wifi7-breakout-year-2026"
+        "2026-05-04_cisco-wifi7-breakout-year-2026",
+        "2026-07-26_apple-n1-wifi7-chip-iphone17"
       ],
       "entries_secondary": [
         "2026-05-28_wifinow-uk-eu-upper-6ghz-regulation",
@@ -2201,6 +2206,7 @@ window.KB_DATA = {
           "2026-07-04_worldvue-openwifi-3500-device-scale",
           "2026-07-06_mediatek-open-source-gateway-rdk-prplos",
           "2026-06-27_wifinow-helium-spectrumone-ambient-power",
+          "2026-07-26_ookla-global-state-of-wifi-2026",
           "2026-05-30_tplink-wifi8-archer8-roadmap",
           "2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion",
           "2026-05-05_belden-acquires-ruckus-1-85b",
@@ -2218,7 +2224,8 @@ window.KB_DATA = {
           "2026-07-03_cisco-9177-outdoor-wifi7-urwb-ap",
           "2026-05-12_hpe-self-driving-networks-723h",
           "2026-05-12_extreme-connect-platform-one-agentone",
-          "2026-05-04_hpe-aruba-730-utb-wifi7-ap"
+          "2026-05-04_hpe-aruba-730-utb-wifi7-ap",
+          "2026-07-26_apple-n1-wifi7-chip-iphone17"
         ]
       }
     },
@@ -2255,6 +2262,7 @@ window.KB_DATA = {
         "2026-07-22_wintech-stadium-wifi-cellular-measurement",
         "2026-07-10_ieee-mentor-misc-plenary-eve-digest",
         "2026-07-03_espressif-esp32-e22-wifi6e-certified",
+        "2026-07-26_ookla-global-state-of-wifi-2026",
         "2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion"
       ],
       "by_type_primary": {
@@ -8286,6 +8294,51 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>本文针对车联网（V2X）网络的可扩展性瓶颈，提出用&quot;语义与任务导向通信&quot;取代当前&quot;可靠且及时地传输全部信息&quot;的主导范式——按消息内容对目标接收方的<strong>相关性</strong>来筛选发送内容。作者为 UMH Elche / 丰田 InfoTech 的 V2X 团队。其问题围绕协作感知（ETSI 术语中的传感器数据共享）展开：在高密度交通下，每辆车广播完整目标列表会使共享信道饱和，边际消息大多是冗余信息。仅传输能改变接收方任务状态的内容，可大幅提升信道资源利用率。</p>\n<p>评估基于 5.9 GHz 的 C-V2X 旁链路（sidelink，QPSK 调制），采用公开发布的 C-V2X 旁链路接收解析模型与 ETSI 基于信道忙比（CBR）的拥塞控制机制（在高负载下丢弃/限制发送）。相比内容无关的传统基线，语义/任务导向 V2X 在高密度单信道场景下将可支持车辆数提升最多 <strong>4.1 倍</strong>（多信道场景下增益依旧保持），将&quot;成功向某车辆送达其所需全部相关信息&quot;的概率<strong>几乎翻倍</strong>，并将连续有效消息之间的<strong>接收间隔时间（IRT）</strong>缩短最多 <strong>67%</strong>——更规律、更频繁的信息交换直接利好安全类应用。</p>\n<p>本文的贡献在于量化证明：撬动 V2X 可扩展性的杠杆是基于相关性的内容筛选，而非更强的物理层或更多频谱，且这些增益在真实的旁链路拥塞控制下依然成立。</p>\n<h3>技术要点</h3>\n<ul><li><strong>范式转变</strong>：从&quot;可靠性/时效性优先&quot;转为&quot;相关性优先&quot;的消息内容筛选（语义+任务导向），以协作感知用例评估。</li><li><strong>无线层</strong>：5.9 GHz 的 C-V2X <strong>旁链路</strong>，QPSK；接收采用公开的 C-V2X 旁链路解析模型；实现 <strong>ETSI 基于 CBR 的拥塞控制</strong>（高负载时丢弃发送）。</li><li><strong>关键数字</strong>：可支持车辆数最多提升 <strong>4.1 倍</strong>（高密度单信道；多信道下保持）；送达全部所需相关信息的概率<strong>约 2 倍</strong>；接收间隔时间最多降低 <strong>67%</strong>。</li><li><strong>增益来源</strong>：相关性筛选剔除冗余发送，在 CBR 拥塞控制下释放信道时长，既提升容量又使 IRT 更规律。</li><li><strong>敏感性分析</strong>：在不同驾驶条件下分析可扩展性增益，确认其稳健性而非单一场景的偶然结果。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 现有的 V2X 条目 <code>2026-05-26_arxiv-v2x-mode0-rcu-safety</code>（Mode 0，路侧计算辅助的资源分配）处理的是 C-V2X 可扩展性的<em>资源分配</em>维度；本文处理的是互补且基本正交的维度：<em>发送什么</em>而非<em>如何调度</em>。这是 KB 中首个在带 ETSI 拥塞控制的真实 C-V2X 旁链路协议栈上量化语义/任务导向通信的条目（多数语义通信工作仅在理想点对点链路上评估）。&quot;相关性即可扩展性杠杆&quot;的结论，为更广泛的 6G&quot;语义通信&quot;命题提供了一个落地于已部署标准车联网场景的具体数据点。</p>",
       "images": [],
       "search_blob": "semantic and task-oriented v2x communications: pushing the limits of v2x networks scalability 语义与任务导向的 v2x 通信：突破 v2x 网络可扩展性的极限 v2x c-v2x sidelink semantic-communications cooperative-perception this paper attacks the scalability ceiling of vehicle-to-everything (v2x) networks by replacing the dominant \"deliver everything reliably and on time\" paradigm with a semantic and task-oriented communication approach that selects message content by its *relevance to the intended receivers*. the authors (lusvarghi, gozalvez, khan, ucar, sepulcre, altintas — the umh elche / toyota infotech v2x group) frame the problem around cooperative perception (sensor-data sharing in etsi terms): in dense traffic, every vehicle broadcasting full object lists saturates the shared channel, so the marginal message carries mostly redundant information. by transmitting only the content that changes a receiver's task state, channel resources are used far more efficiently. 本文针对车联网（v2x）网络的可扩展性瓶颈，提出用\"语义与任务导向通信\"取代当前\"可靠且及时地传输全部信息\"的主导范式——按消息内容对目标接收方的**相关性**来筛选发送内容。作者为 umh elche / 丰田 infotech 的 v2x 团队。其问题围绕协作感知（etsi 术语中的传感器数据共享）展开：在高密度交通下，每辆车广播完整目标列表会使共享信道饱和，边际消息大多是冗余信息。仅传输能改变接收方任务状态的内容，可大幅提升信道资源利用率。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-26_ookla-global-state-of-wifi-2026",
+      "date_found": "2026-07-26",
+      "technology": "wifi",
+      "date_published": "2026-06-07",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Ookla Global State of Wi-Fi 2026: Wi-Fi 7 at just 1.8% of global connections, 6 GHz adoption six-fold in North America",
+      "title_zh": "Ookla《2026 全球 Wi-Fi 状况》报告：Wi-Fi 7 仅占全球连接 1.8%，北美 6 GHz 使用率两年增长六倍",
+      "url": "https://www.ookla.com/articles/global-state-of-wi-fi-2026",
+      "topics": [
+        "Wi-Fi 7",
+        "6 GHz",
+        "deployment",
+        "market-data"
+      ],
+      "topic_primary": "wifi7-deployment",
+      "topics_secondary": [
+        "spectrum-policy"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-07-26_ookla-global-state-of-wifi-2026.md",
+      "summary_short_en": "Ookla's Global State of Wi-Fi 2026 report (published June 7, 2026, surfaced via a July 23 Wi-Fi NOW interview with Ookla's Sue Marek) quantifies how slowly the installed Wi-Fi base actually migrates, using Q1 2026 Speedtest sample data. Globally, Wi-Fi 4 still carries 33.2% of sampled connections and Wi-Fi 5 another 38.3%, while Wi-Fi 6 holds 26.7% and Wi-Fi 7 — despite two years of flagship router and phone launches — sits at just 1.8%. The 5 GHz band carries 59.8% of samples, 2.4 GHz 38.5%, and 6 GHz only 1.7% worldwide.",
+      "summary_short_zh": "Ookla 于 2026 年 6 月 7 日发布《2026 全球 Wi-Fi 状况》报告（7 月 23 日经 Wi-Fi NOW 对 Ookla 研究员 Sue Marek 的访谈再次引起关注），基于 2026 年第一季度 Speedtest 采样数据量化了现网 Wi-Fi 设备代际迁移的缓慢程度。全球范围内，Wi-Fi 4 仍承载 33.2% 的采样连接，Wi-Fi 5 占 38.3%，Wi-Fi 6 占 26.7%，而 Wi-Fi 7 尽管旗舰路由器和手机已发布两年，占比仅 1.8%。频段方面，5 GHz 承载 59.8% 的采样，2.4 GHz 占 38.5%，6 GHz 全球仅占 1.7%。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Ookla's Global State of Wi-Fi 2026 report (published June 7, 2026, surfaced via a July 23 Wi-Fi NOW interview with Ookla's Sue Marek) quantifies how slowly the installed Wi-Fi base actually migrates, using Q1 2026 Speedtest sample data. Globally, Wi-Fi 4 still carries 33.2% of sampled connections and Wi-Fi 5 another 38.3%, while Wi-Fi 6 holds 26.7% and Wi-Fi 7 — despite two years of flagship router and phone launches — sits at just 1.8%. The 5 GHz band carries 59.8% of samples, 2.4 GHz 38.5%, and 6 GHz only 1.7% worldwide.</p>\n<p>Regional divergence is stark. North America leads modern-Wi-Fi migration (57.5% Wi-Fi 6, 6.8% Wi-Fi 7, only 10% Wi-Fi 4) and its 6 GHz usage grew six-fold in two years, from 2.2% of samples in Q1 2024 to 13.8% in Q1 2026. Europe averages 35.2% Wi-Fi 6 / 2.5% Wi-Fi 7 with only 1.6% 6 GHz usage — a direct consequence of the EU's still-pending upper-6-GHz decision. Africa remains 48.8% Wi-Fi 4 with 0.0% 6 GHz. Singapore is the world's Wi-Fi 7 leader at 25% of samples (MyRepublic 27%, ViewQuest 22%, StarHub/Singtel 21%), attributed to full-band 6 GHz availability plus aggressive ISP bundling; the US sits at 7.2% (CenturyLink 14.7%, AT&amp;T Fiber 10.5%), China at 7.5%.</p>\n<p>The report also breaks down the 6 GHz band's composition: in Q1 2026 only 33.7% of 6 GHz samples came from Wi-Fi 7 devices, with 66.3% still Wi-Fi 6E — i.e. most 6 GHz traffic still runs on the older generation. An Omdia forecast cited in the report projects Wi-Fi 7 reaching only 13.8% of the installed base by 2030 (35.2% CAGR), with Wi-Fi 6 peaking at 62.0%. Ookla's headline conclusion: regulatory fragmentation of 6 GHz — not device availability — is the primary constraint on Wi-Fi 7 adoption.</p>\n<h3>Key technical points</h3>\n<ul><li>Global Q1 2026 generation shares: Wi-Fi 4 33.2% / Wi-Fi 5 38.3% / Wi-Fi 6 26.7% / Wi-Fi 7 1.8%; band shares 2.4 GHz 38.5% / 5 GHz 59.8% / 6 GHz 1.7%.</li><li>North America 6 GHz usage grew from 2.2% (Q1 2024) to 13.8% (Q1 2026); Europe stuck at 1.6%, APAC 0.5%, Africa 0.0%.</li><li>Singapore leads Wi-Fi 7 adoption at 25% of samples; US 7.2%, China 7.5%, EU average 2.5%.</li><li>Within the 6 GHz band, 66.3% of samples are still Wi-Fi 6E vs 33.7% Wi-Fi 7 — the band is adopted faster than the newest generation using it.</li><li>Omdia forecast: Wi-Fi 7 only 13.8% of installed base by 2030 (35.2% CAGR); Wi-Fi 6 peaks at 62.0%.</li><li>61.4% of global Android Speedtest samples now come from devices supporting Wi-Fi 6 or newer.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first global installed-base measurement entry — prior deployment entries (e.g. 2026-05-04_extreme-networks-wifi7-momentum-q3 at 37% of unit <em>shipments</em>, 2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion) track vendor shipment mix, which massively leads actual usage: Wi-Fi 7 is 37% of one vendor's shipments but only 1.8% of global connections in the wild. The 6 GHz composition figure (two-thirds of the band's traffic still 6E) and the Singapore-vs-EU regulatory contrast give concrete numbers to the spectrum-policy thread (2026-07-10 EU DNA open letter, FCC 6 GHz items). For anyone modelling real-world 802.11bn rollout, the Omdia 2030 forecast is a sober baseline: standards ship years ahead of the installed base they serve.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Ookla 于 2026 年 6 月 7 日发布《2026 全球 Wi-Fi 状况》报告（7 月 23 日经 Wi-Fi NOW 对 Ookla 研究员 Sue Marek 的访谈再次引起关注），基于 2026 年第一季度 Speedtest 采样数据量化了现网 Wi-Fi 设备代际迁移的缓慢程度。全球范围内，Wi-Fi 4 仍承载 33.2% 的采样连接，Wi-Fi 5 占 38.3%，Wi-Fi 6 占 26.7%，而 Wi-Fi 7 尽管旗舰路由器和手机已发布两年，占比仅 1.8%。频段方面，5 GHz 承载 59.8% 的采样，2.4 GHz 占 38.5%，6 GHz 全球仅占 1.7%。</p>\n<p>区域差异显著：北美在现代 Wi-Fi 迁移上领先（Wi-Fi 6 占 57.5%，Wi-Fi 7 占 6.8%，Wi-Fi 4 仅 10%），其 6 GHz 使用率两年内增长六倍（从 2024 年 Q1 的 2.2% 升至 2026 年 Q1 的 13.8%）。欧洲平均 Wi-Fi 6 占 35.2%、Wi-Fi 7 占 2.5%，6 GHz 使用率仅 1.6%——这是欧盟上段 6 GHz 频谱决策悬而未决的直接后果。非洲仍有 48.8% 的连接停留在 Wi-Fi 4，6 GHz 为 0。新加坡以 25% 的 Wi-Fi 7 采样占比居全球首位（MyRepublic 27%、ViewQuest 22%、StarHub/Singtel 21%），归因于全频段 6 GHz 开放加上运营商激进的捆绑策略；美国为 7.2%（CenturyLink 14.7%、AT&amp;T Fiber 10.5%），中国为 7.5%。</p>\n<p>报告还拆解了 6 GHz 频段的构成：2026 年 Q1 仅 33.7% 的 6 GHz 采样来自 Wi-Fi 7 设备，66.3% 仍是 Wi-Fi 6E——即 6 GHz 流量大部分仍运行在上一代技术上。报告引用 Omdia 预测：到 2030 年 Wi-Fi 7 仅占现网 13.8%（年复合增长率 35.2%），Wi-Fi 6 将达到 62.0% 的峰值。Ookla 的核心结论是：制约 Wi-Fi 7 普及的首要因素是 6 GHz 频谱监管的碎片化，而非设备供应。</p>\n<h3>技术要点</h3>\n<ul><li>2026 年 Q1 全球代际份额：Wi-Fi 4 占 33.2% / Wi-Fi 5 占 38.3% / Wi-Fi 6 占 26.7% / Wi-Fi 7 占 1.8%；频段份额 2.4 GHz 占 38.5% / 5 GHz 占 59.8% / 6 GHz 占 1.7%。</li><li>北美 6 GHz 使用率从 2024 年 Q1 的 2.2% 增至 2026 年 Q1 的 13.8%；欧洲停留在 1.6%，亚太 0.5%，非洲 0。</li><li>新加坡以 25% 的采样占比领跑 Wi-Fi 7；美国 7.2%，中国 7.5%，欧盟平均 2.5%。</li><li>6 GHz 频段内部，66.3% 的采样仍为 Wi-Fi 6E，Wi-Fi 7 仅占 33.7%——频段的普及速度快于使用它的最新代际。</li><li>Omdia 预测：到 2030 年 Wi-Fi 7 仅占现网 13.8%（CAGR 35.2%）；Wi-Fi 6 峰值为 62.0%。</li><li>全球 Android Speedtest 采样中 61.4% 来自支持 Wi-Fi 6 及以上的设备。</li></ul>\n<h3>意义与新意</h3>\n<p>这是知识库中首个全球现网存量测量条目——此前的部署类条目（如 2026-05-04_extreme-networks-wifi7-momentum-q3 中 Wi-Fi 7 占单一厂商出货量 37%，以及 2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion）跟踪的是厂商出货结构，而出货远远领先于实际使用：Wi-Fi 7 占某厂商出货的 37%，但在全球现网连接中仅占 1.8%。6 GHz 频段构成数据（三分之二流量仍为 6E）以及新加坡与欧盟的监管对比，为频谱政策线索（2026-07-10 欧盟 DNA 公开信、FCC 6 GHz 议题）提供了具体数字。对于建模 802.11bn 现实部署节奏的研究者，Omdia 的 2030 年预测是一个清醒的基线：标准的发布总是领先于其服务的现网存量数年。</p>",
+      "images": [
+        {
+          "url": "https://www.ookla.com/s/media/2026/06/ookla_wi-fi_generation_adoption_migration_region_0626-1.png",
+          "caption_en": "Wi-Fi generation adoption and migration by region, Q1 2026",
+          "caption_zh": "2026 年 Q1 各区域 Wi-Fi 代际占比与迁移"
+        },
+        {
+          "url": "https://www.ookla.com/s/media/2026/06/Omdia-Wi-Fi-Generation-Forecast-2026.png",
+          "caption_en": "Omdia Wi-Fi generation forecast to 2030",
+          "caption_zh": "Omdia 至 2030 年 Wi-Fi 代际预测"
+        },
+        {
+          "url": "https://www.ookla.com/s/media/2026/06/ookla_wi-fi_generation_adoption_north_america_0626.png",
+          "caption_en": "North America Wi-Fi generation adoption trend",
+          "caption_zh": "北美 Wi-Fi 代际采用趋势"
+        }
+      ],
+      "search_blob": "ookla global state of wi-fi 2026: wi-fi 7 at just 1.8% of global connections, 6 ghz adoption six-fold in north america ookla《2026 全球 wi-fi 状况》报告：wi-fi 7 仅占全球连接 1.8%，北美 6 ghz 使用率两年增长六倍 wi-fi 7 6 ghz deployment market-data ookla's global state of wi-fi 2026 report (published june 7, 2026, surfaced via a july 23 wi-fi now interview with ookla's sue marek) quantifies how slowly the installed wi-fi base actually migrates, using q1 2026 speedtest sample data. globally, wi-fi 4 still carries 33.2% of sampled connections and wi-fi 5 another 38.3%, while wi-fi 6 holds 26.7% and wi-fi 7 — despite two years of flagship router and phone launches — sits at just 1.8%. the 5 ghz band carries 59.8% of samples, 2.4 ghz 38.5%, and 6 ghz only 1.7% worldwide. ookla 于 2026 年 6 月 7 日发布《2026 全球 wi-fi 状况》报告（7 月 23 日经 wi-fi now 对 ookla 研究员 sue marek 的访谈再次引起关注），基于 2026 年第一季度 speedtest 采样数据量化了现网 wi-fi 设备代际迁移的缓慢程度。全球范围内，wi-fi 4 仍承载 33.2% 的采样连接，wi-fi 5 占 38.3%，wi-fi 6 占 26.7%，而 wi-fi 7 尽管旗舰路由器和手机已发布两年，占比仅 1.8%。频段方面，5 ghz 承载 59.8% 的采样，2.4 ghz 占 38.5%，6 ghz 全球仅占 1.7%。 industry-news wifi"
     },
     {
       "id": "2026-06-10_arxiv-band-blockage-aware-bandit-mmwave-v2x",
@@ -14452,6 +14505,33 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Wang、Lu、Liu、Zhu、Liu（2025 年 9 月）攻克免许可频段中最棘手的开放问题之一：在 6 GHz 频段，Wi-Fi 7 如何与 5G NR-U 在 LBT（先听后讲）规则下进行<em>公平</em>共存？答案是一个<strong>智能体调度器</strong>，把决策一分为二 —— LLM 从遥测中生成<strong>可解释</strong>的策略参数（alpha 公平指数、占空比上限、每类权重）；然后由一个确定性优化器在这些参数上施加安全约束，计算真实分配，并考虑 LBT 损失与能耗。</p>\n<p><strong>可解释性切分</strong>是本文的设计贡献。纯 LLM 策略系统难以认证；纯确定性系统又无法贴合运营商意图。把 LLM（意图→参数）与优化器（参数→分配）解耦，使 LLM 处于安全关键路径之外。</p>\n<p>双 160 MHz 模拟器中关键数据：一种 LLM 配置在小幅吞吐损失下总能耗<strong>降低 35.3%</strong>；另一种配置相对基于规则的基线获得<strong>总比特 +3.5%、bits/J +12.2%</strong>。</p>\n<h3>技术要点</h3>\n<ul><li><strong>场景：</strong> 免许可 6 GHz，Wi-Fi 7 与 5G NR-U 在 LBT 下竞争</li><li><strong>架构切分：</strong> LLM 生成可解释策略参数；确定性优化器负责安全约束 + 资源分配</li><li><strong>输出策略：</strong> alpha 公平指数、占空比上限、每类权重</li><li><strong>数据：</strong> 总能耗 −35.3%（A 配置）或 总比特 +3.5% / bits/J +12.2%（B 配置）</li><li><strong>可复现</strong> —— 代码与日志公开</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>安全感知智能体 Wi-Fi 的架构样板。</strong> &quot;LLM → 参数 → 优化器&quot;模式是可迁移设计，解决了生产环境智能体网络的认证问题。</li><li><strong>6 GHz 共存已经是热门议题。</strong> 加上 20 MHz Wi-Fi 7 IoT 认证（<code>2026-05-01_wifi-alliance-20mhz-iot-cert.md</code>）以及 Wi-Fi 7 部署扩张，6 GHz 共存工作必然增多 —— 本论文树立了基线。</li><li><strong>与 Zheng 等人的 LLM-RL 论文（<code>2026-05-01_arxiv-llm-rl-wireless-optimization.md</code>）形成搭配：</strong> 二者都把 LLM 放在上游而非策略输出，但出于不同动机（状态表示 vs 可解释性）。</li></ul>",
       "images": [],
       "search_blob": "llm-assisted alpha fairness for 6 ghz wifi and nr-u coexistence: an agentic orchestrator for throughput, energy, and sla 面向 6 ghz wi-fi 与 nr-u 共存的 llm 辅助 alpha 公平：兼顾吞吐、能耗与 sla 的智能体调度器 802.11be agentic-ai scheduling wang, lu, liu, zhu, and liu (september 2025) tackle one of the messiest open problems in unlicensed spectrum: how does wi-fi 7 (in 6 ghz) coexist *fairly* with 5g nr-u (also in 6 ghz), where both contend under listen-before-talk (lbt) rules? their answer is an **agentic orchestrator** that splits the decision in two — an llm generates **interpretable** policy parameters (alpha-fairness index, duty-cycle limits, per-class weights) from telemetry; a deterministic optimiser then applies safety constraints and computes the actual fair allocation, accounting for lbt losses and energy cost. wang、lu、liu、zhu、liu（2025 年 9 月）攻克免许可频段中最棘手的开放问题之一：在 6 ghz 频段，wi-fi 7 如何与 5g nr-u 在 lbt（先听后讲）规则下进行*公平*共存？答案是一个**智能体调度器**，把决策一分为二 —— llm 从遥测中生成**可解释**的策略参数（alpha 公平指数、占空比上限、每类权重）；然后由一个确定性优化器在这些参数上施加安全约束，计算真实分配，并考虑 lbt 损失与能耗。 academic-paper wifi"
+    },
+    {
+      "id": "2026-07-26_apple-n1-wifi7-chip-iphone17",
+      "date_found": "2026-07-26",
+      "technology": "wifi",
+      "date_published": "2025-09-10",
+      "type": "product",
+      "category": "industry",
+      "title_en": "Apple N1: first in-house Wi-Fi 7 chip ships in iPhone 17 and iPhone Air, ending 17 years of Broadcom Wi-Fi silicon",
+      "title_zh": "苹果 N1：首款自研 Wi-Fi 7 芯片随 iPhone 17 与 iPhone Air 出货，终结 17 年博通 Wi-Fi 芯片依赖",
+      "url": "https://wifinowglobal.com/news-blog/apple-finally-ditches-broadcom-and-launches-new-n1-wi-fi-7-chip-to-power-iphone-17-but-how-well-will-it-work/",
+      "topics": [
+        "Wi-Fi 7",
+        "chipset",
+        "Apple",
+        "products"
+      ],
+      "topic_primary": "wifi7-deployment",
+      "topics_secondary": [],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-07-26_apple-n1-wifi7-chip-iphone17.md",
+      "summary_short_en": "At its September 2025 iPhone event, Apple introduced the N1 — its first internally designed Wi-Fi chip — shipping in the iPhone 17 lineup and the ultra-thin iPhone Air. The N1 integrates Wi-Fi 7, Bluetooth 6, and Thread on a single die, and its arrival ends a 17-year run of Broadcom combo silicon in every iPhone since the iPhone 3G (2008). Together with Apple's C1 cellular modem (launched earlier in 2025), it completes Apple's move to full in-house wireless silicon.",
+      "summary_short_zh": "在 2025 年 9 月的 iPhone 发布会上，苹果推出了首款自研 Wi-Fi 芯片 N1，随 iPhone 17 系列及超薄 iPhone Air 出货。N1 在单一芯片上集成 Wi-Fi 7、蓝牙 6 和 Thread，其问世终结了自 iPhone 3G（2008 年）以来每一代 iPhone 均采用博通组合芯片的 17 年历史。加上 2025 年早些时候发布的 C1 蜂窝基带，苹果完成了无线芯片全面自研的转型。",
+      "body_html_en": "<h3>Summary</h3>\n<p>At its September 2025 iPhone event, Apple introduced the N1 — its first internally designed Wi-Fi chip — shipping in the iPhone 17 lineup and the ultra-thin iPhone Air. The N1 integrates Wi-Fi 7, Bluetooth 6, and Thread on a single die, and its arrival ends a 17-year run of Broadcom combo silicon in every iPhone since the iPhone 3G (2008). Together with Apple's C1 cellular modem (launched earlier in 2025), it completes Apple's move to full in-house wireless silicon.</p>\n<p>Notably, Apple published almost no radio specifications: no peak PHY rates, no spatial-stream count, no confirmation of 320 MHz channel or MLO configuration support. Wi-Fi NOW's Claus Hetting flagged this silence as deliberate — Apple positions the N1 around &quot;better performance, reliability, and efficiency through improved integration&quot; with iPhone hardware/software features such as AirDrop, Personal Hotspot, and on-device AI services, rather than around headline data rates.</p>\n<p>The strategic consequence is structural for the Wi-Fi chipset market: Apple's phone volumes represent roughly 15–20% of the global smartphone Wi-Fi chipset market, and that share now leaves the merchant market (chiefly Broadcom) for captive supply. This entry is a deliberate backfill (ingested July 2026): the KB's vendor-dynamics thread had no record of the single largest customer-side shift in Wi-Fi silicon supply of 2025.</p>\n<h3>Key technical points</h3>\n<ul><li>N1: Apple's first in-house Wi-Fi chip — Wi-Fi 7 + Bluetooth 6 + Thread integrated; ships in iPhone 17 / iPhone Air (September 2025).</li><li>Ends Broadcom's 17-year presence in iPhone Wi-Fi (every model since iPhone 3G, 2008).</li><li>Apple disclosed no peak rates, stream counts, or 320 MHz / MLO details — positioning is integration and efficiency, not specs.</li><li>Combined with the C1 modem, completes Apple's vertical integration of all phone wireless silicon.</li><li>Removes an estimated 15–20% of the smartphone Wi-Fi chipset market from merchant suppliers.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Backfill rationale: the KB tracks Wi-Fi silicon vendor dynamics (2026-05-01_mediatek-filogic8000-ces2026, 2026-07-06_mediatek-open-source-gateway-rdk-prplos, Broadcom Wi-Fi 8 entries) but had no record of Apple becoming a Wi-Fi chip designer — a shift that shapes every merchant vendor's Wi-Fi 7/8 roadmap assumptions. It also matters for protocol evolution: a captive chip lets Apple ship proprietary cross-layer features (AirDrop/AWDL-style link innovations, AI-driven radio scheduling) without waiting for merchant-silicon roadmaps, which historically previews behaviours that later standardize. Watch: whether N1-class silicon appears in Macs/iPads, and whether Apple joins Wi-Fi 8 (802.11bn) chip announcements in 2026–2027.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>在 2025 年 9 月的 iPhone 发布会上，苹果推出了首款自研 Wi-Fi 芯片 N1，随 iPhone 17 系列及超薄 iPhone Air 出货。N1 在单一芯片上集成 Wi-Fi 7、蓝牙 6 和 Thread，其问世终结了自 iPhone 3G（2008 年）以来每一代 iPhone 均采用博通组合芯片的 17 年历史。加上 2025 年早些时候发布的 C1 蜂窝基带，苹果完成了无线芯片全面自研的转型。</p>\n<p>值得注意的是，苹果几乎未公布任何射频规格：没有峰值 PHY 速率、没有空间流数量、也未确认是否支持 320 MHz 信道或 MLO 配置。Wi-Fi NOW 的 Claus Hetting 指出这种沉默是刻意的——苹果将 N1 的卖点定位于与 iPhone 软硬件（AirDrop、个人热点、端侧 AI 服务）深度集成带来的&quot;更好的性能、可靠性和能效&quot;，而非纸面速率。</p>\n<p>对 Wi-Fi 芯片市场的结构性影响显著：苹果手机出货量约占全球智能手机 Wi-Fi 芯片市场的 15–20%，这部分份额如今从公开市场（主要是博通）转为自供。本条目为刻意回填（2026 年 7 月录入）：知识库的厂商动态线索此前缺失 2025 年 Wi-Fi 芯片供应链最大的一次客户侧变动。</p>\n<h3>技术要点</h3>\n<ul><li>N1：苹果首款自研 Wi-Fi 芯片——集成 Wi-Fi 7、蓝牙 6 和 Thread；随 iPhone 17 / iPhone Air 出货（2025 年 9 月）。</li><li>终结博通在 iPhone Wi-Fi 芯片中长达 17 年的存在（自 2008 年 iPhone 3G 起的每一代机型）。</li><li>苹果未公布峰值速率、空间流数或 320 MHz / MLO 细节——卖点定位于集成与能效，而非规格参数。</li><li>与 C1 基带一道，完成了苹果手机无线芯片的全面垂直整合。</li><li>使约 15–20% 的智能手机 Wi-Fi 芯片市场份额脱离公开供应商（主要为博通）。</li></ul>\n<h3>意义与新意</h3>\n<p>回填理由：知识库持续跟踪 Wi-Fi 芯片厂商动态（2026-05-01_mediatek-filogic8000-ces2026、2026-07-06_mediatek-open-source-gateway-rdk-prplos 及博通 Wi-Fi 8 各条目），但此前缺失&quot;苹果成为 Wi-Fi 芯片设计者&quot;这一改变所有公开市场厂商 Wi-Fi 7/8 路线图假设的事件。它对协议演进同样重要：自研芯片使苹果可以不受公开芯片路线图约束，直接落地跨层私有特性（AirDrop/AWDL 类链路创新、AI 驱动的射频调度）——历史上此类私有行为往往预演了后来的标准化方向。值得关注：N1 级芯片是否会进入 Mac/iPad，以及苹果是否会在 2026–2027 年加入 Wi-Fi 8（802.11bn）芯片阵营。</p>",
+      "images": [],
+      "search_blob": "apple n1: first in-house wi-fi 7 chip ships in iphone 17 and iphone air, ending 17 years of broadcom wi-fi silicon 苹果 n1：首款自研 wi-fi 7 芯片随 iphone 17 与 iphone air 出货，终结 17 年博通 wi-fi 芯片依赖 wi-fi 7 chipset apple products at its september 2025 iphone event, apple introduced the n1 — its first internally designed wi-fi chip — shipping in the iphone 17 lineup and the ultra-thin iphone air. the n1 integrates wi-fi 7, bluetooth 6, and thread on a single die, and its arrival ends a 17-year run of broadcom combo silicon in every iphone since the iphone 3g (2008). together with apple's c1 cellular modem (launched earlier in 2025), it completes apple's move to full in-house wireless silicon. 在 2025 年 9 月的 iphone 发布会上，苹果推出了首款自研 wi-fi 芯片 n1，随 iphone 17 系列及超薄 iphone air 出货。n1 在单一芯片上集成 wi-fi 7、蓝牙 6 和 thread，其问世终结了自 iphone 3g（2008 年）以来每一代 iphone 均采用博通组合芯片的 17 年历史。加上 2025 年早些时候发布的 c1 蜂窝基带，苹果完成了无线芯片全面自研的转型。 product wifi"
     },
     {
       "id": "2026-05-01_arxiv-ftm-survey-2025",
