@@ -81,7 +81,7 @@ window.SOURCES_DATA = {
       "kind": "html",
       "category": "standards",
       "topics_hint": [],
-      "notes": "Official WG status pages. Watch for new TGxx_update.htm files.",
+      "notes": "Official WG status pages. Watch for new TGxx_update.htm files. 2026-07-26 (user-approved 11b): SKIP-EXEMPT — never auto-skip on cf>=3, reset the counter manually instead. The page is a session-report archive: it only changes at plenary/interim boundaries, so between sessions it reads as 'failing' while working perfectly. Worse, when a session DOES land, the outcomes usually reach the KB first via faster channels (D2.0 approval + Wi-Fi 9 SG arrived 07-22 via news; the Session 218 report file appeared here only on 07-26), so this source is a confirmation-of-record channel, not a discovery channel — and auto-skipping it would silently drop the authoritative record. cf reset 3 -> 0 on 2026-07-26.",
       "technology": "wifi"
     },
     {
@@ -131,7 +131,7 @@ window.SOURCES_DATA = {
       "kind": "browser",
       "category": "standards",
       "topics_hint": [],
-      "notes": "Certification announcements (e.g. Wi-Fi CERTIFIED 7 20 MHz IoT cert in Jan 2026). URL fixed 2026-07-10 (user-approved 11b): /news-events/press-releases now 404s; /press-releases is canonical (second drift since May 2026 — the /newsroom path 404'd 2026-05-04). First browser contact in weeks produced 2 entries (WFA x Bluetooth SIG 6 GHz coexistence, EU DNA open letter) — keep in the periodic browser sweep.",
+      "notes": "Certification announcements (e.g. Wi-Fi CERTIFIED 7 20 MHz IoT cert in Jan 2026). URL fixed 2026-07-10 (user-approved 11b): /news-events/press-releases now 404s; /press-releases is canonical (second drift since May 2026 — the /newsroom path 404'd 2026-05-04). First browser contact in weeks produced 2 entries (WFA x Bluetooth SIG 6 GHz coexistence, EU DNA open letter) — keep in the periodic browser sweep. 2026-07-26 (user-approved 11b): cf reset 3 -> 0, kept enabled — quiet, not broken. WFA publishes in bursts around certification launches (CES, plenary follow-ons); a summer gap is its normal cadence, and the 07-10 URL fix proved the path is live. Re-evaluate if still dry ~5 runs after the next certification event.",
       "technology": "wifi"
     },
     {
@@ -1053,6 +1053,7 @@ window.SOURCES_DATA = {
         "bt-le-audio",
         "bt-le"
       ],
+      "notes": "2026-07-26 (user-approved 11b): cf reset 4 -> 0, kept enabled — quiet, not broken. The query keeps re-surfacing the Feb/Mar-2026 SIG blog posts (Auracast market outlook, 2025 year-in-review) because SIG's own publishing cadence is quarterly-ish; that is source rhythm, not source failure. Bluetooth's real discovery channel in this pipeline has become the arxiv security/sensing queries (see the 2026-07-26 Snatcher CCS'26 hit). Re-evaluate around the next Core-spec or Auracast certification milestone.",
       "technology": "bluetooth"
     },
     {
@@ -1116,6 +1117,19 @@ window.SOURCES_DATA = {
         "uwb-ranging"
       ],
       "notes": "Official FiRa Consortium news — UWB application-layer standards and certification.",
+      "technology": "uwb"
+    },
+    {
+      "id": "fira-plugfest-coverage",
+      "name": "FiRa Plugfest / interop event coverage (seasonal)",
+      "url": "",
+      "kind": "web-search",
+      "category": "standards",
+      "topics_hint": [
+        "uwb-fi-ra",
+        "uwb-ranging"
+      ],
+      "notes": "\"Added 2026-07-26 (user-approved 11a/11b). Seasonal query mirroring the WiFi scout's ces/mwc/computex-coverage pattern: UWB's yield is event-driven, and between events the standing sources read as dry (arxiv-uwb, fira-news, ieee-802-15-4z all at or near auto-skip on 2026-07-26 with zero fresh items). Plugfests are where 802.15.4ab interop and MMS/NBA feature claims first get independently tested, which is exactly the substance the vendor press releases omit. NEXT: Plugfest",
       "technology": "uwb"
     },
     {
