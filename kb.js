@@ -3,19 +3,19 @@ window.KB_DATA = {
   "last_updated": "2026-07-26",
   "last_scanned": "2026-07-26",
   "topic_counts": {
-    "6G": 47,
+    "6G": 48,
     "802.11bn": 41,
     "agentic-AI": 38,
     "MAC-layer": 37,
     "products": 34,
     "scheduling": 31,
+    "LEO": 29,
     "security": 29,
-    "LEO": 27,
     "O-RAN": 27,
     "802.11be": 26,
     "WiFi-sensing": 21,
+    "Starlink": 17,
     "MAPC": 16,
-    "Starlink": 16,
     "MLO": 15,
     "PHY-layer": 15,
     "5G": 14,
@@ -23,8 +23,8 @@ window.KB_DATA = {
     "5G-NR": 13,
     "direct-to-device": 13,
     "802.11bf": 13,
+    "NTN": 12,
     "6GHz": 12,
-    "NTN": 11,
     "LLM": 11,
     "AI-RAN": 11,
     "network-slicing": 11,
@@ -104,6 +104,8 @@ window.KB_DATA = {
     "5G-core": 4,
     "802.15.4ab": 4,
     "802.11az": 4,
+    "Starship": 3,
+    "constellation": 3,
     "SLB": 3,
     "P-EDCA": 3,
     "DRU": 3,
@@ -153,6 +155,7 @@ window.KB_DATA = {
     "digital-car-key": 3,
     "roaming": 3,
     "Apple": 3,
+    "V3": 2,
     "foundation-model": 2,
     "FWA": 2,
     "OpenHarmony": 2,
@@ -168,7 +171,6 @@ window.KB_DATA = {
     "NR-V2X": 2,
     "AST-SpaceMobile": 2,
     "WNG": 2,
-    "Starship": 2,
     "AI-offload": 2,
     "UCM": 2,
     "RAN": 2,
@@ -201,7 +203,6 @@ window.KB_DATA = {
     "Matter": 2,
     "MCS": 2,
     "OLLA": 2,
-    "constellation": 2,
     "NWDAF": 2,
     "broadband": 2,
     "direction-finding": 2,
@@ -281,7 +282,6 @@ window.KB_DATA = {
     "Coex": 1,
     "liaison": 1,
     "laser-ISL": 1,
-    "V3": 1,
     "TDD": 1,
     "GNSS": 1,
     "timing-security": 1,
@@ -339,6 +339,9 @@ window.KB_DATA = {
     "high-density-WiFi": 1,
     "stadium-WiFi": 1,
     "directional-antennas": 1,
+    "sovereign-constellation": 1,
+    "Korea": 1,
+    "VLEO": 1,
     "frame-bursting": 1,
     "TXOP": 1,
     "tail-latency": 1,
@@ -817,12 +820,12 @@ window.KB_DATA = {
     "5g-nr": 18,
     "open-ran": 15,
     "spectrum-policy": 14,
-    "leo-constellations": 13,
+    "leo-constellations": 14,
     "mapc-cosr": 12,
     "sat-direct-device": 10,
     "agentic-wifi": 10,
+    "starlink": 9,
     "amp-iot": 9,
-    "starlink": 8,
     "ntn": 7,
     "rtwt-latency": 7,
     "cellular-security": 7,
@@ -855,14 +858,14 @@ window.KB_DATA = {
     "industry-news": 71,
     "ieee-document": 28,
     "product": 18,
-    "satellite-news": 11,
+    "satellite-news": 13,
     "proposal": 4,
     "bluetooth-spec": 2,
     "nearlink-spec": 2
   },
   "category_counts": {
     "academia": 208,
-    "industry": 100,
+    "industry": 102,
     "standards": 36
   },
   "technologies_vocab": {
@@ -3269,6 +3272,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-26_starship-flight13-first-starlink-v3-deployment",
         "2026-07-19_starlink-v3-operational-debut-flight13-d2d",
         "2026-07-09_arxiv-bbrv3-starlink-global-study",
         "2026-06-30_arxiv-leo-latency-region-signatures-starlink",
@@ -3288,6 +3292,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "satellite-news": [
+          "2026-07-26_starship-flight13-first-starlink-v3-deployment",
           "2026-07-19_starlink-v3-operational-debut-flight13-d2d",
           "2026-07-05_starship-flight12-starlink-v3-test-deploy"
         ],
@@ -3316,6 +3321,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "",
       "entries_primary": [
         "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
+        "2026-07-26_south-korea-k-starlink-2035-ratified",
         "2026-07-04_amazon-leo-396-sats-initial-service",
         "2026-06-26_arxiv-all-optical-satellite-burst-size",
         "2026-06-23_arxiv-isl-path-selection-walker-delta",
@@ -3330,6 +3336,7 @@ window.KB_DATA = {
         "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
       ],
       "entries_secondary": [
+        "2026-07-26_starship-flight13-first-starlink-v3-deployment",
         "2026-07-22_sigcomm26-satellite-papers",
         "2026-07-22_ast-spacemobile-d2d-deferral-2027",
         "2026-07-19_starlink-v3-operational-debut-flight13-d2d",
@@ -3363,6 +3370,7 @@ window.KB_DATA = {
           "2026-05-21_arxiv-leo-mmwave-subthz-relay"
         ],
         "satellite-news": [
+          "2026-07-26_south-korea-k-starlink-2035-ratified",
           "2026-07-04_amazon-leo-396-sats-initial-service",
           "2026-07-13_reliance-jio-sovereign-leo-constellation",
           "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
@@ -3471,6 +3479,7 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
+        "2026-07-26_south-korea-k-starlink-2035-ratified",
         "2026-06-30_arxiv-leo-latency-region-signatures-starlink",
         "2026-07-03_arxiv-memntn-memory-native-ntn",
         "2026-06-15_arxiv-aidos-beam-hopping-ngso",
@@ -3506,6 +3515,7 @@ window.KB_DATA = {
         "2026-05-30_fcc-starlink-gen2-authorization-spectrum"
       ],
       "entries_secondary": [
+        "2026-07-26_south-korea-k-starlink-2035-ratified",
         "2026-07-04_amazon-leo-396-sats-initial-service",
         "2026-07-03_starlink-mobile-retail-carrier-plans",
         "2026-07-13_reliance-jio-sovereign-leo-constellation",
@@ -3944,6 +3954,36 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-07-26_starship-flight13-first-starlink-v3-deployment",
+      "date_found": "2026-07-26",
+      "technology": "satellite",
+      "date_published": "2026-07-24",
+      "type": "satellite-news",
+      "category": "industry",
+      "title_en": "Starship Flight 13 deploys first 20 operational Starlink V3 satellites; upper stage nails softest splashdown, booster landing burn fails",
+      "title_zh": "星舰第 13 次试飞成功部署首批 20 颗运营型星链 V3 卫星；上面级实现最软溅落，助推器着陆点火失败",
+      "url": "https://spacenews.com/spacex-conducts-13th-starship-test-flight/",
+      "topics": [
+        "Starlink",
+        "Starship",
+        "V3",
+        "LEO",
+        "constellation"
+      ],
+      "topic_primary": "starlink",
+      "topics_secondary": [
+        "leo-constellations"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-26_starship-flight13-first-starlink-v3-deployment.md",
+      "summary_short_en": "After a July 16 post-ignition abort (four Raptor engines failed to ignite; at least two were removed and re-light reliability hardware fitted) and a July 23 weather waive-off, Starship Flight 13 launched from Starbase on July 24, 2026 at 5:51 p.m. CT with all 33 booster Raptors firing. About 18 minutes in, the upper stage deployed **20 operational Starlink V3 satellites** — the first time functioning V3 hardware (not the mass simulators of Flight 12) has reached orbit. The ship then demonstrated the Raptor relight following the ~11-minute deploy sequence and executed what SpaceX engineers called the \"softest splashdown yet\" in the Indian Ocean.",
+      "summary_short_zh": "在 7 月 16 日点火后中止（四台猛禽发动机未点燃；至少两台被拆下并加装了改进再点火可靠性的硬件）以及 7 月 23 日因天气放弃后，星舰第 13 次试飞于 2026 年 7 月 24 日 17:51（中部时间）从 Starbase 升空，助推器 33 台猛禽发动机全部点火。升空约 18 分钟后，上面级部署了 **20 颗运营型星链 V3 卫星**——这是功能完整的 V3 硬件（而非第 12 次试飞的质量模拟器）首次入轨。随后飞船完成了约 11 分钟部署序列后的猛禽再点火演示，并在印度洋实现了 SpaceX 工程师所称的\"迄今最软溅落\"。",
+      "body_html_en": "<h3>Summary</h3>\n<p>After a July 16 post-ignition abort (four Raptor engines failed to ignite; at least two were removed and re-light reliability hardware fitted) and a July 23 weather waive-off, Starship Flight 13 launched from Starbase on July 24, 2026 at 5:51 p.m. CT with all 33 booster Raptors firing. About 18 minutes in, the upper stage deployed <strong>20 operational Starlink V3 satellites</strong> — the first time functioning V3 hardware (not the mass simulators of Flight 12) has reached orbit. The ship then demonstrated the Raptor relight following the ~11-minute deploy sequence and executed what SpaceX engineers called the &quot;softest splashdown yet&quot; in the Indian Ocean.</p>\n<p>The persistent weak point remains booster recovery: during Booster 20's simulated ocean landing in the Gulf, only ten Raptors relit for the landing burn and two of those shut down within seconds — the second consecutive booster-landing failure in the V3 campaign. The flight was also SpaceX's first since its IPO, adding public-market scrutiny to the cadence question.</p>\n<p>For the constellation roadmap, this converts the V3 promise from paper to orbit: each V3 satellite is specified at ~1 Tbps of downlink capacity (per the pre-flight briefings tracked in 2026-07-19_starlink-v3-operational-debut-flight13-d2d), and Musk's claim of a ~100× space-based bandwidth increase rests on Starship-only V3 deployment at scale. Actual on-orbit V3 performance data — beam capacity, D2D payload behaviour — is the next thing to watch.</p>\n<h3>Key technical points</h3>\n<ul><li>First 20 operational Starlink V3 satellites deployed July 24, 2026 (~18 min after liftoff); Flight 12 had carried only simulators.</li><li>July 16 abort root cause: 4 Raptors failed to ignite; ≥2 engines replaced, re-light reliability hardware + updated abort logic installed.</li><li>Upper stage: post-deploy Raptor relight demonstrated; softest Indian Ocean splashdown to date.</li><li>Booster 20 landing burn: only 10/13 engines relit, 2 shut down early — second consecutive booster-recovery failure.</li><li>V3 spec context: ~1 Tbps/satellite; ~100× constellation bandwidth claim contingent on Starship cadence.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the landing-confirmation follow-up to 2026-07-19_starlink-v3-operational-debut-flight13-d2d (the debut plan) and 2026-07-05_starship-flight12-starlink-v3-test-deploy (simulator deploy): the V3 era is now operational, not planned. The bandwidth-per-launch step change (20 × ~1 Tbps per Starship flight) resets the competitive baseline against Amazon Leo's FCC-deadline-constrained ramp and every LEO entrant tracked in the leo-constellations bin. The unresolved booster-landing reliability is the schedule risk to watch.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>在 7 月 16 日点火后中止（四台猛禽发动机未点燃；至少两台被拆下并加装了改进再点火可靠性的硬件）以及 7 月 23 日因天气放弃后，星舰第 13 次试飞于 2026 年 7 月 24 日 17:51（中部时间）从 Starbase 升空，助推器 33 台猛禽发动机全部点火。升空约 18 分钟后，上面级部署了 <strong>20 颗运营型星链 V3 卫星</strong>——这是功能完整的 V3 硬件（而非第 12 次试飞的质量模拟器）首次入轨。随后飞船完成了约 11 分钟部署序列后的猛禽再点火演示，并在印度洋实现了 SpaceX 工程师所称的&quot;迄今最软溅落&quot;。</p>\n<p>薄弱环节仍是助推器回收：20 号助推器在墨西哥湾模拟海上着陆时，着陆点火仅十台猛禽重新点燃，其中两台点火数秒内又熄火——这是 V3 战役中连续第二次助推器着陆失败。本次飞行也是 SpaceX IPO 后的首次试飞，节奏问题面临公开市场的额外审视。</p>\n<p>对星座路线图而言，这次飞行把 V3 的承诺从纸面带入轨道：每颗 V3 卫星标称约 1 Tbps 下行容量（见 2026-07-19_starlink-v3-operational-debut-flight13-d2d 跟踪的飞行前简报），马斯克&quot;天基带宽提升约 100 倍&quot;的主张依赖于星舰独占的规模化 V3 部署。接下来值得关注的是 V3 的实际在轨性能数据——波束容量与直连终端（D2D）载荷表现。</p>\n<h3>技术要点</h3>\n<ul><li>2026 年 7 月 24 日首批 20 颗运营型星链 V3 卫星部署（升空后约 18 分钟）；第 12 次试飞仅携带模拟器。</li><li>7 月 16 日中止根因：4 台猛禽未点火；更换至少 2 台发动机，加装再点火可靠性硬件并更新中止逻辑。</li><li>上面级：完成部署后猛禽再点火演示；实现迄今最软的印度洋溅落。</li><li>20 号助推器着陆点火：13 台中仅 10 台重燃，其中 2 台数秒内熄火——连续第二次助推器回收失败。</li><li>V3 规格背景：单星约 1 Tbps；&quot;星座带宽 100 倍&quot;主张取决于星舰发射节奏。</li></ul>\n<h3>意义与新意</h3>\n<p>本条目是 2026-07-19_starlink-v3-operational-debut-flight13-d2d（首飞计划）与 2026-07-05_starship-flight12-starlink-v3-test-deploy（模拟器部署）的落地确认后续：V3 时代已从计划变为运营。每次发射的带宽跃变（每次星舰飞行 20 × 约 1 Tbps）重置了与受 FCC 期限约束的 Amazon Leo 及 leo-constellations 分类下所有 LEO 玩家的竞争基线。尚未解决的助推器着陆可靠性是需要关注的进度风险。</p>",
+      "images": [],
+      "search_blob": "starship flight 13 deploys first 20 operational starlink v3 satellites; upper stage nails softest splashdown, booster landing burn fails 星舰第 13 次试飞成功部署首批 20 颗运营型星链 v3 卫星；上面级实现最软溅落，助推器着陆点火失败 starlink starship v3 leo constellation after a july 16 post-ignition abort (four raptor engines failed to ignite; at least two were removed and re-light reliability hardware fitted) and a july 23 weather waive-off, starship flight 13 launched from starbase on july 24, 2026 at 5:51 p.m. ct with all 33 booster raptors firing. about 18 minutes in, the upper stage deployed **20 operational starlink v3 satellites** — the first time functioning v3 hardware (not the mass simulators of flight 12) has reached orbit. the ship then demonstrated the raptor relight following the ~11-minute deploy sequence and executed what spacex engineers called the \"softest splashdown yet\" in the indian ocean. 在 7 月 16 日点火后中止（四台猛禽发动机未点燃；至少两台被拆下并加装了改进再点火可靠性的硬件）以及 7 月 23 日因天气放弃后，星舰第 13 次试飞于 2026 年 7 月 24 日 17:51（中部时间）从 starbase 升空，助推器 33 台猛禽发动机全部点火。升空约 18 分钟后，上面级部署了 **20 颗运营型星链 v3 卫星**——这是功能完整的 v3 硬件（而非第 12 次试飞的质量模拟器）首次入轨。随后飞船完成了约 11 分钟部署序列后的猛禽再点火演示，并在印度洋实现了 spacex 工程师所称的\"迄今最软溅落\"。 satellite-news satellite"
+    },
     {
       "id": "2026-07-26_arxiv-wmfm-ood-6g-isac",
       "date_found": "2026-07-26",
@@ -6225,6 +6265,38 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Wi-Fi NOW 于 2026 年 7 月 4 日发表了对 AmpThink 创始人兼 CEO Bill Anderson 的专访。AmpThink 是北美完成高密度体育场 Wi-Fi 项目最多的集成商（自 2011 年与 Cisco 合作的 Lucas Oil 体育场首秀以来已交付 100 多个场馆）。Anderson 的核心论断是：体育场 Wi-Fi 正在经历从&quot;近距离组网&quot;到&quot;超定向组网&quot;的结构性转变，定向高空设计如今&quot;已是我们所有网络设计的必备要素&quot;。</p>\n<p>传统的超高密度方案是把数百到数千台低功率 AP 布置在离观众极近的位置——座椅下、扶手内、地面盒中。这种方式有效，但隐性成本高达数百万美元：混凝土开孔、防水处理、布线工程，以及维护嵌入座椅设施的 AP 的运维负担。超定向模式将其颠倒过来：AP 数量大幅减少，每台设备在软件可配置的高定向天线阵列后集成多个射频单元，安装在观众上方 200 多英尺的检修通道上。每个波束照射一个特定且互不重叠的座位区，通过旁瓣滤除将大规模同频干扰控制在可接受范围。</p>\n<p>AmpThink 当前设计的核心硬件是 Cisco Catalyst 9104 体育场天线平台，配合 AmpThink 自研的可旋转/可俯仰检修通道安装套件，使安装人员能将每个阵列精确对准指定座位区。专访将这一方案定位为正在形成的默认设计而非小众实验：它已从 Allegiant 体育场的首个商用部署走向新建和翻新场馆的标准配置。</p>\n<h3>技术要点</h3>\n<ul><li>架构转变：近距离组网（数百至数千台座椅下/扶手 AP）→ 超定向高空组网（AP 数量更少、单台射频更多，安装在观众上方 200+ 英尺的检修通道）。</li><li>波束由软件配置且高度定向，辐射方向图带旁瓣滤除；每个波束服务一个互不重叠的座位区。</li><li>硬件：Cisco Catalyst 9104 体育场天线 AP，配合 AmpThink 自研可旋转/可俯仰安装套件实现检修通道上的精确指向。</li><li>经济驱动：近距离部署隐藏着数百万美元的安装成本（混凝土开孔、防水、布线）和沉重运维负担；高空定向设计同时削减两者。</li><li>采用信号：Cisco 9104 出货量从 FY2021 的数百台增至 FY2022 的 4000+ 台、FY2023 的 6000+ 台；AmpThink 已将超定向设计视为所有方案的必备要素。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中第一条体育场/超高密度场馆条目——部署桶此前覆盖企业园区、酒店/MDU（2026-07-04_worldvue-openwifi-3500-device-scale）和户外工业（2026-07-03_cisco-9177-outdoor-wifi7-urwb-ap）等垂直场景。技术本身并不新（Catalyst 9104 于 2021 年发布），但这篇文章标志着该趋势的成熟节点：最资深的体育场集成商如今将超定向视为默认方案而非实验。值得关注这种射频架构与面向密集小区设计的 Wi-Fi 7/8 特性如何互动——尤其是 MLO 流量引导和 802.11bn 多 AP 协调，当小区由高空锐利分区时，其协调空间复用的假设将有所不同。</p>",
       "images": [],
       "search_blob": "ampthink ceo: hyper-directional antenna technology is becoming the default design for ultra-high-density stadium wi-fi ampthink ceo：超定向天线技术正成为超高密度体育场 wi-fi 的默认设计 high-density-wifi stadium-wifi directional-antennas deployment wi-fi now published an interview (july 4, 2026) with bill anderson, founder and ceo of ampthink — the integrator behind more high-density stadium wi-fi projects in north america than any other firm (100+ venues since its 2011 lucas oil stadium debut with cisco). anderson's headline claim: stadium wi-fi is undergoing a structural shift from *proximity networking* to *hyper-directional networking*, and directional overhead designs are now \"essential to all our network designs.\" wi-fi now 于 2026 年 7 月 4 日发表了对 ampthink 创始人兼 ceo bill anderson 的专访。ampthink 是北美完成高密度体育场 wi-fi 项目最多的集成商（自 2011 年与 cisco 合作的 lucas oil 体育场首秀以来已交付 100 多个场馆）。anderson 的核心论断是：体育场 wi-fi 正在经历从\"近距离组网\"到\"超定向组网\"的结构性转变，定向高空设计如今\"已是我们所有网络设计的必备要素\"。 industry-news wifi"
+    },
+    {
+      "id": "2026-07-26_south-korea-k-starlink-2035-ratified",
+      "date_found": "2026-07-26",
+      "technology": "satellite",
+      "date_published": "2026-07-03",
+      "type": "satellite-news",
+      "category": "industry",
+      "title_en": "South Korea ratifies $38.5B 'K-Starlink' sovereign LEO plan: 192-satellite VLEO SAR+comms baseline, Release 21 NTN, MARL-driven handover",
+      "title_zh": "韩国批准 385 亿美元'K-Starlink'主权低轨计划：192 颗甚低轨 SAR+通信卫星基线、Release 21 NTN、多智能体强化学习切换",
+      "url": "https://satnews.com/2026/07/06/south-korea-formally-ratifies-2035-k-starlink-low-earth-orbit-constellation-plan/",
+      "topics": [
+        "LEO",
+        "NTN",
+        "6G",
+        "sovereign-constellation",
+        "Korea",
+        "VLEO"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "ngso-regulation",
+        "sat-ai"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-26_south-korea-k-starlink-2035-ratified.md",
+      "summary_short_en": "On July 3, 2026 the South Korean government formally ratified its industrial space strategy to field a sovereign LEO communications network — dubbed \"K-Starlink\" — by 2035, backed by a 55 trillion won (~$38.5 billion) private-public investment pledge led by Hanwha Group. The Korea AeroSpace Administration (KASA) administers the program; Hanwha Aerospace is prime, ETRI is technical architect, Samsung Electronics takes NTN chipset production, and KT SAT handles telecom distribution. The same package accelerates Korea's lunar-landing target from 2032 to 2030 and targets growing Korea's global space-economy share from 0.7% to 3.0% (~$49B revenue by 2035).",
+      "summary_short_zh": "2026 年 7 月 3 日，韩国政府正式批准其工业航天战略，计划在 2035 年前建成主权低轨通信网络——称为\"K-Starlink\"——由韩华集团牵头的 55 万亿韩元（约 385 亿美元）公私联合投资支持。韩国航空航天厅（KASA）主管该计划；韩华航空航天为总承包，ETRI 任技术架构师，三星电子负责 NTN 芯片生产，KT SAT 承担电信分发。同一方案还将韩国登月目标从 2032 年提前至 2030 年，并计划将韩国全球航天经济份额从 0.7% 提升到 3.0%（2035 年约 490 亿美元收入）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On July 3, 2026 the South Korean government formally ratified its industrial space strategy to field a sovereign LEO communications network — dubbed &quot;K-Starlink&quot; — by 2035, backed by a 55 trillion won (~$38.5 billion) private-public investment pledge led by Hanwha Group. The Korea AeroSpace Administration (KASA) administers the program; Hanwha Aerospace is prime, ETRI is technical architect, Samsung Electronics takes NTN chipset production, and KT SAT handles telecom distribution. The same package accelerates Korea's lunar-landing target from 2032 to 2030 and targets growing Korea's global space-economy share from 0.7% to 3.0% (~$49B revenue by 2035).</p>\n<p>The constellation architecture is still being sized between 128 and 512 satellites, with Hanwha Systems' baseline calling for 192 ultra-low-orbit satellites carrying combined synthetic-aperture-radar and communications payloads, plus 60 polar-phased supplemental assets. Two technical choices stand out: the network is designed to 3GPP Release 21 NTN parameters for 6G integration from day one, and beam/handover management uses an &quot;Intelligent LEO Satellite Conditional Handover&quot; (ILCHO) scheme driven by multi-agent reinforcement learning for autonomous beam-steering.</p>\n<h3>Key technical points</h3>\n<ul><li>55T won (~$38.5B) ratified July 3, 2026; deployment target 2035; KASA + Hanwha + ETRI + Samsung (NTN chipsets) + KT SAT.</li><li>Baseline: 192 VLEO satellites with dual SAR+comms payloads + 60 polar assets; sizing study spans 128–512.</li><li>Designed to 3GPP Release 21 NTN parameters — 6G-native rather than retrofitted.</li><li>ILCHO conditional-handover scheme uses multi-agent reinforcement learning for autonomous beam-steering.</li><li>Program also pulls Korea's lunar landing forward to 2030; space-economy share target 0.7% → 3.0%.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>First KB entry on a sovereign national LEO constellation program from Asia designed 6G-NTN-native. The leo-constellations bin tracks commercial races (Starlink V3, Amazon Leo, OneWeb) and the ngso-regulation bin tracks spectrum fights; K-Starlink adds the state-strategic axis: Release 21 NTN as a national industrial-policy anchor, with Samsung chipset supply vertically integrated. The ILCHO/MARL handover choice is notable as a government-ratified commitment to learned RRM in a safety-critical constellation — compare the academic MARL-handover thread in the sat-ai bin. Watch: constellation sizing decision (128–512) and whether conditional-handover parameters feed back into 3GPP Release 21 NTN work items.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026 年 7 月 3 日，韩国政府正式批准其工业航天战略，计划在 2035 年前建成主权低轨通信网络——称为&quot;K-Starlink&quot;——由韩华集团牵头的 55 万亿韩元（约 385 亿美元）公私联合投资支持。韩国航空航天厅（KASA）主管该计划；韩华航空航天为总承包，ETRI 任技术架构师，三星电子负责 NTN 芯片生产，KT SAT 承担电信分发。同一方案还将韩国登月目标从 2032 年提前至 2030 年，并计划将韩国全球航天经济份额从 0.7% 提升到 3.0%（2035 年约 490 亿美元收入）。</p>\n<p>星座架构仍在 128 至 512 颗之间论证规模，韩华系统的基线方案为 192 颗甚低轨卫星，搭载合成孔径雷达（SAR）与通信复合载荷，另加 60 颗极轨补充星。两个技术选择值得注意：网络自设计之初即按 3GPP Release 21 NTN 参数面向 6G 集成；波束/切换管理采用由多智能体强化学习驱动的&quot;智能 LEO 卫星条件切换&quot;（ILCHO）方案实现自主波束指向。</p>\n<h3>技术要点</h3>\n<ul><li>55 万亿韩元（约 385 亿美元）于 2026 年 7 月 3 日批准；2035 年部署目标；KASA + 韩华 + ETRI + 三星（NTN 芯片）+ KT SAT。</li><li>基线：192 颗甚低轨双载荷（SAR+通信）卫星 + 60 颗极轨补充星；规模论证区间 128–512 颗。</li><li>按 3GPP Release 21 NTN 参数设计——6G 原生而非事后改造。</li><li>ILCHO 条件切换方案采用多智能体强化学习实现自主波束指向。</li><li>该计划同时将韩国登月提前至 2030 年；航天经济份额目标从 0.7% 提升至 3.0%。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库首个关于亚洲主权国家级、6G-NTN 原生设计低轨星座计划的条目。leo-constellations 分类跟踪商业竞赛（星链 V3、Amazon Leo、OneWeb），ngso-regulation 分类跟踪频谱之争；K-Starlink 增加了国家战略维度：以 Release 21 NTN 作为国家产业政策锚点，三星芯片供应垂直整合。ILCHO/多智能体强化学习切换方案作为政府批准的、在安全关键星座中采用学习式无线资源管理的承诺值得注意——可与 sat-ai 分类中的学术 MARL 切换线索对照。关注点：星座规模决策（128–512 颗），以及条件切换参数是否会反馈到 3GPP Release 21 NTN 工作项目。</p>",
+      "images": [],
+      "search_blob": "south korea ratifies $38.5b 'k-starlink' sovereign leo plan: 192-satellite vleo sar+comms baseline, release 21 ntn, marl-driven handover 韩国批准 385 亿美元'k-starlink'主权低轨计划：192 颗甚低轨 sar+通信卫星基线、release 21 ntn、多智能体强化学习切换 leo ntn 6g sovereign-constellation korea vleo on july 3, 2026 the south korean government formally ratified its industrial space strategy to field a sovereign leo communications network — dubbed \"k-starlink\" — by 2035, backed by a 55 trillion won (~$38.5 billion) private-public investment pledge led by hanwha group. the korea aerospace administration (kasa) administers the program; hanwha aerospace is prime, etri is technical architect, samsung electronics takes ntn chipset production, and kt sat handles telecom distribution. the same package accelerates korea's lunar-landing target from 2032 to 2030 and targets growing korea's global space-economy share from 0.7% to 3.0% (~$49b revenue by 2035). 2026 年 7 月 3 日，韩国政府正式批准其工业航天战略，计划在 2035 年前建成主权低轨通信网络——称为\"k-starlink\"——由韩华集团牵头的 55 万亿韩元（约 385 亿美元）公私联合投资支持。韩国航空航天厅（kasa）主管该计划；韩华航空航天为总承包，etri 任技术架构师，三星电子负责 ntn 芯片生产，kt sat 承担电信分发。同一方案还将韩国登月目标从 2032 年提前至 2030 年，并计划将韩国全球航天经济份额从 0.7% 提升到 3.0%（2035 年约 490 亿美元收入）。 satellite-news satellite"
     },
     {
       "id": "2026-07-08_sigcomm26-concord-airtime-contention",
