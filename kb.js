@@ -3,15 +3,15 @@ window.KB_DATA = {
   "last_updated": "2026-07-28",
   "last_scanned": "2026-07-28",
   "topic_counts": {
-    "6G": 48,
+    "6G": 49,
     "802.11bn": 41,
-    "agentic-AI": 38,
+    "agentic-AI": 39,
     "MAC-layer": 37,
     "products": 34,
     "scheduling": 31,
+    "LEO": 30,
     "security": 30,
-    "LEO": 29,
-    "O-RAN": 27,
+    "O-RAN": 28,
     "802.11be": 26,
     "WiFi-sensing": 21,
     "Starlink": 17,
@@ -20,18 +20,18 @@ window.KB_DATA = {
     "MLO": 15,
     "PHY-layer": 15,
     "5G": 14,
+    "NTN": 13,
     "5G-NR": 13,
     "direct-to-device": 13,
     "802.11bf": 13,
-    "NTN": 12,
     "6GHz": 12,
     "LLM": 11,
     "AI-RAN": 11,
     "network-slicing": 11,
     "802.11ax": 11,
+    "digital-twin": 10,
     "mmWave": 10,
     "802.11bp": 9,
-    "digital-twin": 9,
     "energy-efficiency": 9,
     "NearLink": 9,
     "SparkLink": 9,
@@ -52,6 +52,8 @@ window.KB_DATA = {
     "reinforcement-learning": 7,
     "XR": 7,
     "generative-AI": 7,
+    "xApp": 6,
+    "RIC": 6,
     "ISAC": 6,
     "AFC": 6,
     "OFDMA": 6,
@@ -61,11 +63,11 @@ window.KB_DATA = {
     "V2X": 6,
     "automotive": 6,
     "Wi-Fi-8": 6,
+    "5G-core": 5,
     "IAB": 5,
     "backhaul": 5,
     "intent-based-networking": 5,
     "SLE": 5,
-    "xApp": 5,
     "OpenAirInterface": 5,
     "UAV": 5,
     "measurement": 5,
@@ -77,8 +79,8 @@ window.KB_DATA = {
     "Co-BF": 5,
     "channel-sounding": 5,
     "5G-Advanced": 5,
-    "RIC": 5,
     "AMP": 4,
+    "SLA": 4,
     "ELR": 4,
     "jamming": 4,
     "regulation": 4,
@@ -103,7 +105,6 @@ window.KB_DATA = {
     "mobility": 4,
     "AoA": 4,
     "handover": 4,
-    "5G-core": 4,
     "802.15.4ab": 4,
     "802.11az": 4,
     "Starship": 3,
@@ -126,7 +127,6 @@ window.KB_DATA = {
     "PASN": 3,
     "802.1X": 3,
     "ambient-power": 3,
-    "SLA": 3,
     "DRL": 3,
     "autonomous-networks": 3,
     "edge-computing": 3,
@@ -255,6 +255,10 @@ window.KB_DATA = {
     "Ericsson": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "network-architecture": 1,
+    "conflict-resolution": 1,
+    "NAS": 1,
+    "registration": 1,
     "OOD-detection": 1,
     "PHY-security": 1,
     "adversarial-ML": 1,
@@ -819,11 +823,11 @@ window.KB_DATA = {
     "cellular-ai": 27,
     "wifi8-uhr": 27,
     "wifi7-deployment": 24,
-    "6g-vision": 21,
+    "6g-vision": 22,
     "sensing-csi": 20,
     "security-privacy": 19,
     "5g-nr": 18,
-    "open-ran": 15,
+    "open-ran": 16,
     "spectrum-policy": 14,
     "leo-constellations": 14,
     "mapc-cosr": 12,
@@ -831,8 +835,8 @@ window.KB_DATA = {
     "sat-direct-device": 10,
     "agentic-wifi": 10,
     "starlink": 9,
+    "ntn": 8,
     "cellular-security": 8,
-    "ntn": 7,
     "rtwt-latency": 7,
     "uwb-ranging": 7,
     "ai-for-wifi": 7,
@@ -860,7 +864,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 210,
+    "academic-paper": 213,
     "industry-news": 71,
     "ieee-document": 29,
     "product": 18,
@@ -870,7 +874,7 @@ window.KB_DATA = {
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 210,
+    "academia": 213,
     "industry": 102,
     "standards": 37
   },
@@ -2664,6 +2668,7 @@ window.KB_DATA = {
         "2026-05-27_arxiv-encor-anchorless-cellular-core"
       ],
       "entries_secondary": [
+        "2026-07-28_arxiv-location-aware-nas-timers-ntn",
         "2026-07-22_sigcomm26-cellular-systems-papers",
         "2026-07-14_arxiv-gnss-spoofing-detection-tdd-3gpp",
         "2026-06-26_arxiv-cellular-load-forecast-population-dynamics",
@@ -2749,6 +2754,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-28_arxiv-6g-guaranteed-digital-services",
         "2026-07-17_arxiv-unified-ai-isac-evaluation",
         "2026-07-14_arxiv-3gpp-6g-ran-architecture-overview",
         "2026-07-11_arxiv-bessel-beam-thz-ue-uncertainty",
@@ -2801,6 +2807,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-07-28_arxiv-6g-guaranteed-digital-services",
           "2026-07-17_arxiv-unified-ai-isac-evaluation",
           "2026-07-14_arxiv-3gpp-6g-ran-architecture-overview",
           "2026-07-11_arxiv-bessel-beam-thz-ue-uncertainty",
@@ -2875,6 +2882,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-28_arxiv-location-aware-nas-timers-ntn",
         "2026-07-26_arxiv-llm-intent-satellite-iab-fwa",
         "2026-07-24_arxiv-tn-ntn-qlearning-spectrum",
         "2026-07-03_arxiv-memntn-memory-native-ntn",
@@ -2891,6 +2899,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-07-28_arxiv-location-aware-nas-timers-ntn",
           "2026-07-26_arxiv-llm-intent-satellite-iab-fwa",
           "2026-07-24_arxiv-tn-ntn-qlearning-spectrum",
           "2026-07-03_arxiv-memntn-memory-native-ntn",
@@ -2915,6 +2924,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-28_arxiv-twin-fidelity-xapp-conflict-oran",
         "2026-07-10_arxiv-adorn-oran-drift-retraining",
         "2026-07-07_arxiv-ranpilot-proactive-oran-ai-adaptation",
         "2026-07-07_arxiv-modular-oran-testbed-srs-massive-beams",
@@ -2958,6 +2968,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-07-28_arxiv-twin-fidelity-xapp-conflict-oran",
           "2026-07-10_arxiv-adorn-oran-drift-retraining",
           "2026-07-07_arxiv-ranpilot-proactive-oran-ai-adaptation",
           "2026-07-07_arxiv-modular-oran-testbed-srs-massive-beams",
@@ -3103,6 +3114,8 @@ window.KB_DATA = {
         "2026-05-21_kddi-ericsson-ai-uplink-ropt"
       ],
       "entries_secondary": [
+        "2026-07-28_arxiv-6g-guaranteed-digital-services",
+        "2026-07-28_arxiv-twin-fidelity-xapp-conflict-oran",
         "2026-07-26_arxiv-microwave-backhaul-dt-iab-fwa",
         "2026-07-26_arxiv-llm-intent-satellite-iab-fwa",
         "2026-07-26_arxiv-undetectable-attacks-wireless-autoencoders",
@@ -4003,6 +4016,101 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>TGbp（环境供能通信，即反向散射/能量收集 IoT 修订案）在蒙特利尔全会后的尾声阶段上传了两份新的协议设计文本（PDT）贡献（DCN 11-26-1502 与 11-26-1503，后者一天内已更新至 r1）。两者均为规范性文本提案而非讨论性幻灯片，这与该工作组加速完善 D0.50 草案、冲刺官方时间线页面预测的 2026 年 9 月首次工作组信函表决的节奏一致。</p>\n<p>DCN 11-26-1502（李攀攀，华为）提出 WPT（无线能量传输）结束时间指示的文本——让 AMP 设备知晓供能/功率传输窗口何时关闭；对于无电池站点而言，必须将收集到的能量与已知的传输机会相匹配，这一信令至关重要。DCN 11-26-1503（Ian Bajaj，HaiLa Technologies）提出 AMP 服务周期的 PDT——即服务 AMP 设备的调度窗口结构；HaiLa 是一家反向散射芯片初创公司，其与华为共同参与表明 AMP 规范文本正由行业巨头与专业反向散射厂商共同塑造。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1502-00 · TGbp</strong> — &quot;PDT WPT End Time Indication&quot;（WPT 结束时间指示 PDT）。李攀攀（华为）。2026-07-26 上传。规范性文本，用于指示无线能量传输窗口何时结束，使能量收集站点能够规划能量预算。</li><li><strong>DCN 11-26-1503-01 · TGbp</strong> — &quot;PDT AMP Service period&quot;（AMP 服务周期 PDT）。Ian Bajaj（HaiLa Technologies）。2026-07-27/28 上传（一天内 r0→r1）。定义服务 AMP 设备的调度服务周期结构的规范性文本。</li><li>两份文本均面向 D0.50 草案；802.11 时间线页面（2026-07-17 更新）预测 TGbp 将于 2026 年 9 月进行首次工作组信函表决。</li></ul>\n<h3>意义与新意</h3>\n<p>蒙特利尔全会后 Mentor 文档流总体趋于安静，本周 TGbp 是唯一产出实质性规范文本的工作组——这表明 AMP 的日程（2026 年 9 月首次工作组表决）是 802.11 中最临近的标准截止点。这两份 PDT 延续了此前在 2026-07-11_ieee-mentor-tgbp-digest（华为 AMP PDT 清理）与 2026-05-03_ieee-11bp-amp-ul-channel-access（高通上行信道接入）中跟踪的 AMP 调度/能量预算主线：服务周期结构与 WPT 结束时间指示，正是无电池站点确定&quot;何时可发送&quot;与&quot;将有多少能量&quot;所需的最后拼图。</p>",
       "images": [],
       "search_blob": "ieee 802.11 tgbp mentor digest — 2026-07-28: amp service-period and wpt end-time pdts land ahead of the september ballot ieee 802.11 tgbp mentor 摘要 — 2026-07-28：amp 服务周期与 wpt 结束时间 pdt 在 9 月表决前落地 802.11bp amp iot wpt tgbp (ambient power communication, the backscatter/energy-harvesting iot amendment) uploaded two new protocol design text (pdt) contributions in the post-montreal tail (dcn 11-26-1502 and 11-26-1503, the latter already at r1 within a day). both are normative-text proposals rather than discussion slides, consistent with the group racing to mature draft d0.50 toward its first working-group letter ballot, which the official 802.11 timelines page predicts for september 2026. tgbp（环境供能通信，即反向散射/能量收集 iot 修订案）在蒙特利尔全会后的尾声阶段上传了两份新的协议设计文本（pdt）贡献（dcn 11-26-1502 与 11-26-1503，后者一天内已更新至 r1）。两者均为规范性文本提案而非讨论性幻灯片，这与该工作组加速完善 d0.50 草案、冲刺官方时间线页面预测的 2026 年 9 月首次工作组信函表决的节奏一致。 ieee-document wifi"
+    },
+    {
+      "id": "2026-07-28_arxiv-6g-guaranteed-digital-services",
+      "date_found": "2026-07-28",
+      "technology": "cellular",
+      "date_published": "2026-07-27",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "6G: From Connectivity Infrastructure to Guaranteed Digital Services — Soldani et al. on operator sovereignty, outcome pricing, and a governed network-MCP agent plane",
+      "title_zh": "6G：从连接基础设施到有保障的数字服务——Soldani 等论运营商主权、成果计价与受治理的网络 MCP 智能体平面",
+      "url": "https://arxiv.org/abs/2607.24185",
+      "topics": [
+        "6G",
+        "network-architecture",
+        "agentic-AI",
+        "SLA"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-28_arxiv-6g-guaranteed-digital-services.md",
+      "summary_short_en": "David Soldani (a long-time 6G architecture figure) and co-authors submitted a position/architecture paper to IEEE Access (manuscript Access-2026-37371, arXiv Jul-27-2026) arguing that 6G must pivot from selling connectivity infrastructure to selling *guaranteed digital services*. Their diagnosis: five generations of vendor-led architecture have left operators dependent on platforms they cannot fully modify or audit — including the AI functions now being embedded throughout the network.",
+      "summary_short_zh": "David Soldani（长期活跃的 6G 架构专家）与合著者向 IEEE Access 提交了一篇立场/架构论文（稿件号 Access-2026-37371，arXiv 2026-07-27），主张 6G 必须从\"销售连接基础设施\"转向\"销售有保障的数字服务\"。其诊断是：五代由设备商主导的架构使运营商依赖于自身无法完全修改或审计的平台——包括如今嵌入网络各处的 AI 功能。",
+      "body_html_en": "<h3>Summary</h3>\n<p>David Soldani (a long-time 6G architecture figure) and co-authors submitted a position/architecture paper to IEEE Access (manuscript Access-2026-37371, arXiv Jul-27-2026) arguing that 6G must pivot from selling connectivity infrastructure to selling <em>guaranteed digital services</em>. Their diagnosis: five generations of vendor-led architecture have left operators dependent on platforms they cannot fully modify or audit — including the AI functions now being embedded throughout the network.</p>\n<p>The paper operationalises the pivot through four contributions. The <em>Control Compact</em> is a taxonomy that allocates architectural sovereignty — which layers an operator must own outright versus can outsource — according to strategic value. The <em>Guarantee Economy</em> is an outcome-priced commercial model that converts that operator control into enforceable service-level objectives (business guarantees priced per outcome rather than per megabyte). A <em>Network MCP Platform</em> demonstrates how autonomous AI agents integrate with the network through a governed tool plane with auditable hooks — notably importing the Model Context Protocol pattern from the LLM-agent ecosystem into network operations. A standardization roadmap maps the proposals onto AI scope, radio access, core network, and spectrum work.</p>\n<h3>Key technical points</h3>\n<ul><li>Control Compact: sovereignty taxonomy deciding which architectural layers operators must own vs. can outsource, allocated by strategic value.</li><li>Guarantee Economy: outcome-priced model turning operator control into enforceable SLOs — &quot;customer outcomes before peak rates; business guarantees before megabytes.&quot;</li><li>Network MCP Platform: autonomous agents integrate through a governed tool plane with auditable hooks — an MCP-style (LLM tool-calling) integration surface for network operations.</li><li>Standardization roadmap spanning AI scope, RAN, core, and spectrum; venue: IEEE Access submission, fresh Jul-2026.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's 6G-architecture thread (intent-driven 6G, AI-native air interface, SOVA agent-communications) has been dominated by <em>technical</em> AI-native proposals; this is the first entry to frame 6G around operator sovereignty and outcome-priced guarantees as the architectural design driver. The Network MCP Platform is also the first appearance in the KB of the MCP (Model Context Protocol) pattern applied to network control — a concrete bridge between the agentic-AI tooling world and 3GPP-style architecture, complementing 2026-07-24's network-as-agent-communication-service position (SOVA).</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>David Soldani（长期活跃的 6G 架构专家）与合著者向 IEEE Access 提交了一篇立场/架构论文（稿件号 Access-2026-37371，arXiv 2026-07-27），主张 6G 必须从&quot;销售连接基础设施&quot;转向&quot;销售有保障的数字服务&quot;。其诊断是：五代由设备商主导的架构使运营商依赖于自身无法完全修改或审计的平台——包括如今嵌入网络各处的 AI 功能。</p>\n<p>论文通过四项贡献将这一转向落地。<em>控制契约（Control Compact）</em>是一个按战略价值分配架构主权的分类法——哪些层运营商必须完全自持、哪些可以外包。<em>保障经济（Guarantee Economy)</em>是一种按成果计价的商业模式，将运营商控制力转化为可执行的服务级目标（按成果而非按流量计费的业务保障）。<em>网络 MCP 平台</em>展示自治 AI 智能体如何通过带可审计钩子的受治理工具平面接入网络——显著地将 LLM 智能体生态的 Model Context Protocol 模式引入网络运营。最后给出覆盖 AI 范围、无线接入、核心网与频谱的标准化路线图。</p>\n<h3>技术要点</h3>\n<ul><li>控制契约：按战略价值划分的主权分类法，界定运营商必须自持与可外包的架构层。</li><li>保障经济：按成果计价的模式，将运营商控制力转化为可执行的 SLO——&quot;客户成果优先于峰值速率，业务保障优先于流量&quot;。</li><li>网络 MCP 平台：自治智能体经由带可审计钩子的受治理工具平面接入网络——将 LLM 工具调用生态的 MCP 模式移植到网络运营。</li><li>标准化路线图覆盖 AI 范围、RAN、核心网与频谱；投稿 IEEE Access，2026 年 7 月新作。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 中的 6G 架构主线（意图驱动 6G、AI 原生空口、SOVA 智能体通信）此前以<em>技术性</em> AI 原生提案为主；本条目首次以运营商主权与按成果计价的保障作为架构设计驱动力来架构 6G。网络 MCP 平台也是 KB 中首次出现将 MCP（Model Context Protocol）模式应用于网络控制——在智能体 AI 工具生态与 3GPP 式架构之间架起具体桥梁，与 2026-07-24 的&quot;网络即智能体通信服务&quot;立场（SOVA）互为补充。</p>",
+      "images": [],
+      "search_blob": "6g: from connectivity infrastructure to guaranteed digital services — soldani et al. on operator sovereignty, outcome pricing, and a governed network-mcp agent plane 6g：从连接基础设施到有保障的数字服务——soldani 等论运营商主权、成果计价与受治理的网络 mcp 智能体平面 6g network-architecture agentic-ai sla david soldani (a long-time 6g architecture figure) and co-authors submitted a position/architecture paper to ieee access (manuscript access-2026-37371, arxiv jul-27-2026) arguing that 6g must pivot from selling connectivity infrastructure to selling *guaranteed digital services*. their diagnosis: five generations of vendor-led architecture have left operators dependent on platforms they cannot fully modify or audit — including the ai functions now being embedded throughout the network. david soldani（长期活跃的 6g 架构专家）与合著者向 ieee access 提交了一篇立场/架构论文（稿件号 access-2026-37371，arxiv 2026-07-27），主张 6g 必须从\"销售连接基础设施\"转向\"销售有保障的数字服务\"。其诊断是：五代由设备商主导的架构使运营商依赖于自身无法完全修改或审计的平台——包括如今嵌入网络各处的 ai 功能。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-28_arxiv-twin-fidelity-xapp-conflict-oran",
+      "date_found": "2026-07-28",
+      "technology": "cellular",
+      "date_published": "2026-07-24",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Twin-Fidelity-Aware Resolution of Direct xApp Conflicts in Open RAN — a training-free arbiter that stops trusting a drifting digital twin",
+      "title_zh": "开放 RAN 中直接 xApp 冲突的孪生保真度感知消解——不再盲信漂移数字孪生的免训练仲裁器",
+      "url": "https://arxiv.org/abs/2607.22857",
+      "topics": [
+        "O-RAN",
+        "xApp",
+        "digital-twin",
+        "RIC",
+        "conflict-resolution"
+      ],
+      "topic_primary": "open-ran",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-28_arxiv-twin-fidelity-xapp-conflict-oran.md",
+      "summary_short_en": "Almohammedi, Balfaqih, Darshi, Langar and Jaafar (arXiv 2607.22857, submitted Jul-24-2026) tackle *direct conflicts* in Open RAN: independent xApps on the Near-RT RIC issuing incompatible values for the same control parameter — here, downlink transmit power contested between an energy-saving xApp and a coverage/throughput xApp, encoded as a blend weight α ∈ [0,1]. State-of-the-art resolvers (COMIX-style) rank candidate actions with a network digital twin (NDT) — and implicitly assume the twin stays accurate.",
+      "summary_short_zh": "Almohammedi、Balfaqih、Darshi、Langar 与 Jaafar（arXiv 2607.22857，2026-07-24 提交）研究开放 RAN 中的*直接冲突*：Near-RT RIC 上相互独立的 xApp 对同一控制参数下发不兼容的取值——本文中是节能 xApp 与覆盖/吞吐 xApp 争夺下行发射功率，编码为混合权重 α ∈ [0,1]。现有最优消解器（COMIX 类）用网络数字孪生（NDT）为候选动作排序——并隐含假设孪生始终准确。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Almohammedi, Balfaqih, Darshi, Langar and Jaafar (arXiv 2607.22857, submitted Jul-24-2026) tackle <em>direct conflicts</em> in Open RAN: independent xApps on the Near-RT RIC issuing incompatible values for the same control parameter — here, downlink transmit power contested between an energy-saving xApp and a coverage/throughput xApp, encoded as a blend weight α ∈ [0,1]. State-of-the-art resolvers (COMIX-style) rank candidate actions with a network digital twin (NDT) — and implicitly assume the twin stays accurate.</p>\n<p>The paper's contribution is a lightweight, training-free runtime arbiter that explicitly monitors twin fidelity: an EWMA (β=0.70) of the mismatch between twin-predicted and live-observed utility. While the error stays below threshold, the arbiter follows the twin's ranking; when it crosses, it hard-switches to a live-validated fallback action (hard switching deliberately avoids interpolating through poor intermediate actions on non-monotonic utility landscapes). Complexity is O(21) twin queries per control step with O(1) storage, requiring no retraining, no external coordination, and no modification to the conflicting xApps.</p>\n<p>In a 7-cell hexagonal scenario (2.5 GHz, 10 MHz, 42 UEs, 20 seeds), the arbiter achieves normalized utility regret 0.017 ± 0.006 versus 0.159 ± 0.052 for the blind-twin COMIX-style baseline. The gap explodes under twin drift: at 10 dB modeled drift, 0.55 ± 0.25 regret versus 11.19 ± 3.58 — more than 20× worse for the blind baseline — while QoS satisfaction stays comparable to QoS-optimized baselines.</p>\n<h3>Key technical points</h3>\n<ul><li>Direct-conflict setting: two xApps contest DL transmit power; action = blend α ∈ [0,1] between energy-saving (α=0) and coverage/throughput (α=1); 21 candidate actions per interval.</li><li>Fidelity signal: ε_t = β·ε_{t−1} + (1−β)·e_t with β=0.70 over twin-vs-live utility mismatch; threshold crossing triggers hard switch to live-validated fallback.</li><li>Training-free, O(|A|) per step, no xApp modification — contrasts with Safety Copilot / AIDITA robustness that needs model retraining or continuous alignment.</li><li>Results: regret 0.017 vs 0.159 (COMIX-style) drift-free; 0.55 vs 11.19 at 10 dB twin drift; QoS satisfaction 0.740 ± 0.061.</li><li>Assumptions: calibrated warm-up, slowly varying optimum, twin query budget of all 21 candidates per interval.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first xApp <em>conflict-resolution</em> entry — the open-ran bin so far covered testbeds (RANPilot), energy optimization (BeGREEN), and link adaptation, but not the arbitration layer that decides between contradictory xApp commands. It is also the first entry to treat digital-twin <em>unreliability</em> as a first-class runtime signal rather than an offline calibration concern, which the authors claim is a first for direct conflict resolution. The result lands as O-RAN digital-twin usage grows across the KB's cellular-ai thread (world-model network control, 2026-07-22), and its drift-robustness argument generalises to any twin-in-the-loop RIC control.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Almohammedi、Balfaqih、Darshi、Langar 与 Jaafar（arXiv 2607.22857，2026-07-24 提交）研究开放 RAN 中的<em>直接冲突</em>：Near-RT RIC 上相互独立的 xApp 对同一控制参数下发不兼容的取值——本文中是节能 xApp 与覆盖/吞吐 xApp 争夺下行发射功率，编码为混合权重 α ∈ [0,1]。现有最优消解器（COMIX 类）用网络数字孪生（NDT）为候选动作排序——并隐含假设孪生始终准确。</p>\n<p>论文贡献是一个轻量、免训练的运行时仲裁器，显式监测孪生保真度：对孪生预测效用与实测效用之间失配做 EWMA 平滑（β=0.70）。误差低于阈值时跟随孪生排序；越过阈值时硬切换到经实测验证的回退动作（在非单调效用面上刻意避免经过糟糕中间动作的插值）。每控制步复杂度 O(21) 次孪生查询、O(1) 存储，无需重训练、无需外部协调、无需修改冲突 xApp。</p>\n<p>在 7 小区六边形场景（2.5 GHz、10 MHz、42 UE、20 个随机种子）中，归一化效用后悔值为 0.017 ± 0.006，而盲信孪生的 COMIX 类基线为 0.159 ± 0.052。孪生漂移下差距急剧放大：10 dB 漂移时为 0.55 ± 0.25 对 11.19 ± 3.58——盲信基线劣化超过 20 倍——同时 QoS 满足率与面向 QoS 优化的基线相当。</p>\n<h3>技术要点</h3>\n<ul><li>直接冲突设定：两个 xApp 争夺下行发射功率；动作为节能（α=0）与覆盖/吞吐（α=1）之间的混合权重 α ∈ [0,1]；每区间 21 个候选动作。</li><li>保真度信号：对孪生预测与实测效用失配做 ε_t = β·ε_{t−1} + (1−β)·e_t（β=0.70）；越过阈值即硬切换到实测验证回退动作。</li><li>免训练、每步 O(|A|)、不修改 xApp——与需要模型重训练或持续对齐的 Safety Copilot / AIDITA 鲁棒方案形成对比。</li><li>结果：无漂移时后悔值 0.017 对 0.159（COMIX 类）；10 dB 孪生漂移时 0.55 对 11.19；QoS 满足率 0.740 ± 0.061。</li><li>假设：校准预热期、最优动作缓变、孪生每区间可评估全部 21 个候选。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中首个 xApp <em>冲突消解</em>条目——open-ran 主题此前覆盖测试床（RANPilot）、能耗优化（BeGREEN）与链路自适应，但未涉及在相互矛盾的 xApp 指令间做裁决的仲裁层。它也是首个将数字孪生<em>不可靠性</em>作为一级运行时信号（而非离线校准问题）处理的条目，作者称这在直接冲突消解中是首创。在 KB 蜂窝 AI 主线中数字孪生用量持续增长（世界模型网络控制，2026-07-22）的背景下，其抗漂移论证可推广到任何孪生在环的 RIC 控制。</p>",
+      "images": [],
+      "search_blob": "twin-fidelity-aware resolution of direct xapp conflicts in open ran — a training-free arbiter that stops trusting a drifting digital twin 开放 ran 中直接 xapp 冲突的孪生保真度感知消解——不再盲信漂移数字孪生的免训练仲裁器 o-ran xapp digital-twin ric conflict-resolution almohammedi, balfaqih, darshi, langar and jaafar (arxiv 2607.22857, submitted jul-24-2026) tackle *direct conflicts* in open ran: independent xapps on the near-rt ric issuing incompatible values for the same control parameter — here, downlink transmit power contested between an energy-saving xapp and a coverage/throughput xapp, encoded as a blend weight α ∈ [0,1]. state-of-the-art resolvers (comix-style) rank candidate actions with a network digital twin (ndt) — and implicitly assume the twin stays accurate. almohammedi、balfaqih、darshi、langar 与 jaafar（arxiv 2607.22857，2026-07-24 提交）研究开放 ran 中的*直接冲突*：near-rt ric 上相互独立的 xapp 对同一控制参数下发不兼容的取值——本文中是节能 xapp 与覆盖/吞吐 xapp 争夺下行发射功率，编码为混合权重 α ∈ [0,1]。现有最优消解器（comix 类）用网络数字孪生（ndt）为候选动作排序——并隐含假设孪生始终准确。 academic-paper cellular"
+    },
+    {
+      "id": "2026-07-28_arxiv-location-aware-nas-timers-ntn",
+      "date_found": "2026-07-28",
+      "technology": "cellular",
+      "date_published": "2026-07-24",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Location-Aware NAS Timer Optimization in NTN-TN Integrated Networks — per-UE registration timers from LEO path geometry cut latency 20% and energy 10%",
+      "title_zh": "NTN-TN 融合网络中位置感知的 NAS 定时器优化——基于 LEO 路径几何的按 UE 注册定时器降低 20% 时延与 10% 能耗",
+      "url": "https://arxiv.org/abs/2607.21947",
+      "topics": [
+        "NTN",
+        "LEO",
+        "5G-core",
+        "NAS",
+        "registration"
+      ],
+      "topic_primary": "ntn",
+      "topics_secondary": [
+        "5g-nr"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-07-28_arxiv-location-aware-nas-timers-ntn.md",
+      "summary_short_en": "Cheng Liu and Peng Hu (University of Manitoba; NSERC-funded; arXiv 2607.21947, submitted Jul-24-2026) address a neglected control-plane detail of LEO satellite–terrestrial (NTN-TN) integration: Non-Access Stratum (NAS) timers that govern how long a UE and the network wait for responses during 5G registration. Network-wide fixed timer values fail in LEO because propagation delay, inter-satellite-link (ISL) hop count, and AMF queueing vary dramatically with UE location — a single fixed value is overly conservative for short-path UEs and insufficient for long-path or queue-exposed ones.",
+      "summary_short_zh": "Cheng Liu 与 Peng Hu（曼尼托巴大学；NSERC 资助；arXiv 2607.21947，2026-07-24 提交）研究 LEO 卫星-地面（NTN-TN）融合中一个被忽视的控制面细节：管控 5G 注册过程中 UE 与网络等待响应时长的非接入层（NAS）定时器。全网固定的定时器取值在 LEO 中失效，因为传播时延、星间链路（ISL）跳数与 AMF 排队随 UE 位置剧烈变化——单一固定值对短路径 UE 过于保守，对长路径或受排队影响的 UE 又不够用。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Cheng Liu and Peng Hu (University of Manitoba; NSERC-funded; arXiv 2607.21947, submitted Jul-24-2026) address a neglected control-plane detail of LEO satellite–terrestrial (NTN-TN) integration: Non-Access Stratum (NAS) timers that govern how long a UE and the network wait for responses during 5G registration. Network-wide fixed timer values fail in LEO because propagation delay, inter-satellite-link (ISL) hop count, and AMF queueing vary dramatically with UE location — a single fixed value is overly conservative for short-path UEs and insufficient for long-path or queue-exposed ones.</p>\n<p>The proposal keeps the closed-form timer calculation but makes it location-specific. Path-delay modeling incorporates the slant distance to the serving satellite, the ISL hop count estimated from ground-station proximity, and feeder-link propagation. An adaptive endpoint weighting then extends the timer according to expected AMF queue exposure and path reliability — deliberately avoiding extra conservatism on lossy routes where waiting longer cannot help.</p>\n<p>In a Python NAS-registration simulator with a 72×22 LEO constellation, 3000–5000 UEs and 0–50% loss rates, the location-aware timers cut registration latency 20–22% and UE energy 10–12% versus the prior closed-form approach (AstroTimer), and eliminate avoidable retransmissions at all hop counts (the baseline needs 2.00 attempts on 8-hop paths).</p>\n<h3>Key technical points</h3>\n<ul><li>NAS registration timers made per-UE: slant distance + ISL hop estimate (from ground-station proximity) + feeder-link delay replace network-wide constants.</li><li>Adaptive endpoint weighting couples AMF queue-position exposure with path reliability, so lossy paths don't get useless extra waiting.</li><li>72×22 LEO constellation simulation, 3000–5000 UEs, 0–50% loss: −20–22% registration latency, −10–12% UE energy vs AstroTimer; avoidable retransmissions eliminated at all hop counts.</li><li>Closed-form and lightweight — no learning loop; deployable in existing 5G NAS procedures.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>First NAS-layer / control-plane-timer entry in the KB's ntn bin, which so far covered access and transport topics (satellite-IAB, TN-NTN spectrum allocation, LEO beam hopping) but not the registration procedures that decide whether a UE gets onto the network at all. The complementary relationship with 2026-07-26_arxiv-llm-intent-satellite-iab (same integration trend, different layer) is notable: NTN research is moving up the stack from PHY/scheduling into core-network procedure tuning. AstroTimer emerges as the named prior art this work supersedes.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Cheng Liu 与 Peng Hu（曼尼托巴大学；NSERC 资助；arXiv 2607.21947，2026-07-24 提交）研究 LEO 卫星-地面（NTN-TN）融合中一个被忽视的控制面细节：管控 5G 注册过程中 UE 与网络等待响应时长的非接入层（NAS）定时器。全网固定的定时器取值在 LEO 中失效，因为传播时延、星间链路（ISL）跳数与 AMF 排队随 UE 位置剧烈变化——单一固定值对短路径 UE 过于保守，对长路径或受排队影响的 UE 又不够用。</p>\n<p>方案保留闭式定时器计算但使其位置化：路径时延建模纳入到服务卫星的斜距、由地面站邻近度估计的 ISL 跳数以及馈电链路传播；自适应端点加权再按预期 AMF 队列暴露与路径可靠性延长定时器——刻意避免在丢包路径上无谓加长等待（等待无法弥补丢包）。</p>\n<p>在 72×22 LEO 星座、3000–5000 UE、0–50% 丢包率的 Python NAS 注册仿真器中，位置感知定时器较此前闭式方法（AstroTimer）降低注册时延 20–22%、UE 能耗 10–12%，并在所有跳数下消除可避免的重传（基线在 8 跳路径需 2.00 次尝试）。</p>\n<h3>技术要点</h3>\n<ul><li>NAS 注册定时器按 UE 定制：斜距 + ISL 跳数估计（基于地面站邻近度）+ 馈电链路时延，取代全网常量。</li><li>自适应端点加权将 AMF 队列位置暴露与路径可靠性耦合，避免在丢包路径上无效延长等待。</li><li>72×22 LEO 星座仿真、3000–5000 UE、0–50% 丢包：较 AstroTimer 注册时延 −20–22%、UE 能耗 −10–12%；所有跳数下消除可避免重传。</li><li>闭式且轻量——无学习环路，可部署于现有 5G NAS 流程。</li></ul>\n<h3>意义与新意</h3>\n<p>KB ntn 主题下首个 NAS 层/控制面定时器条目——该主题此前覆盖接入与传输（卫星 IAB、TN-NTN 频谱分配、LEO 波束跳变），但未涉及决定 UE 能否入网的注册流程。与 2026-07-26_arxiv-llm-intent-satellite-iab（同一融合趋势、不同层次）的互补关系值得注意：NTN 研究正沿协议栈上移，从物理层/调度进入核心网流程调优。AstroTimer 是本工作所超越的具名先前方案。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2607.21947v1/x1.png",
+          "caption_en": "LEO satellite NTN-TN network architecture",
+          "caption_zh": "LEO 卫星 NTN-TN 网络架构"
+        }
+      ],
+      "search_blob": "location-aware nas timer optimization in ntn-tn integrated networks — per-ue registration timers from leo path geometry cut latency 20% and energy 10% ntn-tn 融合网络中位置感知的 nas 定时器优化——基于 leo 路径几何的按 ue 注册定时器降低 20% 时延与 10% 能耗 ntn leo 5g-core nas registration cheng liu and peng hu (university of manitoba; nserc-funded; arxiv 2607.21947, submitted jul-24-2026) address a neglected control-plane detail of leo satellite–terrestrial (ntn-tn) integration: non-access stratum (nas) timers that govern how long a ue and the network wait for responses during 5g registration. network-wide fixed timer values fail in leo because propagation delay, inter-satellite-link (isl) hop count, and amf queueing vary dramatically with ue location — a single fixed value is overly conservative for short-path ues and insufficient for long-path or queue-exposed ones. cheng liu 与 peng hu（曼尼托巴大学；nserc 资助；arxiv 2607.21947，2026-07-24 提交）研究 leo 卫星-地面（ntn-tn）融合中一个被忽视的控制面细节：管控 5g 注册过程中 ue 与网络等待响应时长的非接入层（nas）定时器。全网固定的定时器取值在 leo 中失效，因为传播时延、星间链路（isl）跳数与 amf 排队随 ue 位置剧烈变化——单一固定值对短路径 ue 过于保守，对长路径或受排队影响的 ue 又不够用。 academic-paper cellular"
     },
     {
       "id": "2026-07-26_starship-flight13-first-starlink-v3-deployment",
