@@ -8,9 +8,9 @@ window.KB_DATA = {
     "agentic-AI": 39,
     "MAC-layer": 37,
     "products": 34,
+    "security": 31,
     "scheduling": 31,
     "LEO": 30,
-    "security": 30,
     "O-RAN": 28,
     "802.11be": 26,
     "WiFi-sensing": 21,
@@ -156,6 +156,9 @@ window.KB_DATA = {
     "roaming": 3,
     "Apple": 3,
     "WPT": 2,
+    "GNSS": 2,
+    "autonomous-vehicles": 2,
+    "VLM": 2,
     "V3": 2,
     "foundation-model": 2,
     "FWA": 2,
@@ -255,6 +258,7 @@ window.KB_DATA = {
     "Ericsson": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "spoofing": 1,
     "network-architecture": 1,
     "conflict-resolution": 1,
     "NAS": 1,
@@ -294,7 +298,6 @@ window.KB_DATA = {
     "liaison": 1,
     "laser-ISL": 1,
     "TDD": 1,
-    "GNSS": 1,
     "timing-security": 1,
     "synchronization": 1,
     "PTP": 1,
@@ -528,7 +531,6 @@ window.KB_DATA = {
     "mobile-backhaul": 1,
     "SD-WAN": 1,
     "anomaly-detection": 1,
-    "VLM": 1,
     "zero-shot": 1,
     "CPE": 1,
     "cloud-gaming": 1,
@@ -564,7 +566,6 @@ window.KB_DATA = {
     "RIS": 1,
     "Open-RAN": 1,
     "edge-cloud": 1,
-    "autonomous-vehicles": 1,
     "random-access": 1,
     "slotted-ALOHA": 1,
     "distributed-MAC": 1,
@@ -840,8 +841,8 @@ window.KB_DATA = {
     "rtwt-latency": 7,
     "uwb-ranging": 7,
     "ai-for-wifi": 7,
+    "sat-ai": 6,
     "network-slicing": 5,
-    "sat-ai": 5,
     "bt-channel-sounding": 5,
     "nearlink-slb": 4,
     "wifi-for-ai": 4,
@@ -864,7 +865,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 213,
+    "academic-paper": 214,
     "industry-news": 71,
     "ieee-document": 29,
     "product": 18,
@@ -874,7 +875,7 @@ window.KB_DATA = {
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 213,
+    "academia": 214,
     "industry": 102,
     "standards": 37
   },
@@ -3497,6 +3498,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-07-28_arxiv-vlm-gnss-spoofing-detection",
         "2026-07-09_arxiv-slm-bbr-leo-adaptation",
         "2026-07-02_arxiv-neo-gnn-leo-orchestration",
         "2026-06-30_arxiv-leostp-diffusion-traffic-prediction-leo",
@@ -3514,6 +3516,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-07-28_arxiv-vlm-gnss-spoofing-detection",
           "2026-07-09_arxiv-slm-bbr-leo-adaptation",
           "2026-07-02_arxiv-neo-gnn-leo-orchestration",
           "2026-06-30_arxiv-leostp-diffusion-traffic-prediction-leo",
@@ -4016,6 +4019,34 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>TGbp（环境供能通信，即反向散射/能量收集 IoT 修订案）在蒙特利尔全会后的尾声阶段上传了两份新的协议设计文本（PDT）贡献（DCN 11-26-1502 与 11-26-1503，后者一天内已更新至 r1）。两者均为规范性文本提案而非讨论性幻灯片，这与该工作组加速完善 D0.50 草案、冲刺官方时间线页面预测的 2026 年 9 月首次工作组信函表决的节奏一致。</p>\n<p>DCN 11-26-1502（李攀攀，华为）提出 WPT（无线能量传输）结束时间指示的文本——让 AMP 设备知晓供能/功率传输窗口何时关闭；对于无电池站点而言，必须将收集到的能量与已知的传输机会相匹配，这一信令至关重要。DCN 11-26-1503（Ian Bajaj，HaiLa Technologies）提出 AMP 服务周期的 PDT——即服务 AMP 设备的调度窗口结构；HaiLa 是一家反向散射芯片初创公司，其与华为共同参与表明 AMP 规范文本正由行业巨头与专业反向散射厂商共同塑造。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1502-00 · TGbp</strong> — &quot;PDT WPT End Time Indication&quot;（WPT 结束时间指示 PDT）。李攀攀（华为）。2026-07-26 上传。规范性文本，用于指示无线能量传输窗口何时结束，使能量收集站点能够规划能量预算。</li><li><strong>DCN 11-26-1503-01 · TGbp</strong> — &quot;PDT AMP Service period&quot;（AMP 服务周期 PDT）。Ian Bajaj（HaiLa Technologies）。2026-07-27/28 上传（一天内 r0→r1）。定义服务 AMP 设备的调度服务周期结构的规范性文本。</li><li>两份文本均面向 D0.50 草案；802.11 时间线页面（2026-07-17 更新）预测 TGbp 将于 2026 年 9 月进行首次工作组信函表决。</li></ul>\n<h3>意义与新意</h3>\n<p>蒙特利尔全会后 Mentor 文档流总体趋于安静，本周 TGbp 是唯一产出实质性规范文本的工作组——这表明 AMP 的日程（2026 年 9 月首次工作组表决）是 802.11 中最临近的标准截止点。这两份 PDT 延续了此前在 2026-07-11_ieee-mentor-tgbp-digest（华为 AMP PDT 清理）与 2026-05-03_ieee-11bp-amp-ul-channel-access（高通上行信道接入）中跟踪的 AMP 调度/能量预算主线：服务周期结构与 WPT 结束时间指示，正是无电池站点确定&quot;何时可发送&quot;与&quot;将有多少能量&quot;所需的最后拼图。</p>",
       "images": [],
       "search_blob": "ieee 802.11 tgbp mentor digest — 2026-07-28: amp service-period and wpt end-time pdts land ahead of the september ballot ieee 802.11 tgbp mentor 摘要 — 2026-07-28：amp 服务周期与 wpt 结束时间 pdt 在 9 月表决前落地 802.11bp amp iot wpt tgbp (ambient power communication, the backscatter/energy-harvesting iot amendment) uploaded two new protocol design text (pdt) contributions in the post-montreal tail (dcn 11-26-1502 and 11-26-1503, the latter already at r1 within a day). both are normative-text proposals rather than discussion slides, consistent with the group racing to mature draft d0.50 toward its first working-group letter ballot, which the official 802.11 timelines page predicts for september 2026. tgbp（环境供能通信，即反向散射/能量收集 iot 修订案）在蒙特利尔全会后的尾声阶段上传了两份新的协议设计文本（pdt）贡献（dcn 11-26-1502 与 11-26-1503，后者一天内已更新至 r1）。两者均为规范性文本提案而非讨论性幻灯片，这与该工作组加速完善 d0.50 草案、冲刺官方时间线页面预测的 2026 年 9 月首次工作组信函表决的节奏一致。 ieee-document wifi"
+    },
+    {
+      "id": "2026-07-28_arxiv-vlm-gnss-spoofing-detection",
+      "date_found": "2026-07-28",
+      "technology": "satellite",
+      "date_published": "2026-07-27",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Vision-Language Model-based GNSS Spoofing Detection for Autonomous Vehicle Navigation — camera + IMU semantics catch what signal-integrity checks miss",
+      "title_zh": "基于视觉-语言模型的 GNSS 欺骗检测用于自动驾驶导航——摄像头与 IMU 语义捕捉信号完整性校验遗漏的攻击",
+      "url": "https://arxiv.org/abs/2607.23962",
+      "topics": [
+        "GNSS",
+        "spoofing",
+        "security",
+        "autonomous-vehicles",
+        "VLM"
+      ],
+      "topic_primary": "sat-ai",
+      "topics_secondary": [],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-07-28_arxiv-vlm-gnss-spoofing-detection.md",
+      "summary_short_en": "Aldeen, Irfan, Dasgupta, Cheng, Rahman and Chowdhury (arXiv 2607.23962, submitted Jul-27-2026; found via the cs.CR listing) present what they describe as the first application of a Vision-Language Model (VLM) to GNSS spoofing detection for autonomous vehicles. The threat model: spoofed GNSS signals covertly redirect an AV or induce unsafe maneuvers. Rather than analysing the RF signal itself, the framework fuses front-camera imagery with onboard sensor streams (speed, acceleration, yaw rate) and asks whether the maneuver implied by GNSS is *semantically consistent* with what the camera and IMU say the vehicle is actually doing.",
+      "summary_short_zh": "Aldeen、Irfan、Dasgupta、Cheng、Rahman 与 Chowdhury（arXiv 2607.23962，2026-07-27 提交；经 cs.CR 列表发现）提出了他们称之为首个将视觉-语言模型（VLM）应用于自动驾驶 GNSS 欺骗检测的工作。威胁模型：伪造的 GNSS 信号隐蔽地改变自动驾驶车辆的路线或诱发不安全驾驶行为。该框架不分析射频信号本身，而是融合前视摄像头图像与车载传感器流（速度、加速度、偏航角速率），判断 GNSS 所隐含的机动动作与摄像头和 IMU 所反映的实际车辆行为在*语义上*是否一致。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Aldeen, Irfan, Dasgupta, Cheng, Rahman and Chowdhury (arXiv 2607.23962, submitted Jul-27-2026; found via the cs.CR listing) present what they describe as the first application of a Vision-Language Model (VLM) to GNSS spoofing detection for autonomous vehicles. The threat model: spoofed GNSS signals covertly redirect an AV or induce unsafe maneuvers. Rather than analysing the RF signal itself, the framework fuses front-camera imagery with onboard sensor streams (speed, acceleration, yaw rate) and asks whether the maneuver implied by GNSS is <em>semantically consistent</em> with what the camera and IMU say the vehicle is actually doing.</p>\n<p>The VLM is adapted through a three-stage fine-tuning process that first grounds visual cues, then calibrates the sensor data into a shared semantic space with them. Evaluation uses real-world drives in Tuscaloosa, Alabama with synchronized GNSS, IMU and camera logs, against three attack classes: trajectory mirroring (wrong turns), position freezing (overshoots), and drift generation (stops). The fine-tuned model reaches F1 94–95% versus 23–32% for zero-shot VLM baselines — with 100% accuracy on wrong-turn and stop attacks and 88–93% on overshoots — while an adaptive-inference scheme cuts compute load by roughly 86%.</p>\n<h3>Key technical points</h3>\n<ul><li>Cross-modal consistency check: GNSS-derived maneuver vs. camera + IMU (speed, acceleration, yaw rate) semantics — a defense layer orthogonal to RF signal-integrity checks.</li><li>Three-stage fine-tuning: visual grounding first, then sensor calibration into a shared semantic space.</li><li>Real-world dataset (Tuscaloosa, AL): synchronized GNSS/IMU/camera; attacks = trajectory mirroring, position freezing, drift generation.</li><li>F1 94–95% fine-tuned vs 23–32% zero-shot; 100% on wrong-turn/stop attacks; adaptive inference −86% compute.</li><li>Claimed first VLM application to GNSS spoofing detection.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's only prior GNSS-security entry (2026-07-14_arxiv-gnss-spoofing-detection-tdd-3gpp) works at the network/standards layer — TDD timing checks in 3GPP networks. This entry opens a second, perception-layer defense axis: semantic cross-checking of position against what the vehicle <em>sees and feels</em>, requiring no receiver or network modification. It is also the first satellite-domain entry sourced through the cs.CR security listing rather than cs.NI — wireless-security work publishes there, and the top security venues post preprints months before the conferences.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Aldeen、Irfan、Dasgupta、Cheng、Rahman 与 Chowdhury（arXiv 2607.23962，2026-07-27 提交；经 cs.CR 列表发现）提出了他们称之为首个将视觉-语言模型（VLM）应用于自动驾驶 GNSS 欺骗检测的工作。威胁模型：伪造的 GNSS 信号隐蔽地改变自动驾驶车辆的路线或诱发不安全驾驶行为。该框架不分析射频信号本身，而是融合前视摄像头图像与车载传感器流（速度、加速度、偏航角速率），判断 GNSS 所隐含的机动动作与摄像头和 IMU 所反映的实际车辆行为在<em>语义上</em>是否一致。</p>\n<p>VLM 经三阶段微调适配：先对视觉线索做落地（grounding），再将传感器数据校准到与之共享的语义空间。评估基于阿拉巴马州塔斯卡卢萨的真实道路数据（同步 GNSS、IMU 与摄像头日志），覆盖三类攻击：轨迹镜像（错误转弯）、位置冻结（冲出路口）与漂移生成（异常停车）。微调模型 F1 达 94–95%，而零样本 VLM 基线仅 23–32%——错误转弯与停车攻击检测准确率 100%，冲出类 88–93%——自适应推理方案同时将计算负载削减约 86%。</p>\n<h3>技术要点</h3>\n<ul><li>跨模态一致性校验：GNSS 推得的机动动作对照摄像头 + IMU（速度、加速度、偏航角速率）语义——与射频信号完整性校验正交的防御层。</li><li>三阶段微调：先视觉落地，再将传感器数据校准入共享语义空间。</li><li>真实数据集（阿拉巴马州塔斯卡卢萨）：同步 GNSS/IMU/摄像头；攻击类型 = 轨迹镜像、位置冻结、漂移生成。</li><li>微调 F1 94–95% 对零样本 23–32%；错误转弯/停车攻击 100%；自适应推理节省 86% 计算。</li><li>声称为 VLM 应用于 GNSS 欺骗检测的首例。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 此前唯一的 GNSS 安全条目（2026-07-14_arxiv-gnss-spoofing-detection-tdd-3gpp）工作在网络/标准层——3GPP 网络中的 TDD 时序校验。本条目开辟了第二条感知层防御轴线：将位置与车辆<em>所见所感</em>做语义交叉校验，无需修改接收机或网络。它也是首个经 cs.CR 安全列表（而非 cs.NI）发现的卫星域条目——无线安全研究多发表于此，且顶级安全会议的预印本比会期早数月上线。</p>",
+      "images": [],
+      "search_blob": "vision-language model-based gnss spoofing detection for autonomous vehicle navigation — camera + imu semantics catch what signal-integrity checks miss 基于视觉-语言模型的 gnss 欺骗检测用于自动驾驶导航——摄像头与 imu 语义捕捉信号完整性校验遗漏的攻击 gnss spoofing security autonomous-vehicles vlm aldeen, irfan, dasgupta, cheng, rahman and chowdhury (arxiv 2607.23962, submitted jul-27-2026; found via the cs.cr listing) present what they describe as the first application of a vision-language model (vlm) to gnss spoofing detection for autonomous vehicles. the threat model: spoofed gnss signals covertly redirect an av or induce unsafe maneuvers. rather than analysing the rf signal itself, the framework fuses front-camera imagery with onboard sensor streams (speed, acceleration, yaw rate) and asks whether the maneuver implied by gnss is *semantically consistent* with what the camera and imu say the vehicle is actually doing. aldeen、irfan、dasgupta、cheng、rahman 与 chowdhury（arxiv 2607.23962，2026-07-27 提交；经 cs.cr 列表发现）提出了他们称之为首个将视觉-语言模型（vlm）应用于自动驾驶 gnss 欺骗检测的工作。威胁模型：伪造的 gnss 信号隐蔽地改变自动驾驶车辆的路线或诱发不安全驾驶行为。该框架不分析射频信号本身，而是融合前视摄像头图像与车载传感器流（速度、加速度、偏航角速率），判断 gnss 所隐含的机动动作与摄像头和 imu 所反映的实际车辆行为在*语义上*是否一致。 academic-paper satellite"
     },
     {
       "id": "2026-07-28_arxiv-6g-guaranteed-digital-services",
