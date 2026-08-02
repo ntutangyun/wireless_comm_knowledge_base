@@ -1,57 +1,58 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-07-28",
-  "last_scanned": "2026-07-28",
+  "last_updated": "2026-08-03",
+  "last_scanned": "2026-08-03",
   "topic_counts": {
     "6G": 49,
-    "802.11bn": 41,
+    "802.11bn": 42,
     "agentic-AI": 39,
     "MAC-layer": 37,
-    "products": 34,
+    "products": 36,
     "security": 31,
     "scheduling": 31,
     "LEO": 30,
     "O-RAN": 28,
-    "802.11be": 26,
+    "802.11be": 27,
     "WiFi-sensing": 21,
     "Starlink": 17,
     "MAPC": 16,
     "IoT": 15,
     "MLO": 15,
     "PHY-layer": 15,
+    "5G-NR": 14,
     "5G": 14,
+    "6GHz": 13,
     "NTN": 13,
-    "5G-NR": 13,
     "direct-to-device": 13,
     "802.11bf": 13,
-    "6GHz": 12,
     "LLM": 11,
     "AI-RAN": 11,
     "network-slicing": 11,
     "802.11ax": 11,
+    "802.11bp": 10,
     "UWB": 10,
     "digital-twin": 10,
     "NearLink": 10,
     "SparkLink": 10,
     "mmWave": 10,
-    "802.11bp": 9,
     "energy-efficiency": 9,
     "CSI": 9,
     "BLE": 9,
+    "spectrum": 8,
     "802.11bq": 8,
     "privacy": 8,
     "Wi-Fi 7": 8,
+    "FCC": 8,
     "3GPP": 8,
     "AI-native": 7,
     "NPCA": 7,
-    "spectrum": 7,
     "802.11bt": 7,
-    "FCC": 7,
     "802.11": 7,
     "URLLC": 7,
     "reinforcement-learning": 7,
     "XR": 7,
     "generative-AI": 7,
+    "backscatter": 6,
     "xApp": 6,
     "RIC": 6,
     "ISAC": 6,
@@ -63,28 +64,29 @@ window.KB_DATA = {
     "V2X": 6,
     "automotive": 6,
     "Wi-Fi-8": 6,
+    "AMP": 5,
     "5G-core": 5,
     "IAB": 5,
     "backhaul": 5,
     "intent-based-networking": 5,
     "SLE": 5,
+    "regulation": 5,
     "OpenAirInterface": 5,
     "UAV": 5,
     "measurement": 5,
     "D2D": 5,
     "massive-MIMO": 5,
-    "backscatter": 5,
     "QoS": 5,
     "Co-SR": 5,
     "Co-BF": 5,
     "channel-sounding": 5,
     "5G-Advanced": 5,
-    "AMP": 4,
+    "ambient-power": 4,
     "SLA": 4,
     "FiRa": 4,
+    "DRU": 4,
     "ELR": 4,
     "jamming": 4,
-    "regulation": 4,
     "congestion-control": 4,
     "UHR": 4,
     "computation-offloading": 4,
@@ -108,16 +110,17 @@ window.KB_DATA = {
     "handover": 4,
     "802.15.4ab": 4,
     "802.11az": 4,
+    "coexistence": 3,
     "Starship": 3,
     "constellation": 3,
     "OpenHarmony": 3,
     "open-source": 3,
     "SLB": 3,
     "P-EDCA": 3,
-    "DRU": 3,
     "energy-saving": 3,
     "spectrum-sharing": 3,
     "SIGCOMM": 3,
+    "high-density": 3,
     "standards-process": 3,
     "AI Offload SG": 3,
     "AI-inference": 3,
@@ -129,7 +132,6 @@ window.KB_DATA = {
     "802.11br": 3,
     "PASN": 3,
     "802.1X": 3,
-    "ambient-power": 3,
     "DRL": 3,
     "autonomous-networks": 3,
     "edge-computing": 3,
@@ -157,6 +159,7 @@ window.KB_DATA = {
     "digital-car-key": 3,
     "roaming": 3,
     "Apple": 3,
+    "WiFi-6E": 2,
     "WPT": 2,
     "GNSS": 2,
     "autonomous-vehicles": 2,
@@ -170,9 +173,9 @@ window.KB_DATA = {
     "Q-learning": 2,
     "positioning": 2,
     "virtualization": 2,
-    "high-density": 2,
     "standardization": 2,
     "PAR": 2,
+    "directional-antenna": 2,
     "NR-V2X": 2,
     "AST-SpaceMobile": 2,
     "WNG": 2,
@@ -181,7 +184,6 @@ window.KB_DATA = {
     "RAN": 2,
     "post-quantum": 2,
     "OWE": 2,
-    "coexistence": 2,
     "TGbn": 2,
     "spectrum-regulation": 2,
     "standard-power": 2,
@@ -256,9 +258,12 @@ window.KB_DATA = {
     "PRB-allocation": 2,
     "NGSO-regulation": 2,
     "narrowband-assist": 2,
+    "test-equipment": 2,
     "Ericsson": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "VLP": 1,
+    "LBT": 1,
     "spoofing": 1,
     "network-architecture": 1,
     "DL-TDoA": 1,
@@ -281,12 +286,10 @@ window.KB_DATA = {
     "A2A": 1,
     "SAR": 1,
     "RAN-configuration": 1,
-    "WiFi-6E": 1,
     "band-steering": 1,
     "WiFi-9": 1,
     "survey": 1,
     "802.11bu": 1,
-    "directional-antenna": 1,
     "evaluation-methodology": 1,
     "deep-learning": 1,
     "formal-verification": 1,
@@ -400,6 +403,7 @@ window.KB_DATA = {
     "ASIL-B": 1,
     "wireless-battery-management": 1,
     "secure-ranging": 1,
+    "stadium": 1,
     "air-interface": 1,
     "neural-receiver": 1,
     "optical-burst-switching": 1,
@@ -745,6 +749,9 @@ window.KB_DATA = {
     "key-establishment": 1,
     "LiFi": 1,
     "physical-layer": 1,
+    "consumer-routers": 1,
+    "supply-chain": 1,
+    "market": 1,
     "Release-20": 1,
     "TR-38.914": 1,
     "study-item": 1,
@@ -762,6 +769,7 @@ window.KB_DATA = {
     "uwb-ranging": 1,
     "multi-millisecond-ranging": 1,
     "digital-key": 1,
+    "5x5-MIMO": 1,
     "monostatic-sensing": 1,
     "E2SM": 1,
     "payments": 1,
@@ -769,7 +777,6 @@ window.KB_DATA = {
     "Resona": 1,
     "digital-wallet": 1,
     "HDT": 1,
-    "test-equipment": 1,
     "FDD": 1,
     "mid-band": 1,
     "KT": 1,
@@ -825,18 +832,18 @@ window.KB_DATA = {
     "chipset": 1
   },
   "primary_topic_counts": {
+    "wifi8-uhr": 28,
     "cellular-ai": 27,
-    "wifi8-uhr": 27,
-    "wifi7-deployment": 24,
+    "wifi7-deployment": 25,
     "6g-vision": 22,
     "sensing-csi": 20,
     "security-privacy": 19,
     "5g-nr": 18,
+    "spectrum-policy": 16,
     "open-ran": 16,
-    "spectrum-policy": 14,
     "leo-constellations": 14,
     "mapc-cosr": 12,
-    "amp-iot": 10,
+    "amp-iot": 11,
     "sat-direct-device": 10,
     "agentic-wifi": 10,
     "starlink": 9,
@@ -869,19 +876,19 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 214,
-    "industry-news": 73,
-    "ieee-document": 29,
-    "product": 18,
+    "academic-paper": 215,
+    "industry-news": 75,
+    "ieee-document": 30,
+    "product": 19,
     "satellite-news": 13,
     "proposal": 4,
     "bluetooth-spec": 2,
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 214,
-    "industry": 104,
-    "standards": 37
+    "academia": 215,
+    "industry": 107,
+    "standards": 38
   },
   "technologies_vocab": {
     "technologies": [
@@ -1994,6 +2001,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((AMP-IoT / 20MHz IoT))\n    Standards\n      802.11bp Ambient Power\n      Wi-Fi CERTIFIED 7 at 20MHz\n    Energy harvesting\n      RF\n      Light\n      Vibration\n    TGbp mechanisms\n      AMP UL channel access\n      AMP receive procedure\n      AMP transmit spec\n      AMP triggering\n      AMP WPT control\n    Coexistence\n      BLE / Thread / Zigbee market\n      HPE Aruba 730 BLE 5.4 + Wi-Fi 7\n    Watch\n      TGbp draft progress\n      Coin-cell / no-battery designs\n      AMP-aware Wi-Fi 8 silicon",
       "diagram_mmd_zh": "mindmap\n  root((AMP-IoT / 20 MHz IoT))\n    标准化\n      802.11bp 环境取电\n      Wi-Fi CERTIFIED 7 20 MHz\n    能量收集\n      射频\n      光\n      振动\n    TGbp 机制\n      AMP 上行信道接入\n      AMP 接收过程\n      AMP 发送规范\n      AMP 触发\n      AMP WPT 控制\n    共存\n      BLE / Thread / Zigbee 市场\n      HPE Aruba 730 BLE 5.4 + Wi-Fi 7\n    关注\n      TGbp 草案进度\n      纽扣电池 / 无电池设计\n      AMP 感知的 Wi-Fi 8 硅片",
       "entries_primary": [
+        "2026-08-03_ieee-mentor-tgbp-digest",
         "2026-07-28_ieee-mentor-tgbp-digest",
         "2026-07-11_ieee-mentor-tgbp-digest",
         "2026-07-09_ieee-mentor-tgbp-preplenary-digest",
@@ -2016,6 +2024,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "ieee-document": [
+          "2026-08-03_ieee-mentor-tgbp-digest",
           "2026-07-28_ieee-mentor-tgbp-digest",
           "2026-07-11_ieee-mentor-tgbp-digest",
           "2026-07-09_ieee-mentor-tgbp-preplenary-digest",
@@ -2108,6 +2117,7 @@ window.KB_DATA = {
         "2026-05-01_ieee-tgbn-d2-schedule",
         "2026-05-01_ieee-march-2026-readout",
         "2026-07-09_springer-towards-wifi9-vision",
+        "2026-08-03_rs-cmp180-wifi8-5x5-validation",
         "2026-05-01_gemtek-quectel-wifi8-mwc2026",
         "2026-05-01_qualcomm-wifi8-mwc2026",
         "2026-05-01_ieee-january-2026-readout",
@@ -2166,6 +2176,7 @@ window.KB_DATA = {
           "2026-06-04_broadcom-samsung-wifi8-5g-fwa-soc",
           "2026-05-27_networkworld-wifi8-edge-ai-platform",
           "2026-05-04_intel-wwc-wifi8-vision",
+          "2026-08-03_rs-cmp180-wifi8-5x5-validation",
           "2026-05-01_gemtek-quectel-wifi8-mwc2026",
           "2026-05-01_qualcomm-wifi8-mwc2026"
         ],
@@ -2196,6 +2207,7 @@ window.KB_DATA = {
         "2026-07-04_worldvue-openwifi-3500-device-scale",
         "2026-07-06_mediatek-open-source-gateway-rdk-prplos",
         "2026-06-27_wifinow-helium-spectrumone-ambient-power",
+        "2026-08-03_extreme-multibeam-matsing-launch",
         "2026-07-03_espressif-esp32-e22-wifi6e-certified",
         "2026-07-26_ookla-global-state-of-wifi-2026",
         "2026-07-03_cisco-9177-outdoor-wifi7-urwb-ap",
@@ -2215,6 +2227,7 @@ window.KB_DATA = {
         "2026-07-26_apple-n1-wifi7-chip-iphone17"
       ],
       "entries_secondary": [
+        "2026-08-03_arxiv-nr-wifi-6ghz-coexistence-testbed",
         "2026-05-28_wifinow-uk-eu-upper-6ghz-regulation",
         "2026-05-21_fcc-6ghz-rule-changes"
       ],
@@ -2242,6 +2255,7 @@ window.KB_DATA = {
         ],
         "product": [
           "2026-07-09_zyxel-outdoor-wifi7-wbe665s",
+          "2026-08-03_extreme-multibeam-matsing-launch",
           "2026-07-03_espressif-esp32-e22-wifi6e-certified",
           "2026-07-03_cisco-9177-outdoor-wifi7-urwb-ap",
           "2026-05-12_hpe-self-driving-networks-723h",
@@ -2265,6 +2279,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Spectrum policy))\n    EU upper-6 GHz\n      RSPG decision - 540 MHz mobile\n      160 MHz frozen for sharing\n      DNA open letter (2026-07-10_wifi-community-eu-dna-open-letter)\n    UK Ofcom Better Together\n      Concurrent Wi-Fi + mobile\n      Sharing rules TBD\n    US FCC\n      6 GHz rule expansion (2026-05-21_fcc-6ghz-rule-changes)\n    Africa / developing markets\n      ICASA standard power + CSIR OpenAFC (2026-07-10_south-africa-standard-power-6ghz-afc)\n    Coexistence research\n      DRL Wi-Fi / NR-U\n      LLM alpha-fairness\n      LPI vs SP power-class asymmetry (2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence)\n    Cross-technology 6 GHz\n      WFA x Bluetooth SIG joint work (2026-07-10_wfa-bluetooth-sig-6ghz-coexistence)\n    Mechanisms\n      AFC (Automated Frequency Coordination)\n      OpenAFC (TIP, open source)\n      LBT bypass debate (Mentor WNG)\n    Watch\n      EU DNA legislative text\n      ICASA end-2026 signature\n      Bluetooth SIG higher-band PHY params\n      Ofcom technical sharing rules\n      APAC / India 6 GHz decisions",
       "diagram_mmd_zh": "mindmap\n  root((频谱与监管政策))\n    欧盟 upper-6 GHz\n      RSPG 决议 - 540 MHz 划给移动\n      160 MHz 暂留共享\n      DNA 公开信 (2026-07-10_wifi-community-eu-dna-open-letter)\n    英国 Ofcom Better Together\n      Wi-Fi 与移动并行使用\n      共享规则待定\n    美国 FCC\n      6 GHz 规则扩展 (2026-05-21_fcc-6ghz-rule-changes)\n    非洲 / 发展中市场\n      ICASA 标准功率 + CSIR OpenAFC (2026-07-10_south-africa-standard-power-6ghz-afc)\n    共存研究\n      DRL Wi-Fi / NR-U\n      LLM alpha 公平\n      LPI 与 SP 功率等级不对称 (2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence)\n    跨技术 6 GHz\n      WFA 与蓝牙 SIG 联合工作 (2026-07-10_wfa-bluetooth-sig-6ghz-coexistence)\n    机制\n      AFC（自动频率协调）\n      OpenAFC（TIP 开源）\n      LBT 绕开之争（Mentor WNG）\n    关注\n      欧盟 DNA 立法文本\n      ICASA 2026 年底签署\n      蓝牙 SIG 高频段 PHY 参数\n      Ofcom 技术共享规则\n      亚太 / 印度 6 GHz 决策",
       "entries_primary": [
+        "2026-08-03_arxiv-nr-wifi-6ghz-coexistence-testbed",
         "2026-07-22_uk-ofcom-full-band-6ghz-adoption",
         "2026-07-22_costa-rica-full-band-6ghz-afc",
         "2026-07-22_fcc-unlicensed-direct-to-satellite-nprm",
@@ -2277,6 +2292,7 @@ window.KB_DATA = {
         "2026-05-04_arxiv-policy-driven-drl-nru-wifi-coexistence",
         "2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz",
         "2026-05-04_ofcom-better-together-6ghz-uk",
+        "2026-08-03_fcc-covered-list-foreign-routers",
         "2026-05-04_eu-rspg-upper-6ghz-decision",
         "2026-05-01_arxiv-llm-6ghz-wifi-nru-coexistence"
       ],
@@ -2288,6 +2304,12 @@ window.KB_DATA = {
         "2026-07-17_extreme-networks-wifi7-ap-portfolio-expansion"
       ],
       "by_type_primary": {
+        "academic-paper": [
+          "2026-08-03_arxiv-nr-wifi-6ghz-coexistence-testbed",
+          "2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence",
+          "2026-05-04_arxiv-policy-driven-drl-nru-wifi-coexistence",
+          "2026-05-01_arxiv-llm-6ghz-wifi-nru-coexistence"
+        ],
         "industry-news": [
           "2026-07-22_uk-ofcom-full-band-6ghz-adoption",
           "2026-07-22_costa-rica-full-band-6ghz-afc",
@@ -2298,12 +2320,8 @@ window.KB_DATA = {
           "2026-05-28_wifinow-uk-eu-upper-6ghz-regulation",
           "2026-05-21_fcc-6ghz-rule-changes",
           "2026-05-04_ofcom-better-together-6ghz-uk",
+          "2026-08-03_fcc-covered-list-foreign-routers",
           "2026-05-04_eu-rspg-upper-6ghz-decision"
-        ],
-        "academic-paper": [
-          "2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence",
-          "2026-05-04_arxiv-policy-driven-drl-nru-wifi-coexistence",
-          "2026-05-01_arxiv-llm-6ghz-wifi-nru-coexistence"
         ],
         "ieee-document": [
           "2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz"
@@ -2621,6 +2639,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "mindmap\n  root((能效与省电))\n    机制\n      TWT 能耗预算\n      R-TWT 能耗侧\n      深睡眠调度\n      电池感知客户端行为\n    交叉引用\n      amp-iot 能量收集\n      rtwt-latency 时延侧\n      mlo 每链路开销\n    今日（次要出现）\n      Wi-Fi 6 上的确定性 TWT\n      20 MHz Wi-Fi 7 IoT 认证\n    分桶规则\n      节省 N% 能耗 - 主在此\n      M ms 内交付 - 主在时延桶\n    关注\n      逐类 MLO 能耗测量\n      AMP-IoT 电池寿命试点\n      Wi-Fi 8 深睡眠电流",
       "entries_primary": [],
       "entries_secondary": [
+        "2026-08-03_ieee-mentor-tgbp-digest",
         "2026-07-28_ieee-mentor-tgbp-digest",
         "2026-07-24_arxiv-uora-power-control-capture-fairness",
         "2026-07-11_ieee-mentor-tgbp-digest",
@@ -4001,6 +4020,88 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-08-03_ieee-mentor-tgbp-digest",
+      "date_found": "2026-08-03",
+      "technology": "wifi",
+      "date_published": "2026-08-03",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 TGbp Mentor digest — 2026-08-03: AMP normative-text wave continues ahead of September ballot",
+      "title_zh": "IEEE 802.11 TGbp Mentor 摘要 — 2026-08-03：AMP 规范文本浪潮在九月投票前持续推进",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bp",
+      "topics": [
+        "802.11bp",
+        "AMP",
+        "ambient-power",
+        "backscatter"
+      ],
+      "topic_primary": "amp-iot",
+      "topics_secondary": [
+        "energy-power-save"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-08-03_ieee-mentor-tgbp-digest.md",
+      "summary_short_en": "TGbp (Ambient Power / AMP IoT) uploaded six substantive proposed-draft-text (PDT) contributions in the July 29–31 window, continuing the normative-text wave first seen in the 28 July digest and confirming that the task group is racing to assemble D0.x text ahead of its predicted September 2026 first WG letter ballot. The contributors span the AMP ecosystem: Huawei (triggering procedure, RFID frame), HaiLa Technologies (excitation frame format, group ack frame format), Qualcomm (recommended OFDM sequences), and OPPO (UL frequency shift for actively transmitting non-AP AMP STAs).",
+      "summary_short_zh": "TGbp（环境能量供电 / AMP IoT）在 7 月 29–31 日窗口上传了六份实质性拟稿文本（PDT）贡献，延续了 7 月 28 日摘要中首次出现的规范文本浪潮，确认该任务组正加紧组装 D0.x 文本，以赶上预计 2026 年 9 月的首次工作组信函投票。贡献方覆盖 AMP 生态：华为（触发流程、RFID 帧）、HaiLa Technologies（激励帧格式、组确认帧格式）、高通（推荐 OFDM 序列）、OPPO（主动发射非 AP AMP STA 的上行频移）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TGbp (Ambient Power / AMP IoT) uploaded six substantive proposed-draft-text (PDT) contributions in the July 29–31 window, continuing the normative-text wave first seen in the 28 July digest and confirming that the task group is racing to assemble D0.x text ahead of its predicted September 2026 first WG letter ballot. The contributors span the AMP ecosystem: Huawei (triggering procedure, RFID frame), HaiLa Technologies (excitation frame format, group ack frame format), Qualcomm (recommended OFDM sequences), and OPPO (UL frequency shift for actively transmitting non-AP AMP STAs).</p>\n<p>Elsewhere the Mentor tail was quiet: TGbn posted one substantive LB291 comment-resolution document (Hikvision, Co-SR/Co-BF hidden-node issue) plus its September meeting agenda, and the AI Offload SG posted its September agenda — the usual between-sessions administrivia before the September interim.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1508-01 · TGbp</strong> — PDT AMP Excitation frame format. Ian Bajaj (HaiLa Technologies).</li><li><strong>DCN 11-26-1509-00 · TGbp</strong> — PDT Recommended OFDM Sequences. Steve Shellhammer (Qualcomm).</li><li><strong>DCN 11-26-1519-00 · TGbp</strong> — PDT AMP Triggering Procedure. Rojan Chitrakar (Huawei).</li><li><strong>DCN 11-26-1520-00 · TGbp</strong> — AMP RFID frame. Rojan Chitrakar (Huawei).</li><li><strong>DCN 11-26-1521-01 · TGbp</strong> — PDT AMP Group Ack frame format. Ian Bajaj (HaiLa Technologies).</li><li><strong>DCN 11-26-1522-00 · TGbp</strong> — PDT UL Frequency Shift for Active Tx non-AP AMP STA. Yinan Qi (OPPO).</li><li><strong>DCN 11-26-1504-00 · TGbn</strong> — LB291 CR for CID 6471, Co-SR/Co-BF hidden-node issue. Jingyang Luo (Hikvision).</li><li>Admin: 1510 (TGbn September agenda, Qualcomm), 1516 (AI Offload SG September agenda, Qualcomm).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>TGbp is currently the only 802.11 task group producing a steady normative-text stream, and this batch fills in the AMP MAC's core moving parts: how an AMP device is energized (excitation frame), how it is polled (triggering procedure), how legacy RFID interoperation is framed (RFID frame), how multiple AMP responses are acknowledged efficiently (group ack), and how active transmitters manage frequency offset (UL frequency shift). Together with the 28 July WPT End Time Indication and Service Period PDTs, the D0.5→ballot trajectory for a September first letter ballot looks on track. The Hikvision Co-SR/Co-BF hidden-node CR is worth watching in the mapc-cosr thread as LB291 resolution grinds on.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TGbp（环境能量供电 / AMP IoT）在 7 月 29–31 日窗口上传了六份实质性拟稿文本（PDT）贡献，延续了 7 月 28 日摘要中首次出现的规范文本浪潮，确认该任务组正加紧组装 D0.x 文本，以赶上预计 2026 年 9 月的首次工作组信函投票。贡献方覆盖 AMP 生态：华为（触发流程、RFID 帧）、HaiLa Technologies（激励帧格式、组确认帧格式）、高通（推荐 OFDM 序列）、OPPO（主动发射非 AP AMP STA 的上行频移）。</p>\n<p>Mentor 其余部分安静：TGbn 上传一份实质性 LB291 意见处理文档（海康威视，Co-SR/Co-BF 隐藏节点问题）及其九月会议议程，AI Offload SG 上传九月议程——九月中期会议前的常规会务节奏。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1508-01 · TGbp</strong> — PDT AMP 激励帧格式。Ian Bajaj（HaiLa Technologies）。</li><li><strong>DCN 11-26-1509-00 · TGbp</strong> — PDT 推荐 OFDM 序列。Steve Shellhammer（Qualcomm）。</li><li><strong>DCN 11-26-1519-00 · TGbp</strong> — PDT AMP 触发流程。Rojan Chitrakar（华为）。</li><li><strong>DCN 11-26-1520-00 · TGbp</strong> — AMP RFID 帧。Rojan Chitrakar（华为）。</li><li><strong>DCN 11-26-1521-01 · TGbp</strong> — PDT AMP 组确认帧格式。Ian Bajaj（HaiLa Technologies）。</li><li><strong>DCN 11-26-1522-00 · TGbp</strong> — PDT 主动发射非 AP AMP STA 的上行频移。Yinan Qi（OPPO）。</li><li><strong>DCN 11-26-1504-00 · TGbn</strong> — LB291 CID 6471 意见处理，Co-SR/Co-BF 隐藏节点问题。Jingyang Luo（海康威视）。</li><li>会务：1510（TGbn 九月议程，高通）、1516（AI Offload SG 九月议程，高通）。</li></ul>\n<h3>意义与新意</h3>\n<p>TGbp 是当前唯一持续产出规范文本的 802.11 任务组，本批贡献补齐了 AMP MAC 的核心组件：AMP 设备如何被供能（激励帧）、如何被轮询（触发流程）、如何与传统 RFID 互操作（RFID 帧）、多个 AMP 响应如何高效确认（组确认）、以及主动发射端如何管理频偏（上行频移）。结合 7 月 28 日的 WPT 结束时间指示与服务周期 PDT，面向九月首次信函投票的 D0.5→投票轨迹看来正常。海康威视的 Co-SR/Co-BF 隐藏节点 CR 值得在 mapc-cosr 主线中随 LB291 处理进展持续关注。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 tgbp mentor digest — 2026-08-03: amp normative-text wave continues ahead of september ballot ieee 802.11 tgbp mentor 摘要 — 2026-08-03：amp 规范文本浪潮在九月投票前持续推进 802.11bp amp ambient-power backscatter tgbp (ambient power / amp iot) uploaded six substantive proposed-draft-text (pdt) contributions in the july 29–31 window, continuing the normative-text wave first seen in the 28 july digest and confirming that the task group is racing to assemble d0.x text ahead of its predicted september 2026 first wg letter ballot. the contributors span the amp ecosystem: huawei (triggering procedure, rfid frame), haila technologies (excitation frame format, group ack frame format), qualcomm (recommended ofdm sequences), and oppo (ul frequency shift for actively transmitting non-ap amp stas). tgbp（环境能量供电 / amp iot）在 7 月 29–31 日窗口上传了六份实质性拟稿文本（pdt）贡献，延续了 7 月 28 日摘要中首次出现的规范文本浪潮，确认该任务组正加紧组装 d0.x 文本，以赶上预计 2026 年 9 月的首次工作组信函投票。贡献方覆盖 amp 生态：华为（触发流程、rfid 帧）、haila technologies（激励帧格式、组确认帧格式）、高通（推荐 ofdm 序列）、oppo（主动发射非 ap amp sta 的上行频移）。 ieee-document wifi"
+    },
+    {
+      "id": "2026-08-03_arxiv-nr-wifi-6ghz-coexistence-testbed",
+      "date_found": "2026-08-03",
+      "technology": "wifi",
+      "date_published": "2026-07-30",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Coexistence of 5G NR and Wi-Fi 6E/7 at 6 GHz: hardware-in-the-loop interference measurements say VLP Wi-Fi cannot hurt licensed NR",
+      "title_zh": "6 GHz 频段 5G NR 与 Wi-Fi 6E/7 共存实测：硬件在环干扰测量表明 VLP Wi-Fi 无法伤及授权 NR 接收机",
+      "url": "https://arxiv.org/abs/2607.28213",
+      "topics": [
+        "6GHz",
+        "5G-NR",
+        "WiFi-6E",
+        "coexistence",
+        "VLP",
+        "LBT",
+        "spectrum"
+      ],
+      "topic_primary": "spectrum-policy",
+      "topics_secondary": [
+        "wifi7-deployment"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-08-03_arxiv-nr-wifi-6ghz-coexistence-testbed.md",
+      "summary_short_en": "A University of Surrey (ICS/5G-6G Innovation Centre, Tafazolli group) team presents the first hardware-in-the-loop study of Wi-Fi 6E/7 interference into *both* the gNB uplink and UE downlink receiver chains of a licensed 5G NR system operating in the upper 6 GHz band (n102, 5925–6425 MHz). The testbed combines an OpenAirInterface 5G stack on USRP X310 SDRs (White Rabbit PTP-synchronised), a commercial TP-Link AXE5400 Wi-Fi 6E AP on 80 MHz channel 9 (~5985 MHz), and a passive RF combiner that injects controlled, calibrated Wi-Fi power into the NR receive paths while the Wi-Fi network carries sustained bidirectional load (three 8K video streams plus six 10 Gbit file transfers).",
+      "summary_short_zh": "萨里大学（ICS/5G-6G 创新中心，Tafazolli 团队）发表了首个同时覆盖 gNB 上行与 UE 下行接收链的硬件在环研究，测量 Wi-Fi 6E/7 对运行于上 6 GHz 频段（n102，5925–6425 MHz）的授权 5G NR 系统的干扰。测试平台由 USRP X310 SDR 上的 OpenAirInterface 5G 协议栈（White Rabbit PTP 同步）、商用 TP-Link AXE5400 Wi-Fi 6E AP（80 MHz 信道 9，约 5985 MHz）以及无源射频合路器组成；后者在 Wi-Fi 网络承载持续双向业务（3 路 8K 视频流 + 6 个 10 Gbit 文件传输）的同时，向 NR 接收路径注入受控、已校准的 Wi-Fi 功率。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A University of Surrey (ICS/5G-6G Innovation Centre, Tafazolli group) team presents the first hardware-in-the-loop study of Wi-Fi 6E/7 interference into <em>both</em> the gNB uplink and UE downlink receiver chains of a licensed 5G NR system operating in the upper 6 GHz band (n102, 5925–6425 MHz). The testbed combines an OpenAirInterface 5G stack on USRP X310 SDRs (White Rabbit PTP-synchronised), a commercial TP-Link AXE5400 Wi-Fi 6E AP on 80 MHz channel 9 (~5985 MHz), and a passive RF combiner that injects controlled, calibrated Wi-Fi power into the NR receive paths while the Wi-Fi network carries sustained bidirectional load (three 8K video streams plus six 10 Gbit file transfers).</p>\n<p>The headline result is a clean empirical protection threshold: neither NR receiver degrades measurably until injected Wi-Fi power exceeds −75 dBm. The UE downlink loses 10–25% throughput at −70 to −65 dBm and suffers radio-link failures above −60 dBm; the gNB uplink shows only a 1–2 dB SNR drop between −75 and −65 dBm, collapsing (6 dB SNR drop, 50% throughput loss) only at −64 dBm. Beacon-only Wi-Fi — the idle-network case — causes no impact at all up to −55 dBm.</p>\n<p>The paper then converts these thresholds into coexistence geometry. A full-load gNB (66 dBm/20 MHz EIRP) creates a listen-before-talk exclusion zone of ~685 m within which a compliant VLP (very-low-power, 14 dBm EIRP) Wi-Fi device senses the gNB and defers, while the maximum distance at which that VLP device could deliver −75 dBm into an NR receiver is only ~112 m — a 6.1× spatial safety factor (4.9× under SSB-only loading). The authors conclude that the standard −62 dBm LBT energy-detection threshold is sufficient for n102 coexistence: a compliant VLP device vacates the channel long before its emissions could degrade either receiver, corroborating ECC Report 366's simulation-based findings with hardware-validated numbers.</p>\n<h3>Key technical points</h3>\n<ul><li>First HIL study covering both NR victim paths: Wi-Fi → UE downlink (C1) and Wi-Fi → gNB uplink (C2), with progressive power sweeps refined to 1–2 dB steps near thresholds.</li><li>Protection threshold: no measurable degradation below −75 dBm injected Wi-Fi power at either receiver; beacon-only interference harmless up to −55 dBm.</li><li>UE DL at 85 Mbit/s: 10–25% throughput loss at −70…−65 dBm, &gt;50% loss and radio-link failures above −60 dBm; gNB UL: 6 dB SNR drop and 50% throughput loss at −64 dBm.</li><li>Coexistence geometry: 685 m LBT exclusion zone (full-load gNB) vs 112 m VLP harm radius → 6.1× spatial safety margin; a 23 dBm UE triggers VLP deferral at ~43 m.</li><li>Policy conclusion: the −62 dBm LBT ED threshold is sufficient for VLP Wi-Fi / licensed NR coexistence in band n102; real VLP duty cycles (3–5%) make the continuous-injection results a conservative worst case.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The 6 GHz &quot;Wi-Fi vs licensed mobile&quot; fight is the KB's most active spectrum-policy thread — UK Ofcom's full-band hybrid framework (2026-07-22_uk-ofcom-full-band-6ghz-adoption), South Africa's standard-power AFC move (2026-07-10_south-africa-standard-power-6ghz-afc), and Costa Rica's full-band AFC (2026-07-22_costa-rica-full-band-6ghz-afc) all hinge on assumptions about how much unlicensed Wi-Fi actually hurts licensed systems sharing the band. This paper replaces those assumptions with hardware-measured thresholds and concludes the standard LBT mechanism already provides a ~6× spatial safety factor for VLP devices — direct empirical ammunition for the &quot;sharing works&quot; side of the European upper-6 GHz debate, and the first entry in this KB to quantify NR-receiver-side protection with a real 5G stack rather than simulation.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>萨里大学（ICS/5G-6G 创新中心，Tafazolli 团队）发表了首个同时覆盖 gNB 上行与 UE 下行接收链的硬件在环研究，测量 Wi-Fi 6E/7 对运行于上 6 GHz 频段（n102，5925–6425 MHz）的授权 5G NR 系统的干扰。测试平台由 USRP X310 SDR 上的 OpenAirInterface 5G 协议栈（White Rabbit PTP 同步）、商用 TP-Link AXE5400 Wi-Fi 6E AP（80 MHz 信道 9，约 5985 MHz）以及无源射频合路器组成；后者在 Wi-Fi 网络承载持续双向业务（3 路 8K 视频流 + 6 个 10 Gbit 文件传输）的同时，向 NR 接收路径注入受控、已校准的 Wi-Fi 功率。</p>\n<p>核心结果是一个干净的经验保护门限：注入 Wi-Fi 功率超过 −75 dBm 之前，两个 NR 接收机均无可测退化。UE 下行在 −70 至 −65 dBm 时损失 10–25% 吞吐，高于 −60 dBm 时出现无线链路失败；gNB 上行在 −75 至 −65 dBm 区间仅有 1–2 dB SNR 下降，直到 −64 dBm 才崩塌（SNR 降 6 dB、吞吐损失 50%）。仅信标的空闲 Wi-Fi 场景在 −55 dBm 以内完全无影响。</p>\n<p>论文进一步把这些门限换算成共存几何：满载 gNB（66 dBm/20 MHz EIRP）产生约 685 米的先听后发（LBT）排除区，合规 VLP（甚低功率，14 dBm EIRP）Wi-Fi 设备在区内会侦听到 gNB 并退避；而该 VLP 设备能把 −75 dBm 送达 NR 接收机的最大距离仅约 112 米——空间安全系数 6.1 倍（仅 SSB 负载时为 4.9 倍）。作者结论：标准的 −62 dBm LBT 能量检测门限对 n102 共存已经足够，为 ECC 报告 366 的仿真结论提供了硬件实证。</p>\n<h3>技术要点</h3>\n<ul><li>首个同时覆盖两条 NR 受害路径的 HIL 研究：Wi-Fi → UE 下行（C1）与 Wi-Fi → gNB 上行（C2），功率扫描在门限附近细化到 1–2 dB 步进。</li><li>保护门限：注入功率低于 −75 dBm 时两个接收机均无可测退化；仅信标干扰在 −55 dBm 以内无任何影响。</li><li>85 Mbit/s UE 下行：−70…−65 dBm 时吞吐损失 10–25%，高于 −60 dBm 时损失超 50% 并出现链路失败；gNB 上行在 −64 dBm 时 SNR 降 6 dB、吞吐损失 50%。</li><li>共存几何：685 米 LBT 排除区（满载 gNB）对 112 米 VLP 危害半径 → 6.1 倍空间安全裕度；23 dBm 的 UE 在约 43 米处即触发 VLP 退避。</li><li>政策结论：−62 dBm LBT 能量检测门限对 n102 频段 VLP Wi-Fi 与授权 NR 共存已经足够；真实 VLP 占空比（3–5%）使连续注入结果成为保守的最坏情形。</li></ul>\n<h3>意义与新意</h3>\n<p>6 GHz「Wi-Fi 对授权移动」之争是本知识库最活跃的频谱政策主线——英国 Ofcom 全频段混合框架（2026-07-22_uk-ofcom-full-band-6ghz-adoption）、南非标准功率 AFC（2026-07-10_south-africa-standard-power-6ghz-afc）、哥斯达黎加全频段 AFC（2026-07-22_costa-rica-full-band-6ghz-afc）都建立在「非授权 Wi-Fi 究竟会对共享频段的授权系统造成多大伤害」的假设之上。本文用硬件实测门限取代这些假设，并得出标准 LBT 机制已为 VLP 设备提供约 6 倍空间安全系数的结论——为欧洲上 6 GHz 之争中「共享可行」一方提供了直接的实证弹药，也是本库首个用真实 5G 协议栈（而非仿真）量化 NR 接收机侧保护的条目。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2607.28213v1/x1.png",
+          "caption_en": "Testbed architecture: OAI 5G stack, USRP X310 nodes and passive RF combiner",
+          "caption_zh": "测试平台架构：OAI 5G 协议栈、USRP X310 节点与无源射频合路器"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.28213v1/x2.png",
+          "caption_en": "Spectral overlap of the 40 MHz NR carrier and 80 MHz Wi-Fi channel at ~5995 MHz",
+          "caption_zh": "40 MHz NR 载波与 80 MHz Wi-Fi 信道在约 5995 MHz 处的频谱重叠"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.28213v1/x3.png",
+          "caption_en": "UE downlink performance vs injected Wi-Fi interference power",
+          "caption_zh": "UE 下行性能随注入 Wi-Fi 干扰功率的变化"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.28213v1/x4.png",
+          "caption_en": "gNB uplink performance vs injected Wi-Fi interference power",
+          "caption_zh": "gNB 上行性能随注入 Wi-Fi 干扰功率的变化"
+        }
+      ],
+      "search_blob": "coexistence of 5g nr and wi-fi 6e/7 at 6 ghz: hardware-in-the-loop interference measurements say vlp wi-fi cannot hurt licensed nr 6 ghz 频段 5g nr 与 wi-fi 6e/7 共存实测：硬件在环干扰测量表明 vlp wi-fi 无法伤及授权 nr 接收机 6ghz 5g-nr wifi-6e coexistence vlp lbt spectrum a university of surrey (ics/5g-6g innovation centre, tafazolli group) team presents the first hardware-in-the-loop study of wi-fi 6e/7 interference into *both* the gnb uplink and ue downlink receiver chains of a licensed 5g nr system operating in the upper 6 ghz band (n102, 5925–6425 mhz). the testbed combines an openairinterface 5g stack on usrp x310 sdrs (white rabbit ptp-synchronised), a commercial tp-link axe5400 wi-fi 6e ap on 80 mhz channel 9 (~5985 mhz), and a passive rf combiner that injects controlled, calibrated wi-fi power into the nr receive paths while the wi-fi network carries sustained bidirectional load (three 8k video streams plus six 10 gbit file transfers). 萨里大学（ics/5g-6g 创新中心，tafazolli 团队）发表了首个同时覆盖 gnb 上行与 ue 下行接收链的硬件在环研究，测量 wi-fi 6e/7 对运行于上 6 ghz 频段（n102，5925–6425 mhz）的授权 5g nr 系统的干扰。测试平台由 usrp x310 sdr 上的 openairinterface 5g 协议栈（white rabbit ptp 同步）、商用 tp-link axe5400 wi-fi 6e ap（80 mhz 信道 9，约 5985 mhz）以及无源射频合路器组成；后者在 wi-fi 网络承载持续双向业务（3 路 8k 视频流 + 6 个 10 gbit 文件传输）的同时，向 nr 接收路径注入受控、已校准的 wi-fi 功率。 academic-paper wifi"
+    },
     {
       "id": "2026-07-28_ieee-mentor-tgbp-digest",
       "date_found": "2026-07-28",
@@ -7185,6 +7286,34 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>英飞凌推出 AIROC TSL100，公开报道将其描述为首款面向汽车安全用例的 UWB 芯片。关键点是 <strong>ASIL-B</strong> 安全定位：这很重要，因为车载 UWB 正从便捷进入、数字车钥匙，延伸到会影响车辆安全与电池系统的功能。</p>\n<p>该芯片围绕无线电池管理以及车内/车旁 UWB 使用场景展开。无线电池管理系统用短距无线链路替代电池包内部的部分线束；在这一角色中，UWB 实现需要提供稳健的测距或定位、可靠数据交换、可预测共存，以及可供汽车集成商审计的安全论证。AIROC 品牌也表明 TSL100 是英飞凌更广连接产品组合的一部分，而不是孤立的小众无线电。</p>\n<p>该条目补足了 KB 中已有的 802.15.4ab 商业化线索。Ceva 条目覆盖可授权 UWB IP，STMicroelectronics 条目覆盖早期 4ab 硅片；英飞凌 TSL100 则加入了明确的汽车安全产品视角，并以无线电池管理作为核心部署故事。</p>\n<h3>技术要点</h3>\n<ul><li>AIROC TSL100 被报道为英飞凌首款面向汽车安全用例的 UWB 芯片。</li><li>公开定位突出 <strong>ASIL-B</strong>，使 UWB 更接近与安全相关的车辆子系统。</li><li>无线电池管理是主应用，用短距无线链路替代电池包中的部分线束。</li><li>该产品为 KB 已有的 UWB 商业化线索加入汽车安全维度。</li></ul>\n<h3>意义与新意</h3>\n<p>UWB 车载覆盖常停留在数字车钥匙和免手进入。TSL100 的特殊之处在于把汽车安全和电池管理放到中心位置，说明 UWB 正被产品化到车辆内部子系统，而不仅是面向用户的进入体验。这把 uwb-ranging 主题从安全接近扩展到具备安全资质的车内感知与遥测。</p>",
       "images": [],
       "search_blob": "infineon launches airoc tsl100 uwb chip for automotive safety and wireless battery management 英飞凌推出 airoc tsl100 uwb 芯片，面向汽车安全与无线电池管理 uwb airoc tsl100 automotive asil-b wireless-battery-management secure-ranging infineon has launched the airoc tsl100, described in the press coverage as the first uwb chip targeted at automotive safety use cases. the reported hook is an **asil-b** safety positioning, which matters because automotive uwb is moving beyond convenience access and digital key toward functions that interact with vehicle safety and battery systems. 英飞凌推出 airoc tsl100，公开报道将其描述为首款面向汽车安全用例的 uwb 芯片。关键点是 **asil-b** 安全定位：这很重要，因为车载 uwb 正从便捷进入、数字车钥匙，延伸到会影响车辆安全与电池系统的功能。 product uwb"
+    },
+    {
+      "id": "2026-08-03_extreme-multibeam-matsing-launch",
+      "date_found": "2026-08-03",
+      "technology": "wifi",
+      "date_published": "2026-06-25",
+      "type": "product",
+      "category": "industry",
+      "title_en": "Extreme Networks launches industry-first Multi-Beam Wireless: 16 Wi-Fi 7 APs behind a MatSing lens antenna for stadium-scale sectorized coverage",
+      "title_zh": "Extreme Networks 发布业界首个多波束无线方案：MatSing 透镜天线加 16 台 Wi-Fi 7 AP，实现体育场级扇区化覆盖",
+      "url": "https://www.businesswire.com/news/home/20260625674700/en/Extreme-Unveils-Industrys-First-Multi-Beam-Wi-Fi-Solution-Delivering-Unprecedented-Capacity-and-Performance-in-Large-Venues",
+      "topics": [
+        "802.11be",
+        "stadium",
+        "directional-antenna",
+        "high-density",
+        "products"
+      ],
+      "topic_primary": "wifi7-deployment",
+      "topics_secondary": [],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-08-03_extreme-multibeam-matsing-launch.md",
+      "summary_short_en": "Extreme Networks announced Extreme Multi-Beam Wireless (25 June 2026), which it bills as the industry's first multi-beam Wi-Fi product for large venues. The system packages sixteen Extreme AP5022FX Wi-Fi 7 access points in a single chassis behind a MatSing spherical lens antenna, dividing a stadium bowl into 16 independently served RF sectors from one centralized overhead mounting point. Each sector receives its own focused beam, replacing hundreds of distributed under-seat or handrail APs with a small number of lens-antenna clusters.",
+      "summary_short_zh": "Extreme Networks 于 2026 年 6 月 25 日发布 Extreme Multi-Beam Wireless，称其为业界首个面向大型场馆的多波束 Wi-Fi 产品。该系统将 16 台 Extreme AP5022FX Wi-Fi 7 接入点封装于单一机箱内，置于 MatSing 球面透镜天线之后，从一个集中式高空安装点将体育场碗形看台划分为 16 个独立服务的射频扇区。每个扇区获得独立聚焦波束，以少量透镜天线簇取代数百个分布式座椅下/扶手 AP。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Extreme Networks announced Extreme Multi-Beam Wireless (25 June 2026), which it bills as the industry's first multi-beam Wi-Fi product for large venues. The system packages sixteen Extreme AP5022FX Wi-Fi 7 access points in a single chassis behind a MatSing spherical lens antenna, dividing a stadium bowl into 16 independently served RF sectors from one centralized overhead mounting point. Each sector receives its own focused beam, replacing hundreds of distributed under-seat or handrail APs with a small number of lens-antenna clusters.</p>\n<p>The product ships in Q4 2026, exclusively through the Extreme–MatSing partnership. The Tennessee Titans will be the first deployment: the new Nissan Stadium (opening spring 2027) selected Extreme for a Wi-Fi 7 network with Multi-Beam Wireless at its core (announced 20 July 2026). Extreme positions the value proposition as capacity-per-infrastructure-dollar — fewer mounting points, less cabling, and simpler maintenance than proximity networks, while the lens keeps per-sector co-channel energy contained.</p>\n<p>An 2 August Wi-Fi NOW roundup framed the launch alongside the broader industry shift toward hyper-directional high-density Wi-Fi. This entry records the productization milestone of a trend the KB has been tracking through integrator practice (AmpThink's catwalk-mounted Cisco 9104 deployments) and competitor gear (Cambium's directional high-density AP).</p>\n<h3>Key technical points</h3>\n<ul><li>16× Extreme AP5022FX Wi-Fi 7 APs in one chassis behind a MatSing spherical lens antenna; 16 independently served RF sectors from a single overhead mount.</li><li>Replaces distributed proximity architectures (under-seat/handrail APs) with centralized hyper-directional clusters — less cabling, fewer mounting points.</li><li>Availability Q4 2026, exclusive Extreme–MatSing partnership; first deployment at the Titans' new Nissan Stadium (Wi-Fi 7, opening spring 2027).</li><li>Lens-based sectorization contains co-channel energy per beam, the same interference-management rationale as catwalk-mounted directional AP practice.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the third — and strongest — datapoint in the KB's hyper-directional stadium Wi-Fi thread, after AmpThink's integrator-side account of overhead beam networking (2026-07-05_ampthink-hyper-directional-stadium-wifi) and Cambium's directional high-density AP (2026-07-17_cambium-directional-wifi7-high-density-ap). What changes here is productization: a major enterprise vendor now ships sectorized lens-antenna Wi-Fi as a catalog product with a marquee NFL deployment attached, converting a design pattern into a market category. Watch how 16-sector single-point architectures interact with 802.11bn multi-AP coordination assumptions as venues refresh toward Wi-Fi 8.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Extreme Networks 于 2026 年 6 月 25 日发布 Extreme Multi-Beam Wireless，称其为业界首个面向大型场馆的多波束 Wi-Fi 产品。该系统将 16 台 Extreme AP5022FX Wi-Fi 7 接入点封装于单一机箱内，置于 MatSing 球面透镜天线之后，从一个集中式高空安装点将体育场碗形看台划分为 16 个独立服务的射频扇区。每个扇区获得独立聚焦波束，以少量透镜天线簇取代数百个分布式座椅下/扶手 AP。</p>\n<p>产品将于 2026 年第四季度出货，通过 Extreme 与 MatSing 的独家合作渠道供应。田纳西泰坦队将成为首个部署方：新尼桑体育场（2027 年春启用）选择 Extreme 构建以 Multi-Beam Wireless 为核心的 Wi-Fi 7 网络（2026 年 7 月 20 日公布）。Extreme 将价值主张定位为「单位基础设施投入的容量」——更少的安装点、更少的布线、更简单的维护，同时透镜将各扇区的同频能量约束在扇区内。</p>\n<p>Wi-Fi NOW 8 月 2 日的周报将此次发布置于行业向超定向高密度 Wi-Fi 转型的大背景中。本条目记录的是本库已通过集成商实践（AmpThink 猫道安装 Cisco 9104）和竞品设备（Cambium 定向高密度 AP）持续追踪的趋势的产品化里程碑。</p>\n<h3>技术要点</h3>\n<ul><li>单一机箱内 16 台 Extreme AP5022FX Wi-Fi 7 AP，置于 MatSing 球面透镜天线后；单个高空安装点服务 16 个独立射频扇区。</li><li>以集中式超定向天线簇取代分布式贴近覆盖架构（座椅下/扶手 AP）——布线更少、安装点更少。</li><li>2026 年 Q4 上市，Extreme–MatSing 独家合作；首个部署为泰坦队新尼桑体育场（Wi-Fi 7，2027 年春启用）。</li><li>基于透镜的扇区化将每个波束的同频能量约束在扇区内，与猫道定向 AP 实践的干扰管理逻辑一致。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本库超定向体育场 Wi-Fi 主线的第三个、也是最强的一个数据点——此前有 AmpThink 从集成商视角描述的高空波束组网（2026-07-05_ampthink-hyper-directional-stadium-wifi）和 Cambium 的定向高密度 AP（2026-07-17_cambium-directional-wifi7-high-density-ap）。本次的变化在于产品化：一家主流企业级厂商将扇区化透镜天线 Wi-Fi 做成目录产品，并附带 NFL 旗舰部署，把一种设计模式变成了一个市场品类。值得关注的是，随着场馆向 Wi-Fi 8 演进，16 扇区单点架构将如何与 802.11bn 多 AP 协调的假设相互作用。</p>",
+      "images": [],
+      "search_blob": "extreme networks launches industry-first multi-beam wireless: 16 wi-fi 7 aps behind a matsing lens antenna for stadium-scale sectorized coverage extreme networks 发布业界首个多波束无线方案：matsing 透镜天线加 16 台 wi-fi 7 ap，实现体育场级扇区化覆盖 802.11be stadium directional-antenna high-density products extreme networks announced extreme multi-beam wireless (25 june 2026), which it bills as the industry's first multi-beam wi-fi product for large venues. the system packages sixteen extreme ap5022fx wi-fi 7 access points in a single chassis behind a matsing spherical lens antenna, dividing a stadium bowl into 16 independently served rf sectors from one centralized overhead mounting point. each sector receives its own focused beam, replacing hundreds of distributed under-seat or handrail aps with a small number of lens-antenna clusters. extreme networks 于 2026 年 6 月 25 日发布 extreme multi-beam wireless，称其为业界首个面向大型场馆的多波束 wi-fi 产品。该系统将 16 台 extreme ap5022fx wi-fi 7 接入点封装于单一机箱内，置于 matsing 球面透镜天线之后，从一个集中式高空安装点将体育场碗形看台划分为 16 个独立服务的射频扇区。每个扇区获得独立聚焦波束，以少量透镜天线簇取代数百个分布式座椅下/扶手 ap。 product wifi"
     },
     {
       "id": "2026-07-03_arxiv-ai-native-6g-air-interface-3gpp",
@@ -13290,6 +13419,40 @@ window.KB_DATA = {
       "search_blob": "march 2026 ieee 802.11 plenary: ai offload study group formed; 802.11bq mmwave ppdu finalized; wi-fi 9 sg forming july 2026 2026 年 3 月 ieee 802.11 全会：ai offload 研究组成立；802.11bq 毫米波 ppdu 定稿；wi-fi 9 研究组将于 2026 年 7 月成立 802.11bn agentic-ai mac-layer scheduling the march 2026 ieee 802.11 plenary in vancouver produced four substantive outcomes: 2026 年 3 月在温哥华举行的 ieee 802.11 全会产生了四项实质性成果： proposal wifi"
     },
     {
+      "id": "2026-08-03_fcc-covered-list-foreign-routers",
+      "date_found": "2026-08-03",
+      "technology": "wifi",
+      "date_published": "2026-03-23",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "FCC adds all foreign-produced consumer routers to its Covered List — new authorizations blocked, conditional approvals carve out exceptions",
+      "title_zh": "美国 FCC 将所有外国生产的消费级路由器列入受管制清单——新认证被禁，附条件批准提供例外通道",
+      "url": "https://www.fcc.gov/document/fcc-updates-covered-list-include-foreign-made-consumer-routers",
+      "topics": [
+        "FCC",
+        "regulation",
+        "consumer-routers",
+        "supply-chain",
+        "market"
+      ],
+      "topic_primary": "spectrum-policy",
+      "topics_secondary": [],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-03_fcc-covered-list-foreign-routers.md",
+      "summary_short_en": "On 23 March 2026 the FCC added consumer-grade routers produced in foreign countries to its Covered List of communications equipment deemed a national-security risk, acting on a 20 March National Security Determination by a White House-convened Executive Branch interagency body which found that all foreign-produced routers pose unacceptable risks. The ban applies when any major stage of production — manufacturing, assembly, design, or development — occurs in a foreign country, which sweeps in essentially the entire consumer router market: production concentrated in China, Taiwan, and Vietnam serves brands including NETGEAR, TP-Link, Google Nest, eero, and Ubiquiti.",
+      "summary_short_zh": "2026 年 3 月 23 日，美国 FCC 将外国生产的消费级路由器列入其「受管制清单」（Covered List，即被认定构成国家安全风险的通信设备清单）。此举依据 3 月 20 日由白宫召集的行政部门跨机构机构作出的国家安全裁定——认定所有外国生产的路由器均构成不可接受的风险。禁令的适用标准是生产的任何主要环节（制造、组装、设计或开发）发生在外国，这实际上覆盖了几乎整个消费路由器市场：集中在中国大陆、台湾和越南的产能服务于 NETGEAR、TP-Link、Google Nest、eero、Ubiquiti 等品牌。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On 23 March 2026 the FCC added consumer-grade routers produced in foreign countries to its Covered List of communications equipment deemed a national-security risk, acting on a 20 March National Security Determination by a White House-convened Executive Branch interagency body which found that all foreign-produced routers pose unacceptable risks. The ban applies when any major stage of production — manufacturing, assembly, design, or development — occurs in a foreign country, which sweeps in essentially the entire consumer router market: production concentrated in China, Taiwan, and Vietnam serves brands including NETGEAR, TP-Link, Google Nest, eero, and Ubiquiti.</p>\n<p>Devices on the Covered List are prohibited from receiving new FCC equipment authorizations and therefore cannot be imported for sale in the US. The order is not retroactive: previously authorized models remain legal to import, sell, and use, and consumers keep their existing routers. A Conditional Approval mechanism provides a controlled path back to market — the FCC's published list of conditional approvals covers all of NETGEAR's Nighthawk and Orbi consumer routers plus cable gateways/modems, while no equivalent approval for TP-Link appears in the public record.</p>\n<p>Industry reaction has been sharply critical. Wi-Fi NOW's editorial (25 March) argues the ban will raise consumer prices (no US consumer-router manufacturing capacity exists), stall product launches through the transition, expose manufacturers to costly contract terminations, invite trade retaliation, and distort the market by leaving enterprise-grade and operator-supplied equipment untouched. This entry is a deliberate catch-up ingest: the action reshapes the regulatory environment for every consumer Wi-Fi product tracked in this KB.</p>\n<h3>Key technical points</h3>\n<ul><li>Legal mechanism: Covered List addition under the Secure Networks framework, triggered by a 20 March 2026 interagency National Security Determination; FCC fact sheet DOC-420034A1.</li><li>Scope test: any major production stage (manufacture, assembly, design, development) in a foreign country → covered; hits China-, Taiwan-, and Vietnam-produced routers across major brands.</li><li>Effect: no new FCC equipment authorizations, hence no new imports for sale; existing authorized models and consumer-owned devices unaffected.</li><li>Escape valve: Conditional Approvals — granted for all NETGEAR Nighthawk/Orbi consumer routers and cable gateways; none published for TP-Link.</li><li>Market distortion flag: enterprise-grade routers and operator-provided CPE are outside the ban's scope.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the single largest regulatory shock to the consumer Wi-Fi market in the KB's coverage window, and it directly collides with product roadmaps already tracked here: TP-Link's first consumer Wi-Fi 8 roadmap (2026-05-30_tplink-wifi8-archer8-roadmap) promised Archer 8 routers in October 2026 explicitly &quot;pending FCC approval&quot; — an approval this order makes impossible without a conditional carve-out that TP-Link publicly lacks. It also reframes the summer-2026 Wi-Fi 8 retail wave (MediaTek Filogic 8000, Broadcom BCM6718-based designs): whichever vendors secure Conditional Approvals control US retail access for the first Wi-Fi 8 generation. The KB previously had no coverage of this action; it is backfilled here because subsequent consumer-product entries cannot be read correctly without it.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026 年 3 月 23 日，美国 FCC 将外国生产的消费级路由器列入其「受管制清单」（Covered List，即被认定构成国家安全风险的通信设备清单）。此举依据 3 月 20 日由白宫召集的行政部门跨机构机构作出的国家安全裁定——认定所有外国生产的路由器均构成不可接受的风险。禁令的适用标准是生产的任何主要环节（制造、组装、设计或开发）发生在外国，这实际上覆盖了几乎整个消费路由器市场：集中在中国大陆、台湾和越南的产能服务于 NETGEAR、TP-Link、Google Nest、eero、Ubiquiti 等品牌。</p>\n<p>列入清单的设备将无法获得新的 FCC 设备认证，因此不能再进口销售。命令不溯及既往：此前已认证的型号仍可合法进口、销售和使用，消费者已购设备不受影响。「附条件批准」机制提供了受控的回归市场通道——FCC 公布的附条件批准清单覆盖 NETGEAR 全部 Nighthawk 和 Orbi 消费路由器及有线网关/调制解调器，而公开记录中未见 TP-Link 获得同等批准。</p>\n<p>业界反应尖锐批评。Wi-Fi NOW 社论（3 月 25 日）认为禁令将推高消费价格（美国不存在消费级路由器制造产能）、使过渡期内的产品发布停滞、让厂商承担高昂的合同终止成本、招致贸易报复，并因企业级和运营商供应设备不受影响而扭曲市场。本条目为有意的补录：该行动重塑了本库所追踪的所有消费级 Wi-Fi 产品的监管环境。</p>\n<h3>技术要点</h3>\n<ul><li>法律机制：依据安全网络框架将设备加入受管制清单，由 2026 年 3 月 20 日跨机构国家安全裁定触发；FCC 情况说明书 DOC-420034A1。</li><li>覆盖标准：任何主要生产环节（制造、组装、设计、开发）位于外国即被覆盖；波及在中国大陆、台湾、越南生产的各大品牌路由器。</li><li>效力：不再颁发新的 FCC 设备认证，即不能再进口销售新型号；已认证型号和消费者已购设备不受影响。</li><li>例外通道：附条件批准——NETGEAR 全部 Nighthawk/Orbi 消费路由器及有线网关已获批；TP-Link 未见公开批准。</li><li>市场扭曲点：企业级路由器和运营商供应的 CPE 不在禁令范围内。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本库覆盖期内消费级 Wi-Fi 市场遭遇的最大监管冲击，并与库中已追踪的产品路线图正面相撞：TP-Link 首个消费级 Wi-Fi 8 路线图（2026-05-30_tplink-wifi8-archer8-roadmap）承诺 2026 年 10 月推出 Archer 8 路由器，且明确注明「待 FCC 批准」——本命令使该批准在没有附条件豁免的情况下不可能实现，而 TP-Link 公开记录中并无豁免。它同时重构了 2026 夏季 Wi-Fi 8 零售浪潮（MediaTek Filogic 8000、基于 Broadcom BCM6718 的设计）的格局：谁拿到附条件批准，谁就掌握第一代 Wi-Fi 8 在美国零售市场的准入。本库此前缺失该行动的记录，特此补录——否则后续消费产品条目无法被正确解读。</p>",
+      "images": [
+        {
+          "url": "https://wifinowevents.s3.amazonaws.com/uploads/2026/03/Screenshot-2026-03-25-at-15.26.03-1024x400.png",
+          "caption_en": "FCC Covered List router action as covered by Wi-Fi NOW",
+          "caption_zh": "Wi-Fi NOW 对 FCC 受管制清单路由器行动的报道"
+        }
+      ],
+      "search_blob": "fcc adds all foreign-produced consumer routers to its covered list — new authorizations blocked, conditional approvals carve out exceptions 美国 fcc 将所有外国生产的消费级路由器列入受管制清单——新认证被禁，附条件批准提供例外通道 fcc regulation consumer-routers supply-chain market on 23 march 2026 the fcc added consumer-grade routers produced in foreign countries to its covered list of communications equipment deemed a national-security risk, acting on a 20 march national security determination by a white house-convened executive branch interagency body which found that all foreign-produced routers pose unacceptable risks. the ban applies when any major stage of production — manufacturing, assembly, design, or development — occurs in a foreign country, which sweeps in essentially the entire consumer router market: production concentrated in china, taiwan, and vietnam serves brands including netgear, tp-link, google nest, eero, and ubiquiti. 2026 年 3 月 23 日，美国 fcc 将外国生产的消费级路由器列入其「受管制清单」（covered list，即被认定构成国家安全风险的通信设备清单）。此举依据 3 月 20 日由白宫召集的行政部门跨机构机构作出的国家安全裁定——认定所有外国生产的路由器均构成不可接受的风险。禁令的适用标准是生产的任何主要环节（制造、组装、设计或开发）发生在外国，这实际上覆盖了几乎整个消费路由器市场：集中在中国大陆、台湾和越南的产能服务于 netgear、tp-link、google nest、eero、ubiquiti 等品牌。 industry-news wifi"
+    },
+    {
       "id": "2026-05-01_arxiv-wirelessbench-llm-agent",
       "date_found": "2026-05-01",
       "technology": "wifi",
@@ -13565,6 +13728,40 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在 Embedded World 2026（纽伦堡，约 2026 年 3 月 10–11 日）上，意法半导体（ST）发布 ST64UWB 系列，并将其定位为业界首款面向下一代超宽带标准 IEEE 802.15.4ab 打造的全集成系统级芯片。核心差异点是片上窄带辅助（NBA）射频与该修订版的多毫秒测距（MMS）模式相结合——ST 称这一组合带来约 8× 于当前 HRP UWB 的工作距离、对放在包内或口袋中的标签显著更好的非视距性能、近距离方向查找，并在同一芯片上开启「全新」的雷达 / 感知应用。</p>\n<p>802.15.4ab（802.15.4z 的后继修订）是整个 UWB 生态翘首以待的标准步伐：它加入窄带辅助捕获、多毫秒测距与相干接收机改进，直指两大走量市场——车载数字钥匙 / 钥匙扣，以及消费级免提门禁 / 在场检测。ST 把 ST64UWB 标榜为 <em>首款</em> 符合 4ab 的 SoC 是值得关注之处：它让 ST 在标准切换的当口，与现有 UWB 芯片领导者（NXP、Qorvo 及 Apple 自研 U 系列）正面竞争，而非追赶上一代 4z。</p>\n<p>本条目标记为 <code>snippet_only</code>——它基于发布报道与 ST 博客标题汇编，而非完整抓取的文章，因此具体型号、送样时间与制程节点细节应在后续补读。现在收录，是因为「首款 802.15.4ab SoC」对 <code>uwb-ranging</code> 桶是承重里程碑，并以标准化的硅片侧故事补充 KB 既有的 UWB 条目（UWB 雷达体脂论文与 SPARK 的 LE-UWB 路演）。</p>\n<h3>技术要点</h3>\n<ul><li><strong>首款 IEEE 802.15.4ab SoC</strong>（据 ST）——802.15.4z 的后继修订。</li><li><strong>片上集成窄带辅助（NBA）射频</strong> 与 UWB 射频并存——用于更快 / 更省的捕获与距离扩展。</li><li><strong>多毫秒测距（MMS）</strong> 模式——4ab 的特性，配合 NBA，ST 称带来约 <strong>8× 工作距离</strong> 与更优 <strong>非视距（NLOS）</strong>（包内 / 口袋）性能。</li><li>同一芯片上的 <strong>近距离方向查找</strong> 与 <strong>全新雷达 / 感知</strong> 模式。</li><li>目标市场：<strong>车载数字钥匙 / 钥匙扣</strong>、消费级 <strong>免提门禁</strong> 与 <strong>在场检测</strong>。</li><li>于 <strong>Embedded World 2026</strong>（约 2026 年 3 月 10–11 日）发布；在 4z→4ab 切换之际与 NXP / Qorvo / Apple 竞争。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 目前的 UWB 覆盖偏应用驱动（UWB 雷达体成分）与路演驱动（SPARK LE-UWB）。ST64UWB 补上标准与硅片的锚点：它是 802.15.4ab——定义窄带辅助 UWB 与多毫秒测距的修订——首款公布的商用器件。这使它成为后续 NXP/Qorvo/Apple 4ab 器件的参照基准，也是 4ab 从草案走向产品的具体信号。其距离扩展与 NLOS 主张（由 NBA 驱动）恰好针对 4z UWB 在包内 / 口袋标签场景中的短板，因此值得作为数字钥匙与在场检测走量市场的使能者来跟踪。型号与送样时间待后续完整抓取时补录。</p>",
       "images": [],
       "search_blob": "stmicroelectronics st64uwb: first ieee 802.15.4ab uwb soc with narrowband assistance 意法半导体 st64uwb：首款支持窄带辅助的 ieee 802.15.4ab uwb 系统级芯片 uwb-ranging 802.15.4ab narrowband-assist multi-millisecond-ranging digital-key automotive radar at embedded world 2026 (nuremberg, ~10–11 march 2026), stmicroelectronics launched the st64uwb family, which it positions as the industry's first fully-integrated system-on-chip built to the next-generation ultra-wideband standard, ieee 802.15.4ab. the headline differentiator is an on-chip narrowband-assistance (nba) radio paired with the amendment's multi-millisecond ranging (mms) mode — the combination st credits with roughly 8× more operating range than current-generation hrp uwb, materially better non-line-of-sight performance for tags carried in a bag or pocket, and close-range direction finding, while also opening \"entirely new\" radar/sensing applications on the same silicon. 在 embedded world 2026（纽伦堡，约 2026 年 3 月 10–11 日）上，意法半导体（st）发布 st64uwb 系列，并将其定位为业界首款面向下一代超宽带标准 ieee 802.15.4ab 打造的全集成系统级芯片。核心差异点是片上窄带辅助（nba）射频与该修订版的多毫秒测距（mms）模式相结合——st 称这一组合带来约 8× 于当前 hrp uwb 的工作距离、对放在包内或口袋中的标签显著更好的非视距性能、近距离方向查找，并在同一芯片上开启「全新」的雷达 / 感知应用。 product uwb"
+    },
+    {
+      "id": "2026-08-03_rs-cmp180-wifi8-5x5-validation",
+      "date_found": "2026-08-03",
+      "technology": "wifi",
+      "date_published": "2026-03-05",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Rohde & Schwarz CMP180 validates Qualcomm Wi-Fi 8 platforms: 5x5 MIMO, finer MCS adaptation and distributed-tone RUs tested on pre-standard silicon",
+      "title_zh": "罗德与施瓦茨 CMP180 完成高通 Wi-Fi 8 平台验证：在预标准芯片上测试 5x5 MIMO、更细粒度 MCS 自适应与分布式音调 RU",
+      "url": "https://www.rohde-schwarz.com/us/about-us/news-press/all-news/rohde-schwarz-enables-rapid-validation-of-next-gen-wi-fi-8-networking-platforms-including-5x5-mimo-capabilities_229356-1611946.html",
+      "topics": [
+        "802.11bn",
+        "test-equipment",
+        "5x5-MIMO",
+        "DRU",
+        "products"
+      ],
+      "topic_primary": "wifi8-uhr",
+      "topics_secondary": [],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-08-03_rs-cmp180-wifi8-5x5-validation.md",
+      "summary_short_en": "Rohde & Schwarz announced (5 March 2026) that Qualcomm completed validation and performance testing of its Wi-Fi 8 (802.11bn) networking platforms using the R&S CMP180 radio communication tester. Three pre-standard UHR capabilities were exercised on real silicon across 2.4, 5, and 6 GHz: 5x5 MIMO operation (the fifth spatial stream aimed at raising per-link throughput headroom), finer-grained modulation-and-coding-scheme steps that let rate adaptation track real-time radio conditions more closely, and distributed-tone resource units (DRU) that spread a client's uplink energy across the channel to extract more transmit power under PSD-constrained regulatory regimes.",
+      "summary_short_zh": "罗德与施瓦茨于 2026 年 3 月 5 日宣布，高通已使用 R&S CMP180 无线通信综测仪完成其 Wi-Fi 8（802.11bn）网络平台的验证与性能测试。三项预标准 UHR 能力在真实芯片上跨 2.4、5、6 GHz 三频段得到验证：5x5 MIMO（第五条空间流，用于提升单链路吞吐上限）、更细粒度的 MCS 档位（使速率自适应更贴近实时无线信道状态），以及分布式音调资源单元（DRU，将客户端上行能量分散到整个信道，在受 PSD 限制的监管制度下获得更高发射功率）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Rohde &amp; Schwarz announced (5 March 2026) that Qualcomm completed validation and performance testing of its Wi-Fi 8 (802.11bn) networking platforms using the R&amp;S CMP180 radio communication tester. Three pre-standard UHR capabilities were exercised on real silicon across 2.4, 5, and 6 GHz: 5x5 MIMO operation (the fifth spatial stream aimed at raising per-link throughput headroom), finer-grained modulation-and-coding-scheme steps that let rate adaptation track real-time radio conditions more closely, and distributed-tone resource units (DRU) that spread a client's uplink energy across the channel to extract more transmit power under PSD-constrained regulatory regimes.</p>\n<p>No performance numbers were disclosed; the announcement's significance is ecosystem-stage rather than mechanism-level. It is one leg of a broader test-equipment race around 802.11bn: R&amp;S has also demonstrated first Wi-Fi 8 RF signaling tests with Broadcom and is collaborating with NETGEAR on Wi-Fi 8 AP validation, per an August Wi-Fi NOW roundup that surfaced this thread. This entry is a deliberate catch-up ingest — the KB's Wi-Fi 8 coverage had chip announcements (Filogic 8000, BCM6718) and standards mechanics but no test-and-validation datapoint confirming which UHR features are actually exercised on pre-standard hardware.</p>\n<h3>Key technical points</h3>\n<ul><li>R&amp;S CMP180 tester validated Qualcomm Wi-Fi 8 platform silicon across 2.4/5/6 GHz.</li><li>Features exercised: 5x5 MIMO, finer MCS granularity for real-time link adaptation, and distributed-tone resource units (DRU) for uplink power under PSD limits.</li><li>No throughput/latency numbers published — ecosystem-readiness signal, not a benchmark.</li><li>Part of a wider 802.11bn test-equipment thread: R&amp;S + Broadcom first RF signaling tests; R&amp;S + NETGEAR AP validation ongoing.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's wifi8-uhr bin tracks mechanisms (NPCA, P-EDCA, DSO, MAPC — see 2026-07-24_arxiv-wifi8-uhr-mechanisms-verification) and chip launches, but until now had no visibility into the validation layer that sits between draft text and shipping product. That 5x5 MIMO and DRU — two of 802.11bn's PHY-side differentiators — are already being exercised on Qualcomm silicon with commercial test equipment is the concrete signal that these features will survive into first-generation hardware. It also confirms the pre-standard cadence: validation started while TGbn was still resolving D2.0 comments (2026-07-22_ieee-80211bn-d2-approval-wifi9-sg).</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>罗德与施瓦茨于 2026 年 3 月 5 日宣布，高通已使用 R&amp;S CMP180 无线通信综测仪完成其 Wi-Fi 8（802.11bn）网络平台的验证与性能测试。三项预标准 UHR 能力在真实芯片上跨 2.4、5、6 GHz 三频段得到验证：5x5 MIMO（第五条空间流，用于提升单链路吞吐上限）、更细粒度的 MCS 档位（使速率自适应更贴近实时无线信道状态），以及分布式音调资源单元（DRU，将客户端上行能量分散到整个信道，在受 PSD 限制的监管制度下获得更高发射功率）。</p>\n<p>公告未披露性能数据；其意义在于生态阶段信号而非机制层面。这是围绕 802.11bn 的测试仪器竞赛的一环：据 Wi-Fi NOW 8 月周报，R&amp;S 还与 Broadcom 演示了首个 Wi-Fi 8 射频信令测试，并与 NETGEAR 合作进行 Wi-Fi 8 AP 验证。本条目为有意补录——本库的 Wi-Fi 8 覆盖已有芯片发布（Filogic 8000、BCM6718）和标准进展，但缺少确认哪些 UHR 特性已在预标准硬件上实际验证的测试环节数据点。</p>\n<h3>技术要点</h3>\n<ul><li>R&amp;S CMP180 综测仪跨 2.4/5/6 GHz 验证高通 Wi-Fi 8 平台芯片。</li><li>验证特性：5x5 MIMO、更细粒度 MCS 档位的实时链路自适应、以及 PSD 限制下提升上行功率的分布式音调资源单元（DRU）。</li><li>未公布吞吐/时延数据——属生态就绪信号，非性能基准。</li><li>属于更广的 802.11bn 测试仪器主线：R&amp;S 与 Broadcom 的首个射频信令测试、与 NETGEAR 的 AP 验证均在进行中。</li></ul>\n<h3>意义与新意</h3>\n<p>本库 wifi8-uhr 板块此前追踪的是机制（NPCA、P-EDCA、DSO、MAPC——见 2026-07-24_arxiv-wifi8-uhr-mechanisms-verification）与芯片发布，但一直缺少介于草案文本与量产产品之间的「验证层」可见性。5x5 MIMO 与 DRU——802.11bn 两项 PHY 侧差异化特性——已在高通芯片上用商用测试仪器验证，这是它们将进入第一代硬件的具体信号。它同时印证了预标准节奏：验证工作在 TGbn 仍在处理 D2.0 意见期间（2026-07-22_ieee-80211bn-d2-approval-wifi9-sg）就已展开。</p>",
+      "images": [
+        {
+          "url": "https://assets.rohde-schwarz.com/public/image/products/test-and-measurement/wireless-device-testers-and-systems/wireless-tester-rf-analyzer/generator/cmp180/cmp180-radio-communication-tester-front-low-rohde-schwarz_200_63979_2880_1620_1.jpg",
+          "caption_en": "Rohde & Schwarz CMP180 radio communication tester",
+          "caption_zh": "罗德与施瓦茨 CMP180 无线通信综测仪"
+        }
+      ],
+      "search_blob": "rohde & schwarz cmp180 validates qualcomm wi-fi 8 platforms: 5x5 mimo, finer mcs adaptation and distributed-tone rus tested on pre-standard silicon 罗德与施瓦茨 cmp180 完成高通 wi-fi 8 平台验证：在预标准芯片上测试 5x5 mimo、更细粒度 mcs 自适应与分布式音调 ru 802.11bn test-equipment 5x5-mimo dru products rohde & schwarz announced (5 march 2026) that qualcomm completed validation and performance testing of its wi-fi 8 (802.11bn) networking platforms using the r&s cmp180 radio communication tester. three pre-standard uhr capabilities were exercised on real silicon across 2.4, 5, and 6 ghz: 5x5 mimo operation (the fifth spatial stream aimed at raising per-link throughput headroom), finer-grained modulation-and-coding-scheme steps that let rate adaptation track real-time radio conditions more closely, and distributed-tone resource units (dru) that spread a client's uplink energy across the channel to extract more transmit power under psd-constrained regulatory regimes. 罗德与施瓦茨于 2026 年 3 月 5 日宣布，高通已使用 r&s cmp180 无线通信综测仪完成其 wi-fi 8（802.11bn）网络平台的验证与性能测试。三项预标准 uhr 能力在真实芯片上跨 2.4、5、6 ghz 三频段得到验证：5x5 mimo（第五条空间流，用于提升单链路吞吐上限）、更细粒度的 mcs 档位（使速率自适应更贴近实时无线信道状态），以及分布式音调资源单元（dru，将客户端上行能量分散到整个信道，在受 psd 限制的监管制度下获得更高发射功率）。 industry-news wifi"
     },
     {
       "id": "2026-05-30_arxiv-native-isac-oran-6g",
