@@ -29,14 +29,16 @@ HDC 2026 上做出的星闪开源承诺（KB 条目 2026-06-23_nearlink-open-sou
 ## Key technical points (EN)
 
 - 100,000+ lines of core protocol-stack code (150k+ in some counts) open-sourced July 15, 2026; OpenAtom Foundation formal announcement July 22.
-- Hosted on AtomGit; incorporated into the OpenHarmony community — the landing the 2026-06-23 announcement promised.
+- Hosted on AtomGit; incorporated into the OpenHarmony community — the landing the 2026-06-23 announcement promised. Live repo: https://atomgit.com/openharmony/communication_nearlink_service.
+- Two-layer structure: a Foundational Service Layer (standardized connectivity, dual-channel SSAP control signalling + Port data transfer) and a Foundational Application Layer shipping HID, BAS, DIS, MC and VCC profiles — the peripherals-first interoperability set (wireless mice, keyboards, speakers out of the box).
 - Modular stack with unified APIs for cross-chip interoperability; explicit no-vendor-lock-in framing.
 - Integration spans standards development, chip R&D, and the open-source OS ecosystem; HarmonyOS and OpenHarmony applications share the API surface.
 
 ## Key technical points (ZH)
 
 - 10 万余行核心协议栈代码（部分口径 15 万行以上）于 2026-07-15 开源；开放原子基金会 7 月 22 日正式官宣。
-- 托管于 AtomGit；并入 OpenHarmony 社区 —— 兑现 2026-06-23 条目所记录的承诺。
+- 托管于 AtomGit；并入 OpenHarmony 社区 —— 兑现 2026-06-23 条目所记录的承诺。代码仓库：https://atomgit.com/openharmony/communication_nearlink_service。
+- 两层结构：基础服务层（标准化连接能力，SSAP 控制信令 + Port 数据传输双通道）与基础应用层（HID、BAS、DIS、MC、VCC 配置——外设优先的互操作集合，无线鼠标、键盘、音箱开箱即用）。
 - 模块化协议栈 + 统一 API 实现跨芯片互操作；明确"无厂商锁定"。
 - 整合覆盖标准制定、芯片研发与开源操作系统生态；HarmonyOS 与 OpenHarmony 应用共享同一 API 面。
 
