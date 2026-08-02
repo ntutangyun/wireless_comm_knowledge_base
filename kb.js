@@ -66,6 +66,7 @@ window.KB_DATA = {
     "V2X": 6,
     "automotive": 6,
     "Wi-Fi-8": 6,
+    "channel-sounding": 6,
     "AMP": 5,
     "LLM-agent": 5,
     "5G-core": 5,
@@ -80,7 +81,6 @@ window.KB_DATA = {
     "QoS": 5,
     "Co-SR": 5,
     "Co-BF": 5,
-    "channel-sounding": 5,
     "5G-Advanced": 5,
     "ambient-power": 4,
     "edge-computing": 4,
@@ -111,6 +111,7 @@ window.KB_DATA = {
     "AoA": 4,
     "handover": 4,
     "802.15.4ab": 4,
+    "ranging": 4,
     "802.11az": 4,
     "coexistence": 3,
     "Starship": 3,
@@ -120,6 +121,7 @@ window.KB_DATA = {
     "P-EDCA": 3,
     "energy-saving": 3,
     "spectrum-sharing": 3,
+    "positioning": 3,
     "SIGCOMM": 3,
     "high-density": 3,
     "standards-process": 3,
@@ -150,7 +152,6 @@ window.KB_DATA = {
     "Bluetooth": 3,
     "phased-array": 3,
     "radar": 3,
-    "ranging": 3,
     "cellular-ai": 3,
     "rApp": 3,
     "spectrum-policy": 3,
@@ -172,7 +173,6 @@ window.KB_DATA = {
     "Ofcom": 2,
     "power-control": 2,
     "Q-learning": 2,
-    "positioning": 2,
     "virtualization": 2,
     "standardization": 2,
     "PAR": 2,
@@ -779,6 +779,8 @@ window.KB_DATA = {
     "uwb-ranging": 1,
     "multi-millisecond-ranging": 1,
     "digital-key": 1,
+    "Bluetooth-6.0": 1,
+    "angle-estimation": 1,
     "5x5-MIMO": 1,
     "monostatic-sensing": 1,
     "E2SM": 1,
@@ -863,8 +865,8 @@ window.KB_DATA = {
     "cellular-security": 8,
     "rtwt-latency": 7,
     "ai-for-wifi": 7,
+    "bt-channel-sounding": 6,
     "network-slicing": 5,
-    "bt-channel-sounding": 5,
     "nearlink-slb": 4,
     "wifi-for-ai": 4,
     "nearlink-sle": 4,
@@ -887,7 +889,7 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 220,
-    "industry-news": 75,
+    "industry-news": 76,
     "ieee-document": 30,
     "product": 19,
     "satellite-news": 13,
@@ -897,7 +899,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 220,
-    "industry": 107,
+    "industry": 108,
     "standards": 38
   },
   "technologies_vocab": {
@@ -3718,7 +3720,8 @@ window.KB_DATA = {
         "2026-05-24_arxiv-connectionless-ble-cs-pawr",
         "2026-05-26_arxiv-toa-ranging-ngd-attack-bt-cs",
         "2026-07-11_bluetooth-core-63-release",
-        "2026-05-24_bluetooth-core-6-3-spec-release"
+        "2026-05-24_bluetooth-core-6-3-spec-release",
+        "2026-08-03_metirionic-cs-distance-angle-mars"
       ],
       "entries_secondary": [
         "2026-07-13_rohde-realtek-first-ble-hdt-test-solution",
@@ -3735,6 +3738,9 @@ window.KB_DATA = {
         "bluetooth-spec": [
           "2026-07-11_bluetooth-core-63-release",
           "2026-05-24_bluetooth-core-6-3-spec-release"
+        ],
+        "industry-news": [
+          "2026-08-03_metirionic-cs-distance-angle-mars"
         ]
       }
     },
@@ -3785,7 +3791,8 @@ window.KB_DATA = {
       "entries_secondary": [
         "2026-07-06_nordic-nrf54l15-tag-channel-sounding",
         "2026-07-26_arxiv-snatcher-find-my-ble-tracking",
-        "2026-05-24_arxiv-connectionless-ble-cs-pawr"
+        "2026-05-24_arxiv-connectionless-ble-cs-pawr",
+        "2026-08-03_metirionic-cs-distance-angle-mars"
       ],
       "by_type_primary": {
         "academic-paper": [
@@ -13932,6 +13939,36 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在 Embedded World 2026（纽伦堡，约 2026 年 3 月 10–11 日）上，意法半导体（ST）发布 ST64UWB 系列，并将其定位为业界首款面向下一代超宽带标准 IEEE 802.15.4ab 打造的全集成系统级芯片。核心差异点是片上窄带辅助（NBA）射频与该修订版的多毫秒测距（MMS）模式相结合——ST 称这一组合带来约 8× 于当前 HRP UWB 的工作距离、对放在包内或口袋中的标签显著更好的非视距性能、近距离方向查找，并在同一芯片上开启「全新」的雷达 / 感知应用。</p>\n<p>802.15.4ab（802.15.4z 的后继修订）是整个 UWB 生态翘首以待的标准步伐：它加入窄带辅助捕获、多毫秒测距与相干接收机改进，直指两大走量市场——车载数字钥匙 / 钥匙扣，以及消费级免提门禁 / 在场检测。ST 把 ST64UWB 标榜为 <em>首款</em> 符合 4ab 的 SoC 是值得关注之处：它让 ST 在标准切换的当口，与现有 UWB 芯片领导者（NXP、Qorvo 及 Apple 自研 U 系列）正面竞争，而非追赶上一代 4z。</p>\n<p>本条目标记为 <code>snippet_only</code>——它基于发布报道与 ST 博客标题汇编，而非完整抓取的文章，因此具体型号、送样时间与制程节点细节应在后续补读。现在收录，是因为「首款 802.15.4ab SoC」对 <code>uwb-ranging</code> 桶是承重里程碑，并以标准化的硅片侧故事补充 KB 既有的 UWB 条目（UWB 雷达体脂论文与 SPARK 的 LE-UWB 路演）。</p>\n<h3>技术要点</h3>\n<ul><li><strong>首款 IEEE 802.15.4ab SoC</strong>（据 ST）——802.15.4z 的后继修订。</li><li><strong>片上集成窄带辅助（NBA）射频</strong> 与 UWB 射频并存——用于更快 / 更省的捕获与距离扩展。</li><li><strong>多毫秒测距（MMS）</strong> 模式——4ab 的特性，配合 NBA，ST 称带来约 <strong>8× 工作距离</strong> 与更优 <strong>非视距（NLOS）</strong>（包内 / 口袋）性能。</li><li>同一芯片上的 <strong>近距离方向查找</strong> 与 <strong>全新雷达 / 感知</strong> 模式。</li><li>目标市场：<strong>车载数字钥匙 / 钥匙扣</strong>、消费级 <strong>免提门禁</strong> 与 <strong>在场检测</strong>。</li><li>于 <strong>Embedded World 2026</strong>（约 2026 年 3 月 10–11 日）发布；在 4z→4ab 切换之际与 NXP / Qorvo / Apple 竞争。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 目前的 UWB 覆盖偏应用驱动（UWB 雷达体成分）与路演驱动（SPARK LE-UWB）。ST64UWB 补上标准与硅片的锚点：它是 802.15.4ab——定义窄带辅助 UWB 与多毫秒测距的修订——首款公布的商用器件。这使它成为后续 NXP/Qorvo/Apple 4ab 器件的参照基准，也是 4ab 从草案走向产品的具体信号。其距离扩展与 NLOS 主张（由 NBA 驱动）恰好针对 4z UWB 在包内 / 口袋标签场景中的短板，因此值得作为数字钥匙与在场检测走量市场的使能者来跟踪。型号与送样时间待后续完整抓取时补录。</p>",
       "images": [],
       "search_blob": "stmicroelectronics st64uwb: first ieee 802.15.4ab uwb soc with narrowband assistance 意法半导体 st64uwb：首款支持窄带辅助的 ieee 802.15.4ab uwb 系统级芯片 uwb-ranging 802.15.4ab narrowband-assist multi-millisecond-ranging digital-key automotive radar at embedded world 2026 (nuremberg, ~10–11 march 2026), stmicroelectronics launched the st64uwb family, which it positions as the industry's first fully-integrated system-on-chip built to the next-generation ultra-wideband standard, ieee 802.15.4ab. the headline differentiator is an on-chip narrowband-assistance (nba) radio paired with the amendment's multi-millisecond ranging (mms) mode — the combination st credits with roughly 8× more operating range than current-generation hrp uwb, materially better non-line-of-sight performance for tags carried in a bag or pocket, and close-range direction finding, while also opening \"entirely new\" radar/sensing applications on the same silicon. 在 embedded world 2026（纽伦堡，约 2026 年 3 月 10–11 日）上，意法半导体（st）发布 st64uwb 系列，并将其定位为业界首款面向下一代超宽带标准 ieee 802.15.4ab 打造的全集成系统级芯片。核心差异点是片上窄带辅助（nba）射频与该修订版的多毫秒测距（mms）模式相结合——st 称这一组合带来约 8× 于当前 hrp uwb 的工作距离、对放在包内或口袋中的标签显著更好的非视距性能、近距离方向查找，并在同一芯片上开启「全新」的雷达 / 感知应用。 product uwb"
+    },
+    {
+      "id": "2026-08-03_metirionic-cs-distance-angle-mars",
+      "date_found": "2026-08-03",
+      "technology": "bluetooth",
+      "date_published": "2026-03-09",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Metirionic MARS: first public demo of simultaneous distance AND angle estimation from Bluetooth Channel Sounding, on Nordic nRF54L15 with quad-antenna arrays",
+      "title_zh": "Metirionic MARS：全球首次公开演示由蓝牙信道探测同时估计距离与角度，基于 Nordic nRF54L15 与四天线阵列",
+      "url": "https://markets.financialcontent.com/clarkebroadcasting.mymotherlode/article/gnwcq-2026-3-9-metirionic-debuts-industry-first-bluetooth-channel-sounding-solution-for-simultaneous-distance-and-angle-precision",
+      "topics": [
+        "Bluetooth-6.0",
+        "channel-sounding",
+        "ranging",
+        "angle-estimation",
+        "positioning"
+      ],
+      "topic_primary": "bt-channel-sounding",
+      "topics_secondary": [
+        "bt-location"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-03_metirionic-cs-distance-angle-mars.md",
+      "summary_short_en": "Metirionic (Dresden-based ranging-stack specialist) demonstrated on 9 March 2026 the first public system extracting both high-accuracy distance and precision bearing from a single Bluetooth Channel Sounding measurement procedure. Standard Bluetooth 6.0 Channel Sounding delivers ranging only; angle determination has historically required the separate AoA/AoD direction-finding feature with its dedicated CTE (constant tone extension) hardware path. Metirionic's Advanced Ranging Stack (MARS) instead mines the channel-sounding exchange itself: it analyzes Channel Impulse Response data across a quad-antenna array to characterize indoor multipath, identifies the direct path, suppresses reflection error, and computes range and bearing simultaneously — sub-meter spatial positioning, with a claimed 2x performance gain for dual-antenna over single-antenna designs.",
+      "summary_short_zh": "Metirionic（德累斯顿测距协议栈厂商）于 2026 年 3 月 9 日完成首次公开演示：从单次蓝牙信道探测（Channel Sounding）测量流程中同时提取高精度距离与方位角。标准蓝牙 6.0 信道探测只提供测距；角度测定此前需要独立的 AoA/AoD 测向特性及其专用 CTE（恒定音扩展）硬件路径。Metirionic 的高级测距协议栈（MARS）直接挖掘信道探测交换本身：跨四天线阵列分析信道冲激响应（CIR）数据以刻画室内多径、识别直射路径、抑制反射误差，同时计算距离与方位——亚米级空间定位，双天线设计相对单天线宣称 2 倍性能增益。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Metirionic (Dresden-based ranging-stack specialist) demonstrated on 9 March 2026 the first public system extracting both high-accuracy distance and precision bearing from a single Bluetooth Channel Sounding measurement procedure. Standard Bluetooth 6.0 Channel Sounding delivers ranging only; angle determination has historically required the separate AoA/AoD direction-finding feature with its dedicated CTE (constant tone extension) hardware path. Metirionic's Advanced Ranging Stack (MARS) instead mines the channel-sounding exchange itself: it analyzes Channel Impulse Response data across a quad-antenna array to characterize indoor multipath, identifies the direct path, suppresses reflection error, and computes range and bearing simultaneously — sub-meter spatial positioning, with a claimed 2x performance gain for dual-antenna over single-antenna designs.</p>\n<p>The demo hardware stack is notable for spanning the CS ecosystem: a Nordic nRF54L15 initiator, Synaptics Veros connectivity silicon, Ezurio dual-antenna modules (commercially available dev kits), and a Bauer door-lock platform as the first commercial transition. Partners include onceLabs, Ellisys, Minew, Raytac and Fanstel. This entry is a deliberate catch-up ingest: the KB's channel-sounding coverage (Core 6.3 hardware-inline CS, Nordic nRF54L15 Tag, connectionless CS via PAwR) had no datapoint on angle extraction from CS — the capability that pushes CS from &quot;secure ranging&quot; toward full local positioning without CTE antennas.</p>\n<h3>Key technical points</h3>\n<ul><li>MARS analyzes Channel Impulse Response across a quad-antenna array: direct-path identification + reflection suppression → simultaneous range and bearing from one CS procedure.</li><li>Sub-meter positioning claimed; dual-antenna designs deliver ~2x performance over single-antenna.</li><li>No CTE/AoA hardware needed — angle rides on the same CS exchange used for secure ranging.</li><li>Ecosystem-wide demo stack: Nordic nRF54L15 initiator, Synaptics Veros, Ezurio dual-antenna modules, Bauer door lock; Ellisys/Minew/Raytac/Fanstel among partners.</li><li>Ezurio dual-antenna nRF54L15 dev kits commercially available at announcement.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's bt-channel-sounding thread has tracked CS efficiency (Core 6.3's hardware-inline PCT transfer), CS scale (connectionless CS over PAwR), and CS silicon (Nordic nRF54L15 Tag) — but every entry assumed CS = distance only. Angle-from-CIR changes the competitive picture against UWB two ways: it narrows UWB's 2D-positioning advantage without new antennas beyond an array, and it does so on commodity BLE silicon already shipping for ranging. Worth watching whether the technique gets standardized or stays a proprietary stack-vendor differentiator — the same fork the KB has watched play out in Wi-Fi sensing.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Metirionic（德累斯顿测距协议栈厂商）于 2026 年 3 月 9 日完成首次公开演示：从单次蓝牙信道探测（Channel Sounding）测量流程中同时提取高精度距离与方位角。标准蓝牙 6.0 信道探测只提供测距；角度测定此前需要独立的 AoA/AoD 测向特性及其专用 CTE（恒定音扩展）硬件路径。Metirionic 的高级测距协议栈（MARS）直接挖掘信道探测交换本身：跨四天线阵列分析信道冲激响应（CIR）数据以刻画室内多径、识别直射路径、抑制反射误差，同时计算距离与方位——亚米级空间定位，双天线设计相对单天线宣称 2 倍性能增益。</p>\n<p>演示硬件栈横跨 CS 生态：Nordic nRF54L15 发起端、Synaptics Veros 连接芯片、Ezurio 双天线模组（开发套件已商用）、以及作为首个商用落地的 Bauer 门锁平台。合作方包括 onceLabs、Ellisys、Minew、Raytac、Fanstel。本条目为有意补录：本库的信道探测覆盖（Core 6.3 硬件内联 CS、Nordic nRF54L15 Tag、经 PAwR 的无连接 CS）此前没有任何「从 CS 提取角度」的数据点——而正是该能力把 CS 从「安全测距」推向无需 CTE 天线的完整本地定位。</p>\n<h3>技术要点</h3>\n<ul><li>MARS 跨四天线阵列分析信道冲激响应：直射路径识别 + 反射抑制 → 单次 CS 流程同时得到距离与方位。</li><li>宣称亚米级定位；双天线设计较单天线约 2 倍性能。</li><li>无需 CTE/AoA 硬件——角度信息搭载于用于安全测距的同一 CS 交换。</li><li>生态级演示栈：Nordic nRF54L15 发起端、Synaptics Veros、Ezurio 双天线模组、Bauer 门锁；合作方含 Ellisys/Minew/Raytac/Fanstel。</li><li>Ezurio 双天线 nRF54L15 开发套件发布时即已商用。</li></ul>\n<h3>意义与新意</h3>\n<p>本库 bt-channel-sounding 主线已覆盖 CS 效率（Core 6.3 硬件内联 PCT 传输）、CS 规模（经 PAwR 的无连接 CS）与 CS 芯片（Nordic nRF54L15 Tag）——但每个条目都默认 CS 只做距离。「从 CIR 提取角度」从两个方向改变了与 UWB 的竞争格局：它在除阵列外无需新天线的前提下收窄了 UWB 的 2D 定位优势，且运行在已为测距出货的商用 BLE 芯片上。值得关注该技术是走向标准化还是保持为协议栈厂商的私有差异化——与本库在 Wi-Fi 感知领域观察到的分叉如出一辙。</p>",
+      "images": [],
+      "search_blob": "metirionic mars: first public demo of simultaneous distance and angle estimation from bluetooth channel sounding, on nordic nrf54l15 with quad-antenna arrays metirionic mars：全球首次公开演示由蓝牙信道探测同时估计距离与角度，基于 nordic nrf54l15 与四天线阵列 bluetooth-6.0 channel-sounding ranging angle-estimation positioning metirionic (dresden-based ranging-stack specialist) demonstrated on 9 march 2026 the first public system extracting both high-accuracy distance and precision bearing from a single bluetooth channel sounding measurement procedure. standard bluetooth 6.0 channel sounding delivers ranging only; angle determination has historically required the separate aoa/aod direction-finding feature with its dedicated cte (constant tone extension) hardware path. metirionic's advanced ranging stack (mars) instead mines the channel-sounding exchange itself: it analyzes channel impulse response data across a quad-antenna array to characterize indoor multipath, identifies the direct path, suppresses reflection error, and computes range and bearing simultaneously — sub-meter spatial positioning, with a claimed 2x performance gain for dual-antenna over single-antenna designs. metirionic（德累斯顿测距协议栈厂商）于 2026 年 3 月 9 日完成首次公开演示：从单次蓝牙信道探测（channel sounding）测量流程中同时提取高精度距离与方位角。标准蓝牙 6.0 信道探测只提供测距；角度测定此前需要独立的 aoa/aod 测向特性及其专用 cte（恒定音扩展）硬件路径。metirionic 的高级测距协议栈（mars）直接挖掘信道探测交换本身：跨四天线阵列分析信道冲激响应（cir）数据以刻画室内多径、识别直射路径、抑制反射误差，同时计算距离与方位——亚米级空间定位，双天线设计相对单天线宣称 2 倍性能增益。 industry-news bluetooth"
     },
     {
       "id": "2026-08-03_rs-cmp180-wifi8-5x5-validation",
