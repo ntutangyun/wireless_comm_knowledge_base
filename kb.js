@@ -8,44 +8,45 @@ window.KB_DATA = {
     "agentic-AI": 39,
     "MAC-layer": 37,
     "products": 36,
+    "LEO": 33,
     "security": 33,
-    "LEO": 32,
+    "O-RAN": 32,
     "scheduling": 31,
-    "O-RAN": 29,
     "802.11be": 27,
     "WiFi-sensing": 22,
     "Starlink": 17,
+    "IoT": 16,
     "MAPC": 16,
-    "IoT": 15,
     "MLO": 15,
     "PHY-layer": 15,
     "5G-NR": 14,
+    "direct-to-device": 14,
     "5G": 14,
     "802.11bf": 14,
+    "AI-RAN": 13,
     "6GHz": 13,
     "NTN": 13,
-    "direct-to-device": 13,
-    "AI-RAN": 12,
+    "network-slicing": 12,
+    "UWB": 11,
     "LLM": 11,
-    "network-slicing": 11,
     "802.11ax": 11,
+    "energy-efficiency": 10,
     "802.11bp": 10,
-    "UWB": 10,
+    "BLE": 10,
     "digital-twin": 10,
     "mmWave": 10,
     "CSI": 10,
     "802.11": 9,
-    "energy-efficiency": 9,
+    "FCC": 9,
     "NearLink": 9,
     "SparkLink": 9,
-    "BLE": 9,
     "spectrum": 8,
     "802.11bq": 8,
     "privacy": 8,
     "Wi-Fi 7": 8,
-    "FCC": 8,
     "3GPP": 8,
     "generative-AI": 8,
+    "OpenAirInterface": 7,
     "RIC": 7,
     "AI-native": 7,
     "NPCA": 7,
@@ -54,7 +55,8 @@ window.KB_DATA = {
     "reinforcement-learning": 7,
     "XR": 7,
     "backscatter": 6,
-    "OpenAirInterface": 6,
+    "5G-Advanced": 6,
+    "D2D": 6,
     "xApp": 6,
     "ISAC": 6,
     "AFC": 6,
@@ -69,7 +71,9 @@ window.KB_DATA = {
     "channel-sounding": 6,
     "edge-AI": 5,
     "AMP": 5,
+    "handover": 5,
     "LLM-agent": 5,
+    "FiRa": 5,
     "5G-core": 5,
     "IAB": 5,
     "backhaul": 5,
@@ -77,16 +81,15 @@ window.KB_DATA = {
     "SLE": 5,
     "regulation": 5,
     "UAV": 5,
-    "D2D": 5,
     "massive-MIMO": 5,
     "QoS": 5,
     "Co-SR": 5,
     "Co-BF": 5,
-    "5G-Advanced": 5,
+    "AI-inference": 4,
     "ambient-power": 4,
+    "machine-learning": 4,
     "edge-computing": 4,
     "SLA": 4,
-    "FiRa": 4,
     "DRU": 4,
     "ELR": 4,
     "jamming": 4,
@@ -108,12 +111,13 @@ window.KB_DATA = {
     "Release-21": 4,
     "mobility": 4,
     "AoA": 4,
-    "handover": 4,
     "802.15.4ab": 4,
     "ranging": 4,
     "802.11az": 4,
     "MCS": 3,
     "coexistence": 3,
+    "Amazon-Leo": 3,
+    "Globalstar": 3,
     "open-source": 3,
     "Starship": 3,
     "constellation": 3,
@@ -126,7 +130,6 @@ window.KB_DATA = {
     "high-density": 3,
     "standards-process": 3,
     "AI Offload SG": 3,
-    "AI-inference": 3,
     "REVmf": 3,
     "direct-to-cell": 3,
     "BlueBird": 3,
@@ -137,7 +140,6 @@ window.KB_DATA = {
     "802.1X": 3,
     "DRL": 3,
     "autonomous-networks": 3,
-    "machine-learning": 3,
     "waveform": 3,
     "orchestration": 3,
     "traffic-prediction": 3,
@@ -161,6 +163,7 @@ window.KB_DATA = {
     "roaming": 3,
     "Apple": 3,
     "DCF": 2,
+    "formal-verification": 2,
     "WiFi-6E": 2,
     "downlink": 2,
     "WPT": 2,
@@ -204,8 +207,6 @@ window.KB_DATA = {
     "FR3": 2,
     "HarmonyOS": 2,
     "beam-hopping": 2,
-    "Amazon-Leo": 2,
-    "Globalstar": 2,
     "OFDM": 2,
     "RTT": 2,
     "Wi-Fi-7": 2,
@@ -231,6 +232,7 @@ window.KB_DATA = {
     "carrier-aggregation": 2,
     "O-Cloud": 2,
     "LE-UWB": 2,
+    "interoperability": 2,
     "5G-SA": 2,
     "Samsung": 2,
     "HAPS": 2,
@@ -268,6 +270,16 @@ window.KB_DATA = {
     "MoE": 1,
     "contention-window": 1,
     "V2I": 1,
+    "functional-split": 1,
+    "E2": 1,
+    "A1": 1,
+    "O1": 1,
+    "Kubernetes": 1,
+    "crystal-free": 1,
+    "SCuM": 1,
+    "calibration": 1,
+    "LoS": 1,
+    "terminal": 1,
     "energy": 1,
     "net-zero": 1,
     "RAN-orchestration": 1,
@@ -306,7 +318,6 @@ window.KB_DATA = {
     "802.11bu": 1,
     "evaluation-methodology": 1,
     "deep-learning": 1,
-    "formal-verification": 1,
     "learning-to-optimize": 1,
     "Part-15": 1,
     "New-Glenn": 1,
@@ -530,7 +541,6 @@ window.KB_DATA = {
     "imec": 1,
     "flexible-duplex": 1,
     "deterministic": 1,
-    "interoperability": 1,
     "C-V2X": 1,
     "semantic-communications": 1,
     "cooperative-perception": 1,
@@ -816,6 +826,8 @@ window.KB_DATA = {
     "inertial-navigation": 1,
     "factor-graph": 1,
     "GNSS-denied": 1,
+    "Qualcomm": 1,
+    "STMicroelectronics": 1,
     "OSSDM": 1,
     "RF-chain": 1,
     "channel-model": 1,
@@ -853,14 +865,14 @@ window.KB_DATA = {
     "wifi7-deployment": 25,
     "6g-vision": 23,
     "sensing-csi": 21,
+    "open-ran": 19,
     "security-privacy": 19,
     "5g-nr": 18,
-    "open-ran": 17,
     "spectrum-policy": 16,
-    "leo-constellations": 14,
+    "leo-constellations": 15,
     "mapc-cosr": 12,
     "amp-iot": 11,
-    "sat-direct-device": 10,
+    "sat-direct-device": 11,
     "agentic-wifi": 10,
     "starlink": 9,
     "rtwt-latency": 8,
@@ -869,9 +881,10 @@ window.KB_DATA = {
     "ntn": 8,
     "cellular-security": 8,
     "ai-for-wifi": 7,
+    "network-slicing": 6,
     "bt-channel-sounding": 6,
     "wifi-for-ai": 5,
-    "network-slicing": 5,
+    "bt-le": 4,
     "nearlink-slb": 4,
     "bt-location": 4,
     "ftm-ranging": 4,
@@ -880,9 +893,8 @@ window.KB_DATA = {
     "mlo": 3,
     "nearlink-sle": 3,
     "ngso-regulation": 3,
-    "bt-le": 3,
+    "uwb-fi-ra": 3,
     "uwb-radar": 2,
-    "uwb-fi-ra": 2,
     "mmwave-bq": 2,
     "nearlink-automotive": 2,
     "roaming-mobility": 2,
@@ -892,8 +904,8 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 223,
-    "industry-news": 75,
+    "academic-paper": 228,
+    "industry-news": 77,
     "ieee-document": 30,
     "product": 19,
     "satellite-news": 13,
@@ -902,8 +914,8 @@ window.KB_DATA = {
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 223,
-    "industry": 107,
+    "academia": 228,
+    "industry": 109,
     "standards": 38
   },
   "technologies_vocab": {
@@ -2974,6 +2986,8 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-04_arxiv-oran-energy-latency-ai-placement",
+        "2026-08-04_arxiv-veraran-preactuation-ran-certification",
         "2026-08-03_arxiv-macgyver-airan-scheduler-framework",
         "2026-07-28_arxiv-twin-fidelity-xapp-conflict-oran",
         "2026-07-10_arxiv-adorn-oran-drift-retraining",
@@ -2993,6 +3007,7 @@ window.KB_DATA = {
         "2026-07-11_oran-security-update-2026"
       ],
       "entries_secondary": [
+        "2026-08-04_arxiv-metis-declarative-slice-orchestrator",
         "2026-08-03_arxiv-creact-oran-forensic-triage-agent",
         "2026-07-24_arxiv-srs-xapp-indoor-localization-oai",
         "2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps",
@@ -3020,6 +3035,8 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-04_arxiv-oran-energy-latency-ai-placement",
+          "2026-08-04_arxiv-veraran-preactuation-ran-certification",
           "2026-08-03_arxiv-macgyver-airan-scheduler-framework",
           "2026-07-28_arxiv-twin-fidelity-xapp-conflict-oran",
           "2026-07-10_arxiv-adorn-oran-drift-retraining",
@@ -3056,6 +3073,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-04_arxiv-metis-declarative-slice-orchestrator",
         "2026-07-13_arxiv-mappo-sla-uav-mec-slicing",
         "2026-06-08_arxiv-i2slicer-5g-sa-slice-orchestration",
         "2026-06-28_arxiv-privacy-marl-vr-slice-6g-sdran",
@@ -3077,6 +3095,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-04_arxiv-metis-declarative-slice-orchestrator",
           "2026-07-13_arxiv-mappo-sla-uav-mec-slicing",
           "2026-06-08_arxiv-i2slicer-5g-sa-slice-orchestration",
           "2026-06-28_arxiv-privacy-marl-vr-slice-6g-sdran",
@@ -3106,6 +3125,7 @@ window.KB_DATA = {
         "2026-06-30_arxiv-subedge-subscriber-centric-mec-6g"
       ],
       "entries_secondary": [
+        "2026-08-04_arxiv-oran-energy-latency-ai-placement",
         "2026-07-26_arxiv-microwave-backhaul-dt-iab-fwa",
         "2026-07-13_arxiv-mappo-sla-uav-mec-slicing",
         "2026-07-08_arxiv-hype-uav-6g-qoais",
@@ -3168,6 +3188,8 @@ window.KB_DATA = {
         "2026-05-21_kddi-ericsson-ai-uplink-ropt"
       ],
       "entries_secondary": [
+        "2026-08-04_arxiv-oran-energy-latency-ai-placement",
+        "2026-08-04_arxiv-veraran-preactuation-ran-certification",
         "2026-08-03_arxiv-packetized-energy-6g-ran",
         "2026-08-03_arxiv-macgyver-airan-scheduler-framework",
         "2026-07-28_arxiv-6g-guaranteed-digital-services",
@@ -3404,6 +3426,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-04_arxiv-leo-los-skyline-proactive-handover",
         "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
         "2026-07-26_south-korea-k-starlink-2035-ratified",
         "2026-07-04_amazon-leo-396-sats-initial-service",
@@ -3420,6 +3443,7 @@ window.KB_DATA = {
         "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
       ],
       "entries_secondary": [
+        "2026-08-04_amazon-leo-d2d-5105-satellite-filing",
         "2026-08-03_arxiv-stride-inorbit-edge-eo",
         "2026-07-26_starship-flight13-first-starlink-v3-deployment",
         "2026-07-22_sigcomm26-satellite-papers",
@@ -3445,6 +3469,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-04_arxiv-leo-los-skyline-proactive-handover",
           "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
           "2026-06-26_arxiv-all-optical-satellite-burst-size",
           "2026-06-23_arxiv-isl-path-selection-walker-delta",
@@ -3505,6 +3530,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Satellite direct-to-device))\n    Operators\n      Starlink direct-to-cell\n      AST SpaceMobile BlueBird\n      Apple / Globalstar SOS\n    Spectrum\n      EchoStar 65 MHz mid-band (AWS-3/4, H-Block)\n      Earlier FCC D2C spectrum denial\n    Strategy shift 2026\n      Retail Starlink Mobile ambitions\n      Possible terrestrial buildout\n    Hardware\n      Block 2 BlueBird 2,400 sq ft arrays\n      989 Mbps peak D2D measured\n    Watch\n      EchoStar transfer ~Nov 2027\n      Gen2 100x capacity claim\n      AST 45-60 satellites by end-2026\n      3GPP NTN handset support",
       "diagram_mmd_zh": "mindmap\n  root((卫星直连手机))\n    运营方\n      Starlink 直连蜂窝\n      AST SpaceMobile BlueBird\n      Apple / Globalstar 紧急求救\n    频谱\n      EchoStar 65 MHz 中频段（AWS-3/4、H-Block）\n      此前 FCC 否决 D2C 频谱申请\n    2026 战略转向\n      Starlink Mobile 零售野心\n      可能自建地面网络\n    硬件\n      Block 2 BlueBird 2,400 平方英尺阵列\n      实测 989 Mbps 峰值 D2D\n    待关注\n      EchoStar 转让 ~2027 年 11 月\n      Gen2 百倍容量宣称\n      AST 年底 45-60 颗\n      3GPP NTN 终端支持",
       "entries_primary": [
+        "2026-08-04_amazon-leo-d2d-5105-satellite-filing",
         "2026-07-24_starlink-fastweb-italy-d2c-trial",
         "2026-07-22_ast-spacemobile-d2d-deferral-2027",
         "2026-07-03_starlink-mobile-retail-carrier-plans",
@@ -3525,17 +3551,18 @@ window.KB_DATA = {
         "2026-06-01_arxiv-uav-connectivity-cellular-vs-starlink"
       ],
       "by_type_primary": {
+        "industry-news": [
+          "2026-08-04_amazon-leo-d2d-5105-satellite-filing",
+          "2026-05-24_ast-spacemobile-q1-2026-45-bluebirds",
+          "2026-05-30_fcc-ast-spacemobile-full-constellation-approval",
+          "2026-05-30_keysight-samsung-rel19-nr-ntn-sband"
+        ],
         "satellite-news": [
           "2026-07-24_starlink-fastweb-italy-d2c-trial",
           "2026-07-22_ast-spacemobile-d2d-deferral-2027",
           "2026-07-03_starlink-mobile-retail-carrier-plans",
           "2026-06-18_ast-spacemobile-bluebird-block2-launch",
           "2026-07-22_amazon-globalstar-acquisition-apple-satellite"
-        ],
-        "industry-news": [
-          "2026-05-24_ast-spacemobile-q1-2026-45-bluebirds",
-          "2026-05-30_fcc-ast-spacemobile-full-constellation-approval",
-          "2026-05-30_keysight-samsung-rel19-nr-ntn-sband"
         ],
         "academic-paper": [
           "2026-05-26_arxiv-elevation-aware-sul-ds2d",
@@ -3567,6 +3594,7 @@ window.KB_DATA = {
         "2026-06-13_arxiv-space-data-centers-orbital-computing"
       ],
       "entries_secondary": [
+        "2026-08-04_arxiv-leo-los-skyline-proactive-handover",
         "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
         "2026-07-26_south-korea-k-starlink-2035-ratified",
         "2026-06-30_arxiv-leo-latency-region-signatures-starlink",
@@ -3607,6 +3635,7 @@ window.KB_DATA = {
         "2026-05-30_fcc-starlink-gen2-authorization-spectrum"
       ],
       "entries_secondary": [
+        "2026-08-04_amazon-leo-d2d-5105-satellite-filing",
         "2026-07-26_south-korea-k-starlink-2035-ratified",
         "2026-07-04_amazon-leo-396-sats-initial-service",
         "2026-07-03_starlink-mobile-retail-carrier-plans",
@@ -3642,6 +3671,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-04_arxiv-lightcal-crystal-free-ble-optical-calibration",
         "2026-05-21_arxiv-enhanced-ble-esb-hybrid",
         "2026-07-13_rohde-realtek-first-ble-hdt-test-solution",
         "2026-05-30_nordic-nrf54lm20b-npu-ble-soc"
@@ -3660,6 +3690,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-04_arxiv-lightcal-crystal-free-ble-optical-calibration",
           "2026-05-21_arxiv-enhanced-ble-esb-hybrid"
         ],
         "industry-news": [
@@ -3876,7 +3907,8 @@ window.KB_DATA = {
       "diagram_mmd_zh": "mindmap\n  root((FiRa 生态))\n    角色\n      基于 802.15.4z 的互操作认证\n      应用规范（数字钥匙、门禁、定位）\n    成员动向\n      SPARK Microsystems（LE-UWB 数据通信）\n      意法半导体进入董事会（汽车数字钥匙）\n    汇合趋势\n      测距与数据共用一颗射频\n      与 802.15.4ab 对齐\n    待关注\n      首次亚洲 Plugfest\n      数据通信规范是否纳入发布\n      汽车数字钥匙出货量",
       "entries_primary": [
         "2026-07-03_spark-microsystems-joins-fira",
-        "2026-05-21_jcb-uwb-payments-japan"
+        "2026-05-21_jcb-uwb-payments-japan",
+        "2026-08-04_fira-plugfests-uwb-interop-program"
       ],
       "entries_secondary": [
         "2026-07-28_apple-google-uwb-indoor-gps-platform",
@@ -3888,7 +3920,8 @@ window.KB_DATA = {
       "by_type_primary": {
         "industry-news": [
           "2026-07-03_spark-microsystems-joins-fira",
-          "2026-05-21_jcb-uwb-payments-japan"
+          "2026-05-21_jcb-uwb-payments-japan",
+          "2026-08-04_fira-plugfests-uwb-interop-program"
         ]
       }
     },
@@ -4131,6 +4164,36 @@ window.KB_DATA = {
       "search_blob": "sensitivity-driven adaptive contention window optimization for ieee 802.11 based v2i networks 基于灵敏度分析的 802.11 v2i 网络自适应竞争窗口优化 802.11 dcf contention-window v2i a single-author analytical study (aytül bozkurt, submitted 2026-08-03) that treats the classic 802.11 dcf performance model as a deterministic system and asks which parameters actually move the needle for vehicle-to-infrastructure (v2i) links. the method pairs local one-factor-at-a-time analysis, expressed as dimensionless elasticities, with variance-based global sensitivity analysis (sobol indices) across five metrics: throughput, collision probability, delay, packet delivery ratio, and age of information. 一篇单作者分析型论文（aytül bozkurt，2026-08-03 提交），将经典 802.11 dcf 性能模型视为确定性系统，探讨哪些参数真正影响车辆到基础设施（v2i）链路的性能。方法上将局部单因素分析（以无量纲弹性表示）与基于方差的全局灵敏度分析（sobol 指数）配对，覆盖五个指标：吞吐量、碰撞概率、时延、包投递率与信息年龄（aoi）。 academic-paper wifi"
     },
     {
+      "id": "2026-08-04_arxiv-oran-energy-latency-ai-placement",
+      "date_found": "2026-08-04",
+      "technology": "cellular",
+      "date_published": "2026-08-03",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Energy-Latency Trade-offs in O-RAN with Distributed Baseband Processing and AI Inference",
+      "title_zh": "O-RAN 分布式基带处理与 AI 推理的能耗-时延权衡",
+      "url": "https://arxiv.org/abs/2608.02082",
+      "topics": [
+        "O-RAN",
+        "functional-split",
+        "energy-efficiency",
+        "AI-inference"
+      ],
+      "topic_primary": "open-ran",
+      "topics_secondary": [
+        "cellular-ai",
+        "mec"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-04_arxiv-oran-energy-latency-ai-placement.md",
+      "summary_short_en": "A joint modeling study (Tariq, Raj, Pandey, Dzaferagic, Popovski, Kilper — an Aalborg/Trinity-College-Dublin flavoured author set, submitted 2026-08-03) that treats a question operators now face concretely: where, across an O-RAN deployment's access, metro, and long-haul segments, should baseband processing functions and AI/ML inference workloads be placed when both energy and latency matter?",
+      "summary_short_zh": "一项联合建模研究（Tariq、Raj、Pandey、Dzaferagic、Popovski、Kilper——奥尔堡/都柏林圣三一背景的作者组合，2026-08-03 提交），处理运营商当下的具体问题：在 O-RAN 部署的接入、城域与长途段之间，当能耗与时延都重要时，基带处理功能与 AI/ML 推理负载应放在哪里？",
+      "body_html_en": "<h3>Summary</h3>\n<p>A joint modeling study (Tariq, Raj, Pandey, Dzaferagic, Popovski, Kilper — an Aalborg/Trinity-College-Dublin flavoured author set, submitted 2026-08-03) that treats a question operators now face concretely: where, across an O-RAN deployment's access, metro, and long-haul segments, should baseband processing functions and AI/ML inference workloads be placed when both energy and latency matter?</p>\n<p>The authors build an end-to-end energy-consumption model that folds in latency modeling and — unusually for this literature — the energy cost of AI/ML inference itself, rather than treating inference as free-riding on RAN compute. On top of the model they formulate an optimization that selects the placement of baseband functions (across O-RAN's flexible functional splits) and inference tasks jointly, subject to network load, server frequency, and energy-budget constraints.</p>\n<p>The headline qualitative result: QoS requirements and network load <em>jointly</em> determine optimal placement — there is no static split/placement that is simultaneously energy-optimal and latency-safe across load regimes, so centralisation-vs-distribution must be re-decided as load shifts. The paper positions itself as design guidance for O-RAN deployments expected to host AI-driven services (AI-RAN) whose inference workloads compete with baseband processing for the same distributed compute.</p>\n<h3>Key technical points</h3>\n<ul><li>End-to-end energy model spanning access / metro / long-haul segments, with latency modeling and explicit AI-inference energy cost included.</li><li>Joint optimization: placement of baseband functions (functional splits) + AI inference tasks under network-load, server-frequency, and energy-budget constraints.</li><li>Finding: no static placement is optimal across load regimes — QoS and load jointly move the optimum between centralised and distributed configurations.</li><li>Framing target: AI-RAN deployments where inference workloads and baseband processing share distributed compute.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The open-ran bin has entries on programmable MAC scheduling (MAC-Gyver), forensic triage (C-RE-ACT), and fleet energy management (2026-08-03_arxiv-packetized-energy-6g-ran, which manages BS energy as a virtual power plant); this entry fills the placement dimension — where compute goes, not how much energy the fleet trades. Counting AI-inference energy as a first-class term is the differentiating move as AI-RAN marketing routinely assumes inference is absorbed for free. Abstract-level ingest only (no HTML rendering available); a later run can upgrade source_quality if the camera-ready lands with numbers worth capturing.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>一项联合建模研究（Tariq、Raj、Pandey、Dzaferagic、Popovski、Kilper——奥尔堡/都柏林圣三一背景的作者组合，2026-08-03 提交），处理运营商当下的具体问题：在 O-RAN 部署的接入、城域与长途段之间，当能耗与时延都重要时，基带处理功能与 AI/ML 推理负载应放在哪里？</p>\n<p>作者建立了端到端能耗模型，纳入时延建模，并且——在这类文献中少见地——纳入 AI/ML 推理本身的能耗，而非把推理当作搭 RAN 算力便车的免费项。在模型之上构建优化问题，联合选择基带功能（跨 O-RAN 灵活功能切分）与推理任务的放置，约束条件包括网络负载、服务器频率与能耗预算。</p>\n<p>核心定性结论：QoS 需求与网络负载<em>共同</em>决定最优放置——不存在在所有负载状态下同时能耗最优且时延安全的静态切分/放置方案，集中化与分布化必须随负载迁移重新决策。论文将自身定位为承载 AI 驱动业务（AI-RAN）的 O-RAN 部署的设计指南，这类推理负载与基带处理竞争同一套分布式算力。</p>\n<h3>技术要点</h3>\n<ul><li>覆盖接入/城域/长途段的端到端能耗模型，含时延建模与显式的 AI 推理能耗。</li><li>联合优化：在网络负载、服务器频率与能耗预算约束下放置基带功能（功能切分）与 AI 推理任务。</li><li>结论：不存在跨负载状态的静态最优放置——QoS 与负载共同使最优点在集中式与分布式配置间移动。</li><li>目标场景：推理负载与基带处理共享分布式算力的 AI-RAN 部署。</li></ul>\n<h3>意义与新意</h3>\n<p>open-ran 主题已有可编程 MAC 调度（MAC-Gyver）、取证分诊（C-RE-ACT）与集群能量管理条目（2026-08-03_arxiv-packetized-energy-6g-ran，将基站能量作为虚拟电厂管理）；本条目补上放置维度——算力放在哪里，而非集群交易多少能量。将 AI 推理能耗作为一等项计入是其差异化之处，因为 AI-RAN 的宣传通常默认推理开销可被免费吸收。本条目仅为摘要级收录（无 HTML 渲染）；若正式版发表并带有值得记录的数据，后续运行可升级 source_quality。</p>",
+      "images": [],
+      "search_blob": "energy-latency trade-offs in o-ran with distributed baseband processing and ai inference o-ran 分布式基带处理与 ai 推理的能耗-时延权衡 o-ran functional-split energy-efficiency ai-inference a joint modeling study (tariq, raj, pandey, dzaferagic, popovski, kilper — an aalborg/trinity-college-dublin flavoured author set, submitted 2026-08-03) that treats a question operators now face concretely: where, across an o-ran deployment's access, metro, and long-haul segments, should baseband processing functions and ai/ml inference workloads be placed when both energy and latency matter? 一项联合建模研究（tariq、raj、pandey、dzaferagic、popovski、kilper——奥尔堡/都柏林圣三一背景的作者组合，2026-08-03 提交），处理运营商当下的具体问题：在 o-ran 部署的接入、城域与长途段之间，当能耗与时延都重要时，基带处理功能与 ai/ml 推理负载应放在哪里？ academic-paper cellular"
+    },
+    {
       "id": "2026-08-03_ieee-mentor-tgbp-digest",
       "date_found": "2026-08-03",
       "technology": "wifi",
@@ -4158,6 +4221,152 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>TGbp（环境能量供电 / AMP IoT）在 7 月 29–31 日窗口上传了六份实质性拟稿文本（PDT）贡献，延续了 7 月 28 日摘要中首次出现的规范文本浪潮，确认该任务组正加紧组装 D0.x 文本，以赶上预计 2026 年 9 月的首次工作组信函投票。贡献方覆盖 AMP 生态：华为（触发流程、RFID 帧）、HaiLa Technologies（激励帧格式、组确认帧格式）、高通（推荐 OFDM 序列）、OPPO（主动发射非 AP AMP STA 的上行频移）。</p>\n<p>Mentor 其余部分安静：TGbn 上传一份实质性 LB291 意见处理文档（海康威视，Co-SR/Co-BF 隐藏节点问题）及其九月会议议程，AI Offload SG 上传九月议程——九月中期会议前的常规会务节奏。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1508-01 · TGbp</strong> — PDT AMP 激励帧格式。Ian Bajaj（HaiLa Technologies）。</li><li><strong>DCN 11-26-1509-00 · TGbp</strong> — PDT 推荐 OFDM 序列。Steve Shellhammer（Qualcomm）。</li><li><strong>DCN 11-26-1519-00 · TGbp</strong> — PDT AMP 触发流程。Rojan Chitrakar（华为）。</li><li><strong>DCN 11-26-1520-00 · TGbp</strong> — AMP RFID 帧。Rojan Chitrakar（华为）。</li><li><strong>DCN 11-26-1521-01 · TGbp</strong> — PDT AMP 组确认帧格式。Ian Bajaj（HaiLa Technologies）。</li><li><strong>DCN 11-26-1522-00 · TGbp</strong> — PDT 主动发射非 AP AMP STA 的上行频移。Yinan Qi（OPPO）。</li><li><strong>DCN 11-26-1504-00 · TGbn</strong> — LB291 CID 6471 意见处理，Co-SR/Co-BF 隐藏节点问题。Jingyang Luo（海康威视）。</li><li>会务：1510（TGbn 九月议程，高通）、1516（AI Offload SG 九月议程，高通）。</li></ul>\n<h3>意义与新意</h3>\n<p>TGbp 是当前唯一持续产出规范文本的 802.11 任务组，本批贡献补齐了 AMP MAC 的核心组件：AMP 设备如何被供能（激励帧）、如何被轮询（触发流程）、如何与传统 RFID 互操作（RFID 帧）、多个 AMP 响应如何高效确认（组确认）、以及主动发射端如何管理频偏（上行频移）。结合 7 月 28 日的 WPT 结束时间指示与服务周期 PDT，面向九月首次信函投票的 D0.5→投票轨迹看来正常。海康威视的 Co-SR/Co-BF 隐藏节点 CR 值得在 mapc-cosr 主线中随 LB291 处理进展持续关注。</p>",
       "images": [],
       "search_blob": "ieee 802.11 tgbp mentor digest — 2026-08-03: amp normative-text wave continues ahead of september ballot ieee 802.11 tgbp mentor 摘要 — 2026-08-03：amp 规范文本浪潮在九月投票前持续推进 802.11bp amp ambient-power backscatter tgbp (ambient power / amp iot) uploaded six substantive proposed-draft-text (pdt) contributions in the july 29–31 window, continuing the normative-text wave first seen in the 28 july digest and confirming that the task group is racing to assemble d0.x text ahead of its predicted september 2026 first wg letter ballot. the contributors span the amp ecosystem: huawei (triggering procedure, rfid frame), haila technologies (excitation frame format, group ack frame format), qualcomm (recommended ofdm sequences), and oppo (ul frequency shift for actively transmitting non-ap amp stas). tgbp（环境能量供电 / amp iot）在 7 月 29–31 日窗口上传了六份实质性拟稿文本（pdt）贡献，延续了 7 月 28 日摘要中首次出现的规范文本浪潮，确认该任务组正加紧组装 d0.x 文本，以赶上预计 2026 年 9 月的首次工作组信函投票。贡献方覆盖 amp 生态：华为（触发流程、rfid 帧）、haila technologies（激励帧格式、组确认帧格式）、高通（推荐 ofdm 序列）、oppo（主动发射非 ap amp sta 的上行频移）。 ieee-document wifi"
+    },
+    {
+      "id": "2026-08-04_arxiv-veraran-preactuation-ran-certification",
+      "date_found": "2026-08-04",
+      "technology": "cellular",
+      "date_published": "2026-08-02",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "VeraRAN: Pre-Actuation Certification and Event-Causal Synchronization Repair for Asynchronous Multi-Interface RAN Plans",
+      "title_zh": "VeraRAN：异步多接口 RAN 计划的执行前认证与事件因果同步修复",
+      "url": "https://arxiv.org/abs/2608.01047",
+      "topics": [
+        "O-RAN",
+        "AI-RAN",
+        "formal-verification",
+        "E2",
+        "A1",
+        "O1"
+      ],
+      "topic_primary": "open-ran",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-08-04_arxiv-veraran-preactuation-ran-certification.md",
+      "summary_short_en": "VeraRAN (Hou & Yang, submitted 2026-08-02) attacks a safety gap that becomes acute as LLM planners start driving RAN controllers: a plan whose every command is individually valid, and whose final state is safe, can still traverse unsafe *intermediate* states when its actions execute asynchronously across the E2, A1, and O1 interfaces. Feeding a 35B-parameter language-model planner (Qwen) with RAN planning tasks, the authors measure that 28.8% of locally-valid plans are asynchronously unsafe — a striking number that turns \"the plan passed validation\" into a false comfort.",
+      "summary_short_zh": "VeraRAN（Hou 与 Yang，2026-08-02 提交）针对的是随 LLM 规划器开始驱动 RAN 控制器而日益尖锐的安全缺口：即使计划中每条命令各自有效、最终状态安全，其动作在 E2、A1、O1 接口上异步执行时仍可能穿越不安全的*中间*状态。作者用 35B 参数的语言模型规划器（Qwen）生成 RAN 计划，测得 28.8% 的局部有效计划在异步执行下不安全——这一数字使\"计划通过了校验\"成为虚假的安心。",
+      "body_html_en": "<h3>Summary</h3>\n<p>VeraRAN (Hou &amp; Yang, submitted 2026-08-02) attacks a safety gap that becomes acute as LLM planners start driving RAN controllers: a plan whose every command is individually valid, and whose final state is safe, can still traverse unsafe <em>intermediate</em> states when its actions execute asynchronously across the E2, A1, and O1 interfaces. Feeding a 35B-parameter language-model planner (Qwen) with RAN planning tasks, the authors measure that 28.8% of locally-valid plans are asynchronously unsafe — a striking number that turns &quot;the plan passed validation&quot; into a false comfort.</p>\n<p>The mechanism, VeraSync, models each action's full lifecycle as six events — REQUEST, DELIVERY, ACCEPT, authoritative APPLY, mechanism COMPLETE, independent OBSERVE — with bounded delays and causal relations, explicitly distinguishing transport acknowledgements from authoritative state transitions (live E2 measurements show ACCEPT-to-APPLY separations of 0.455–50.9 ms median, so treating an ACK as &quot;done&quot; is measurably wrong). Verification explores delay scenarios and event orderings; when it finds an unsafe trajectory, counterexample-driven repair synthesises <em>versioned event barriers</em> from registered templates (e.g. &quot;recipient quota APPLY must precede donor quota REQUEST&quot;) and re-verifies. To keep exploration tractable, MI-POR — a multi-interface partial-order reduction using RAN-specific lifecycle/resource/evidence footprints — prunes 94.6–95.0% of explored states on 20–40-action plans and cuts median verification time 37.7–40.9×.</p>\n<p>Across a 144-plan benchmark (six families, 4–30 actions, handover/quota on E2, policy on A1, cell-sleep on O1), all plans certify after repair while leaving 87–89% of action pairs unordered — i.e. the repair adds only the ordering that safety actually requires. Evaluation spans ns-O-RAN simulation and a live OCUDU E2SM-RC deployment.</p>\n<h3>Key technical points</h3>\n<ul><li>Measured gap: 28.8% of locally-valid LLM-generated RAN plans are asynchronously unsafe (35B-model study) — validity of individual commands does not compose.</li><li>Six-event action lifecycle (REQUEST/DELIVERY/ACCEPT/APPLY/COMPLETE/OBSERVE) with bounded delays; transport ACK explicitly not release authority; live E2 ACCEPT→APPLY medians 0.455–50.9 ms.</li><li>Counterexample-driven repair synthesises versioned event barriers gated on action identity, target scope, version, and epoch; re-verifies after insertion.</li><li>MI-POR partial-order reduction with RAN lifecycle/resource semantics: 94.6–95.0% state pruning, 37.7–40.9× median verification speed-up.</li><li>144-plan benchmark certified with 87–89% of action pairs left unordered; ns-O-RAN + live OCUDU E2SM-RC validation.</li><li>Positioning: pre-actuation certification versus post-hoc conflict detection (PACIFISTA, COMIX) and versus SDN consistent-update work (NICE, Dionysus) that lacks authoritative external lifecycle evidence.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the missing safety layer for the AI-RAN actuation thread the KB has been tracking: 2026-08-03_arxiv-creact-oran-forensic-triage-agent diagnoses failures <em>after</em> they happen, the xApp-conflict taxonomy entry (2026-08-03 window) catalogues <em>what</em> conflicts, and MAC-Gyver opens the MAC to programmable agents — VeraRAN is the first entry that certifies agent-issued plans <em>before</em> they touch the network, with the asynchrony-aware lifecycle model as the genuinely new piece. The 28.8% unsafe-plan rate is the most concrete quantitative argument yet that LLM planners need a verification shim, not just better prompts. Watch for this framing (authoritative-evidence barriers, not ACK-gated release) to surface in O-RAN Alliance WG3 discussions around RIC conflict mitigation.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>VeraRAN（Hou 与 Yang，2026-08-02 提交）针对的是随 LLM 规划器开始驱动 RAN 控制器而日益尖锐的安全缺口：即使计划中每条命令各自有效、最终状态安全，其动作在 E2、A1、O1 接口上异步执行时仍可能穿越不安全的<em>中间</em>状态。作者用 35B 参数的语言模型规划器（Qwen）生成 RAN 计划，测得 28.8% 的局部有效计划在异步执行下不安全——这一数字使&quot;计划通过了校验&quot;成为虚假的安心。</p>\n<p>其机制 VeraSync 将每个动作的完整生命周期建模为六个事件——REQUEST、DELIVERY、ACCEPT、权威 APPLY、机制 COMPLETE、独立 OBSERVE——带有界时延与因果关系，并显式区分传输层确认与权威状态迁移（实测 E2 上 ACCEPT 到 APPLY 的中位间隔为 0.455–50.9 ms，把 ACK 当作&quot;已完成&quot;是可测量的错误）。验证器探索时延场景与事件排序；发现不安全轨迹时，反例驱动的修复从注册模板合成<em>带版本的事件屏障</em>（如&quot;接收方配额的 APPLY 必须先于捐出方配额的 REQUEST&quot;）并重新验证。为保持可解性，MI-POR——利用 RAN 特定生命周期/资源/证据足迹的多接口偏序归约——在 20–40 动作计划上剪除 94.6–95.0% 的探索状态，中位验证时间缩短 37.7–40.9 倍。</p>\n<p>在 144 个计划的基准（六个家族，4–30 个动作，E2 上的切换/配额、A1 策略、O1 小区休眠）上，所有计划经修复后均获认证，同时保留 87–89% 的动作对无序——即修复只添加安全真正需要的排序。评估覆盖 ns-O-RAN 仿真与真实 OCUDU E2SM-RC 部署。</p>\n<h3>技术要点</h3>\n<ul><li>实测缺口：局部有效的 LLM 生成 RAN 计划中 28.8% 异步不安全（35B 模型研究）——单条命令的有效性不可组合。</li><li>六事件动作生命周期（REQUEST/DELIVERY/ACCEPT/APPLY/COMPLETE/OBSERVE）带有界时延；传输 ACK 明确不作为放行依据；实测 E2 ACCEPT→APPLY 中位间隔 0.455–50.9 ms。</li><li>反例驱动修复合成带版本的事件屏障，按动作身份、目标范围、版本与纪元门控；插入后重新验证。</li><li>具备 RAN 生命周期/资源语义的 MI-POR 偏序归约：状态剪枝 94.6–95.0%，中位验证提速 37.7–40.9 倍。</li><li>144 计划基准全部认证且 87–89% 动作对保持无序；ns-O-RAN 仿真 + 真实 OCUDU E2SM-RC 验证。</li><li>定位：执行前认证，区别于事后冲突检测（PACIFISTA、COMIX）与缺少权威外部生命周期证据的 SDN 一致性更新工作（NICE、Dionysus）。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本 KB 持续跟踪的 AI-RAN 执行线索中缺失的安全层：2026-08-03_arxiv-creact-oran-forensic-triage-agent 在故障<em>发生后</em>诊断，xApp 冲突分类条目（2026-08-03 窗口）归纳<em>何种</em>冲突，MAC-Gyver 向可编程智能体开放 MAC——VeraRAN 则是第一个在智能体计划<em>触网前</em>进行认证的条目，其感知异步性的生命周期模型是真正的新元素。28.8% 的不安全计划率是迄今最具体的量化论据：LLM 规划器需要验证垫层，而不仅是更好的提示词。关注这一框架（基于权威证据的屏障而非 ACK 门控放行）是否会出现在 O-RAN 联盟 WG3 关于 RIC 冲突缓解的讨论中。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2608.01047v1/x1.png",
+          "caption_en": "VeraRAN architecture: pre-actuation verification, barrier repair, MI-POR",
+          "caption_zh": "VeraRAN 架构：执行前验证、屏障修复与 MI-POR"
+        },
+        {
+          "url": "https://arxiv.org/html/2608.01047v1/x2.png",
+          "caption_en": "Local validity risk and repair baselines",
+          "caption_zh": "局部有效性风险与修复基线对比"
+        },
+        {
+          "url": "https://arxiv.org/html/2608.01047v1/x4.png",
+          "caption_en": "MI-POR state and verification-time reduction",
+          "caption_zh": "MI-POR 状态与验证时间缩减"
+        }
+      ],
+      "search_blob": "veraran: pre-actuation certification and event-causal synchronization repair for asynchronous multi-interface ran plans veraran：异步多接口 ran 计划的执行前认证与事件因果同步修复 o-ran ai-ran formal-verification e2 a1 o1 veraran (hou & yang, submitted 2026-08-02) attacks a safety gap that becomes acute as llm planners start driving ran controllers: a plan whose every command is individually valid, and whose final state is safe, can still traverse unsafe *intermediate* states when its actions execute asynchronously across the e2, a1, and o1 interfaces. feeding a 35b-parameter language-model planner (qwen) with ran planning tasks, the authors measure that 28.8% of locally-valid plans are asynchronously unsafe — a striking number that turns \"the plan passed validation\" into a false comfort. veraran（hou 与 yang，2026-08-02 提交）针对的是随 llm 规划器开始驱动 ran 控制器而日益尖锐的安全缺口：即使计划中每条命令各自有效、最终状态安全，其动作在 e2、a1、o1 接口上异步执行时仍可能穿越不安全的*中间*状态。作者用 35b 参数的语言模型规划器（qwen）生成 ran 计划，测得 28.8% 的局部有效计划在异步执行下不安全——这一数字使\"计划通过了校验\"成为虚假的安心。 academic-paper cellular"
+    },
+    {
+      "id": "2026-08-04_arxiv-metis-declarative-slice-orchestrator",
+      "date_found": "2026-08-04",
+      "technology": "cellular",
+      "date_published": "2026-07-31",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "METIS: A Declarative Slice Orchestrator for Application-Centric 5G/6G Networks",
+      "title_zh": "METIS：面向应用的 5G/6G 声明式网络切片编排器",
+      "url": "https://arxiv.org/abs/2607.29282",
+      "topics": [
+        "network-slicing",
+        "O-RAN",
+        "5G-Advanced",
+        "Kubernetes",
+        "OpenAirInterface"
+      ],
+      "topic_primary": "network-slicing",
+      "topics_secondary": [
+        "open-ran"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-04_arxiv-metis-declarative-slice-orchestrator.md",
+      "summary_short_en": "METIS (Divband, Yaghoubian, Nikaein — the Eurecom/OpenAirInterface orbit) rebuilds slice lifecycle management around a Kubernetes-style declarative model: Network Slice Instances become first-class declarative resources managed by cascaded reconciliation loops, replacing the network-centric data models, imperative workflows, and static slice templates of existing orchestrators (ONAP, CLiSO, NASP lineage).",
+      "summary_short_zh": "METIS（Divband、Yaghoubian、Nikaein——Eurecom/OpenAirInterface 团队）以 Kubernetes 式声明式模型重构切片生命周期管理：网络切片实例（NSI）成为由级联调和环管理的一等声明式资源，取代现有编排器（ONAP、CLiSO、NASP 一系）的网络中心数据模型、命令式工作流与静态切片模板。",
+      "body_html_en": "<h3>Summary</h3>\n<p>METIS (Divband, Yaghoubian, Nikaein — the Eurecom/OpenAirInterface orbit) rebuilds slice lifecycle management around a Kubernetes-style declarative model: Network Slice Instances become first-class declarative resources managed by cascaded reconciliation loops, replacing the network-centric data models, imperative workflows, and static slice templates of existing orchestrators (ONAP, CLiSO, NASP lineage).</p>\n<p>The design covers the full Day-0/1/2 arc. Day-0: customers express application-centric service profiles (semantic + quality-of-experience requirements), from which METIS automatically derives 3GPP-aligned Slice Profiles by hierarchical aggregation — no static template catalogue. Day-1: a joint O-RAN + 3GPP coordination layer decides whether to share existing network functions or scale new ones under resource constraints, wiring NF interconnection via the NSI serving scope. Day-2: distributed Slice/Network/NF operators give idempotent create/modify/terminate/recover operations with NSI-level QoS holding across domains.</p>\n<p>On a cloud-native testbed (Kubernetes 1.31.3, OpenAirInterface RAN + Open5GS core, three physical Quectel UEs over-the-air, nine zones across three regions), METIS creates an NSI in ≤22.4 s, updates in ≤5.1 s, upgrades in ≤52.2 s, deletes in ≤32.1 s, recovers from failures at four levels in &lt;19 s, and scales to 63 NSIs across nine zones on &lt;0.03 CPU cores. The architectural finding worth remembering: core-only slicing cannot reliably satisfy uplink SLAs — downlink can be shaped at the core before it reaches the radio, but uplink originates unregulated at the UE, so radio-side enforcement is necessary, not merely complementary.</p>\n<h3>Key technical points</h3>\n<ul><li>NSIs as declarative resources with cascaded reconciliation loops (Kubernetes operator pattern applied to slicing); idempotent lifecycle operations.</li><li>Day-0 application-centric service profiles auto-derive 3GPP Slice Profiles via hierarchical aggregation — removes static template catalogues.</li><li>Day-1 joint O-RAN + 3GPP provider coordination with share-vs-scale decisions and NSI serving-scope interconnection.</li><li>Testbed: OAI + Open5GS on K8s 1.31.3, 3 physical UEs OTA, 9 zones / 3 regions; creation ≤22.4 s, update ≤5.1 s, upgrade ≤52.2 s, deletion ≤32.1 s, 4-level failure recovery &lt;19 s, 63 NSIs on &lt;0.03 cores.</li><li>Uplink finding: core-only shaping cannot hold uplink SLAs; radio-side enforcement is structurally required.</li><li>SLA compliance 80%+ under concurrent RAN+CN overload.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The network-slicing bin's existing entries lean on RAN-side slice management (the 06-28 privacy-aware MARL VR slice entry) and declarative intent at the service layer; METIS is the first entry demonstrating a full Day-0/1/2 declarative orchestrator with joint RAN+core enforcement on real over-the-air hardware — and its uplink-enforcement finding is a concrete architectural constraint that intent-based slicing proposals routinely gloss over. Coming from the OAI lineage, the implementation is likely to propagate into the open-source stack the community actually runs, which gives its interface choices (application-centric profiles → auto-derived Slice Profiles) more standard-shaping weight than a typical orchestration paper.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>METIS（Divband、Yaghoubian、Nikaein——Eurecom/OpenAirInterface 团队）以 Kubernetes 式声明式模型重构切片生命周期管理：网络切片实例（NSI）成为由级联调和环管理的一等声明式资源，取代现有编排器（ONAP、CLiSO、NASP 一系）的网络中心数据模型、命令式工作流与静态切片模板。</p>\n<p>设计覆盖完整的 Day-0/1/2 弧线。Day-0：客户表达面向应用的服务画像（语义 + 体验质量需求），METIS 通过层级聚合自动推导 3GPP 对齐的切片画像——无需静态模板目录。Day-1：O-RAN 与 3GPP 联合协调层在资源约束下决定复用既有网络功能还是扩容新功能，并通过 NSI 服务范围连接 NF。Day-2：分布式的切片/网络/NF 操作器提供幂等的创建/修改/终止/恢复操作，跨域保持 NSI 级 QoS。</p>\n<p>在云原生测试床上（Kubernetes 1.31.3、OpenAirInterface RAN + Open5GS 核心网、三个实体 Quectel 终端空口接入、三区域九个地理分区），METIS 创建 NSI ≤22.4 秒、更新 ≤5.1 秒、升级 ≤52.2 秒、删除 ≤32.1 秒，四个层级的故障恢复 &lt;19 秒，并以 &lt;0.03 CPU 核扩展到九分区 63 个 NSI。值得记住的架构发现：仅核心网切片无法可靠满足上行 SLA——下行可在到达无线侧前于核心网整形，而上行在终端侧无约束产生，因此无线侧执行是必需而非补充。</p>\n<h3>技术要点</h3>\n<ul><li>NSI 作为声明式资源，由级联调和环管理（Kubernetes operator 模式应用于切片）；生命周期操作幂等。</li><li>Day-0 面向应用的服务画像经层级聚合自动推导 3GPP 切片画像——去除静态模板目录。</li><li>Day-1 O-RAN 与 3GPP 提供方联合协调，复用/扩容决策 + NSI 服务范围互连。</li><li>测试床：OAI + Open5GS on K8s 1.31.3，3 个实体终端空口接入，3 区域 9 分区；创建 ≤22.4 s、更新 ≤5.1 s、升级 ≤52.2 s、删除 ≤32.1 s、四级故障恢复 &lt;19 s，&lt;0.03 核支撑 63 个 NSI。</li><li>上行发现：仅核心网整形无法保持上行 SLA；无线侧执行在结构上必需。</li><li>并发 RAN+CN 过载下 SLA 达标率 80%+。</li></ul>\n<h3>意义与新意</h3>\n<p>network-slicing 主题的现有条目偏向 RAN 侧切片管理（06-28 隐私感知 MARL VR 切片条目）与服务层的声明式意图；METIS 是第一个在真实空口硬件上展示完整 Day-0/1/2 声明式编排、且 RAN+核心网联合执行的条目——其上行执行发现是基于意图的切片方案常常回避的具体架构约束。出自 OAI 一系，该实现很可能进入社区实际运行的开源栈，使其接口选择（应用画像 → 自动推导切片画像）比一般编排论文更具标准塑造力。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2607.29282v1/x1.png",
+          "caption_en": "METIS high-level architecture",
+          "caption_zh": "METIS 总体架构"
+        },
+        {
+          "url": "https://arxiv.org/html/2607.29282v1/x2.png",
+          "caption_en": "Hierarchical mapping for NSI orchestration",
+          "caption_zh": "NSI 编排的层级映射"
+        }
+      ],
+      "search_blob": "metis: a declarative slice orchestrator for application-centric 5g/6g networks metis：面向应用的 5g/6g 声明式网络切片编排器 network-slicing o-ran 5g-advanced kubernetes openairinterface metis (divband, yaghoubian, nikaein — the eurecom/openairinterface orbit) rebuilds slice lifecycle management around a kubernetes-style declarative model: network slice instances become first-class declarative resources managed by cascaded reconciliation loops, replacing the network-centric data models, imperative workflows, and static slice templates of existing orchestrators (onap, cliso, nasp lineage). metis（divband、yaghoubian、nikaein——eurecom/openairinterface 团队）以 kubernetes 式声明式模型重构切片生命周期管理：网络切片实例（nsi）成为由级联调和环管理的一等声明式资源，取代现有编排器（onap、cliso、nasp 一系）的网络中心数据模型、命令式工作流与静态切片模板。 academic-paper cellular"
+    },
+    {
+      "id": "2026-08-04_arxiv-lightcal-crystal-free-ble-optical-calibration",
+      "date_found": "2026-08-04",
+      "technology": "bluetooth",
+      "date_published": "2026-07-31",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "LightCal: Lightweight Optical-Pulse Bootstrap Calibration for Crystal-Free BLE Radios",
+      "title_zh": "LightCal：晶振-free BLE 射频的轻量光脉冲自举校准",
+      "url": "https://arxiv.org/abs/2608.00141",
+      "topics": [
+        "BLE",
+        "crystal-free",
+        "SCuM",
+        "calibration",
+        "IoT"
+      ],
+      "topic_primary": "bt-le",
+      "topics_secondary": [],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-04_arxiv-lightcal-crystal-free-ble-optical-calibration.md",
+      "summary_short_en": "A Berkeley-lineage team (Wang, Yuan, Burnett, Maksimovic, Pister, Chang — the group behind the Single-Chip micro Mote, SCμM; accepted to IEEE Globecom 2026, submitted 2026-07-31) addresses the bootstrap problem of crystal-free radios: a BLE chip with no external crystal oscillator has no accurate frequency reference, so before it can even join a network it must somehow discover its own RF carrier error. Prior crystal-free calibration approaches lean on already-received RF packets — a chicken-and-egg dependency when the radio is too mistuned to receive anything.",
+      "summary_short_zh": "伯克利一系的团队（Wang、Yuan、Burnett、Maksimovic、Pister、Chang——单芯片微尘 SCμM 的团队；IEEE Globecom 2026 录用，2026-07-31 提交）处理晶振-free 射频的自举问题：没有外部晶振的 BLE 芯片缺乏精确频率基准，在入网之前必须先设法发现自身的射频载波误差。既有的无晶振校准方案依赖已接收到的射频包——当射频失调到收不到任何包时，这是先有鸡还是先有蛋的死结。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A Berkeley-lineage team (Wang, Yuan, Burnett, Maksimovic, Pister, Chang — the group behind the Single-Chip micro Mote, SCμM; accepted to IEEE Globecom 2026, submitted 2026-07-31) addresses the bootstrap problem of crystal-free radios: a BLE chip with no external crystal oscillator has no accurate frequency reference, so before it can even join a network it must somehow discover its own RF carrier error. Prior crystal-free calibration approaches lean on already-received RF packets — a chicken-and-egg dependency when the radio is too mistuned to receive anything.</p>\n<p>LightCal's answer is an optical side-channel: periodic light pulses from a commodity HTC Lighthouse V1 VR base station serve as the external timing reference. The chip's optical receiver accumulates pulses to build a stable timing base, then a transmit-time fine sweep resolves the residual frequency offset. Demonstrated on the SCμM platform, optical calibration constrains the RF carrier offset to a bounded residual error, enabling practical BLE initialisation with no crystal at all — a pre-RF bootstrap path that cuts cost, size, and integration complexity for single-chip IoT devices.</p>\n<h3>Key technical points</h3>\n<ul><li>Problem: crystal-free BLE radios cannot receive until calibrated, and prior calibration methods need received RF packets — a bootstrap deadlock.</li><li>Mechanism: periodic optical pulses (HTC Lighthouse V1) as external timing reference; pulse accumulation for timing stability; transmit-time fine sweep for residual offset.</li><li>Platform: SCμM (Single-Chip micro Mote); RF carrier offset bounded to a residual error sufficient for BLE initialisation.</li><li>Positioning: a pre-RF bootstrap calibration path for crystal-free and highly integrated IoT platforms.</li><li>Venue: IEEE Globecom 2026.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>First crystal-free-radio entry in the bt-le bin: the KB's BLE thread covers protocol evolution (Core 6.x, channel sounding) and application ecosystems, but not the silicon-integration frontier where the crystal is the last off-chip component standing between BLE and true single-chip motes. The optical-bootstrap trick — borrowing a mass-market VR accessory as a precision timing source — is the kind of cross-domain repurposing that tends to propagate; it also complements the bin's Snatcher-era security thread by widening what &quot;a BLE device&quot; can physically be (dust-scale, batteryless-adjacent nodes). Abstract-level ingest; Globecom camera-ready may bring residual-offset numbers worth capturing.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>伯克利一系的团队（Wang、Yuan、Burnett、Maksimovic、Pister、Chang——单芯片微尘 SCμM 的团队；IEEE Globecom 2026 录用，2026-07-31 提交）处理晶振-free 射频的自举问题：没有外部晶振的 BLE 芯片缺乏精确频率基准，在入网之前必须先设法发现自身的射频载波误差。既有的无晶振校准方案依赖已接收到的射频包——当射频失调到收不到任何包时，这是先有鸡还是先有蛋的死结。</p>\n<p>LightCal 的答案是光学侧信道：用商品化 HTC Lighthouse V1 VR 基站的周期性光脉冲作为外部时间基准。芯片的光接收器累积脉冲建立稳定时基，再通过发射时刻细扫描消解残余频偏。在 SCμM 平台上验证，光校准将射频载波偏移约束到有界残差，实现完全无晶振的实用 BLE 初始化——一条射频前自举路径，为单芯片 IoT 器件削减成本、尺寸与集成复杂度。</p>\n<h3>技术要点</h3>\n<ul><li>问题：晶振-free BLE 校准前无法接收，而既有校准方法需要已接收的射频包——自举死锁。</li><li>机制：周期光脉冲（HTC Lighthouse V1）作外部时基；脉冲累积获得时基稳定性；发射时刻细扫描消解残余频偏。</li><li>平台：SCμM 单芯片微尘；射频载波偏移约束到足以完成 BLE 初始化的有界残差。</li><li>定位：面向晶振-free 与高集成 IoT 平台的射频前自举校准路径。</li><li>发表：IEEE Globecom 2026。</li></ul>\n<h3>意义与新意</h3>\n<p>bt-le 主题中首个晶振-free 射频条目：KB 的 BLE 线索覆盖协议演进（Core 6.x、信道探测）与应用生态，但尚未触及硅集成前沿——晶振是横在 BLE 与真正单芯片微尘之间的最后一个片外元件。光学自举技巧——借用大众市场 VR 配件作为精密时间源——属于易于扩散的跨域挪用；它也从物理形态上拓宽了&quot;BLE 设备&quot;的可能性（尘埃级、近无电池节点），与该主题 Snatcher 一线的安全讨论互补。当前为摘要级收录；Globecom 正式版若有残余频偏数据值得补充。</p>",
+      "images": [],
+      "search_blob": "lightcal: lightweight optical-pulse bootstrap calibration for crystal-free ble radios lightcal：晶振-free ble 射频的轻量光脉冲自举校准 ble crystal-free scum calibration iot a berkeley-lineage team (wang, yuan, burnett, maksimovic, pister, chang — the group behind the single-chip micro mote, scμm; accepted to ieee globecom 2026, submitted 2026-07-31) addresses the bootstrap problem of crystal-free radios: a ble chip with no external crystal oscillator has no accurate frequency reference, so before it can even join a network it must somehow discover its own rf carrier error. prior crystal-free calibration approaches lean on already-received rf packets — a chicken-and-egg dependency when the radio is too mistuned to receive anything. 伯克利一系的团队（wang、yuan、burnett、maksimovic、pister、chang——单芯片微尘 scμm 的团队；ieee globecom 2026 录用，2026-07-31 提交）处理晶振-free 射频的自举问题：没有外部晶振的 ble 芯片缺乏精确频率基准，在入网之前必须先设法发现自身的射频载波误差。既有的无晶振校准方案依赖已接收到的射频包——当射频失调到收不到任何包时，这是先有鸡还是先有蛋的死结。 academic-paper bluetooth"
+    },
+    {
+      "id": "2026-08-04_arxiv-leo-los-skyline-proactive-handover",
+      "date_found": "2026-08-04",
+      "technology": "satellite",
+      "date_published": "2026-07-31",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Learning the LoS Skyline from LEO Satellite Observations for Proactive Handover",
+      "title_zh": "从 LEO 卫星观测学习视距天际线以实现主动切换",
+      "url": "https://arxiv.org/abs/2608.00125",
+      "topics": [
+        "LEO",
+        "handover",
+        "machine-learning",
+        "LoS",
+        "terminal"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "sat-ai"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-04_arxiv-leo-los-skyline-proactive-handover.md",
+      "summary_short_en": "A Fraunhofer FOKUS group (Corici, Zaboub, Eichhorn, Buhr; IEEE PIMRC 2026 workshop, submitted 2026-07-31) tackles a practical LEO terminal problem: links to fast-moving satellites die abruptly when the satellite passes behind a building or terrain, and reactive handover then costs an outage. Existing proactive approaches need 3D building maps, sky cameras, or extra sensors — infrastructure a consumer terminal doesn't have.",
+      "summary_short_zh": "弗劳恩霍夫 FOKUS 团队（Corici、Zaboub、Eichhorn、Buhr；IEEE PIMRC 2026 研讨会，2026-07-31 提交）处理一个实际的 LEO 终端问题：快速移动的卫星一旦被建筑或地形遮挡，链路会突然中断，被动式切换随之付出断连代价。现有主动方案需要 3D 建筑地图、天空相机或额外传感器——消费级终端并不具备。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A Fraunhofer FOKUS group (Corici, Zaboub, Eichhorn, Buhr; IEEE PIMRC 2026 workshop, submitted 2026-07-31) tackles a practical LEO terminal problem: links to fast-moving satellites die abruptly when the satellite passes behind a building or terrain, and reactive handover then costs an outage. Existing proactive approaches need 3D building maps, sky cameras, or extra sensors — infrastructure a consumer terminal doesn't have.</p>\n<p>The paper's move is map-free skyline learning: the terminal reconstructs its own local line-of-sight &quot;skyline&quot; — the obstruction boundary across azimuth and elevation — purely from its history of passive satellite signal observations, treating obstruction as a binary classification problem over sky directions. Two estimators are compared: a Gaussian Process classifier and an MLP with circular azimuth encoding plus Monte-Carlo-dropout uncertainty quantification. The learned obstruction surface is then fused with published satellite ephemeris data by an &quot;EphemerisWindow&quot; algorithm that forecasts when the currently-serving satellite's trajectory will cross into the obstructed region — predicting link termination before it happens and triggering handover preparation in advance.</p>\n<p>Both estimators beat empirical baselines, enabling proactive handover with no environmental sensing hardware at all — the constellation's own signals are the survey instrument.</p>\n<h3>Key technical points</h3>\n<ul><li>Obstruction detection as binary classification over (azimuth, elevation); skyline learned solely from passive satellite signal observations at the terminal.</li><li>Two estimators: Gaussian Process classifier vs MLP with circular azimuth encoding + MC-dropout uncertainty.</li><li>EphemerisWindow algorithm fuses the learned obstruction surface with satellite trajectories to forecast link-termination events ahead of time.</li><li>No 3D maps, sky cameras, or extra sensors required; both estimators outperform empirical baselines.</li><li>Venue: IEEE PIMRC 2026 workshop.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The leo-constellations bin's handover thread has so far been network-side (2026-08-03's NTN NAS-timer entry; earlier LEO path-selection work); this is the first terminal-side, self-surveying approach in the KB — the terminal turns constellation motion into a free sky-survey and converts reactive outages into scheduled handovers. The idea generalises naturally to any dense-constellation service (including D2D smartphones, where sky cameras are a non-starter), which links it to the sat-direct-device thread. Abstract-level ingest; the PIMRC camera-ready may add quantitative outage-reduction numbers worth a source_quality upgrade later.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>弗劳恩霍夫 FOKUS 团队（Corici、Zaboub、Eichhorn、Buhr；IEEE PIMRC 2026 研讨会，2026-07-31 提交）处理一个实际的 LEO 终端问题：快速移动的卫星一旦被建筑或地形遮挡，链路会突然中断，被动式切换随之付出断连代价。现有主动方案需要 3D 建筑地图、天空相机或额外传感器——消费级终端并不具备。</p>\n<p>论文的做法是免地图的天际线学习：终端仅凭其被动卫星信号观测历史，重建自身局部视距&quot;天际线&quot;——方位角与仰角上的遮挡边界——将遮挡判断建模为对天空方向的二元分类。比较了两种估计器：高斯过程分类器，以及带圆形方位角编码与蒙特卡洛 Dropout 不确定性量化的 MLP。学得的遮挡面再通过 &quot;EphemerisWindow&quot; 算法与公开的卫星星历融合，预测当前服务卫星轨迹何时进入遮挡区——在链路中断前预测终止并提前触发切换准备。</p>\n<p>两种估计器均优于经验基线，实现完全无需环境感知硬件的主动切换——星座自身的信号就是测绘仪器。</p>\n<h3>技术要点</h3>\n<ul><li>将遮挡检测建模为（方位角、仰角）上的二元分类；天际线仅由终端的被动卫星信号观测学习。</li><li>两种估计器：高斯过程分类器 vs 带圆形方位编码 + MC-dropout 不确定性的 MLP。</li><li>EphemerisWindow 算法将学得的遮挡面与卫星轨迹融合，提前预报链路终止事件。</li><li>无需 3D 地图、天空相机或额外传感器；两估计器均优于经验基线。</li><li>发表：IEEE PIMRC 2026 研讨会。</li></ul>\n<h3>意义与新意</h3>\n<p>leo-constellations 主题的切换线索此前偏网络侧（2026-08-03 的 NTN NAS 定时器条目；更早的 LEO 路径选择工作）；本条是 KB 中首个终端侧自测绘方案——终端把星座运动变成免费的天空测绘，将被动断连转化为有计划的切换。该思路可自然推广到任何密集星座业务（包括不可能装天空相机的 D2D 智能手机），从而与 sat-direct-device 线索相连。当前为摘要级收录；PIMRC 正式版若给出断连降低的量化数据，可在后续运行升级 source_quality。</p>",
+      "images": [],
+      "search_blob": "learning the los skyline from leo satellite observations for proactive handover 从 leo 卫星观测学习视距天际线以实现主动切换 leo handover machine-learning los terminal a fraunhofer fokus group (corici, zaboub, eichhorn, buhr; ieee pimrc 2026 workshop, submitted 2026-07-31) tackles a practical leo terminal problem: links to fast-moving satellites die abruptly when the satellite passes behind a building or terrain, and reactive handover then costs an outage. existing proactive approaches need 3d building maps, sky cameras, or extra sensors — infrastructure a consumer terminal doesn't have. 弗劳恩霍夫 fokus 团队（corici、zaboub、eichhorn、buhr；ieee pimrc 2026 研讨会，2026-07-31 提交）处理一个实际的 leo 终端问题：快速移动的卫星一旦被建筑或地形遮挡，链路会突然中断，被动式切换随之付出断连代价。现有主动方案需要 3d 建筑地图、天空相机或额外传感器——消费级终端并不具备。 academic-paper satellite"
     },
     {
       "id": "2026-08-03_arxiv-packetized-energy-6g-ran",
@@ -4257,6 +4466,37 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "coexistence of 5g nr and wi-fi 6e/7 at 6 ghz: hardware-in-the-loop interference measurements say vlp wi-fi cannot hurt licensed nr 6 ghz 频段 5g nr 与 wi-fi 6e/7 共存实测：硬件在环干扰测量表明 vlp wi-fi 无法伤及授权 nr 接收机 6ghz 5g-nr wifi-6e coexistence vlp lbt spectrum a university of surrey (ics/5g-6g innovation centre, tafazolli group) team presents the first hardware-in-the-loop study of wi-fi 6e/7 interference into *both* the gnb uplink and ue downlink receiver chains of a licensed 5g nr system operating in the upper 6 ghz band (n102, 5925–6425 mhz). the testbed combines an openairinterface 5g stack on usrp x310 sdrs (white rabbit ptp-synchronised), a commercial tp-link axe5400 wi-fi 6e ap on 80 mhz channel 9 (~5985 mhz), and a passive rf combiner that injects controlled, calibrated wi-fi power into the nr receive paths while the wi-fi network carries sustained bidirectional load (three 8k video streams plus six 10 gbit file transfers). 萨里大学（ics/5g-6g 创新中心，tafazolli 团队）发表了首个同时覆盖 gnb 上行与 ue 下行接收链的硬件在环研究，测量 wi-fi 6e/7 对运行于上 6 ghz 频段（n102，5925–6425 mhz）的授权 5g nr 系统的干扰。测试平台由 usrp x310 sdr 上的 openairinterface 5g 协议栈（white rabbit ptp 同步）、商用 tp-link axe5400 wi-fi 6e ap（80 mhz 信道 9，约 5985 mhz）以及无源射频合路器组成；后者在 wi-fi 网络承载持续双向业务（3 路 8k 视频流 + 6 个 10 gbit 文件传输）的同时，向 nr 接收路径注入受控、已校准的 wi-fi 功率。 academic-paper wifi"
+    },
+    {
+      "id": "2026-08-04_amazon-leo-d2d-5105-satellite-filing",
+      "date_found": "2026-08-04",
+      "technology": "satellite",
+      "date_published": "2026-07-28",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Amazon Leo files FCC application for 5,105-satellite direct-to-device constellation",
+      "title_zh": "亚马逊 Leo 向 FCC 申请 5105 颗直连设备卫星星座",
+      "url": "https://www.androidauthority.com/amazon-leo-fcc-filing-satellites-3691911/",
+      "topics": [
+        "direct-to-device",
+        "D2D",
+        "FCC",
+        "Amazon-Leo",
+        "Globalstar"
+      ],
+      "topic_primary": "sat-direct-device",
+      "topics_secondary": [
+        "leo-constellations",
+        "ngso-regulation"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-04_amazon-leo-d2d-5105-satellite-filing.md",
+      "summary_short_en": "Amazon Leo (formerly Project Kuiper) has filed an FCC application (SAT-LOA-20260601-00224, filed 2026-06-01, surfacing in trade press late July) for a new constellation of 5,105 low-Earth-orbit satellites dedicated to direct-to-device (D2D) connectivity — voice, messaging, data, and emergency services delivered to standard smartphones with compatible chipsets, without terrestrial towers. The constellation is organised into five orbital shells: three covering mid-latitudes, one high-latitude, and one near-polar, with full deployment targeted by July 30, 2029.",
+      "summary_short_zh": "亚马逊 Leo（前身 Project Kuiper）向 FCC 提交了新申请（SAT-LOA-20260601-00224，2026-06-01 提交，7 月底见诸行业媒体），计划部署 5105 颗专用于直连设备（D2D）的低轨卫星——为搭载兼容芯片组的普通智能手机提供语音、消息、数据与紧急服务，无需地面基站。星座分为五个轨道壳层：三个覆盖中纬度、一个高纬度、一个近极地，完整部署目标为 2029 年 7 月 30 日。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Amazon Leo (formerly Project Kuiper) has filed an FCC application (SAT-LOA-20260601-00224, filed 2026-06-01, surfacing in trade press late July) for a new constellation of 5,105 low-Earth-orbit satellites dedicated to direct-to-device (D2D) connectivity — voice, messaging, data, and emergency services delivered to standard smartphones with compatible chipsets, without terrestrial towers. The constellation is organised into five orbital shells: three covering mid-latitudes, one high-latitude, and one near-polar, with full deployment targeted by July 30, 2029.</p>\n<p>This is a separate build from Leo's broadband constellation (390 satellites in orbit as of the filing's press coverage; fixed service via Leo Nano/Pro/Ultra antennas rolling out later in 2026). The D2D application also slots into Amazon's April 2026 acquisition of Globalstar: the filing describes the new constellation operating alongside both the existing Leo network and Globalstar's constellation, whose spectrum and Apple Emergency-SOS relationship give Amazon an installed D2D anchor tenant.</p>\n<p>Competitively, this creates a three-way D2D race at constellation scale: Starlink Direct to Cell (commercial since July 2025 on T-Mobile, Gen2 expansion to 15,000 satellites approved January 2026), AST SpaceMobile (FCC commercial authorization April 2026 for 248 satellites, next-gen BlueBirds launching August 2026), and now Amazon with the largest dedicated-D2D filing to date.</p>\n<h3>Key technical points</h3>\n<ul><li>FCC application SAT-LOA-20260601-00224: 5,105 LEO satellites, five orbital shells (3 mid-latitude, 1 high-latitude, 1 near-polar), deployment deadline July 30, 2029.</li><li>Dedicated D2D constellation, distinct from the Leo broadband network (390 satellites in orbit; consumer fixed service starting 2026).</li><li>Service set: voice, messaging, data, emergency — to unmodified smartphones with compatible chipsets.</li><li>Integrates with the April 2026 Globalstar acquisition (spectrum + Apple Emergency SOS anchor).</li><li>Context: Starlink DtC at 15,000 approved Gen2 satellites, AST SpaceMobile 248 authorized — Amazon's filing is the largest dedicated-D2D constellation proposed so far.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The sat-direct-device bin tracks the D2D race's regulatory and capability milestones (Starlink Gen2 approval, AST commercial authorization, the FCC's unlicensed direct-to-satellite NPRM in 2026-07-22_fcc-unlicensed-direct-to-satellite-nprm); this entry adds the third major entrant at a scale that exceeds both incumbents' dedicated D2D fleets. The event key for dedup is the FCC application number SAT-LOA-20260601-00224 — expect landing events (grant, first D2D launch) as separate future entries. The Globalstar-acquisition tie-in also makes this the first KB datapoint on how Amazon intends to use that spectrum position.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>亚马逊 Leo（前身 Project Kuiper）向 FCC 提交了新申请（SAT-LOA-20260601-00224，2026-06-01 提交，7 月底见诸行业媒体），计划部署 5105 颗专用于直连设备（D2D）的低轨卫星——为搭载兼容芯片组的普通智能手机提供语音、消息、数据与紧急服务，无需地面基站。星座分为五个轨道壳层：三个覆盖中纬度、一个高纬度、一个近极地，完整部署目标为 2029 年 7 月 30 日。</p>\n<p>这与 Leo 的宽带星座是相互独立的建设（媒体报道时在轨 390 颗；固定宽带经 Leo Nano/Pro/Ultra 天线于 2026 年晚些时候开始商用）。D2D 申请也与亚马逊 2026 年 4 月收购 Globalstar 相衔接：申请描述新星座与既有 Leo 网络及 Globalstar 星座并行运营，后者的频谱与 Apple 紧急 SOS 合作关系为亚马逊提供了现成的 D2D 锚定客户。</p>\n<p>竞争格局上，这形成了星座级 D2D 的三方竞赛：Starlink Direct to Cell（2025 年 7 月起在 T-Mobile 商用，2026 年 1 月 Gen2 扩至 1.5 万颗获批）、AST SpaceMobile（2026 年 4 月获 FCC 商用授权，248 颗，新一代 BlueBirds 2026 年 8 月发射），以及如今提交了迄今最大专用 D2D 申请的亚马逊。</p>\n<h3>技术要点</h3>\n<ul><li>FCC 申请 SAT-LOA-20260601-00224：5105 颗低轨卫星，五个轨道壳层（3 中纬、1 高纬、1 近极地），部署期限 2029 年 7 月 30 日。</li><li>专用 D2D 星座，独立于 Leo 宽带网络（在轨 390 颗；消费级固定服务 2026 年启动）。</li><li>服务集：语音、消息、数据、紧急服务——面向搭载兼容芯片组的普通智能手机。</li><li>与 2026 年 4 月的 Globalstar 收购整合（频谱 + Apple 紧急 SOS 锚定业务）。</li><li>背景：Starlink DtC Gen2 获批 1.5 万颗、AST SpaceMobile 授权 248 颗——亚马逊此次申请是迄今最大的专用 D2D 星座提案。</li></ul>\n<h3>意义与新意</h3>\n<p>sat-direct-device 主题跟踪 D2D 竞赛的监管与能力里程碑（Starlink Gen2 获批、AST 商用授权、FCC 免许可直连卫星 NPRM 见 2026-07-22_fcc-unlicensed-direct-to-satellite-nprm）；本条目加入了第三个主要玩家，其规模超过两家先行者的专用 D2D 舰队。去重事件键为 FCC 申请号 SAT-LOA-20260601-00224——后续落地事件（批准、首次 D2D 发射）应作为独立条目。与 Globalstar 收购的衔接也使本条成为 KB 中关于亚马逊如何使用该频谱资产的首个数据点。</p>",
+      "images": [],
+      "search_blob": "amazon leo files fcc application for 5,105-satellite direct-to-device constellation 亚马逊 leo 向 fcc 申请 5105 颗直连设备卫星星座 direct-to-device d2d fcc amazon-leo globalstar amazon leo (formerly project kuiper) has filed an fcc application (sat-loa-20260601-00224, filed 2026-06-01, surfacing in trade press late july) for a new constellation of 5,105 low-earth-orbit satellites dedicated to direct-to-device (d2d) connectivity — voice, messaging, data, and emergency services delivered to standard smartphones with compatible chipsets, without terrestrial towers. the constellation is organised into five orbital shells: three covering mid-latitudes, one high-latitude, and one near-polar, with full deployment targeted by july 30, 2029. 亚马逊 leo（前身 project kuiper）向 fcc 提交了新申请（sat-loa-20260601-00224，2026-06-01 提交，7 月底见诸行业媒体），计划部署 5105 颗专用于直连设备（d2d）的低轨卫星——为搭载兼容芯片组的普通智能手机提供语音、消息、数据与紧急服务，无需地面基站。星座分为五个轨道壳层：三个覆盖中纬度、一个高纬度、一个近极地，完整部署目标为 2029 年 7 月 30 日。 industry-news satellite"
     },
     {
       "id": "2026-08-03_arxiv-stride-inorbit-edge-eo",
@@ -14547,6 +14787,34 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Sørensen、Bryne、Gryte 与 Johansen（NTNU）证明：在 GNSS 不可用时，商用相控阵蓝牙的角度测量可用于辅助惯性导航——适用于仓储物流、无人机降落与自主对接等场景。难点在于低成本相控阵蓝牙的角度观测噪声大、作用距离有限，朴素融合会迅速退化。</p>\n<p>作者用因子图优化将惯性测量单元（IMU）数据与蓝牙到达角观测融合，并系统比较多种稳健估计策略（不同的稳健代价函数/离群点处理），以防噪声较大的蓝牙角度污染状态估计。此外还测试了在蓝牙角度之外再加入测距或气压高度的辅助配置。</p>\n<p>验证使用真实多旋翼无人机飞行数据并模拟 GNSS 失锁。论文贡献是实证性的：展示了哪些稳健因子图策略能在真实相控阵蓝牙噪声下存活，以及在 GNSS 中断期间测距或气压辅助如何与角度观测互补。它将商用蓝牙 AoA 定位为短距 GNSS 拒止导航中可行、低成本的辅助传感器，而非独立定位系统。</p>\n<h3>技术要点</h3>\n<ul><li>用因子图融合 IMU 与商用相控阵蓝牙 AoA 观测。</li><li>系统比较多种稳健估计策略，以容忍噪声大、距离短的蓝牙角度。</li><li>辅助变体：蓝牙角度 + 测距，或蓝牙角度 + 气压高度。</li><li>在真实多旋翼无人机飞行数据上做实验验证并模拟 GNSS 失锁。</li><li>定位：将商用蓝牙 AoA 作为低成本 GNSS 拒止辅助传感器，而非独立定位。</li></ul>\n<h3>意义与新意</h3>\n<p>将 KB 的蓝牙测向覆盖从纯射频 DOA/信道工作扩展到传感器融合/机器人应用。<code>2026-05-30_arxiv-lmoment-ble-cte-los-nlos</code> 在统计上刻画 AoA 信道，本文则展示噪声 AoA 在下游如何使用——与惯性数据稳健融合以实现 GNSS 拒止导航。稳健因子图方法是可迁移的核心贡献。</p>",
       "images": [],
       "search_blob": "bluetooth phased-array aided inertial navigation using factor graphs: experimental verification 基于因子图的蓝牙相控阵辅助惯性导航：实验验证 bluetooth aoa phased-array inertial-navigation factor-graph gnss-denied sørensen, bryne, gryte, and johansen (ntnu) demonstrate that commercial phased-array bluetooth angle measurements can aid inertial navigation when gnss is unavailable — for warehouse logistics, drone landing, and autonomous docking. the challenge is that low-cost phased-array bluetooth produces noisy angular observations with limited range, so naïve fusion degrades quickly. sørensen、bryne、gryte 与 johansen（ntnu）证明：在 gnss 不可用时，商用相控阵蓝牙的角度测量可用于辅助惯性导航——适用于仓储物流、无人机降落与自主对接等场景。难点在于低成本相控阵蓝牙的角度观测噪声大、作用距离有限，朴素融合会迅速退化。 academic-paper bluetooth"
+    },
+    {
+      "id": "2026-08-04_fira-plugfests-uwb-interop-program",
+      "date_found": "2026-08-04",
+      "technology": "uwb",
+      "date_published": "2026-02-17",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "FiRa Consortium launches UWB Plugfests: Qualcomm hosts April, STMicroelectronics September 2026",
+      "title_zh": "FiRa 联盟启动 UWB Plugfest 互操作测试：高通 4 月、意法半导体 9 月主办",
+      "url": "https://www.firaconsortium.org/news/press-releases/2026/02/fira-consortium-launches-ultrawideband-plugfests-to-advance-industry",
+      "topics": [
+        "FiRa",
+        "interoperability",
+        "UWB",
+        "Qualcomm",
+        "STMicroelectronics"
+      ],
+      "topic_primary": "uwb-fi-ra",
+      "topics_secondary": [],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-08-04_fira-plugfests-uwb-interop-program.md",
+      "summary_short_en": "The FiRa Consortium announced (2026-02-17) a standing Plugfest program: in-person, pairwise interoperability testing events where member companies validate implementations of adopted FiRa specifications against each other, exchange technical findings, and surface implementation issues before products ship. The first two events are vendor-hosted: Plugfest #1 at Qualcomm Technologies in April 2026, Plugfest #2 at STMicroelectronics in September 2026.",
+      "summary_short_zh": "FiRa 联盟宣布（2026-02-17）设立常态化 Plugfest 项目：面对面的成对互操作测试活动，成员公司相互验证已通过的 FiRa 规范实现、交流技术发现，并在产品出货前暴露实现问题。前两场由厂商主办：第一场 2026 年 4 月在高通，第二场 2026 年 9 月在意法半导体。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The FiRa Consortium announced (2026-02-17) a standing Plugfest program: in-person, pairwise interoperability testing events where member companies validate implementations of adopted FiRa specifications against each other, exchange technical findings, and surface implementation issues before products ship. The first two events are vendor-hosted: Plugfest #1 at Qualcomm Technologies in April 2026, Plugfest #2 at STMicroelectronics in September 2026.</p>\n<p>The announcement doesn't enumerate which specification layers are exercised, but the timing is not incidental: it lands as the ecosystem absorbs IEEE 802.15.4ab (whose enhancements FiRa committed in October 2025 to fold into future specifications) and as the first 4ab silicon arrives (ST's ST64UWB family with narrowband-assist). Pairwise plugfests are the standard mechanism alliances use to de-risk exactly this kind of spec transition — Wi-Fi Alliance and Bluetooth SIG both institutionalised them years ago; FiRa formalising the practice is a maturity marker for the UWB ecosystem.</p>\n<p>This entry is a deliberate February backfill: the uwb-fi-ra bin had no coverage of the program, and the September ST-hosted event makes it forward-relevant.</p>\n<h3>Key technical points</h3>\n<ul><li>Standing pairwise interoperability program validating adopted FiRa specifications; issues surfaced pre-ship.</li><li>Plugfest #1: Qualcomm Technologies, April 2026. Plugfest #2: STMicroelectronics, September 2026.</li><li>Context: FiRa's October 2025 commitment to integrate IEEE 802.15.4ab enhancements; first 4ab silicon (ST64UWB) shipping.</li><li>Quote: &quot;FiRa Plugfests turn specifications into real-world confidence&quot; (Annette Mahoney).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The uwb-fi-ra bin tracks the consortium's spec-and-certification arc; this fills the interop-program gap between spec adoption (4ab integration commitment) and certified products. Watch the September ST plugfest — if 4ab/NBA-capable devices cross-test there, it dates the practical start of multi-vendor 802.15.4ab interoperability, which the ST64UWB entry (2026-06 window) sets up but cannot confirm.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>FiRa 联盟宣布（2026-02-17）设立常态化 Plugfest 项目：面对面的成对互操作测试活动，成员公司相互验证已通过的 FiRa 规范实现、交流技术发现，并在产品出货前暴露实现问题。前两场由厂商主办：第一场 2026 年 4 月在高通，第二场 2026 年 9 月在意法半导体。</p>\n<p>公告未列明测试覆盖的规范层次，但时机并非偶然：它正值生态消化 IEEE 802.15.4ab（FiRa 于 2025 年 10 月承诺将其增强纳入未来规范），且首批 4ab 芯片落地（ST 的 ST64UWB 家族，带窄带辅助）。成对 plugfest 正是联盟组织为此类规范过渡去风险的标准机制——Wi-Fi 联盟与蓝牙 SIG 多年前就已将其制度化；FiRa 将这一实践正式化是 UWB 生态成熟度的标志。</p>\n<p>本条为有意的 2 月回填：uwb-fi-ra 主题此前未覆盖该项目，且 9 月 ST 主办的活动使其具有前瞻相关性。</p>\n<h3>技术要点</h3>\n<ul><li>常态化成对互操作项目，验证已通过的 FiRa 规范；问题在出货前暴露。</li><li>第一场：高通，2026 年 4 月。第二场：意法半导体，2026 年 9 月。</li><li>背景：FiRa 2025 年 10 月承诺整合 IEEE 802.15.4ab 增强；首批 4ab 芯片（ST64UWB）出货。</li><li>引语：&quot;FiRa Plugfest 把规范变成真实世界的信心&quot;（Annette Mahoney）。</li></ul>\n<h3>意义与新意</h3>\n<p>uwb-fi-ra 主题跟踪联盟的规范与认证弧线；本条填补了规范采纳（4ab 整合承诺）与认证产品之间的互操作项目空档。关注 9 月 ST 场次——若 4ab/窄带辅助设备在此交叉测试，即可为多厂商 802.15.4ab 互操作的实际起点定日，这是 ST64UWB 条目（2026-06 窗口）铺垫但无法确认的。</p>",
+      "images": [],
+      "search_blob": "fira consortium launches uwb plugfests: qualcomm hosts april, stmicroelectronics september 2026 fira 联盟启动 uwb plugfest 互操作测试：高通 4 月、意法半导体 9 月主办 fira interoperability uwb qualcomm stmicroelectronics the fira consortium announced (2026-02-17) a standing plugfest program: in-person, pairwise interoperability testing events where member companies validate implementations of adopted fira specifications against each other, exchange technical findings, and surface implementation issues before products ship. the first two events are vendor-hosted: plugfest #1 at qualcomm technologies in april 2026, plugfest #2 at stmicroelectronics in september 2026. fira 联盟宣布（2026-02-17）设立常态化 plugfest 项目：面对面的成对互操作测试活动，成员公司相互验证已通过的 fira 规范实现、交流技术发现，并在产品出货前暴露实现问题。前两场由厂商主办：第一场 2026 年 4 月在高通，第二场 2026 年 9 月在意法半导体。 industry-news uwb"
     },
     {
       "id": "2026-05-01_arxiv-intellicise-agentic-ai-security",
