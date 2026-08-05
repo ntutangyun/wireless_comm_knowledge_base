@@ -26,6 +26,7 @@ window.KB_DATA = {
     "802.11bf": 14,
     "AI-RAN": 13,
     "6GHz": 13,
+    "BLE": 12,
     "network-slicing": 12,
     "CSI": 11,
     "FCC": 11,
@@ -35,7 +36,6 @@ window.KB_DATA = {
     "802.11": 10,
     "energy-efficiency": 10,
     "802.11bp": 10,
-    "BLE": 10,
     "digital-twin": 10,
     "mmWave": 10,
     "spectrum": 9,
@@ -87,6 +87,7 @@ window.KB_DATA = {
     "QoS": 5,
     "Co-SR": 5,
     "Co-BF": 5,
+    "LE-Audio": 4,
     "direct-to-cell": 4,
     "BlueBird": 4,
     "DRL": 4,
@@ -117,8 +118,10 @@ window.KB_DATA = {
     "802.15.4ab": 4,
     "ranging": 4,
     "802.11az": 4,
+    "HDT": 3,
     "AST-SpaceMobile": 3,
     "MCS": 3,
+    "PHY": 3,
     "coexistence": 3,
     "Amazon-Leo": 3,
     "Globalstar": 3,
@@ -244,7 +247,6 @@ window.KB_DATA = {
     "5G-SA": 2,
     "Samsung": 2,
     "HAPS": 2,
-    "PHY": 2,
     "control-plane": 2,
     "semantic-communication": 2,
     "UPF": 2,
@@ -262,7 +264,6 @@ window.KB_DATA = {
     "healthcare": 2,
     "MRSS": 2,
     "HCI": 2,
-    "LE-Audio": 2,
     "AIOps": 2,
     "enterprise": 2,
     "802.11n": 2,
@@ -280,6 +281,7 @@ window.KB_DATA = {
     "Ka-band": 1,
     "military-satcom": 1,
     "Arctic": 1,
+    "SoC": 1,
     "Rakuten": 1,
     "Japan": 1,
     "admission control": 1,
@@ -824,7 +826,6 @@ window.KB_DATA = {
     "JCB": 1,
     "Resona": 1,
     "digital-wallet": 1,
-    "HDT": 1,
     "mid-band": 1,
     "KT": 1,
     "AIR-3284": 1,
@@ -907,7 +908,7 @@ window.KB_DATA = {
     "bt-channel-sounding": 6,
     "cellular-massive-mimo": 5,
     "wifi-for-ai": 5,
-    "bt-le": 4,
+    "bt-le": 5,
     "ngso-regulation": 4,
     "nearlink-slb": 4,
     "bt-location": 4,
@@ -921,24 +922,25 @@ window.KB_DATA = {
     "mmwave-bq": 2,
     "nearlink-automotive": 2,
     "roaming-mobility": 2,
+    "bt-le-audio": 1,
     "sat-iot": 1,
     "bt-security": 1,
     "bt-mesh": 1
   },
   "type_counts": {
     "academic-paper": 232,
-    "industry-news": 79,
+    "industry-news": 80,
     "ieee-document": 30,
     "product": 19,
     "satellite-news": 16,
     "proposal": 4,
-    "bluetooth-spec": 2,
+    "bluetooth-spec": 3,
     "nearlink-spec": 2
   },
   "category_counts": {
     "academia": 232,
-    "industry": 114,
-    "standards": 38
+    "industry": 115,
+    "standards": 39
   },
   "technologies_vocab": {
     "technologies": [
@@ -3728,11 +3730,13 @@ window.KB_DATA = {
       "diagram_mmd_zh": "",
       "entries_primary": [
         "2026-08-04_arxiv-lightcal-crystal-free-ble-optical-calibration",
+        "2026-08-05_bluetooth-sig-hdt-draft-spec-public-review",
         "2026-05-21_arxiv-enhanced-ble-esb-hybrid",
         "2026-07-13_rohde-realtek-first-ble-hdt-test-solution",
         "2026-05-30_nordic-nrf54lm20b-npu-ble-soc"
       ],
       "entries_secondary": [
+        "2026-08-05_ceva-actions-ats296x-hdt-audio-socs",
         "2026-07-06_nordic-nrf54l15-tag-channel-sounding",
         "2026-07-26_arxiv-snatcher-find-my-ble-tracking",
         "2026-07-14_arxiv-ble-nlos-detection-ml-direction-finding",
@@ -3748,6 +3752,9 @@ window.KB_DATA = {
         "academic-paper": [
           "2026-08-04_arxiv-lightcal-crystal-free-ble-optical-calibration",
           "2026-05-21_arxiv-enhanced-ble-esb-hybrid"
+        ],
+        "bluetooth-spec": [
+          "2026-08-05_bluetooth-sig-hdt-draft-spec-public-review"
         ],
         "industry-news": [
           "2026-07-13_rohde-realtek-first-ble-hdt-test-solution"
@@ -3770,13 +3777,20 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-08-05_ceva-actions-ats296x-hdt-audio-socs"
+      ],
       "entries_secondary": [
+        "2026-08-05_bluetooth-sig-hdt-draft-spec-public-review",
         "2026-07-11_bluetooth-core-63-release",
         "2026-05-24_bluetooth-core-6-3-spec-release",
         "2026-07-13_rohde-realtek-first-ble-hdt-test-solution"
       ],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "industry-news": [
+          "2026-08-05_ceva-actions-ats296x-hdt-audio-socs"
+        ]
+      }
     },
     "bt-mesh": {
       "id": "bt-mesh",
@@ -4182,6 +4196,35 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>MDA Space 于 2026 年 8 月 4 日宣布获得 Telesat <strong>4.74 亿美元的合同增额</strong>，从两方面扩展 Lightspeed LEO 计划。其一，在蒙特利尔工厂已在制造的 198 颗基础上增订 <strong>27 颗 MDA AURORA 卫星</strong>，制造订单增至 <strong>225 颗</strong>——并使 Telesat <em>已获全额资金</em>的星座规模从 156 颗提升至 225 颗（+69 颗：原先订购的备份星现计入已获资星座）。其二，为当前在产的 Lightspeed 卫星<strong>加装 500 MHz 军用 Ka 频段</strong>，替换等量的商用 Ka 频谱。</p>\n<p>军用 Ka 频段置换与加拿大<strong>增强卫星通信项目-极地（ESCP-P）</strong>挂钩，使 Lightspeed 成为加拿大北极军事通信的骨干——MDA Space CEO Mike Greenley 表示：&quot;可靠的北极军事通信是捍卫加拿大主权的必需。&quot; 4.74 亿美元的大部分将计入 MDA 2026 年第三季度的订单储备。公告未披露新的交付或服务日期；此前报道称 SpaceX 将自 2026 年中起在约一年内部署首批 Lightspeed 星座，Lightspeed 商用连接目标为 2027 年底起。</p>\n<h3>技术要点</h3>\n<ul><li>合同增额 4.74 亿美元（大部分计入 MDA 2026 年 Q3 订单储备）；2026 年 8 月 4 日公布。</li><li>制造订单：198 → 225 颗 MDA AURORA 新一代宽带卫星（蒙特利尔产线）。</li><li>已获资星座规模：156 → 225 颗（+69）。</li><li>频谱变更：在产卫星加装 500 MHz 军用 Ka 频段，替换等量商用 Ka 频谱。</li><li>计划驱动：加拿大增强卫星通信项目-极地（ESCP-P）——北极军事通信。</li><li>部署背景（此前报道）：SpaceX 自 2026 年中起约一年内完成首批发射；Lightspeed 商用服务目标为 2027 年第四季度起。</li></ul>\n<h3>意义与新意</h3>\n<p>这是知识库的<strong>首条 Telesat Lightspeed 条目</strong>——leo-constellations 板块此前覆盖了 Starlink、OneWeb/Eutelsat、Amazon Leo、Jio 与 K-Starlink，但一直缺少这第四个西方 LEO 宽带计划。值得注意的信号在于扩容的资金来源：不是消费宽带经济性，而是主权-军事锚定客户（ESCP-P）——从买方视角呼应了 IRIS²、K-Starlink、Jio 的主权星座主题。在产卫星上以 500 MHz 军用 Ka 置换商用 Ka，也是制造后期载荷频谱重构的具体案例。关注点：Lightspeed 首次发射（SpaceX，2026 年中起）及 ESCP-P 里程碑。</p>",
       "images": [],
       "search_blob": "telesat lightspeed grows to 225 funded satellites: $474m mda award adds 27 aurora sats and swaps in 500 mhz of military ka-band telesat lightspeed 扩容至 225 颗已获资卫星：mda 获 4.74 亿美元增订 27 颗 aurora 卫星，并换入 500 mhz 军用 ka 频段 telesat lightspeed mda-aurora ka-band military-satcom arctic leo mda space announced on august 4, 2026 a **us$474 million contract increase** from telesat that expands the lightspeed leo program in two ways. first, it adds **27 mda aurora satellites** to the 198 already being manufactured at mda's montréal facility, taking the build order to **225** — and lifting telesat's *fully funded* constellation from 156 to 225 satellites (+69, since previously ordered spares now count toward the funded constellation). second, it funds **the addition of 500 mhz of military ka-band** to lightspeed satellites currently in production, replacing the same amount of commercial ka-band spectrum on those spacecraft. mda space 于 2026 年 8 月 4 日宣布获得 telesat **4.74 亿美元的合同增额**，从两方面扩展 lightspeed leo 计划。其一，在蒙特利尔工厂已在制造的 198 颗基础上增订 **27 颗 mda aurora 卫星**，制造订单增至 **225 颗**——并使 telesat *已获全额资金*的星座规模从 156 颗提升至 225 颗（+69 颗：原先订购的备份星现计入已获资星座）。其二，为当前在产的 lightspeed 卫星**加装 500 mhz 军用 ka 频段**，替换等量的商用 ka 频谱。 satellite-news satellite"
+    },
+    {
+      "id": "2026-08-05_ceva-actions-ats296x-hdt-audio-socs",
+      "date_found": "2026-08-05",
+      "technology": "bluetooth",
+      "date_published": "2026-08-04",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Ceva and Actions Technology launch ATS296X — HDT-based audio SoCs with first native Bluetooth lossless multichannel audio",
+      "title_zh": "Ceva 与炬芯科技发布 ATS296X——基于 HDT 的音频 SoC，首次实现蓝牙原生无损多声道音频",
+      "url": "https://audioxpress.com/news/ceva-and-actions-technology-collaborate-to-bring-bluetooth-hdt-audio-chips-to-market",
+      "topics": [
+        "BLE",
+        "HDT",
+        "LE-Audio",
+        "SoC"
+      ],
+      "topic_primary": "bt-le-audio",
+      "topics_secondary": [
+        "bt-le"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-05_ceva-actions-ats296x-hdt-audio-socs.md",
+      "summary_short_en": "Ceva and Actions Technology announced (August 4, 2026) the ATS296X series of Bluetooth audio system-on-chips built on Ceva's Bluetooth High Data Throughput (HDT) platform — one of the industry's earliest commercial HDT implementations, arriving days after the Bluetooth SIG opened the draft HDT specification for public review. The SoCs combine Ceva-Waves Bluetooth controller, modem, RF and protocol-stack IP with Ceva's Audio DSP IP for the audio processing pipeline, plus a dual-RF design proprietary to Actions Technology. HDT lifts peak Bluetooth LE throughput from 2 Mbps to roughly 7.5 Mbps.",
+      "summary_short_zh": "Ceva 与炬芯科技（Actions Technology）于 2026 年 8 月 4 日发布基于 Ceva 蓝牙高数据吞吐（HDT）平台的 ATS296X 系列蓝牙音频 SoC——业界最早的商用 HDT 实现之一，且发布时点紧随蓝牙 SIG 公开 HDT 规范草案数日之后。该系列芯片集成 Ceva-Waves 蓝牙控制器、调制解调器、射频与协议栈 IP，配合 Ceva 音频 DSP IP 构建音频处理管线，并采用炬芯自有的双射频（dual-RF）设计。HDT 将蓝牙 LE 峰值吞吐从 2 Mbps 提升至约 7.5 Mbps。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Ceva and Actions Technology announced (August 4, 2026) the ATS296X series of Bluetooth audio system-on-chips built on Ceva's Bluetooth High Data Throughput (HDT) platform — one of the industry's earliest commercial HDT implementations, arriving days after the Bluetooth SIG opened the draft HDT specification for public review. The SoCs combine Ceva-Waves Bluetooth controller, modem, RF and protocol-stack IP with Ceva's Audio DSP IP for the audio processing pipeline, plus a dual-RF design proprietary to Actions Technology. HDT lifts peak Bluetooth LE throughput from 2 Mbps to roughly 7.5 Mbps.</p>\n<p>The headline capability is what the partners describe as the first native Bluetooth support for lossless multichannel audio. Target products span Bluetooth speakers and soundbar systems with wireless satellite speakers and subwoofers (where multichannel over Bluetooth removes the proprietary 5 GHz links such systems use today), wireless microphones, ultra-low-latency gaming audio, and accelerated over-the-air software updates. The partnership is long-running — Ceva IP inside Actions Technology chips has shipped in over 100 million wireless audio SoCs.</p>\n<p>The ATS296X series is currently in interoperability testing while HDT specification ratification is pending; Ceva says it has participated in four industry interoperability events. Taken together with the SIG's late-2026 adoption target, the announcement signals that IP vendors and fabless audio-chip makers are queuing silicon to land at, or shortly after, the moment HDT is formally adopted into the Core Specification.</p>\n<h3>Key technical points</h3>\n<ul><li>ATS296X series: Bluetooth audio SoCs on Ceva's HDT platform — Ceva-Waves BT controller/modem/RF/stack IP + Ceva Audio DSP IP + Actions dual-RF design.</li><li>HDT peak throughput ~7.5 Mbps (vs 2 Mbps LE today) enables the claimed first native Bluetooth lossless multichannel audio.</li><li>Targets: soundbars/speakers with wireless satellites and subwoofers, wireless microphones, ultra-low-latency gaming audio, faster OTA updates.</li><li>Status: in interoperability testing; HDT ratification pending; Ceva has joined four industry interop events.</li><li>Partnership scale: &gt;100 million wireless audio SoCs shipped with Ceva IP inside Actions chips.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's second named-silicon HDT signal and its first from the licensable-IP path: 2026-07-13_rohde-realtek-first-ble-hdt-test-solution documented Realtek's in-house HDT chips plus test tooling, while this entry shows HDT reaching the merchant audio-SoC market through Ceva IP — the same IP-then-silicon diffusion pattern the KB recorded for UWB (2026-05-26_ceva-waves-uwb-ip-802154ab). The &quot;lossless multichannel&quot; claim also concretizes HDT's audio use case beyond generic &quot;hi-res streaming&quot;: replacing the proprietary 5 GHz links inside home-theater speaker sets with standard Bluetooth is a specific, sizable product category. Notably, both this and the draft-spec release (2026-08-05_bluetooth-sig-hdt-draft-spec-public-review) landed in the same week — the HDT commercialization wave is synchronizing ahead of the late-2026 Core adoption.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Ceva 与炬芯科技（Actions Technology）于 2026 年 8 月 4 日发布基于 Ceva 蓝牙高数据吞吐（HDT）平台的 ATS296X 系列蓝牙音频 SoC——业界最早的商用 HDT 实现之一，且发布时点紧随蓝牙 SIG 公开 HDT 规范草案数日之后。该系列芯片集成 Ceva-Waves 蓝牙控制器、调制解调器、射频与协议栈 IP，配合 Ceva 音频 DSP IP 构建音频处理管线，并采用炬芯自有的双射频（dual-RF）设计。HDT 将蓝牙 LE 峰值吞吐从 2 Mbps 提升至约 7.5 Mbps。</p>\n<p>其旗舰能力是双方所称的首个蓝牙原生无损多声道音频支持。目标产品覆盖带无线卫星音箱与低音炮的蓝牙音箱/回音壁系统（蓝牙多声道传输可取代此类系统现今使用的私有 5 GHz 链路）、无线麦克风、超低时延游戏音频，以及加速的 OTA 软件升级。两家公司合作已久——搭载 Ceva IP 的炬芯芯片已在无线音频 SoC 市场出货超过 1 亿颗。</p>\n<p>ATS296X 系列目前正在进行互操作性测试，等待 HDT 规范正式批准；Ceva 表示已参加四场行业互操作性活动。结合 SIG 2026 年底的采纳目标来看，此次发布表明 IP 供应商与无晶圆音频芯片厂商正排队部署硅片，以便在 HDT 正式纳入核心规范之际或之后不久落地。</p>\n<h3>技术要点</h3>\n<ul><li>ATS296X 系列：基于 Ceva HDT 平台的蓝牙音频 SoC——Ceva-Waves 蓝牙控制器/调制解调器/射频/协议栈 IP + Ceva 音频 DSP IP + 炬芯双射频设计。</li><li>HDT 峰值吞吐约 7.5 Mbps（现行 LE 为 2 Mbps），支撑其宣称的首个蓝牙原生无损多声道音频。</li><li>目标产品：带无线卫星音箱/低音炮的回音壁与音箱系统、无线麦克风、超低时延游戏音频、更快的 OTA 升级。</li><li>状态：互操作性测试中；HDT 规范批准待定；Ceva 已参加四场行业互操作活动。</li><li>合作规模：搭载 Ceva IP 的炬芯芯片已出货逾 1 亿颗无线音频 SoC。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中第二个具名硅片的 HDT 信号，也是首个来自可授权 IP 路径的信号：2026-07-13_rohde-realtek-first-ble-hdt-test-solution 记录了瑞昱自研 HDT 芯片与测试工具，而本条目显示 HDT 正通过 Ceva IP 进入第三方音频 SoC 市场——与 KB 在 UWB 领域记录的&quot;IP 先行、硅片跟进&quot;扩散模式（2026-05-26_ceva-waves-uwb-ip-802154ab）如出一辙。&quot;无损多声道&quot;的宣称也把 HDT 的音频用例从泛泛的&quot;高解析度流媒体&quot;落到实处：用标准蓝牙取代家庭影院音箱组内部的私有 5 GHz 链路，是一个具体且可观的产品品类。值得注意的是，本条目与 HDT 草案公开（2026-08-05_bluetooth-sig-hdt-draft-spec-public-review）落在同一周——HDT 商业化浪潮正在 2026 年底核心规范采纳之前同步就位。</p>",
+      "images": [],
+      "search_blob": "ceva and actions technology launch ats296x — hdt-based audio socs with first native bluetooth lossless multichannel audio ceva 与炬芯科技发布 ats296x——基于 hdt 的音频 soc，首次实现蓝牙原生无损多声道音频 ble hdt le-audio soc ceva and actions technology announced (august 4, 2026) the ats296x series of bluetooth audio system-on-chips built on ceva's bluetooth high data throughput (hdt) platform — one of the industry's earliest commercial hdt implementations, arriving days after the bluetooth sig opened the draft hdt specification for public review. the socs combine ceva-waves bluetooth controller, modem, rf and protocol-stack ip with ceva's audio dsp ip for the audio processing pipeline, plus a dual-rf design proprietary to actions technology. hdt lifts peak bluetooth le throughput from 2 mbps to roughly 7.5 mbps. ceva 与炬芯科技（actions technology）于 2026 年 8 月 4 日发布基于 ceva 蓝牙高数据吞吐（hdt）平台的 ats296x 系列蓝牙音频 soc——业界最早的商用 hdt 实现之一，且发布时点紧随蓝牙 sig 公开 hdt 规范草案数日之后。该系列芯片集成 ceva-waves 蓝牙控制器、调制解调器、射频与协议栈 ip，配合 ceva 音频 dsp ip 构建音频处理管线，并采用炬芯自有的双射频（dual-rf）设计。hdt 将蓝牙 le 峰值吞吐从 2 mbps 提升至约 7.5 mbps。 industry-news bluetooth"
     },
     {
       "id": "2026-08-05_ast-spacemobile-japan-rakuten-d2c-live",
@@ -4647,6 +4690,51 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>弗劳恩霍夫 FOKUS 团队（Corici、Zaboub、Eichhorn、Buhr；IEEE PIMRC 2026 研讨会，2026-07-31 提交）处理一个实际的 LEO 终端问题：快速移动的卫星一旦被建筑或地形遮挡，链路会突然中断，被动式切换随之付出断连代价。现有主动方案需要 3D 建筑地图、天空相机或额外传感器——消费级终端并不具备。</p>\n<p>论文的做法是免地图的天际线学习：终端仅凭其被动卫星信号观测历史，重建自身局部视距&quot;天际线&quot;——方位角与仰角上的遮挡边界——将遮挡判断建模为对天空方向的二元分类。比较了两种估计器：高斯过程分类器，以及带圆形方位角编码与蒙特卡洛 Dropout 不确定性量化的 MLP。学得的遮挡面再通过 &quot;EphemerisWindow&quot; 算法与公开的卫星星历融合，预测当前服务卫星轨迹何时进入遮挡区——在链路中断前预测终止并提前触发切换准备。</p>\n<p>两种估计器均优于经验基线，实现完全无需环境感知硬件的主动切换——星座自身的信号就是测绘仪器。</p>\n<h3>技术要点</h3>\n<ul><li>将遮挡检测建模为（方位角、仰角）上的二元分类；天际线仅由终端的被动卫星信号观测学习。</li><li>两种估计器：高斯过程分类器 vs 带圆形方位编码 + MC-dropout 不确定性的 MLP。</li><li>EphemerisWindow 算法将学得的遮挡面与卫星轨迹融合，提前预报链路终止事件。</li><li>无需 3D 地图、天空相机或额外传感器；两估计器均优于经验基线。</li><li>发表：IEEE PIMRC 2026 研讨会。</li></ul>\n<h3>意义与新意</h3>\n<p>leo-constellations 主题的切换线索此前偏网络侧（2026-08-03 的 NTN NAS 定时器条目；更早的 LEO 路径选择工作）；本条是 KB 中首个终端侧自测绘方案——终端把星座运动变成免费的天空测绘，将被动断连转化为有计划的切换。该思路可自然推广到任何密集星座业务（包括不可能装天空相机的 D2D 智能手机），从而与 sat-direct-device 线索相连。当前为摘要级收录；PIMRC 正式版若给出断连降低的量化数据，可在后续运行升级 source_quality。</p>",
       "images": [],
       "search_blob": "learning the los skyline from leo satellite observations for proactive handover 从 leo 卫星观测学习视距天际线以实现主动切换 leo handover machine-learning los terminal a fraunhofer fokus group (corici, zaboub, eichhorn, buhr; ieee pimrc 2026 workshop, submitted 2026-07-31) tackles a practical leo terminal problem: links to fast-moving satellites die abruptly when the satellite passes behind a building or terrain, and reactive handover then costs an outage. existing proactive approaches need 3d building maps, sky cameras, or extra sensors — infrastructure a consumer terminal doesn't have. 弗劳恩霍夫 fokus 团队（corici、zaboub、eichhorn、buhr；ieee pimrc 2026 研讨会，2026-07-31 提交）处理一个实际的 leo 终端问题：快速移动的卫星一旦被建筑或地形遮挡，链路会突然中断，被动式切换随之付出断连代价。现有主动方案需要 3d 建筑地图、天空相机或额外传感器——消费级终端并不具备。 academic-paper satellite"
+    },
+    {
+      "id": "2026-08-05_bluetooth-sig-hdt-draft-spec-public-review",
+      "date_found": "2026-08-05",
+      "technology": "bluetooth",
+      "date_published": "2026-07-30",
+      "type": "bluetooth-spec",
+      "category": "standards",
+      "title_en": "Bluetooth SIG opens High Data Throughput (HDT) draft specification for public review — QPSK/QAM PHY, 7.5 Mbps, adoption slated for late 2026",
+      "title_zh": "蓝牙 SIG 公开高数据吞吐（HDT）规范草案供公众评审——QPSK/QAM 物理层、7.5 Mbps，预计 2026 年底正式采纳",
+      "url": "https://audioxpress.com/news/bluetooth-sig-encourages-developers-and-product-designers-to-review-available-high-data-throughput-hdt-draft-specification",
+      "topics": [
+        "BLE",
+        "HDT",
+        "LE-Audio",
+        "PHY"
+      ],
+      "topic_primary": "bt-le",
+      "topics_secondary": [
+        "bt-le-audio"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-08-05_bluetooth-sig-hdt-draft-spec-public-review.md",
+      "summary_short_en": "The Bluetooth SIG has made a draft of the High Data Throughput (HDT) specification publicly available on bluetooth.com and is encouraging developers and product designers to review it ahead of planned adoption into the Bluetooth Core Specification in late 2026 (reported by audioXpress, July 30, 2026). This is the first time the technical content of HDT — the headline feature of the 2026 Bluetooth roadmap — is open for public reading, moving it from a promised capability (confirmed \"for 2026\" at the Core 6.3 release) to reviewable draft text.",
+      "summary_short_zh": "蓝牙 SIG 已在 bluetooth.com 公开高数据吞吐（HDT）规范草案，鼓励开发者与产品设计者在其于 2026 年底正式纳入蓝牙核心规范之前进行评审（audioXpress 2026 年 7 月 30 日报道）。这是 HDT——2026 年蓝牙路线图的旗舰特性——的技术内容首次向公众开放阅读，使其从 Core 6.3 发布时\"确认 2026 年推出\"的承诺，变为可审阅的草案文本。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The Bluetooth SIG has made a draft of the High Data Throughput (HDT) specification publicly available on bluetooth.com and is encouraging developers and product designers to review it ahead of planned adoption into the Bluetooth Core Specification in late 2026 (reported by audioXpress, July 30, 2026). This is the first time the technical content of HDT — the headline feature of the 2026 Bluetooth roadmap — is open for public reading, moving it from a promised capability (confirmed &quot;for 2026&quot; at the Core 6.3 release) to reviewable draft text.</p>\n<p>The draft reveals the PHY design in more detail than any previous public communication. HDT introduces a new radio mode built on QPSK and QAM modulation running at 2 megasymbols per second with multiple bits carried per symbol, decoded with coherent detection — a significant departure for Bluetooth LE, whose existing PHYs are frequency-shift-keyed and non-coherently detected. The rate ladder spans 2, 3, 4, 6, and 7.5 Mbps (nearly 4x today's LE 2M PHY), with forward error correction applied at the physical layer for all bit rates. Above the PHY, HDT adds a flexible packet structure supporting payloads of roughly 8,000+ bytes, dynamic rate switching that adapts modulation to channel quality, and strengthened link-layer integrity protection with 64-bit and 128-bit Message Integrity Check options (versus 32-bit today).</p>\n<p>Target use cases named by the SIG include high-resolution and lossless audio streaming, faster firmware updates and file transfers, multi-sensor IoT and wearable data streaming, and industrial/medical device telemetry. Feedback is routed to the Core Specification Working Group (core-main@bluetooth.org). With adoption expected in the late-2026 Core release, the draft publication effectively starts the countdown for the feature the whole 2026 Bluetooth ecosystem cycle has been building toward.</p>\n<h3>Key technical points</h3>\n<ul><li>Draft HDT specification publicly downloadable on bluetooth.com; adoption into the Core Specification planned for late 2026.</li><li>New PHY mode: QPSK and QAM at 2 Msym/s with coherent detection — Bluetooth LE's first move beyond non-coherent FSK.</li><li>Five data rates: 2 / 3 / 4 / 6 / 7.5 Mbps; forward error correction at the PHY for all rates.</li><li>Flexible packet structure with ~8,000+ byte payloads; dynamic, channel-quality-driven adaptive rate switching.</li><li>Integrity hardening: 64-bit and 128-bit Message Integrity Check options (up from 32-bit).</li><li>Use cases: hi-res/lossless audio, fast firmware/file transfer, multi-sensor wearable streaming, industrial and medical telemetry.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB has tracked HDT through two prior stages: the spec-side promise (2026-07-11_bluetooth-core-63-release — &quot;HDT confirmed for 2026&quot; plus HCI mask headroom reserved for it) and the ecosystem-side prerequisites (2026-07-13_rohde-realtek-first-ble-hdt-test-solution — first HDT silicon and test tooling, which already disclosed the five-rate 2–7.5 Mbps ladder and &quot;three new modulation schemes&quot;). This entry adds the third stage: the draft text itself is now public, and it names what those modulations actually are — QPSK/QAM with coherent detection at 2 Msym/s — along with the ~8 KB payload structure, PHY-level FEC across all rates, adaptive rate switching, and the 64/128-bit MIC upgrade, none of which were previously public. The late-2026 adoption target also pins the long-rumored timeline to the SIG's next bi-annual Core release (~Nov 2026), the exact milestone this KB's Bluetooth thread has been watching since May.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>蓝牙 SIG 已在 bluetooth.com 公开高数据吞吐（HDT）规范草案，鼓励开发者与产品设计者在其于 2026 年底正式纳入蓝牙核心规范之前进行评审（audioXpress 2026 年 7 月 30 日报道）。这是 HDT——2026 年蓝牙路线图的旗舰特性——的技术内容首次向公众开放阅读，使其从 Core 6.3 发布时&quot;确认 2026 年推出&quot;的承诺，变为可审阅的草案文本。</p>\n<p>草案以前所未有的细节披露了 PHY 设计。HDT 引入一种全新的无线电模式：基于 QPSK 与 QAM 调制、以每秒 200 万符号（2 Msym/s）运行、每符号承载多个比特，并采用相干检测解码——这对蓝牙 LE 是一次重大转变，因为现有 LE PHY 均为频移键控（FSK）加非相干检测。速率阶梯覆盖 2、3、4、6 与 7.5 Mbps（接近现有 LE 2M PHY 的 4 倍），且所有速率档均在物理层应用前向纠错（FEC）。在 PHY 之上，HDT 增加了支持约 8000 字节以上载荷的灵活分组结构、根据信道质量自适应切换调制的动态速率机制，以及强化的链路层完整性保护——消息完整性校验（MIC）提供 64 位与 128 位选项（现行为 32 位）。</p>\n<p>SIG 列出的目标场景包括高解析度/无损音频流、更快的固件升级与文件传输、多传感器 IoT 与可穿戴数据流，以及工业/医疗设备遥测。反馈通过核心规范工作组（core-main@bluetooth.org）收集。随着正式采纳预计落在 2026 年底的核心规范版本，草案公开实质上启动了整个 2026 蓝牙生态周期所指向的这一特性的倒计时。</p>\n<h3>技术要点</h3>\n<ul><li>HDT 规范草案已可在 bluetooth.com 公开下载；计划于 2026 年底纳入核心规范。</li><li>全新 PHY 模式：QPSK 与 QAM 调制、2 Msym/s 符号率、相干检测——蓝牙 LE 首次突破非相干 FSK。</li><li>五档速率：2 / 3 / 4 / 6 / 7.5 Mbps；所有速率档均在物理层应用前向纠错。</li><li>灵活分组结构，载荷约 8000 字节以上；基于信道质量的动态自适应速率切换。</li><li>完整性强化：消息完整性校验（MIC）提供 64 位与 128 位选项（现行为 32 位）。</li><li>用例：高解析度/无损音频、快速固件与文件传输、多传感器可穿戴数据流、工业与医疗遥测。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 此前从两个阶段跟踪 HDT：规范侧承诺（2026-07-11_bluetooth-core-63-release——&quot;HDT 确认 2026 年推出&quot;及为其预留的 HCI 掩码空间）与生态侧前提（2026-07-13_rohde-realtek-first-ble-hdt-test-solution——首批 HDT 硅片与测试工具，已披露 2–7.5 Mbps 五档速率与&quot;三种新调制方案&quot;）。本条目补上第三阶段：草案文本本身已公开，并首次揭示这些调制的真身——2 Msym/s 的 QPSK/QAM 加相干检测——以及约 8 KB 的载荷结构、全速率档物理层 FEC、自适应速率切换和 64/128 位 MIC 升级，这些此前均未公开。2026 年底的采纳目标也把传闻已久的时间线钉在 SIG 下一个半年度核心规范版本（约 2026 年 11 月）——正是本 KB 蓝牙线索自 5 月以来一直关注的里程碑。</p>",
+      "images": [
+        {
+          "url": "https://cdn.xingosoftware.com/audioxpress/images/fetch/dpr_1,w_765,h_430,c_fit/https%3A%2F%2Faudioxpress.com%2Fassets%2Fupload%2Fimages%2F1%2F20260803131554_BluetoothHDT-infographic-Jul2026-audioXpress-01-TWeb.jpg",
+          "caption_en": "Bluetooth HDT infographic — feature overview (1 of 2)",
+          "caption_zh": "蓝牙 HDT 信息图——特性总览（其一）"
+        },
+        {
+          "url": "https://cdn.xingosoftware.com/audioxpress/images/fetch/dpr_1,w_765,h_430,c_fit/https%3A%2F%2Faudioxpress.com%2Fassets%2Fupload%2Fimages%2F1%2F20260803131554_BluetoothHDT-infographic-Jul2026-audioXpress-02-TWeb.jpg",
+          "caption_en": "Bluetooth HDT infographic — feature overview (2 of 2)",
+          "caption_zh": "蓝牙 HDT 信息图——特性总览（其二）"
+        },
+        {
+          "url": "https://cdn.xingosoftware.com/audioxpress/images/fetch/dpr_1,w_765,h_430,c_fit/https%3A%2F%2Faudioxpress.com%2Fassets%2Fupload%2Fimages%2F1%2F20260803131554_BluetoothHDT-Generic-HiResAudio2-TWeb.jpg",
+          "caption_en": "Bluetooth HDT high-resolution audio use case",
+          "caption_zh": "蓝牙 HDT 高解析度音频用例"
+        }
+      ],
+      "search_blob": "bluetooth sig opens high data throughput (hdt) draft specification for public review — qpsk/qam phy, 7.5 mbps, adoption slated for late 2026 蓝牙 sig 公开高数据吞吐（hdt）规范草案供公众评审——qpsk/qam 物理层、7.5 mbps，预计 2026 年底正式采纳 ble hdt le-audio phy the bluetooth sig has made a draft of the high data throughput (hdt) specification publicly available on bluetooth.com and is encouraging developers and product designers to review it ahead of planned adoption into the bluetooth core specification in late 2026 (reported by audioxpress, july 30, 2026). this is the first time the technical content of hdt — the headline feature of the 2026 bluetooth roadmap — is open for public reading, moving it from a promised capability (confirmed \"for 2026\" at the core 6.3 release) to reviewable draft text. 蓝牙 sig 已在 bluetooth.com 公开高数据吞吐（hdt）规范草案，鼓励开发者与产品设计者在其于 2026 年底正式纳入蓝牙核心规范之前进行评审（audioxpress 2026 年 7 月 30 日报道）。这是 hdt——2026 年蓝牙路线图的旗舰特性——的技术内容首次向公众开放阅读，使其从 core 6.3 发布时\"确认 2026 年推出\"的承诺，变为可审阅的草案文本。 bluetooth-spec bluetooth"
     },
     {
       "id": "2026-08-03_arxiv-packetized-energy-6g-ran",
