@@ -41,7 +41,7 @@ window.SOURCES_DATA = {
       "kind": "web-search",
       "category": "academia",
       "topics_hint": [],
-      "notes": "Conference is annual — usually August. Check around accept-notification time.",
+      "notes": "Conference is annual — usually August. Check around accept-notification time. 2026-07-28 (user-approved 11b): cf reset 3 -> 0 + SEASONAL WINDOW — SIGCOMM 2026 proceedings land Aug 17-21 (Concord camera-ready expected; upgrade 2026-07-08 entry to full). Contact this source on every run Aug 15-25 REGARDLESS of cf counter; if cf climbs back to 3 before then, reset it again when the window opens rather than skipping.",
       "technology": "wifi"
     },
     {
@@ -218,7 +218,7 @@ window.SOURCES_DATA = {
         "IoT",
         "products"
       ],
-      "notes": "URL updated 2026-05-04 (the /en/news path now 404s).",
+      "notes": "URL updated 2026-05-04 (the /en/news path now 404s). 2026-07-28 (user-approved 11b): SECOND cf reset 3 -> 0, kept enabled — dry spells track Espressif's release cadence (last hit: ESP32-E22 6E cert, Jun-12), not breakage. If a THIRD cf=3 accumulates with no intervening hit, accept the auto-skip until the next ESP32 release wave instead of resetting again.",
       "technology": "wifi"
     },
     {
@@ -328,16 +328,6 @@ window.SOURCES_DATA = {
       "technology": "wifi"
     },
     {
-      "id": "rcr-wireless",
-      "name": "RCR Wireless News",
-      "url": "https://www.rcrwireless.com/category/network-infrastructure/",
-      "kind": "html",
-      "category": "industry",
-      "topics_hint": [],
-      "notes": "2026-07-03 (user-approved Step 11b): hit cf=3 but KEPT ENABLED with manual cf reset — page fetches fine and carries satellite/cellular-relevant signals (the 06-29 'Starlink raises the stakes' editorial foreshadowed the Starlink Mobile story); its WiFi yield is just currently dry. Reset again if it produces a WiFi hit; disable only if WiFi-dry past ~10 more runs.",
-      "technology": "wifi"
-    },
-    {
       "id": "light-reading",
       "name": "Light Reading",
       "url": "https://www.lightreading.com/",
@@ -432,7 +422,7 @@ window.SOURCES_DATA = {
       "topics_hint": [
         "products"
       ],
-      "notes": "Added 2026-07-03 (user-approved Step 11a). Produced the Cisco Live US 2026 9177 outdoor Wi-Fi 7 URWB AP full-body hit via plain WebFetch when US outlets only carried AIOps coverage. Strong European enterprise-networking depth (Catalyst/AP model-level detail). Landing page is html-fetchable; use the query_hint for targeted sweeps. 2026-07-07 (user-approved 11b): cf reset 3->0, kept enabled — its dry streak coincides with the sector-wide pre-plenary lull; re-evaluate ~5 runs after the Montreal plenary if still dry.",
+      "notes": "Added 2026-07-03 (user-approved Step 11a). Produced the Cisco Live US 2026 9177 outdoor Wi-Fi 7 URWB AP full-body hit via plain WebFetch when US outlets only carried AIOps coverage. Strong European enterprise-networking depth (Catalyst/AP model-level detail). Landing page is html-fetchable; use the query_hint for targeted sweeps. 2026-07-07 (user-approved 11b): cf reset 3->0, kept enabled — its dry streak coincides with the sector-wide pre-plenary lull; re-evaluate ~5 runs after the Montreal plenary if still dry. 2026-07-28 (user-approved 11b): SECOND cf reset 3 -> 0 — the Montreal wave arrived via wifinowglobal, not heise, so the post-plenary re-evaluation clock starts now; if a THIRD cf=3 accumulates with no hit by ~5 more runs, disable rather than reset.",
       "technology": "wifi"
     },
     {
@@ -528,6 +518,18 @@ window.SOURCES_DATA = {
         "products"
       ],
       "notes": "",
+      "technology": "wifi"
+    },
+    {
+      "id": "regulatory-docket-backfill",
+      "name": "Regulatory docket backfill sweep (FCC / Ofcom / ECC) — quarterly",
+      "url": "",
+      "kind": "web-search",
+      "category": "standards",
+      "topics_hint": [
+        "spectrum-policy"
+      ],
+      "notes": "Added 2026-08-03 (user-approved 11a). QUARTERLY cadence, not daily: run on the first meta-run of each quarter (Jan/Apr/Jul/Oct) and additionally after any multi-day run gap. Origin: the FCC Covered-List foreign-router ban (order 2026-03-23, DOC-420034A1) went uncaptured for 4 months and only surfaced 2026-08-03 because a general news sweep re-ranked a March editorial — policy shocks must be captured deliberately, not by editorial re-surfacing luck. Sweep shape: one query per regulator (FCC covered list / equipment authorization; Ofcom statement Wi-Fi spectrum; ECC/CEPT decision RLAN 6 GHz), dedupe by event (order number / docket ID), ingest misses as dated backfills with rationale. Zero yield on most quarters is EXPECTED and is not a failure — do not bump consecutive_failures on off-quarter runs.",
       "technology": "wifi"
     },
     {
@@ -665,6 +667,7 @@ window.SOURCES_DATA = {
         "5g-nr",
         "open-ran"
       ],
+      "notes": "2026-08-04 (user-approved 11b): cf hit 3 — ACCEPT the auto-skip, do not reset. Nokia's AI-RAN/6G announcements consistently reach the KB first via general news sweeps and cross-channels (AI-RAN platform arrived 07-19 via news, AI-in-RAN via ericsson-adjacent coverage); the dedicated query has been dupe-only since June. Kept enabled so a future manual reset can revive it if the general sweeps start missing Nokia items.",
       "technology": "cellular"
     },
     {
