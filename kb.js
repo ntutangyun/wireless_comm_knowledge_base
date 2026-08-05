@@ -37,16 +37,16 @@ window.KB_DATA = {
     "energy-efficiency": 10,
     "802.11bp": 10,
     "digital-twin": 10,
+    "NearLink": 10,
+    "SparkLink": 10,
     "mmWave": 10,
     "spectrum": 9,
-    "NearLink": 9,
-    "SparkLink": 9,
+    "automotive": 8,
     "802.11bq": 8,
     "privacy": 8,
     "Wi-Fi 7": 8,
     "3GPP": 8,
     "generative-AI": 8,
-    "automotive": 7,
     "OpenAirInterface": 7,
     "RIC": 7,
     "AI-native": 7,
@@ -96,6 +96,7 @@ window.KB_DATA = {
     "machine-learning": 4,
     "edge-computing": 4,
     "SLA": 4,
+    "digital-car-key": 4,
     "DRU": 4,
     "ELR": 4,
     "jamming": 4,
@@ -164,7 +165,6 @@ window.KB_DATA = {
     "spectrum-policy": 3,
     "802.11ac": 3,
     "WPA3": 3,
-    "digital-car-key": 3,
     "roaming": 3,
     "Apple": 3,
     "digital-key": 2,
@@ -183,6 +183,9 @@ window.KB_DATA = {
     "V3": 2,
     "foundation-model": 2,
     "FWA": 2,
+    "ICCE": 2,
+    "iSLA": 2,
+    "standards": 2,
     "C-band": 2,
     "Part-100": 2,
     "licensing": 2,
@@ -488,7 +491,6 @@ window.KB_DATA = {
     "embodied-AI": 1,
     "memory": 1,
     "星闪": 1,
-    "iSLA": 1,
     "routing": 1,
     "Walker-Delta": 1,
     "path-selection": 1,
@@ -622,7 +624,6 @@ window.KB_DATA = {
     "Monte-Carlo": 1,
     "cell-switching": 1,
     "benchmarking": 1,
-    "standards": 1,
     "weather": 1,
     "telemetry": 1,
     "reliability": 1,
@@ -744,7 +745,6 @@ window.KB_DATA = {
     "CSD": 1,
     "vital-sign": 1,
     "dielectric-spectroscopy": 1,
-    "ICCE": 1,
     "Release 20": 1,
     "BSR": 1,
     "AI-receivers": 1,
@@ -914,6 +914,7 @@ window.KB_DATA = {
     "nearlink-slb": 4,
     "bt-location": 4,
     "ftm-ranging": 4,
+    "nearlink-automotive": 3,
     "mec": 3,
     "mlo": 3,
     "nearlink-sle": 3,
@@ -921,7 +922,6 @@ window.KB_DATA = {
     "cellular-spectrum": 2,
     "uwb-radar": 2,
     "mmwave-bq": 2,
-    "nearlink-automotive": 2,
     "roaming-mobility": 2,
     "bt-le-audio": 1,
     "sat-iot": 1,
@@ -930,7 +930,7 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 232,
-    "industry-news": 81,
+    "industry-news": 82,
     "ieee-document": 30,
     "product": 20,
     "satellite-news": 16,
@@ -940,7 +940,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 232,
-    "industry": 117,
+    "industry": 118,
     "standards": 39
   },
   "technologies_vocab": {
@@ -4073,6 +4073,7 @@ window.KB_DATA = {
         "2026-05-30_huawei-starlink-e2-audio-lossless"
       ],
       "entries_secondary": [
+        "2026-08-05_sparklink-car-key-forum-china-auto-2026",
         "2026-07-10_nearlink-matepad-matebook-e2-audio-matrix",
         "2026-05-24_sparklink-car-key-device-rollout-2-0",
         "2026-05-21_sparklink-digital-car-key-beijing-autoshow",
@@ -4108,6 +4109,7 @@ window.KB_DATA = {
         "2026-06-05_nearlink-sle-gbt-46803-national-standard"
       ],
       "entries_secondary": [
+        "2026-08-05_sparklink-car-key-forum-china-auto-2026",
         "2026-07-24_nearlink-stack-opensource-landing",
         "2026-06-23_nearlink-open-source-openharmony-hdc2026",
         "2026-05-21_sparklink-ecosystem-2026-overview",
@@ -4156,6 +4158,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-05_sparklink-car-key-forum-china-auto-2026",
         "2026-05-24_sparklink-car-key-device-rollout-2-0",
         "2026-05-21_sparklink-digital-car-key-beijing-autoshow"
       ],
@@ -4165,6 +4168,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "industry-news": [
+          "2026-08-05_sparklink-car-key-forum-china-auto-2026",
           "2026-05-24_sparklink-car-key-device-rollout-2-0",
           "2026-05-21_sparklink-digital-car-key-beijing-autoshow"
         ]
@@ -5345,6 +5349,50 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "llm-assisted intent-based satellite-integrated access and backhaul (iab) fwa for rural areas 大模型辅助的意图驱动卫星集成接入回传（iab）：面向农村的固定无线接入方案 ntn leo iab llm intent-based-networking energy-efficiency the companion paper to 2026-07-26_arxiv-microwave-backhaul-dt-iab-fwa (ndikumana et al.) replaces the microwave long-haul with a satellite layer and adds natural-language intent handling. the architecture treats regenerative leo satellites (oneweb constellation dataset, 651 satellites) as iab nodes: satellites form inter-satellite links, terrestrial stations attach via feeder links with rssi-driven handover, and the terrestrial layer mixes fixed iab nodes serving households with mobile iab nodes mounted on agricultural vehicles. mec-hosted vnfs (m-du, m-mt, du, mt) are activated only when needed. 本文是 2026-07-26_arxiv-microwave-backhaul-dt-iab-fwa 的姊妹篇（ndikumana 等），将微波长距回传替换为卫星层，并加入自然语言意图处理。架构将再生式 leo 卫星（oneweb 星座数据集，651 颗卫星）作为 iab 节点：卫星间构成星间链路，地面站通过馈电链路接入并基于 rssi 切换；地面层混合了服务住户的固定 iab 节点与安装在农用车辆上的移动 iab 节点。mec 托管的 vnf（m-du、m-mt、du、mt）按需激活。 academic-paper cellular"
+    },
+    {
+      "id": "2026-08-05_sparklink-car-key-forum-china-auto-2026",
+      "date_found": "2026-08-05",
+      "technology": "nearlink",
+      "date_published": "2026-07-22",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "SparkLink digital car-key industry forum at 2026 China Auto Forum: 260M+ chips shipped, 800k vehicles keyed in past year (1M+ projected 2026), 88 alliance standards, national car-key standard enters approval phase",
+      "title_zh": "2026 中国汽车论坛星闪数字车钥匙产业发展论坛：芯片累计出货 2.6 亿+、过去一年 80 万辆装车（2026 预计破 100 万）、联盟标准累计发布 88 项、国家标准进入报批阶段",
+      "url": "http://www.chinaautotrends.com/chezhanMes.aspx?id=19038&c=73&t=14",
+      "topics": [
+        "NearLink",
+        "SparkLink",
+        "digital-car-key",
+        "automotive",
+        "ICCE",
+        "iSLA",
+        "standards"
+      ],
+      "topic_primary": "nearlink-automotive",
+      "topics_secondary": [
+        "nearlink-slb",
+        "nearlink-sle"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-05_sparklink-car-key-forum-china-auto-2026.md",
+      "summary_short_en": "On July 21, 2026, the SparkLink Digital Car Key Industry Development Forum was held at the 2026 China Auto Forum in Shanghai Jiading, jointly organized by the China Automotive Standardization Research Institute, the Intelligent Connected Vehicle industry digital-key body ICCE, and the International SparkLink Alliance (iSLA). It is the first dedicated SparkLink automotive industry forum since the technology's centralized debut at the April 2026 Beijing Auto Show, and it delivered a batch of refreshed ecosystem metrics that supersede the figures previously in this KB.",
+      "summary_short_zh": "2026 年 7 月 21 日，星闪数字车钥匙产业发展论坛在上海嘉定 2026 中国汽车论坛期间举行，由中国汽车标准化研究院、智能网联汽车数字钥匙产业组织 ICCE 与国际星闪联盟（iSLA）联合主办。这是继 2026 年 4 月北京车展集中亮相之后星闪汽车方向的首个专题产业论坛，并发布了一批刷新本知识库既有记录的生态数据。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On July 21, 2026, the SparkLink Digital Car Key Industry Development Forum was held at the 2026 China Auto Forum in Shanghai Jiading, jointly organized by the China Automotive Standardization Research Institute, the Intelligent Connected Vehicle industry digital-key body ICCE, and the International SparkLink Alliance (iSLA). It is the first dedicated SparkLink automotive industry forum since the technology's centralized debut at the April 2026 Beijing Auto Show, and it delivered a batch of refreshed ecosystem metrics that supersede the figures previously in this KB.</p>\n<p>The headline numbers: iSLA membership has surpassed <strong>1,250 companies</strong> (up from the ~1,200 reported earlier in 2026); the alliance has cumulatively released <strong>88 industry standards</strong>; cumulative SparkLink <strong>chip shipments exceed 260 million</strong> — a substantial jump from the 100M+ milestone reported in April 2026, indicating shipment velocity is accelerating rather than plateauing. On the automotive side, <strong>over 800,000 vehicles</strong> shipped with SparkLink digital keys in the preceding year, with 2026 volume projected to <strong>exceed 1 million vehicles</strong>; Huawei Wallet digital car keys have reached <strong>19 million activations across 43 connected automakers</strong>.</p>\n<p>Technically, the forum reiterated the SparkLink car-key value proposition — decimeter-level (0.6 m) positioning via phase-difference + ToF fusion ranging, recognition distance up to 100 m, ~40% lower power than Bluetooth 5.3, ~6× faster key-resolution time than traditional Bluetooth passive-entry flows, and full-link encryption. On standards, the Chinese <strong>national standard for the SparkLink digital car key has entered the approval (报批) phase</strong>, moving beyond the alliance/group-standard tier, and the forum launched a five-point ecosystem action plan covering penetration-rate growth, ecosystem expansion, tiered classification, internationalization pathways, and continued innovation exploration.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Event</strong>: SparkLink Digital Car Key Industry Development Forum, 2026 China Auto Forum, Shanghai Jiading, July 21, 2026; co-hosted by China Automotive Standardization Research Institute + ICCE + iSLA.</li><li><strong>Ecosystem scale</strong>: 1,250+ iSLA member companies; 88 alliance standards cumulatively released; <strong>260M+ SparkLink chips shipped</strong> (vs 100M+ reported April 2026).</li><li><strong>Automotive deployment</strong>: 800k+ vehicles with SparkLink digital keys in the past year; <strong>1M+ vehicles projected for 2026</strong>; Huawei Wallet: 19M key activations, 43 automakers connected.</li><li><strong>Performance claims</strong>: 0.6 m positioning accuracy (phase-diff + ToF fusion), up to 100 m recognition distance, ~40% lower power vs Bluetooth 5.3, ~6× faster key resolution vs traditional Bluetooth, full-link encryption.</li><li><strong>Standards milestone</strong>: national standard for the SparkLink digital car key has entered the approval (报批) phase.</li><li><strong>Five-point action plan</strong>: penetration growth, ecosystem expansion, tiered classification system, internationalization pathway, innovation exploration.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This forum resets the KB's ecosystem baseline on three axes. First, the <strong>chip-shipment curve</strong>: 100M+ cumulative (April 2026, per <code>2026-05-21_sparklink-ecosystem-2026-overview</code>) → 260M+ (July 2026) implies roughly 160M chips shipped in about a quarter — the strongest quantitative evidence yet that SparkLink volume is being driven by ecosystem-wide adoption (HID peripherals, audio, car keys) rather than Huawei flagship attach alone. Second, the <strong>automotive trajectory</strong> now has real deployed numbers, not showcase counts: 800k vehicles keyed in the trailing year against the 1M-unit 2026 forecast, plus the demand-side 19M Huawei Wallet activations that complement the ~50M OTA-eligible handset base captured in <code>2026-05-24_sparklink-car-key-device-rollout-2-0</code>. Third, the <strong>standards ladder</strong>: the KB previously recorded SLE's GB/T national standards (<code>2026-05-28</code>/<code>2026-06-05</code> entries); the car-key national standard entering the approval phase extends national-standard status from the radio layer up into the application/service profile — a prerequisite for non-Huawei OEMs and international expansion (one of the five action-plan points). Watch items: publication of the car-key national standard number, and whether wireless BMS (the other long-promised SparkLink automotive use case) surfaces at the next forum cycle.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026 年 7 月 21 日，星闪数字车钥匙产业发展论坛在上海嘉定 2026 中国汽车论坛期间举行，由中国汽车标准化研究院、智能网联汽车数字钥匙产业组织 ICCE 与国际星闪联盟（iSLA）联合主办。这是继 2026 年 4 月北京车展集中亮相之后星闪汽车方向的首个专题产业论坛，并发布了一批刷新本知识库既有记录的生态数据。</p>\n<p>核心数据：iSLA 成员单位突破 <strong>1,250 家</strong>（此前 2026 年初报道约 1,200 家）；联盟累计发布 <strong>88 项产业标准</strong>；星闪<strong>芯片累计出货超过 2.6 亿颗</strong> —— 相比 2026 年 4 月报道的 1 亿+里程碑大幅跃升，表明出货速度在加速而非趋缓。汽车侧，过去一年<strong>超过 80 万辆</strong>搭载星闪数字钥匙的车辆下线，2026 年预计<strong>突破 100 万辆</strong>；华为钱包数字车钥匙<strong>激活量达 1,900 万、接入车企 43 家</strong>。</p>\n<p>技术层面，论坛重申星闪车钥匙的价值主张 —— 相位差 + ToF 融合测距实现分米级（0.6 m）定位、识别距离最远 100 m、功耗较蓝牙 5.3 低约 40%、钥匙解析速度较传统蓝牙被动进入快约 6 倍、全链路加密。标准层面，星闪数字车钥匙<strong>国家标准已进入报批阶段</strong>，超越联盟/团体标准层级；论坛还发布了五点生态共建行动计划，覆盖渗透率提升、生态扩展、分级分类体系、国际化路径与创新探索。</p>\n<h3>技术要点</h3>\n<ul><li><strong>事件</strong>：星闪数字车钥匙产业发展论坛，2026 中国汽车论坛（上海嘉定），2026 年 7 月 21 日；中国汽车标准化研究院 + ICCE + iSLA 联合主办。</li><li><strong>生态规模</strong>：iSLA 成员超 1,250 家；联盟标准累计发布 88 项；<strong>星闪芯片累计出货超 2.6 亿颗</strong>（2026 年 4 月报道为 1 亿+）。</li><li><strong>汽车部署</strong>：过去一年 80 万+ 辆车搭载星闪数字钥匙；<strong>2026 年预计突破 100 万辆</strong>；华为钱包：钥匙激活 1,900 万、接入车企 43 家。</li><li><strong>性能指标</strong>：0.6 m 定位精度（相位差 + ToF 融合）、识别距离最远 100 m、功耗较蓝牙 5.3 低约 40%、钥匙解析较传统蓝牙快约 6 倍、全链路加密。</li><li><strong>标准里程碑</strong>：星闪数字车钥匙国家标准进入报批阶段。</li><li><strong>五点行动计划</strong>：渗透率提升、生态扩展、分级分类体系、国际化路径、创新探索。</li></ul>\n<h3>意义与新意</h3>\n<p>本论坛在三个维度上刷新了知识库的生态基线。其一，<strong>芯片出货曲线</strong>：累计 1 亿+（2026 年 4 月，见 <code>2026-05-21_sparklink-ecosystem-2026-overview</code>）→ 2.6 亿+（2026 年 7 月），意味着约一个季度出货约 1.6 亿颗 —— 迄今最有力的量化证据，说明星闪出货量由全生态采用（HID 外设、音频、车钥匙）驱动，而非仅靠华为旗舰机搭载。其二，<strong>汽车轨迹</strong>首次有了实际部署数字而非展会数量：过去一年 80 万辆装车、2026 年 100 万辆预测，加上需求侧 1,900 万华为钱包激活，与 <code>2026-05-24_sparklink-car-key-device-rollout-2-0</code> 中约 5000 万台可 OTA 手机基础互为补充。其三，<strong>标准阶梯</strong>：知识库此前记录了 SLE 的 GB/T 国家标准（<code>2026-05-28</code>/<code>2026-06-05</code> 条目）；车钥匙国家标准进入报批阶段，将国家标准地位从无线层向上延伸到应用/服务规范层 —— 这是非华为系 OEM 采用与国际化（五点行动计划之一）的前提。关注点：车钥匙国家标准号的正式发布，以及无线电池管理（星闪汽车方向另一长期承诺用例）是否在下一轮论坛周期出现。</p>",
+      "images": [
+        {
+          "url": "http://www.chinaautotrends.com/upload/editor/image/20260722/22120445431.jpg",
+          "caption_en": "SparkLink digital car-key industry forum at the 2026 China Auto Forum",
+          "caption_zh": "2026 中国汽车论坛星闪数字车钥匙产业发展论坛现场"
+        },
+        {
+          "url": "http://www.chinaautotrends.com/upload/editor/image/20260722/22120450685.jpg",
+          "caption_en": "Forum presentation on SparkLink car-key ecosystem progress",
+          "caption_zh": "论坛上关于星闪车钥匙生态进展的演讲"
+        }
+      ],
+      "search_blob": "sparklink digital car-key industry forum at 2026 china auto forum: 260m+ chips shipped, 800k vehicles keyed in past year (1m+ projected 2026), 88 alliance standards, national car-key standard enters approval phase 2026 中国汽车论坛星闪数字车钥匙产业发展论坛：芯片累计出货 2.6 亿+、过去一年 80 万辆装车（2026 预计破 100 万）、联盟标准累计发布 88 项、国家标准进入报批阶段 nearlink sparklink digital-car-key automotive icce isla standards on july 21, 2026, the sparklink digital car key industry development forum was held at the 2026 china auto forum in shanghai jiading, jointly organized by the china automotive standardization research institute, the intelligent connected vehicle industry digital-key body icce, and the international sparklink alliance (isla). it is the first dedicated sparklink automotive industry forum since the technology's centralized debut at the april 2026 beijing auto show, and it delivered a batch of refreshed ecosystem metrics that supersede the figures previously in this kb. 2026 年 7 月 21 日，星闪数字车钥匙产业发展论坛在上海嘉定 2026 中国汽车论坛期间举行，由中国汽车标准化研究院、智能网联汽车数字钥匙产业组织 icce 与国际星闪联盟（isla）联合主办。这是继 2026 年 4 月北京车展集中亮相之后星闪汽车方向的首个专题产业论坛，并发布了一批刷新本知识库既有记录的生态数据。 industry-news nearlink"
     },
     {
       "id": "2026-08-05_fcc-upper-cband-auction-rules-adopted",
