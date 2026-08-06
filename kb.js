@@ -6,9 +6,9 @@ window.KB_DATA = {
     "6G": 53,
     "802.11bn": 43,
     "agentic-AI": 39,
+    "LEO": 37,
     "MAC-layer": 37,
     "security": 36,
-    "LEO": 36,
     "products": 36,
     "O-RAN": 34,
     "scheduling": 32,
@@ -18,9 +18,9 @@ window.KB_DATA = {
     "MAPC": 17,
     "Starlink": 17,
     "IoT": 16,
+    "NTN": 15,
     "MLO": 15,
     "PHY-layer": 15,
-    "NTN": 14,
     "5G-NR": 14,
     "direct-to-device": 14,
     "802.11bf": 14,
@@ -88,6 +88,7 @@ window.KB_DATA = {
     "massive-MIMO": 5,
     "QoS": 5,
     "Co-BF": 5,
+    "latency": 4,
     "LE-Audio": 4,
     "direct-to-cell": 4,
     "BlueBird": 4,
@@ -149,7 +150,6 @@ window.KB_DATA = {
     "waveform": 3,
     "orchestration": 3,
     "traffic-prediction": 3,
-    "latency": 3,
     "AMP-IoT": 3,
     "inter-satellite-link": 3,
     "deterministic-latency": 3,
@@ -167,6 +167,7 @@ window.KB_DATA = {
     "WPA3": 3,
     "roaming": 3,
     "Apple": 3,
+    "OneWeb": 2,
     "device-authentication": 2,
     "keystroke-inference": 2,
     "digital-key": 2,
@@ -284,6 +285,8 @@ window.KB_DATA = {
     "Ericsson": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "remote-control": 1,
+    "Agriculture-4.0": 1,
     "RF-fingerprint": 1,
     "Telesat": 1,
     "Lightspeed": 1,
@@ -857,7 +860,6 @@ window.KB_DATA = {
     "RF-chain": 1,
     "channel-model": 1,
     "L-moments": 1,
-    "OneWeb": 1,
     "Eutelsat": 1,
     "Airbus": 1,
     "Gen2": 1,
@@ -895,8 +897,8 @@ window.KB_DATA = {
     "5g-nr": 18,
     "leo-constellations": 16,
     "spectrum-policy": 16,
+    "sat-direct-device": 13,
     "mapc-cosr": 13,
-    "sat-direct-device": 12,
     "amp-iot": 11,
     "uwb-ranging": 10,
     "agentic-wifi": 10,
@@ -930,7 +932,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 235,
+    "academic-paper": 236,
     "industry-news": 82,
     "ieee-document": 30,
     "product": 20,
@@ -940,7 +942,7 @@ window.KB_DATA = {
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 235,
+    "academia": 236,
     "industry": 118,
     "standards": 39
   },
@@ -3505,6 +3507,7 @@ window.KB_DATA = {
         "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
       ],
       "entries_secondary": [
+        "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
         "2026-08-05_ast-spacemobile-japan-rakuten-d2c-live",
         "2026-08-04_amazon-leo-d2d-5105-satellite-filing",
         "2026-08-03_arxiv-stride-inorbit-edge-eo",
@@ -3573,6 +3576,7 @@ window.KB_DATA = {
         "2026-07-22_sigcomm26-satellite-papers"
       ],
       "entries_secondary": [
+        "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
         "2026-05-29_arxiv-quantum-safe-ike-satellite"
       ],
       "by_type_primary": {
@@ -3595,6 +3599,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Satellite direct-to-device))\n    Operators\n      Starlink direct-to-cell\n      AST SpaceMobile BlueBird\n      Apple / Globalstar SOS\n    Spectrum\n      EchoStar 65 MHz mid-band (AWS-3/4, H-Block)\n      Earlier FCC D2C spectrum denial\n    Strategy shift 2026\n      Retail Starlink Mobile ambitions\n      Possible terrestrial buildout\n    Hardware\n      Block 2 BlueBird 2,400 sq ft arrays\n      989 Mbps peak D2D measured\n    Watch\n      EchoStar transfer ~Nov 2027\n      Gen2 100x capacity claim\n      AST 45-60 satellites by end-2026\n      3GPP NTN handset support",
       "diagram_mmd_zh": "mindmap\n  root((卫星直连手机))\n    运营方\n      Starlink 直连蜂窝\n      AST SpaceMobile BlueBird\n      Apple / Globalstar 紧急求救\n    频谱\n      EchoStar 65 MHz 中频段（AWS-3/4、H-Block）\n      此前 FCC 否决 D2C 频谱申请\n    2026 战略转向\n      Starlink Mobile 零售野心\n      可能自建地面网络\n    硬件\n      Block 2 BlueBird 2,400 平方英尺阵列\n      实测 989 Mbps 峰值 D2D\n    待关注\n      EchoStar 转让 ~2027 年 11 月\n      Gen2 百倍容量宣称\n      AST 年底 45-60 颗\n      3GPP NTN 终端支持",
       "entries_primary": [
+        "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
         "2026-08-05_ast-spacemobile-japan-rakuten-d2c-live",
         "2026-08-04_amazon-leo-d2d-5105-satellite-filing",
         "2026-07-24_starlink-fastweb-italy-d2c-trial",
@@ -3617,6 +3622,11 @@ window.KB_DATA = {
         "2026-06-01_arxiv-uav-connectivity-cellular-vs-starlink"
       ],
       "by_type_primary": {
+        "academic-paper": [
+          "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
+          "2026-05-26_arxiv-elevation-aware-sul-ds2d",
+          "2026-05-30_arxiv-5g-nr-ntn-survey-roadmap"
+        ],
         "satellite-news": [
           "2026-08-05_ast-spacemobile-japan-rakuten-d2c-live",
           "2026-07-24_starlink-fastweb-italy-d2c-trial",
@@ -3630,10 +3640,6 @@ window.KB_DATA = {
           "2026-05-24_ast-spacemobile-q1-2026-45-bluebirds",
           "2026-05-30_fcc-ast-spacemobile-full-constellation-approval",
           "2026-05-30_keysight-samsung-rel19-nr-ntn-sband"
-        ],
-        "academic-paper": [
-          "2026-05-26_arxiv-elevation-aware-sul-ds2d",
-          "2026-05-30_arxiv-5g-nr-ntn-survey-roadmap"
         ]
       }
     },
@@ -4187,6 +4193,38 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
+      "date_found": "2026-08-06",
+      "technology": "satellite",
+      "date_published": "2026-08-05",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "HRRC on the Farm: Quantile Forecasting for Highly-Reliable Remote Control via LEO Networks",
+      "title_zh": "农田上的高可靠远程控制：面向 LEO 网络远程操控的分位数预测",
+      "url": "https://arxiv.org/abs/2608.04326",
+      "topics": [
+        "LEO",
+        "NTN",
+        "remote-control",
+        "latency",
+        "Agriculture-4.0",
+        "OneWeb"
+      ],
+      "topic_primary": "sat-direct-device",
+      "topics_secondary": [
+        "leo-constellations",
+        "sat-iot"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-06_arxiv-hrrc-leo-remote-control-quantile.md",
+      "summary_short_en": "HRRC on the Farm (André Gomes, Jie Wang; accepted at IEEE Globecom 2026; submitted to arXiv 5 Aug 2026) tackles a concrete obstacle to using LEO satellite connectivity for mission-critical farm automation (Agriculture 4.0): **latency volatility**. LEO networks give ubiquitous rural coverage, but their end-to-end latency spikes unpredictably, which is dangerous for closed-loop remote control of a moving vehicle — a late control packet can mean the vehicle has already travelled too far before the next command lands.",
+      "summary_short_zh": "《农田上的高可靠远程控制》（André Gomes、Jie Wang；被 IEEE Globecom 2026 接收；2026 年 8 月 5 日提交 arXiv）针对将 LEO 卫星连接用于关键农业自动化（农业 4.0）的一个具体障碍：**时延波动**。LEO 网络提供无处不在的农村覆盖，但其端到端时延会不可预测地骤增，这对移动车辆的闭环远程控制十分危险——一个迟到的控制包可能意味着车辆在下一条指令到达前已行驶过远。",
+      "body_html_en": "<h3>Summary</h3>\n<p>HRRC on the Farm (André Gomes, Jie Wang; accepted at IEEE Globecom 2026; submitted to arXiv 5 Aug 2026) tackles a concrete obstacle to using LEO satellite connectivity for mission-critical farm automation (Agriculture 4.0): <strong>latency volatility</strong>. LEO networks give ubiquitous rural coverage, but their end-to-end latency spikes unpredictably, which is dangerous for closed-loop remote control of a moving vehicle — a late control packet can mean the vehicle has already travelled too far before the next command lands.</p>\n<p>The paper reframes highly-reliable remote control (HRRC) as a <strong>quantile-forecasting problem</strong> rather than a mean-latency problem: instead of predicting <em>average</em> latency, it builds a <strong>high-quantile estimator that predicts the latency spike at a specified reliability level</strong> (e.g. the 99th-percentile latency the link will exhibit). With that upper-bound forecast in hand, the control loop can safely pick the maximum vehicle speed that still guarantees a command arrives before the vehicle outruns its last instruction, at the required reliability.</p>\n<p>Evaluated on a <strong>real-world OneWeb dataset</strong> collected in a major US agricultural region, the estimator meets the reliability requirement while letting the remote-controlled vehicle operate at speeds <strong>up to 138.6% higher</strong> than a conservative baseline that does not forecast the tail. The contribution is the reliability-level-conditioned tail-latency predictor and its use as a speed-governing signal, validated on operational LEO measurements rather than a simulator.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem:</strong> LEO latency volatility breaks closed-loop remote control of moving farm vehicles.</li><li><strong>Reframing:</strong> HRRC cast as high-quantile latency forecasting (predict the tail spike at a target reliability), not mean prediction.</li><li><strong>Use:</strong> the forecast tail-latency bound governs the maximum safe vehicle speed.</li><li><strong>Data:</strong> real OneWeb measurements from a US agricultural hub (not simulation).</li><li><strong>Result:</strong> up to 138.6% higher operating speed while meeting reliability; venue IEEE Globecom 2026.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's satellite entries lean toward constellation build-outs, direct-to-device spectrum, and routing/handover work; this is one of the few entries treating <strong>LEO as a control-plane latency substrate for a specific mission-critical application</strong> and quantifying the operational payoff (speed headroom) of forecasting the latency tail. The quantile-forecasting framing — predicting a reliability-conditioned upper bound rather than an average — is a transferable idea for any LEO application with hard deadlines (teleoperation, remote surgery-adjacent, industrial control over NTN), and it is grounded in real OneWeb data rather than a channel model, which is comparatively rare in the KB's satellite corpus.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>《农田上的高可靠远程控制》（André Gomes、Jie Wang；被 IEEE Globecom 2026 接收；2026 年 8 月 5 日提交 arXiv）针对将 LEO 卫星连接用于关键农业自动化（农业 4.0）的一个具体障碍：<strong>时延波动</strong>。LEO 网络提供无处不在的农村覆盖，但其端到端时延会不可预测地骤增，这对移动车辆的闭环远程控制十分危险——一个迟到的控制包可能意味着车辆在下一条指令到达前已行驶过远。</p>\n<p>论文将高可靠远程控制（HRRC）重构为<strong>分位数预测问题</strong>而非均值时延问题：它不预测<em>平均</em>时延，而是构建一个<strong>在指定可靠性水平下预测时延骤增的高分位估计器</strong>（例如链路将呈现的 99 分位时延）。有了该上界预测，控制回路即可安全地选取仍能保证指令在车辆越出上一指令范围前到达的最大车速。</p>\n<p>在某美国主要农业区采集的<strong>真实 OneWeb 数据集</strong>上评测，该估计器在满足可靠性要求的同时，使被远程控制的车辆可以<strong>比不预测尾部时延的保守基线高出多达 138.6%</strong> 的速度运行。其贡献在于以可靠性水平为条件的尾时延预测器，及其作为限速信号的用法，且以真实 LEO 实测数据而非仿真验证。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题：</strong> LEO 时延波动破坏移动农机的闭环远程控制。</li><li><strong>重构：</strong> 将 HRRC 视为高分位时延预测（在目标可靠性下预测尾部骤增），而非均值预测。</li><li><strong>用途：</strong> 预测的尾时延上界用于限定最大安全车速。</li><li><strong>数据：</strong> 来自美国农业区的真实 OneWeb 实测（非仿真）。</li><li><strong>结果：</strong> 在满足可靠性的同时运行速度最高提升 138.6%；发表于 IEEE Globecom 2026。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的卫星条目偏重星座建设、直连终端频谱与路由/切换工作；本条目是少数将 <strong>LEO 视为特定关键应用的控制面时延底座</strong>、并量化预测时延尾部所带来运营收益（速度余量）的条目之一。分位数预测框架——预测以可靠性为条件的上界而非平均值——对任何有硬性截止期的 LEO 应用（远程操控、远程手术相关、经 NTN 的工业控制）都是可迁移的思路；且它基于真实 OneWeb 数据而非信道模型，这在 KB 卫星语料中相对少见。</p>",
+      "images": [],
+      "search_blob": "hrrc on the farm: quantile forecasting for highly-reliable remote control via leo networks 农田上的高可靠远程控制：面向 leo 网络远程操控的分位数预测 leo ntn remote-control latency agriculture-4.0 oneweb hrrc on the farm (andré gomes, jie wang; accepted at ieee globecom 2026; submitted to arxiv 5 aug 2026) tackles a concrete obstacle to using leo satellite connectivity for mission-critical farm automation (agriculture 4.0): **latency volatility**. leo networks give ubiquitous rural coverage, but their end-to-end latency spikes unpredictably, which is dangerous for closed-loop remote control of a moving vehicle — a late control packet can mean the vehicle has already travelled too far before the next command lands. 《农田上的高可靠远程控制》（andré gomes、jie wang；被 ieee globecom 2026 接收；2026 年 8 月 5 日提交 arxiv）针对将 leo 卫星连接用于关键农业自动化（农业 4.0）的一个具体障碍：**时延波动**。leo 网络提供无处不在的农村覆盖，但其端到端时延会不可预测地骤增，这对移动车辆的闭环远程控制十分危险——一个迟到的控制包可能意味着车辆在下一条指令到达前已行驶过远。 academic-paper satellite"
+    },
     {
       "id": "2026-08-06_arxiv-horffi-open-set-rf-fingerprint",
       "date_found": "2026-08-06",
