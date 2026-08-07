@@ -6,7 +6,7 @@ window.KB_DATA = {
     "6G": 54,
     "802.11bn": 43,
     "agentic-AI": 39,
-    "LEO": 37,
+    "LEO": 38,
     "MAC-layer": 37,
     "security": 36,
     "products": 36,
@@ -17,23 +17,24 @@ window.KB_DATA = {
     "5G": 18,
     "MAPC": 17,
     "Starlink": 17,
+    "direct-to-device": 16,
     "IoT": 16,
     "5G-NR": 15,
     "NTN": 15,
     "MLO": 15,
     "PHY-layer": 15,
     "AI-RAN": 14,
-    "direct-to-device": 14,
     "802.11bf": 14,
     "UWB": 13,
     "6GHz": 13,
+    "FCC": 12,
     "802.11": 12,
     "CSI": 12,
     "BLE": 12,
     "network-slicing": 12,
-    "FCC": 11,
     "LLM": 11,
     "802.11ax": 11,
+    "spectrum": 10,
     "energy-efficiency": 10,
     "802.11bp": 10,
     "digital-twin": 10,
@@ -41,7 +42,6 @@ window.KB_DATA = {
     "SparkLink": 10,
     "mmWave": 10,
     "privacy": 9,
-    "spectrum": 9,
     "automotive": 8,
     "802.11bq": 8,
     "Wi-Fi 7": 8,
@@ -72,6 +72,7 @@ window.KB_DATA = {
     "V2X": 6,
     "Wi-Fi-8": 6,
     "channel-sounding": 6,
+    "BlueBird": 5,
     "802.11bi": 5,
     "MARL": 5,
     "edge-AI": 5,
@@ -89,10 +90,10 @@ window.KB_DATA = {
     "massive-MIMO": 5,
     "QoS": 5,
     "Co-BF": 5,
+    "AST-SpaceMobile": 4,
     "latency": 4,
     "LE-Audio": 4,
     "direct-to-cell": 4,
-    "BlueBird": 4,
     "DRL": 4,
     "AI-inference": 4,
     "ambient-power": 4,
@@ -122,7 +123,6 @@ window.KB_DATA = {
     "802.11az": 4,
     "standards": 3,
     "HDT": 3,
-    "AST-SpaceMobile": 3,
     "MCS": 3,
     "PHY": 3,
     "coexistence": 3,
@@ -168,6 +168,7 @@ window.KB_DATA = {
     "WPA3": 3,
     "roaming": 3,
     "Apple": 3,
+    "Part-15": 2,
     "OneWeb": 2,
     "device-authentication": 2,
     "keystroke-inference": 2,
@@ -363,7 +364,6 @@ window.KB_DATA = {
     "evaluation-methodology": 1,
     "deep-learning": 1,
     "learning-to-optimize": 1,
-    "Part-15": 1,
     "New-Glenn": 1,
     "Falcon-9": 1,
     "dApps": 1,
@@ -900,7 +900,7 @@ window.KB_DATA = {
     "5g-nr": 18,
     "leo-constellations": 16,
     "spectrum-policy": 16,
-    "sat-direct-device": 13,
+    "sat-direct-device": 14,
     "mapc-cosr": 13,
     "amp-iot": 11,
     "uwb-ranging": 10,
@@ -914,9 +914,9 @@ window.KB_DATA = {
     "ai-for-wifi": 7,
     "cellular-massive-mimo": 6,
     "bt-channel-sounding": 6,
+    "ngso-regulation": 5,
     "wifi-for-ai": 5,
     "bt-le": 5,
-    "ngso-regulation": 4,
     "nearlink-slb": 4,
     "bt-location": 4,
     "ftm-ranging": 4,
@@ -939,14 +939,14 @@ window.KB_DATA = {
     "industry-news": 82,
     "ieee-document": 31,
     "product": 20,
-    "satellite-news": 16,
+    "satellite-news": 18,
     "proposal": 4,
     "bluetooth-spec": 3,
     "nearlink-spec": 2
   },
   "category_counts": {
     "academia": 238,
-    "industry": 118,
+    "industry": 120,
     "standards": 40
   },
   "technologies_vocab": {
@@ -3519,6 +3519,7 @@ window.KB_DATA = {
         "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
       ],
       "entries_secondary": [
+        "2026-08-07_ast-bluebird-11-13-launch",
         "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
         "2026-08-05_ast-spacemobile-japan-rakuten-d2c-live",
         "2026-08-04_amazon-leo-d2d-5105-satellite-filing",
@@ -3611,6 +3612,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Satellite direct-to-device))\n    Operators\n      Starlink direct-to-cell\n      AST SpaceMobile BlueBird\n      Apple / Globalstar SOS\n    Spectrum\n      EchoStar 65 MHz mid-band (AWS-3/4, H-Block)\n      Earlier FCC D2C spectrum denial\n    Strategy shift 2026\n      Retail Starlink Mobile ambitions\n      Possible terrestrial buildout\n    Hardware\n      Block 2 BlueBird 2,400 sq ft arrays\n      989 Mbps peak D2D measured\n    Watch\n      EchoStar transfer ~Nov 2027\n      Gen2 100x capacity claim\n      AST 45-60 satellites by end-2026\n      3GPP NTN handset support",
       "diagram_mmd_zh": "mindmap\n  root((卫星直连手机))\n    运营方\n      Starlink 直连蜂窝\n      AST SpaceMobile BlueBird\n      Apple / Globalstar 紧急求救\n    频谱\n      EchoStar 65 MHz 中频段（AWS-3/4、H-Block）\n      此前 FCC 否决 D2C 频谱申请\n    2026 战略转向\n      Starlink Mobile 零售野心\n      可能自建地面网络\n    硬件\n      Block 2 BlueBird 2,400 平方英尺阵列\n      实测 989 Mbps 峰值 D2D\n    待关注\n      EchoStar 转让 ~2027 年 11 月\n      Gen2 百倍容量宣称\n      AST 年底 45-60 颗\n      3GPP NTN 终端支持",
       "entries_primary": [
+        "2026-08-07_ast-bluebird-11-13-launch",
         "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
         "2026-08-05_ast-spacemobile-japan-rakuten-d2c-live",
         "2026-08-04_amazon-leo-d2d-5105-satellite-filing",
@@ -3626,6 +3628,7 @@ window.KB_DATA = {
         "2026-05-30_arxiv-5g-nr-ntn-survey-roadmap"
       ],
       "entries_secondary": [
+        "2026-08-07_fcc-adopts-unlicensed-d2d-nprm",
         "2026-07-19_starlink-v3-operational-debut-flight13-d2d",
         "2026-07-04_amazon-leo-396-sats-initial-service",
         "2026-07-13_reliance-jio-sovereign-leo-constellation",
@@ -3634,18 +3637,19 @@ window.KB_DATA = {
         "2026-06-01_arxiv-uav-connectivity-cellular-vs-starlink"
       ],
       "by_type_primary": {
-        "academic-paper": [
-          "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
-          "2026-05-26_arxiv-elevation-aware-sul-ds2d",
-          "2026-05-30_arxiv-5g-nr-ntn-survey-roadmap"
-        ],
         "satellite-news": [
+          "2026-08-07_ast-bluebird-11-13-launch",
           "2026-08-05_ast-spacemobile-japan-rakuten-d2c-live",
           "2026-07-24_starlink-fastweb-italy-d2c-trial",
           "2026-07-22_ast-spacemobile-d2d-deferral-2027",
           "2026-07-03_starlink-mobile-retail-carrier-plans",
           "2026-06-18_ast-spacemobile-bluebird-block2-launch",
           "2026-07-22_amazon-globalstar-acquisition-apple-satellite"
+        ],
+        "academic-paper": [
+          "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
+          "2026-05-26_arxiv-elevation-aware-sul-ds2d",
+          "2026-05-30_arxiv-5g-nr-ntn-survey-roadmap"
         ],
         "industry-news": [
           "2026-08-04_amazon-leo-d2d-5105-satellite-filing",
@@ -3715,6 +3719,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-07_fcc-adopts-unlicensed-d2d-nprm",
         "2026-08-05_fcc-part100-adopted-satellite-licensing",
         "2026-07-11_fcc-part100-space-modernization-order",
         "2026-05-28_eu-2ghz-mss-spectrum-three-way-split",
@@ -3736,6 +3741,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "satellite-news": [
+          "2026-08-07_fcc-adopts-unlicensed-d2d-nprm",
           "2026-08-05_fcc-part100-adopted-satellite-licensing",
           "2026-07-11_fcc-part100-space-modernization-order"
         ],
@@ -4205,6 +4211,64 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-08-07_fcc-adopts-unlicensed-d2d-nprm",
+      "date_found": "2026-08-07",
+      "technology": "satellite",
+      "date_published": "2026-08-06",
+      "type": "satellite-news",
+      "category": "industry",
+      "title_en": "FCC adopts NPRM opening 200+ MHz of unlicensed Part 15 spectrum for satellite direct-to-device (ET Docket 26-169)",
+      "title_zh": "FCC 通过 NPRM：为卫星直连设备开放 200+ MHz 免许可 Part 15 频谱（ET 案卷 26-169）",
+      "url": "https://www.fcc.gov/document/opening-unlicensed-spectrum-direct-device-offerings",
+      "topics": [
+        "FCC",
+        "direct-to-device",
+        "spectrum",
+        "Part-15"
+      ],
+      "topic_primary": "ngso-regulation",
+      "topics_secondary": [
+        "sat-direct-device"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-07_fcc-adopts-unlicensed-d2d-nprm.md",
+      "summary_short_en": "At its August 6, 2026 open meeting the FCC voted to adopt the Notice of Proposed Rulemaking (ET Docket No. 26-169) that would let unlicensed Part 15 devices communicate directly with satellites — the adoption of the draft the KB tracked when it circulated in July (see 2026-07-22_fcc-unlicensed-direct-to-satellite-nprm). The NPRM targets three high-power unlicensed bands with no existing satellite allocations: 902–928 MHz, 2400–2483.5 MHz, and 5725–5850 MHz (U-NII-3) — more than 200 MHz in total.",
+      "summary_short_zh": "2026 年 8 月 6 日的公开会议上，FCC 投票通过了允许免许可 Part 15 设备直接与卫星通信的规则制定提案（NPRM，ET 案卷 26-169）——即本知识库 7 月已跟踪的草案（见 2026-07-22_fcc-unlicensed-direct-to-satellite-nprm）正式获得通过。该 NPRM 针对三个无现有卫星划分、允许较高功率的免许可频段：902–928 MHz、2400–2483.5 MHz 和 5725–5850 MHz（U-NII-3），合计超过 200 MHz。",
+      "body_html_en": "<h3>Summary</h3>\n<p>At its August 6, 2026 open meeting the FCC voted to adopt the Notice of Proposed Rulemaking (ET Docket No. 26-169) that would let unlicensed Part 15 devices communicate directly with satellites — the adoption of the draft the KB tracked when it circulated in July (see 2026-07-22_fcc-unlicensed-direct-to-satellite-nprm). The NPRM targets three high-power unlicensed bands with no existing satellite allocations: 902–928 MHz, 2400–2483.5 MHz, and 5725–5850 MHz (U-NII-3) — more than 200 MHz in total.</p>\n<p>For uplinks (Earth-to-space), the Commission tentatively concludes that Part 15 devices may transmit to satellites under their <em>existing</em> technical parameters — no increase in permissible power, antenna gain, bandwidth, or out-of-band emission limits — reasoning that this adds no interference risk beyond today's terrestrial use. Downlinks (space-to-Earth) are treated more cautiously: the NPRM seeks comment on power-flux-density limits, beam constraints, aggregate emissions across constellations, radio-astronomy protection, geofencing, and altitude restrictions.</p>\n<p>All satellite operation would remain on the classic Part 15 unprotected, non-interference basis, and the draft proposes that Part 15 compliance suffices without additional Part 25 earth-station certification testing. Comments are due 30 days after Federal Register publication (replies 60 days).</p>\n<h3>Key technical points</h3>\n<ul><li>Adopted 2026-08-06 at the FCC open meeting; ET Docket No. 26-169; &gt;200 MHz across 902–928 / 2400–2483.5 / 5725–5850 MHz.</li><li>Uplink: existing Part 15 power/gain/bandwidth/OOBE limits unchanged — satellite reception becomes a new permissible receiver, not a new transmitter class.</li><li>Downlink: open questions on PFD limits, beam constraints, aggregate constellation emissions, radio-astronomy protection, geofencing, altitude limits.</li><li>Unprotected, non-interference basis preserved; no additional Part 25 certification proposed.</li><li>Comments FR+30 days; replies FR+60 days.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This entry records the NPRM moving from circulated draft (July, see 2026-07-22_fcc-unlicensed-direct-to-satellite-nprm) to adopted rulemaking with a docket number and a comment clock — the point where the industry (Wi-Fi/Bluetooth chipset vendors, LEO operators like AST and SpaceX, and the 900 MHz LoRa/ISM ecosystem) must formally engage. If the uplink tentative conclusion survives comments, ordinary unlicensed radios could gain a satellite path without hardware recertification — a structural bridge between the unlicensed and NGSO worlds.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026 年 8 月 6 日的公开会议上，FCC 投票通过了允许免许可 Part 15 设备直接与卫星通信的规则制定提案（NPRM，ET 案卷 26-169）——即本知识库 7 月已跟踪的草案（见 2026-07-22_fcc-unlicensed-direct-to-satellite-nprm）正式获得通过。该 NPRM 针对三个无现有卫星划分、允许较高功率的免许可频段：902–928 MHz、2400–2483.5 MHz 和 5725–5850 MHz（U-NII-3），合计超过 200 MHz。</p>\n<p>上行（地对空）方面，委员会初步认定 Part 15 设备可在<strong>现有</strong>技术参数下向卫星发射——功率、天线增益、带宽和带外发射限值均不放宽——理由是这不会带来超出当前地面使用的干扰风险。下行（空对地）则更为审慎：NPRM 就功率通量密度限值、波束约束、星座聚合发射、射电天文保护、地理围栏与高度限制征求意见。</p>\n<p>所有卫星操作仍遵循经典的 Part 15&quot;不受保护、不得干扰&quot;原则；草案还提出 Part 15 合规即可、无需额外的 Part 25 地球站认证测试。评论期为《联邦公报》刊出后 30 天（答复意见 60 天）。</p>\n<h3>技术要点</h3>\n<ul><li>2026-08-06 FCC 公开会议通过；ET 案卷 26-169；902–928 / 2400–2483.5 / 5725–5850 MHz 合计 &gt;200 MHz。</li><li>上行：现有 Part 15 功率/增益/带宽/带外发射限值不变——卫星只是新增的合法接收方，不新设发射类别。</li><li>下行：就 PFD 限值、波束约束、星座聚合发射、射电天文保护、地理围栏、高度限制征求意见。</li><li>保留&quot;不受保护、不得干扰&quot;原则；不要求额外 Part 25 认证。</li><li>评论期：《联邦公报》刊出后 30 天；答复 60 天。</li></ul>\n<h3>意义与新意</h3>\n<p>本条目记录该 NPRM 从 7 月的流转草案（见 2026-07-22_fcc-unlicensed-direct-to-satellite-nprm）推进为带案卷号和评论时钟的正式规则制定——产业界（Wi-Fi/蓝牙芯片厂商、AST 与 SpaceX 等低轨运营商、900 MHz LoRa/ISM 生态）必须正式参与的节点。若上行初步结论在评论期后维持，普通免许可无线电设备无需硬件重新认证即可获得卫星通路——这是免许可世界与 NGSO（非地球静止轨道卫星）世界之间的结构性桥梁。</p>",
+      "images": [],
+      "search_blob": "fcc adopts nprm opening 200+ mhz of unlicensed part 15 spectrum for satellite direct-to-device (et docket 26-169) fcc 通过 nprm：为卫星直连设备开放 200+ mhz 免许可 part 15 频谱（et 案卷 26-169） fcc direct-to-device spectrum part-15 at its august 6, 2026 open meeting the fcc voted to adopt the notice of proposed rulemaking (et docket no. 26-169) that would let unlicensed part 15 devices communicate directly with satellites — the adoption of the draft the kb tracked when it circulated in july (see 2026-07-22_fcc-unlicensed-direct-to-satellite-nprm). the nprm targets three high-power unlicensed bands with no existing satellite allocations: 902–928 mhz, 2400–2483.5 mhz, and 5725–5850 mhz (u-nii-3) — more than 200 mhz in total. 2026 年 8 月 6 日的公开会议上，fcc 投票通过了允许免许可 part 15 设备直接与卫星通信的规则制定提案（nprm，et 案卷 26-169）——即本知识库 7 月已跟踪的草案（见 2026-07-22_fcc-unlicensed-direct-to-satellite-nprm）正式获得通过。该 nprm 针对三个无现有卫星划分、允许较高功率的免许可频段：902–928 mhz、2400–2483.5 mhz 和 5725–5850 mhz（u-nii-3），合计超过 200 mhz。 satellite-news satellite"
+    },
+    {
+      "id": "2026-08-07_ast-bluebird-11-13-launch",
+      "date_found": "2026-08-07",
+      "technology": "satellite",
+      "date_published": "2026-08-05",
+      "type": "satellite-news",
+      "category": "industry",
+      "title_en": "AST SpaceMobile launches BlueBird 11–13 — next-gen satellites with ~2× peak download, beta D2D service in sight",
+      "title_zh": "AST SpaceMobile 发射 BlueBird 11–13——下一代卫星峰值下载速率翻倍，beta 直连手机服务在望",
+      "url": "https://www.businesswire.com/news/home/20260728125090/en/AST-SpaceMobile-Announces-Launch-Date-for-BlueBird-Satellites-11-12-and-13",
+      "topics": [
+        "AST-SpaceMobile",
+        "BlueBird",
+        "direct-to-device",
+        "LEO"
+      ],
+      "topic_primary": "sat-direct-device",
+      "topics_secondary": [
+        "leo-constellations"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-08-07_ast-bluebird-11-13-launch.md",
+      "summary_short_en": "AST SpaceMobile's BlueBird 11, 12 and 13 satellites lifted off on 2026-08-05 at 3:42 a.m. EDT from Cape Canaveral aboard a SpaceX Falcon 9, continuing the Block 2 deployment the KB tracked with the first three Block 2 BlueBirds in June (see 2026-06-18_ast-spacemobile-bluebird-block2-launch). The company states the latest units nearly double peak download speeds versus its first-generation BlueBirds.",
+      "summary_short_zh": "AST SpaceMobile 的 BlueBird 11、12、13 号卫星于 2026-08-05 美东时间凌晨 3:42 由 SpaceX 猎鹰 9 号自卡纳维拉尔角发射升空，延续 6 月首批三颗 Block 2 BlueBird 的部署节奏（见 2026-06-18_ast-spacemobile-bluebird-block2-launch）。公司表示最新卫星的峰值下载速率较第一代 BlueBird 接近翻倍。",
+      "body_html_en": "<h3>Summary</h3>\n<p>AST SpaceMobile's BlueBird 11, 12 and 13 satellites lifted off on 2026-08-05 at 3:42 a.m. EDT from Cape Canaveral aboard a SpaceX Falcon 9, continuing the Block 2 deployment the KB tracked with the first three Block 2 BlueBirds in June (see 2026-06-18_ast-spacemobile-bluebird-block2-launch). The company states the latest units nearly double peak download speeds versus its first-generation BlueBirds.</p>\n<p>The launch matters for the direct-to-device (D2D) timeline: after AST deferred commercial service to early 2027 (see 2026-07-22_ast-spacemobile-d2d-deferral-2027), this batch is positioned as the enabler of a <em>beta</em> D2D service in the interim, with the company reaffirming 2026 revenue guidance of $150–200 M. AST's D2D approach uses very large phased arrays in LEO that talk to unmodified smartphones over carrier spectrum — the constellation build-out pace, not handset support, is its gating factor.</p>\n<h3>Key technical points</h3>\n<ul><li>Launch: 2026-08-05, 3:42 a.m. EDT, Falcon 9 from Cape Canaveral; BlueBird 11/12/13 (Block 2 generation).</li><li>~2× peak download speed vs first-generation BlueBirds (company claim).</li><li>Positioned to enable a beta D2D service ahead of the early-2027 commercial start; 2026 revenue guidance $150–200 M reaffirmed.</li><li>Block 2 BlueBirds carry ~2,400 sq ft phased arrays — among the largest commercial LEO antennas.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Third D2D-constellation datapoint in three weeks for the KB: SpaceX flying operational V3 Starlink D2D hardware (2026-07-19), AST deferring commercial service (2026-07-22), and now AST's next-gen batch flying with a beta-service framing. The KB's sat-direct-device bin can now track the two D2D architectures (AST's big-array/unmodified-phone vs Starlink's V3) on concrete deployment cadence rather than roadmap claims.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>AST SpaceMobile 的 BlueBird 11、12、13 号卫星于 2026-08-05 美东时间凌晨 3:42 由 SpaceX 猎鹰 9 号自卡纳维拉尔角发射升空，延续 6 月首批三颗 Block 2 BlueBird 的部署节奏（见 2026-06-18_ast-spacemobile-bluebird-block2-launch）。公司表示最新卫星的峰值下载速率较第一代 BlueBird 接近翻倍。</p>\n<p>这次发射关乎直连设备（D2D，卫星直连普通手机）时间表：在 AST 将商用服务推迟至 2027 年初之后（见 2026-07-22_ast-spacemobile-d2d-deferral-2027），这批卫星被定位为过渡期 <strong>beta</strong> D2D 服务的使能者，公司同时重申 2026 年营收指引 1.5–2 亿美元。AST 的 D2D 路线采用低轨超大相控阵直接与未改装智能手机在运营商频谱上通信——瓶颈在星座建设速度，而非手机端支持。</p>\n<h3>技术要点</h3>\n<ul><li>发射：2026-08-05 美东 3:42，猎鹰 9 号，卡纳维拉尔角；BlueBird 11/12/13（Block 2 代）。</li><li>峰值下载速率较第一代 BlueBird 接近翻倍（公司宣称）。</li><li>定位为 2027 年初商用前 beta D2D 服务的使能批次；重申 2026 年营收指引 1.5–2 亿美元。</li><li>Block 2 BlueBird 搭载约 2,400 平方英尺相控阵——商业低轨卫星中最大的天线之一。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本知识库三周内的第三个 D2D 星座动态：SpaceX 发射运营版 V3 Starlink D2D 硬件（2026-07-19）、AST 推迟商用（2026-07-22）、如今 AST 下一代批次以 beta 服务定位升空。sat-direct-device 主题现在可以基于具体部署节奏（而非路线图宣称）同时跟踪两条 D2D 技术路线（AST 大阵列直连普通手机 vs Starlink V3）。</p>",
+      "images": [],
+      "search_blob": "ast spacemobile launches bluebird 11–13 — next-gen satellites with ~2× peak download, beta d2d service in sight ast spacemobile 发射 bluebird 11–13——下一代卫星峰值下载速率翻倍，beta 直连手机服务在望 ast-spacemobile bluebird direct-to-device leo ast spacemobile's bluebird 11, 12 and 13 satellites lifted off on 2026-08-05 at 3:42 a.m. edt from cape canaveral aboard a spacex falcon 9, continuing the block 2 deployment the kb tracked with the first three block 2 bluebirds in june (see 2026-06-18_ast-spacemobile-bluebird-block2-launch). the company states the latest units nearly double peak download speeds versus its first-generation bluebirds. ast spacemobile 的 bluebird 11、12、13 号卫星于 2026-08-05 美东时间凌晨 3:42 由 spacex 猎鹰 9 号自卡纳维拉尔角发射升空，延续 6 月首批三颗 block 2 bluebird 的部署节奏（见 2026-06-18_ast-spacemobile-bluebird-block2-launch）。公司表示最新卫星的峰值下载速率较第一代 bluebird 接近翻倍。 satellite-news satellite"
+    },
     {
       "id": "2026-08-07_arxiv-ocudu-gpu-cuda-5g-phy",
       "date_found": "2026-08-07",
