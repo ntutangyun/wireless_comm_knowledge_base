@@ -1,7 +1,7 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-08-06",
-  "last_scanned": "2026-08-06",
+  "last_updated": "2026-08-07",
+  "last_scanned": "2026-08-07",
   "topic_counts": {
     "6G": 53,
     "802.11bn": 43,
@@ -40,10 +40,10 @@ window.KB_DATA = {
     "NearLink": 10,
     "SparkLink": 10,
     "mmWave": 10,
+    "privacy": 9,
     "spectrum": 9,
     "automotive": 8,
     "802.11bq": 8,
-    "privacy": 8,
     "Wi-Fi 7": 8,
     "3GPP": 8,
     "generative-AI": 8,
@@ -71,6 +71,7 @@ window.KB_DATA = {
     "V2X": 6,
     "Wi-Fi-8": 6,
     "channel-sounding": 6,
+    "802.11bi": 5,
     "MARL": 5,
     "edge-AI": 5,
     "AMP": 5,
@@ -104,7 +105,6 @@ window.KB_DATA = {
     "congestion-control": 4,
     "UHR": 4,
     "computation-offloading": 4,
-    "802.11bi": 4,
     "sidelink": 4,
     "GNN": 4,
     "TGbt": 4,
@@ -120,6 +120,7 @@ window.KB_DATA = {
     "802.15.4ab": 4,
     "ranging": 4,
     "802.11az": 4,
+    "standards": 3,
     "HDT": 3,
     "AST-SpaceMobile": 3,
     "MCS": 3,
@@ -188,7 +189,6 @@ window.KB_DATA = {
     "FWA": 2,
     "ICCE": 2,
     "iSLA": 2,
-    "standards": 2,
     "C-band": 2,
     "Part-100": 2,
     "licensing": 2,
@@ -890,8 +890,8 @@ window.KB_DATA = {
     "cellular-ai": 28,
     "wifi8-uhr": 28,
     "wifi7-deployment": 25,
+    "security-privacy": 23,
     "6g-vision": 23,
-    "security-privacy": 22,
     "sensing-csi": 21,
     "open-ran": 19,
     "5g-nr": 18,
@@ -934,7 +934,7 @@ window.KB_DATA = {
   "type_counts": {
     "academic-paper": 236,
     "industry-news": 82,
-    "ieee-document": 30,
+    "ieee-document": 31,
     "product": 20,
     "satellite-news": 16,
     "proposal": 4,
@@ -944,7 +944,7 @@ window.KB_DATA = {
   "category_counts": {
     "academia": 236,
     "industry": 118,
-    "standards": 39
+    "standards": 40
   },
   "technologies_vocab": {
     "technologies": [
@@ -2598,6 +2598,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "mindmap\n  root((安全与隐私))\n    攻击\n      AirSnitch 客户端隔离（NDSS'26）\n      CSI-RFF 微信号\n      StateFi FSM 指纹\n      VWattacker VoWiFi\n      乡村部署攻击面\n    防御\n      PHY 前导码签名（CE）\n      运行时 MAC 再随机化\n      安全 FTM（关联 ftm-ranging）\n    标准活动\n      TGbi EPPKE\n      TGbt 后量子 / 加密敏捷\n    关注\n      WPA3 后继在 IETF/IEEE\n      感知隐私监管\n      RFF 轮换 + MAC 再随机化",
       "entries_primary": [
         "2026-08-06_arxiv-horffi-open-set-rf-fingerprint",
+        "2026-08-07_ieee-tgbi-d6-sa-recirc-94pct",
         "2026-08-06_arxiv-airkey-wifi-acoustic-pin-inference",
         "2026-08-05_arxiv-airkey-ack-csi-acoustic-pin-inference",
         "2026-07-17_ieee-80211bi-conditional-approval-milestone",
@@ -2657,6 +2658,7 @@ window.KB_DATA = {
           "2026-05-05_arxiv-mac-rerandomization-runtime"
         ],
         "ieee-document": [
+          "2026-08-07_ieee-tgbi-d6-sa-recirc-94pct",
           "2026-07-17_ieee-80211bi-conditional-approval-milestone",
           "2026-07-11_ieee-mentor-tgbt-digest",
           "2026-07-10_ieee-mentor-tgbt-plenary-eve-digest",
@@ -4254,6 +4256,32 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>HoRFFI（Zeng、Shen、Zhang、Shen、Tan、Song；2026 年 8 月 5 日提交 arXiv，投稿 IEEE INFOCOM 2026；经 cs.CR 安全扫描路由）研究<strong>开放集射频指纹识别（RFFI）</strong>——利用发射信号中硬件缺陷特征进行物理层设备认证。它针对的实际问题是&quot;开放度&quot;：部署中的认证器不仅要识别已注册设备，还必须<strong>拒绝从未训练过的未知设备</strong>，且只能使用有限的标注训练数据。假设每个测试设备在训练时都见过的闭集 RFFI 模型在此场景下表现很差。</p>\n<p>方法核心是<strong>相似度增强变分信息瓶颈（SVIB）</strong>监督机制。变分信息瓶颈压缩所学表示，仅保留设备判别性信息、丢弃无关变化；相似度增强项塑造该表示，使新颖/未知类别更易分离，从而提升对训练集之外设备与条件的迁移性。这正是系统能以有限标注实现未知设备拒识的原因。</p>\n<p>在公开的 <strong>LoRa 与 Wi-Fi</strong> RFFI 数据集上评测，HoRFFI 在新颖类准确率与 AUC（开放集判别指标）上较基线取得提升。该论文为投稿（尚未接收），摘要除相对提升论断外未给出具体设备型号或绝对准确率数字。</p>\n<h3>技术要点</h3>\n<ul><li><strong>任务：</strong> 开放集 RFFI——认证已注册设备<em>并</em>拒绝未知/未见设备，且标注数据有限。</li><li><strong>SVIB：</strong> 变分信息瓶颈（丢弃无关信息、保留设备判别特征）+ 提升新颖类分离与迁移性的相似度增强项。</li><li><strong>数据集：</strong> 公开 LoRa 与 Wi-Fi RFFI 数据集；指标为新颖类准确率与 AUC。</li><li><strong>状态：</strong> 投稿 IEEE INFOCOM 2026（尚未接收）；仅摘要级细节。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 中已有一条基于 CSI 的射频指纹条目（CSI-RFF，20 次测量约 99%），其工作于闭集、高信噪比场景。HoRFFI 处于设计空间的不同位置：它是<strong>开放集/高开放度</strong>的——即拒绝从未注册设备这一更难、更贴近部署的问题——且是一种在 Wi-Fi 与 LoRa 上均验证的通用 RFFI 表示学习方法，而非专用于 Wi-Fi CSI 的技术。其新颖性为中等（变分信息瓶颈 RFFI 已有前作；相似度增强 + 开放度框架是新增量），故 novelty 2。作为 security-privacy bin 中日益增多的 Wi-Fi 识别/去匿名工作的防御方对应物，具有相关性。</p>",
       "images": [],
       "search_blob": "horffi: high-openness rf fingerprint identification with a similarity-enhanced variational information bottleneck horffi：基于相似度增强变分信息瓶颈的高开放度射频指纹识别 rf-fingerprint device-authentication machine-learning security 802.11 horffi (zeng, shen, zhang, shen, tan, song; arxiv 5 aug 2026, submitted to ieee infocom 2026; routed from the cs.cr security sweep) addresses **open-set rf fingerprint identification (rffi)** — physical-layer device authentication from hardware-imperfection signatures in the transmitted signal. the practical problem it targets is \"openness\": a deployed authenticator must not only recognise enrolled devices but also **reject unknown devices it was never trained on**, and it must do so with only limited labelled training data. closed-set rffi models that assume every test device was seen during training fail badly in this regime. horffi（zeng、shen、zhang、shen、tan、song；2026 年 8 月 5 日提交 arxiv，投稿 ieee infocom 2026；经 cs.cr 安全扫描路由）研究**开放集射频指纹识别（rffi）**——利用发射信号中硬件缺陷特征进行物理层设备认证。它针对的实际问题是\"开放度\"：部署中的认证器不仅要识别已注册设备，还必须**拒绝从未训练过的未知设备**，且只能使用有限的标注训练数据。假设每个测试设备在训练时都见过的闭集 rffi 模型在此场景下表现很差。 academic-paper wifi"
+    },
+    {
+      "id": "2026-08-07_ieee-tgbi-d6-sa-recirc-94pct",
+      "date_found": "2026-08-07",
+      "technology": "wifi",
+      "date_published": "2026-08-04",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11bi (Enhanced Privacy) D6.0 passes SA recirculation ballot at 94% — publication in final stretch",
+      "title_zh": "IEEE 802.11bi（增强隐私）D6.0 以 94% 通过 SA 再循环投票——发布进入最后阶段",
+      "url": "https://www.ieee802.org/11/Reports/802.11_Timelines.htm",
+      "topics": [
+        "802.11bi",
+        "privacy",
+        "standards"
+      ],
+      "topic_primary": "security-privacy",
+      "topics_secondary": [],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-08-07_ieee-tgbi-d6-sa-recirc-94pct.md",
+      "summary_short_en": "The IEEE 802.11 Working Group's official Timelines page (re-stamped 2026-08-06) records that TGbi — the Enhanced Service with Data Privacy Protection task group, colloquially the \"Wi-Fi privacy amendment\" — passed its latest SA (Standards Association) recirculation ballot on draft D6.0 with **94% approval on 2026-08-04**, up from the 92% D5.0 result logged in July. SA recirculation is the last balloting stage before RevCom submission and publication, so 802.11bi is now in its final stretch.",
+      "summary_short_zh": "IEEE 802.11 工作组官方 Timelines 页面（2026-08-06 更新）记录：TGbi——数据隐私保护增强任务组，即通称的\"Wi-Fi 隐私修订案\"——其草案 D6.0 于 **2026-08-04 以 94% 的赞成率通过最新一轮 SA（标准协会）再循环投票**，高于 7 月记录的 D5.0 的 92%。SA 再循环是提交 RevCom 与正式发布前的最后投票阶段，因此 802.11bi 已进入收尾冲刺。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The IEEE 802.11 Working Group's official Timelines page (re-stamped 2026-08-06) records that TGbi — the Enhanced Service with Data Privacy Protection task group, colloquially the &quot;Wi-Fi privacy amendment&quot; — passed its latest SA (Standards Association) recirculation ballot on draft D6.0 with <strong>94% approval on 2026-08-04</strong>, up from the 92% D5.0 result logged in July. SA recirculation is the last balloting stage before RevCom submission and publication, so 802.11bi is now in its final stretch.</p>\n<p>Supporting activity on IEEE Mentor corroborates the milestone: TGbi's CRG (Comment Resolution Group) uploaded a second-recirculation comment spreadsheet and a CRG telecon agenda on 2026-08-05 (DCN 11-26-1528/1527, Carol Ansley, Cox), indicating the group is resolving the residual ballot comments rather than reworking the draft.</p>\n<p>802.11bi defines mechanisms that reduce the trackability of Wi-Fi devices and users: randomized/changing MAC addresses that survive session continuity, protection of identifying fields in management frames, and the EPPKE (Enhanced Privacy Protected Key Exchange) machinery. Once published, it becomes the standards-track baseline for client privacy across consumer and enterprise Wi-Fi.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>D6.0 SA recirculation ballot: 94% approval, 2026-08-04</strong> (prior: D5.0 at 92%); Timelines page stamp 2026-08-06.</li><li>SA recirculation is the final ballot stage — remaining steps are comment resolution, RevCom, and IEEE-SA Standards Board approval.</li><li>Mentor DCN 11-26-1527/1528 (2026-08-05): TGbi CRG telecon agenda + 2nd-recirc comment spreadsheet — routine end-game comment resolution.</li><li>802.11bi scope: MAC address randomization with session continuity, management-frame field protection, EPPKE.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB has tracked TGbi through its WG ballots and the pre-Montreal Mentor digests (see 2026-07-09_ieee-mentor-tgbi-tgm-preplenary-digest); this entry records the amendment crossing 94% at SA recirculation — the strongest signal yet that 802.11bi publishes on the current timeline rather than slipping. Device and AP vendors now have a stable target for implementing standards-based client privacy.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>IEEE 802.11 工作组官方 Timelines 页面（2026-08-06 更新）记录：TGbi——数据隐私保护增强任务组，即通称的&quot;Wi-Fi 隐私修订案&quot;——其草案 D6.0 于 <strong>2026-08-04 以 94% 的赞成率通过最新一轮 SA（标准协会）再循环投票</strong>，高于 7 月记录的 D5.0 的 92%。SA 再循环是提交 RevCom 与正式发布前的最后投票阶段，因此 802.11bi 已进入收尾冲刺。</p>\n<p>IEEE Mentor 上的相关动态佐证了这一里程碑：TGbi 的 CRG（评审意见处理组）于 2026-08-05 上传了第二轮再循环意见表和 CRG 电话会议议程（DCN 11-26-1528/1527，Carol Ansley，Cox），表明工作组正在处理残余投票意见，而非重做草案。</p>\n<p>802.11bi 定义了降低 Wi-Fi 设备与用户可追踪性的机制：可保持会话连续性的随机化/变化 MAC 地址、管理帧中标识性字段的保护，以及 EPPKE（增强隐私保护密钥交换）机制。发布后，它将成为消费级与企业级 Wi-Fi 客户端隐私的标准基线。</p>\n<h3>技术要点</h3>\n<ul><li><strong>D6.0 SA 再循环投票：94% 赞成，2026-08-04</strong>（此前 D5.0 为 92%）；Timelines 页面时间戳 2026-08-06。</li><li>SA 再循环是最后的投票阶段——余下步骤为意见处理、RevCom 与 IEEE-SA 标准委员会批准。</li><li>Mentor DCN 11-26-1527/1528（2026-08-05）：TGbi CRG 电话会议议程 + 第二轮再循环意见表——常规的收尾意见处理。</li><li>802.11bi 范围：具备会话连续性的 MAC 地址随机化、管理帧字段保护、EPPKE。</li></ul>\n<h3>意义与新意</h3>\n<p>本知识库已通过 WG 投票与蒙特利尔全会前的 Mentor 摘要（见 2026-07-09_ieee-mentor-tgbi-tgm-preplenary-digest）持续跟踪 TGbi；本条目记录该修订案在 SA 再循环阶段跨过 94%——这是 802.11bi 将按当前时间表发布而非延期的最强信号。设备与 AP 厂商现在有了实现标准化客户端隐私的稳定目标。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11bi (enhanced privacy) d6.0 passes sa recirculation ballot at 94% — publication in final stretch ieee 802.11bi（增强隐私）d6.0 以 94% 通过 sa 再循环投票——发布进入最后阶段 802.11bi privacy standards the ieee 802.11 working group's official timelines page (re-stamped 2026-08-06) records that tgbi — the enhanced service with data privacy protection task group, colloquially the \"wi-fi privacy amendment\" — passed its latest sa (standards association) recirculation ballot on draft d6.0 with **94% approval on 2026-08-04**, up from the 92% d5.0 result logged in july. sa recirculation is the last balloting stage before revcom submission and publication, so 802.11bi is now in its final stretch. ieee 802.11 工作组官方 timelines 页面（2026-08-06 更新）记录：tgbi——数据隐私保护增强任务组，即通称的\"wi-fi 隐私修订案\"——其草案 d6.0 于 **2026-08-04 以 94% 的赞成率通过最新一轮 sa（标准协会）再循环投票**，高于 7 月记录的 d5.0 的 92%。sa 再循环是提交 revcom 与正式发布前的最后投票阶段，因此 802.11bi 已进入收尾冲刺。 ieee-document wifi"
     },
     {
       "id": "2026-08-06_arxiv-fm4wifi-flow-matching-cosr",
