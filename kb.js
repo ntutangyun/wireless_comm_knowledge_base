@@ -7,16 +7,16 @@ window.KB_DATA = {
     "802.11bn": 43,
     "agentic-AI": 40,
     "LEO": 39,
+    "O-RAN": 38,
     "security": 38,
     "MAC-layer": 37,
-    "O-RAN": 36,
     "products": 36,
     "scheduling": 33,
     "802.11be": 27,
     "WiFi-sensing": 24,
+    "5G-NR": 19,
     "5G": 18,
     "IoT": 17,
-    "5G-NR": 17,
     "MAPC": 17,
     "Starlink": 17,
     "direct-to-device": 16,
@@ -27,14 +27,14 @@ window.KB_DATA = {
     "UWB": 14,
     "AI-RAN": 14,
     "802.11bf": 14,
+    "network-slicing": 13,
     "BLE": 13,
     "FCC": 13,
     "6GHz": 13,
+    "LLM": 12,
     "CSI": 12,
-    "network-slicing": 12,
     "digital-twin": 11,
     "spectrum": 11,
-    "LLM": 11,
     "NearLink": 11,
     "802.11ax": 11,
     "energy-efficiency": 10,
@@ -42,6 +42,8 @@ window.KB_DATA = {
     "SparkLink": 10,
     "mmWave": 10,
     "privacy": 9,
+    "UAV": 8,
+    "RIC": 8,
     "URLLC": 8,
     "automotive": 8,
     "802.11bq": 8,
@@ -51,14 +53,14 @@ window.KB_DATA = {
     "resource-allocation": 7,
     "ISAC": 7,
     "xApp": 7,
-    "UAV": 7,
     "OpenAirInterface": 7,
-    "RIC": 7,
     "AI-native": 7,
     "NPCA": 7,
     "802.11bt": 7,
     "reinforcement-learning": 7,
     "XR": 7,
+    "MEC": 6,
+    "IAB": 6,
     "edge-AI": 6,
     "machine-learning": 6,
     "Co-SR": 6,
@@ -78,7 +80,6 @@ window.KB_DATA = {
     "channel-sounding": 6,
     "ranging": 5,
     "edge-computing": 5,
-    "MEC": 5,
     "BlueBird": 5,
     "802.11bi": 5,
     "MARL": 5,
@@ -86,7 +87,6 @@ window.KB_DATA = {
     "handover": 5,
     "FiRa": 5,
     "5G-core": 5,
-    "IAB": 5,
     "backhaul": 5,
     "intent-based-networking": 5,
     "NGSO": 5,
@@ -122,7 +122,9 @@ window.KB_DATA = {
     "AoA": 4,
     "802.15.4ab": 4,
     "802.11az": 4,
+    "semantic-communication": 3,
     "device-authentication": 3,
+    "PPO": 3,
     "HARQ": 3,
     "standards": 3,
     "HDT": 3,
@@ -170,6 +172,8 @@ window.KB_DATA = {
     "WPA3": 3,
     "roaming": 3,
     "Apple": 3,
+    "FlexRIC": 2,
+    "E2SM": 2,
     "DW3000": 2,
     "ESP32": 2,
     "IPv6": 2,
@@ -227,7 +231,6 @@ window.KB_DATA = {
     "LSTM": 2,
     "PAKE": 2,
     "DSO": 2,
-    "PPO": 2,
     "BBR": 2,
     "contention": 2,
     "FDD": 2,
@@ -267,7 +270,6 @@ window.KB_DATA = {
     "Samsung": 2,
     "HAPS": 2,
     "control-plane": 2,
-    "semantic-communication": 2,
     "UPF": 2,
     "MSS": 2,
     "IRIS2": 2,
@@ -295,10 +297,14 @@ window.KB_DATA = {
     "Ericsson": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "split-inference": 1,
+    "edge-offload": 1,
+    "SLAM": 1,
     "dev-kit": 1,
     "6LoWPAN": 1,
     "IP-Link": 1,
     "theory": 1,
+    "RLFT": 1,
     "spectrum-monitoring": 1,
     "signal-classification": 1,
     "physical-AI": 1,
@@ -459,7 +465,6 @@ window.KB_DATA = {
     "tail-latency": 1,
     "LEO-broadband": 1,
     "Near-RT-RIC": 1,
-    "FlexRIC": 1,
     "AI-agent": 1,
     "guardrails": 1,
     "EU-AI-Act": 1,
@@ -846,7 +851,6 @@ window.KB_DATA = {
     "angle-estimation": 1,
     "5x5-MIMO": 1,
     "monostatic-sensing": 1,
-    "E2SM": 1,
     "payments": 1,
     "JCB": 1,
     "Resona": 1,
@@ -916,9 +920,9 @@ window.KB_DATA = {
     "security-privacy": 26,
     "wifi7-deployment": 25,
     "6g-vision": 24,
+    "open-ran": 21,
     "sensing-csi": 21,
     "5g-nr": 20,
-    "open-ran": 20,
     "spectrum-policy": 17,
     "leo-constellations": 16,
     "sat-direct-device": 14,
@@ -928,17 +932,17 @@ window.KB_DATA = {
     "agentic-wifi": 10,
     "ntn": 9,
     "starlink": 9,
+    "network-slicing": 8,
     "rtwt-latency": 8,
     "sat-ai": 8,
     "cellular-security": 8,
-    "network-slicing": 7,
     "ai-for-wifi": 7,
     "bt-le": 6,
     "cellular-massive-mimo": 6,
     "bt-channel-sounding": 6,
+    "mec": 5,
     "ngso-regulation": 5,
     "wifi-for-ai": 5,
-    "mec": 4,
     "nearlink-slb": 4,
     "nearlink-sle": 4,
     "bt-location": 4,
@@ -956,7 +960,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 246,
+    "academic-paper": 249,
     "industry-news": 84,
     "ieee-document": 31,
     "product": 21,
@@ -966,7 +970,7 @@ window.KB_DATA = {
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 246,
+    "academia": 249,
     "industry": 123,
     "standards": 41
   },
@@ -3084,6 +3088,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-12_arxiv-evoric-llm-ppo-oran-ric",
         "2026-08-07_arxiv-ocudu-gpu-cuda-5g-phy",
         "2026-08-04_arxiv-oran-energy-latency-ai-placement",
         "2026-08-04_arxiv-veraran-preactuation-ran-certification",
@@ -3106,6 +3111,7 @@ window.KB_DATA = {
         "2026-07-11_oran-security-update-2026"
       ],
       "entries_secondary": [
+        "2026-08-12_arxiv-bvlos-drones-oran-5g-slicing",
         "2026-08-08_arxiv-5g-isac-uav-oran-sensing",
         "2026-08-05_arxiv-fedcritic-mimo-serverless-6g-ran",
         "2026-08-05_arxiv-leo-drl-meta-scheduler-ntn-slicing",
@@ -3137,6 +3143,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-12_arxiv-evoric-llm-ppo-oran-ric",
           "2026-08-07_arxiv-ocudu-gpu-cuda-5g-phy",
           "2026-08-04_arxiv-oran-energy-latency-ai-placement",
           "2026-08-04_arxiv-veraran-preactuation-ran-certification",
@@ -3176,6 +3183,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-12_arxiv-bvlos-drones-oran-5g-slicing",
         "2026-08-05_arxiv-opa-online-slice-admission-pricing",
         "2026-08-04_arxiv-metis-declarative-slice-orchestrator",
         "2026-07-13_arxiv-mappo-sla-uav-mec-slicing",
@@ -3200,6 +3208,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-12_arxiv-bvlos-drones-oran-5g-slicing",
           "2026-08-05_arxiv-opa-online-slice-admission-pricing",
           "2026-08-04_arxiv-metis-declarative-slice-orchestrator",
           "2026-07-13_arxiv-mappo-sla-uav-mec-slicing",
@@ -3226,6 +3235,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-12_arxiv-5g-edge-slam-semantic-fiducial",
         "2026-08-08_arxiv-balance-hybrid-speculative-edge-llm",
         "2026-07-11_arxiv-mores-distributed-llm-inference",
         "2026-07-07_arxiv-5g-mec-powerline-latency-cost",
@@ -3247,6 +3257,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-12_arxiv-5g-edge-slam-semantic-fiducial",
           "2026-08-08_arxiv-balance-hybrid-speculative-edge-llm",
           "2026-07-11_arxiv-mores-distributed-llm-inference",
           "2026-07-07_arxiv-5g-mec-powerline-latency-cost",
@@ -3298,6 +3309,8 @@ window.KB_DATA = {
         "2026-05-21_kddi-ericsson-ai-uplink-ropt"
       ],
       "entries_secondary": [
+        "2026-08-12_arxiv-5g-edge-slam-semantic-fiducial",
+        "2026-08-12_arxiv-evoric-llm-ppo-oran-ric",
         "2026-08-09_arxiv-holonic-digital-twins-physical-ai",
         "2026-08-08_arxiv-dtmc-proactive-harq-urllc-scheduling",
         "2026-08-08_arxiv-balance-hybrid-speculative-edge-llm",
@@ -4270,6 +4283,85 @@ window.KB_DATA = {
   },
   "entries": [
     {
+      "id": "2026-08-12_arxiv-bvlos-drones-oran-5g-slicing",
+      "date_found": "2026-08-12",
+      "technology": "cellular",
+      "date_published": "2026-08-10",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Enabling Beyond-Visual-Line-of-Sight Drone Operation over Open RAN 5G Networks with Slicing",
+      "title_zh": "基于切片的 Open RAN 5G 网络实现超视距无人机运行",
+      "url": "https://arxiv.org/abs/2608.09481",
+      "topics": [
+        "O-RAN",
+        "network-slicing",
+        "UAV",
+        "5G-NR",
+        "FlexRIC",
+        "E2SM"
+      ],
+      "topic_primary": "network-slicing",
+      "topics_secondary": [
+        "open-ran"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-08-12_arxiv-bvlos-drones-oran-5g-slicing.md",
+      "summary_short_en": "This paper (Pau Baguer, Esteban Municio, Gines Garcia-Aviles, Xavier Costa-Pérez — i2CAT, NEC Labs Europe, ICREA; arXiv 10 Aug 2026) gives an empirical demonstration that RAN slicing on an open-source O-RAN 5G stack can meet the strict latency budgets of Beyond-Visual-Line-of-Sight (BVLOS) drone operation: below ~40 ms for command-and-control/telemetry and ~140 ms for video, which vanilla proportional-fair 5G cannot reliably hold under congestion.",
+      "summary_short_zh": "本文（Pau Baguer、Esteban Municio、Gines Garcia-Aviles、Xavier Costa-Pérez——i2CAT、NEC 欧洲实验室、ICREA；2026 年 8 月 10 日 arXiv）以实测证明：在开源 O-RAN 5G 协议栈上做 RAN 切片，能满足超视距（BVLOS）无人机运行的严格时延预算——指挥控制/遥测须低于约 40 ms、视频须低于约 140 ms，而拥塞下普通比例公平 5G 无法可靠保证。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper (Pau Baguer, Esteban Municio, Gines Garcia-Aviles, Xavier Costa-Pérez — i2CAT, NEC Labs Europe, ICREA; arXiv 10 Aug 2026) gives an empirical demonstration that RAN slicing on an open-source O-RAN 5G stack can meet the strict latency budgets of Beyond-Visual-Line-of-Sight (BVLOS) drone operation: below ~40 ms for command-and-control/telemetry and ~140 ms for video, which vanilla proportional-fair 5G cannot reliably hold under congestion.</p>\n<p>The testbed integrates three open stacks — <strong>OpenAirInterface</strong> (5G NR, on Ettus USRP SDRs), <strong>FlexRIC</strong> (near-real-time RIC), and the <strong>PX4</strong> autopilot — and implements slot-granularity slicing through the <strong>E2 Service Model (E2SM)</strong>, allocating 2/3 of resources to high-priority drone control flows and 1/3 to background traffic for hard isolation. Under competing load, slicing holds downlink control latency around ~8 ms and uplink around ~20 ms, versus highly variable latency without it. The operational payoff is measured on the flight itself: maximum trajectory positional error drops from 2.4 m (no slicing) to 1.0 m (with slicing) — a 2.4× reduction — while first-person-view video latency stabilizes near 25 ms. Occasional latency spikes persist even with slicing, which the authors note would need adaptive video codecs to fully absorb.</p>\n<p>The contribution is the first integrated evaluation of a fully open-source O-RAN stack for BVLOS drone C2, with an E2SM slot-granularity slicing implementation in OAI and empirical evidence that slice isolation — not scheduler tuning — is what converts a congested 5G link into one that meets 3GPP UAS requirements.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Stack:</strong> OpenAirInterface 5G NR (USRP SDR) + FlexRIC (near-RT RIC) + PX4 autopilot; two independent 5G TDD links per drone.</li><li><strong>Slicing:</strong> E2SM slot-granularity, 2/3 control : 1/3 background; hard isolation vs proportional-fair scheduling.</li><li><strong>Latency:</strong> sliced DL control ~8 ms, UL ~20 ms; FPV video ~25 ms (well under 140 ms); sub-40 ms C2 meets 3GPP UAS.</li><li><strong>Flight impact:</strong> max trajectory error 2.4 m → 1.0 m (2.4× reduction) with slicing.</li><li><strong>Caveat:</strong> residual latency spikes persist; adaptive codecs proposed as mitigation.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's open-RAN and slicing entries lean toward AI-driven control and resource-optimization theory; this is a rare end-to-end <em>empirical</em> result tying an E2SM slice directly to a physical outcome (a drone's trajectory error), on a fully open stack anyone can reproduce. It also complements the KB's growing UAV-over-cellular cluster (5G-ISAC UAV sensing, low-altitude 5G measurement) by addressing the C2/telemetry reliability leg rather than sensing or coverage. The concrete 2.4× trajectory-error reduction and the &quot;isolation beats scheduler tuning&quot; finding make it a useful reference point for URLLC-style slicing claims.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文（Pau Baguer、Esteban Municio、Gines Garcia-Aviles、Xavier Costa-Pérez——i2CAT、NEC 欧洲实验室、ICREA；2026 年 8 月 10 日 arXiv）以实测证明：在开源 O-RAN 5G 协议栈上做 RAN 切片，能满足超视距（BVLOS）无人机运行的严格时延预算——指挥控制/遥测须低于约 40 ms、视频须低于约 140 ms，而拥塞下普通比例公平 5G 无法可靠保证。</p>\n<p>测试床整合三套开源栈——<strong>OpenAirInterface</strong>（5G NR，运行于 Ettus USRP SDR）、<strong>FlexRIC</strong>（近实时 RIC）与 <strong>PX4</strong> 自动驾驶——并通过 <strong>E2 服务模型（E2SM）</strong>实现时隙粒度切片，将 2/3 资源分配给高优先级无人机控制流、1/3 给背景流量以实现硬隔离。竞争负载下，切片将下行控制时延保持在约 8 ms、上行约 20 ms，而无切片时时延剧烈波动。运行收益在飞行本身上测得：最大轨迹位置误差从 2.4 m（无切片）降至 1.0 m（有切片），减少 2.4 倍；第一视角视频时延稳定在约 25 ms。即便有切片仍存在偶发时延尖峰，作者指出需自适应视频编解码才能完全吸收。</p>\n<p>其贡献是首个针对 BVLOS 无人机 C2 的全开源 O-RAN 栈集成评测，在 OAI 中实现 E2SM 时隙粒度切片，并实证：将拥塞 5G 链路转变为满足 3GPP UAS 要求的关键是切片隔离而非调度器调参。</p>\n<h3>技术要点</h3>\n<ul><li><strong>协议栈：</strong> OpenAirInterface 5G NR（USRP SDR）+ FlexRIC（近实时 RIC）+ PX4 自动驾驶；每架无人机两条独立 5G TDD 链路。</li><li><strong>切片：</strong> E2SM 时隙粒度，2/3 控制 : 1/3 背景；相对比例公平调度实现硬隔离。</li><li><strong>时延：</strong> 切片下行控制约 8 ms、上行约 20 ms；FPV 视频约 25 ms（远低于 140 ms）；亚 40 ms C2 满足 3GPP UAS。</li><li><strong>飞行影响：</strong> 最大轨迹误差 2.4 m → 1.0 m（减少 2.4 倍）。</li><li><strong>注意：</strong> 仍有残余时延尖峰；提出自适应编解码作为缓解。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的开放 RAN 与切片条目偏重 AI 驱动控制与资源优化理论；本文是少见的端到端<em>实证</em>结果，将 E2SM 切片直接与物理结果（无人机轨迹误差）关联，且基于任何人可复现的全开源栈。它还补充了 KB 中日益增多的 UAV-over-cellular 簇（5G-ISAC 无人机感知、低空 5G 测量），处理的是 C2/遥测可靠性一环而非感知或覆盖。2.4 倍轨迹误差降低与&quot;隔离胜过调度器调参&quot;的发现，使其成为 URLLC 式切片论断的有用参照。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2608.09481v1/final_architecture_v3.png",
+          "caption_en": "System architecture: UAV, 5G RAN (OAI/USRP), core network, and near-RT RIC (FlexRIC) with E2SM slicing",
+          "caption_zh": "系统架构：无人机、5G RAN（OAI/USRP）、核心网与近实时 RIC（FlexRIC）及 E2SM 切片"
+        }
+      ],
+      "search_blob": "enabling beyond-visual-line-of-sight drone operation over open ran 5g networks with slicing 基于切片的 open ran 5g 网络实现超视距无人机运行 o-ran network-slicing uav 5g-nr flexric e2sm this paper (pau baguer, esteban municio, gines garcia-aviles, xavier costa-pérez — i2cat, nec labs europe, icrea; arxiv 10 aug 2026) gives an empirical demonstration that ran slicing on an open-source o-ran 5g stack can meet the strict latency budgets of beyond-visual-line-of-sight (bvlos) drone operation: below ~40 ms for command-and-control/telemetry and ~140 ms for video, which vanilla proportional-fair 5g cannot reliably hold under congestion. 本文（pau baguer、esteban municio、gines garcia-aviles、xavier costa-pérez——i2cat、nec 欧洲实验室、icrea；2026 年 8 月 10 日 arxiv）以实测证明：在开源 o-ran 5g 协议栈上做 ran 切片，能满足超视距（bvlos）无人机运行的严格时延预算——指挥控制/遥测须低于约 40 ms、视频须低于约 140 ms，而拥塞下普通比例公平 5g 无法可靠保证。 academic-paper cellular"
+    },
+    {
+      "id": "2026-08-12_arxiv-5g-edge-slam-semantic-fiducial",
+      "date_found": "2026-08-12",
+      "technology": "cellular",
+      "date_published": "2026-08-10",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "A Semantic Communication Approach to Fiducial Marker Processing in 5G-Enabled Edge SLAM",
+      "title_zh": "面向 5G 边缘 SLAM 中基准标记处理的语义通信方法",
+      "url": "https://arxiv.org/abs/2608.09620",
+      "topics": [
+        "MEC",
+        "semantic-communication",
+        "split-inference",
+        "5G-NR",
+        "edge-offload",
+        "SLAM"
+      ],
+      "topic_primary": "mec",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-08-12_arxiv-5g-edge-slam-semantic-fiducial.md",
+      "summary_short_en": "This paper (Boris Radovanovic, Vukan Ninkovic, Katarina Vidojevic, Buda Bajic Papuga, Dejan Vukobratovic — University of Novi Sad and the Institute for AI Research and Development of Serbia; arXiv 10 Aug 2026) applies a **semantic-communication / split-inference** design to fiducial-marker perception for robots that offload to a 5G edge server. Rather than shipping raw camera images (bandwidth-heavy) or fully processing on-board (compute-heavy), the robot runs the first *k* blocks of a deep fiducial-marker network (DeepTag-style), then transmits a compact learned intermediate representation **z** over 5G; the edge server runs the remaining blocks and performs SLAM. The intermediate feature is \"task-oriented semantic information\" — it suppresses redundancy while preserving what pose estimation needs.",
+      "summary_short_zh": "本文（Boris Radovanovic、Vukan Ninkovic、Katarina Vidojevic、Buda Bajic Papuga、Dejan Vukobratovic——诺维萨德大学与塞尔维亚人工智能研究与发展研究所；2026 年 8 月 10 日 arXiv）将**语义通信/分割推理**设计应用于机器人向 5G 边缘服务器卸载的基准标记（fiducial marker）感知。机器人不发送原始相机图像（占带宽），也不完全在本地处理（占算力），而是运行深度基准标记网络（DeepTag 类）的前 *k* 块，再通过 5G 传输紧凑的学习中间表示 **z**；边缘服务器运行其余块并执行 SLAM。该中间特征是\"面向任务的语义信息\"——抑制冗余、保留位姿估计所需内容。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper (Boris Radovanovic, Vukan Ninkovic, Katarina Vidojevic, Buda Bajic Papuga, Dejan Vukobratovic — University of Novi Sad and the Institute for AI Research and Development of Serbia; arXiv 10 Aug 2026) applies a <strong>semantic-communication / split-inference</strong> design to fiducial-marker perception for robots that offload to a 5G edge server. Rather than shipping raw camera images (bandwidth-heavy) or fully processing on-board (compute-heavy), the robot runs the first <em>k</em> blocks of a deep fiducial-marker network (DeepTag-style), then transmits a compact learned intermediate representation <strong>z</strong> over 5G; the edge server runs the remaining blocks and performs SLAM. The intermediate feature is &quot;task-oriented semantic information&quot; — it suppresses redundancy while preserving what pose estimation needs.</p>\n<p>The pipeline is split at a variable point <em>k</em>, creating a spectrum of computation-vs-communication trade-offs: an early split sends a large payload (up to ~1024 kB of feature maps) but does little on-board compute; a late split sends almost nothing (0.06 kB of final keypoints) but does most of the work locally. The authors measure this on a real 20 MHz 5G testbed (srsRAN/Open5GS) with a fitted uplink model <strong>RTT = 39.9 ms + 0.18 ms/kB</strong>, ROS2/DDS middleware over UDP/IP, and a ~5.06M-parameter VGG-style encoder + regression head producing 16 normalized keypoints. Perception stays accurate (mean keypoint error 1.47 px / 0.90%; representative pose error 0.83 cm translation, 2.04° rotation, competitive with an AprilTag-2 baseline). The split-cost analysis shows a clear optimum that depends on the robot's onboard compute ratio γ: deep splits win when onboard compute is weak (γ ≤ 2), early splits win when it is strong (γ ≥ 4) — motivating adaptive partitioning under changing network/compute conditions.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Design:</strong> split-inference / semantic communication — transmit a learned task-oriented feature z, not raw images or final keypoints, over 5G to an edge server that finishes the pipeline + SLAM.</li><li><strong>Split point k:</strong> trades payload (1024 kB early → 0.06 kB late) against onboard compute; end-to-end cost has a clear optimum vs onboard-compute ratio γ.</li><li><strong>Testbed:</strong> real 20 MHz 5G (srsRAN/Open5GS), ROS2/DDS over UDP/IP; uplink RTT = 39.9 ms + 0.18 ms/kB.</li><li><strong>Accuracy:</strong> keypoint error 1.47 px (0.90%); pose 0.83 cm / 2.04° (competitive with AprilTag-2).</li><li><strong>Finding:</strong> optimal split is compute-dependent → motivates adaptive partitioning.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's MEC and cellular-AI bins hold plenty of offload-scheduling theory; this entry is a concrete, testbed-measured instance of <em>semantic</em> offload — where the thing sent over 5G is a learned task representation rather than compressed pixels — applied to a real robotics perception task (fiducial-marker pose for SLAM). The fitted RTT model and the γ-dependent optimal-split result give a reusable, quantitative template for reasoning about where to cut any DNN pipeline across a 5G link, and the AprilTag-competitive accuracy shows the semantic compression is essentially lossless for the downstream task. Complements the edge-LLM offload entries by covering a vision/robotics workload with a clean split-point cost model.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文（Boris Radovanovic、Vukan Ninkovic、Katarina Vidojevic、Buda Bajic Papuga、Dejan Vukobratovic——诺维萨德大学与塞尔维亚人工智能研究与发展研究所；2026 年 8 月 10 日 arXiv）将<strong>语义通信/分割推理</strong>设计应用于机器人向 5G 边缘服务器卸载的基准标记（fiducial marker）感知。机器人不发送原始相机图像（占带宽），也不完全在本地处理（占算力），而是运行深度基准标记网络（DeepTag 类）的前 <em>k</em> 块，再通过 5G 传输紧凑的学习中间表示 <strong>z</strong>；边缘服务器运行其余块并执行 SLAM。该中间特征是&quot;面向任务的语义信息&quot;——抑制冗余、保留位姿估计所需内容。</p>\n<p>流水线在可变分割点 <em>k</em> 处切分，形成一系列算力与通信的权衡：早分割发送大负载（多达约 1024 kB 特征图）但本地计算少；晚分割几乎不发送（0.06 kB 最终关键点）但大部分计算在本地。作者在真实 20 MHz 5G 测试床（srsRAN/Open5GS）上测量，拟合上行模型 <strong>RTT = 39.9 ms + 0.18 ms/kB</strong>，采用 ROS2/DDS 中间件经 UDP/IP，以及约 506 万参数的 VGG 式编码器 + 回归头输出 16 个归一化关键点。感知保持准确（平均关键点误差 1.47 px / 0.90%；代表性位姿误差平移 0.83 cm、旋转 2.04°，与 AprilTag-2 基线相当）。分割成本分析显示存在明确最优点，取决于机器人板载算力比 γ：算力弱时（γ ≤ 2）深分割更优，算力强时（γ ≥ 4）早分割更优——推动在网络/算力变化下的自适应分割。</p>\n<h3>技术要点</h3>\n<ul><li><strong>设计：</strong> 分割推理/语义通信——经 5G 向边缘服务器传输学习到的面向任务特征 z（而非原始图像或最终关键点），边缘完成流水线 + SLAM。</li><li><strong>分割点 k：</strong> 在负载（早 1024 kB → 晚 0.06 kB）与板载算力间权衡；端到端成本相对板载算力比 γ 有明确最优。</li><li><strong>测试床：</strong> 真实 20 MHz 5G（srsRAN/Open5GS），ROS2/DDS 经 UDP/IP；上行 RTT = 39.9 ms + 0.18 ms/kB。</li><li><strong>精度：</strong> 关键点误差 1.47 px（0.90%）；位姿 0.83 cm / 2.04°（与 AprilTag-2 相当）。</li><li><strong>发现：</strong> 最优分割依赖算力 → 推动自适应分割。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的 MEC 与 cellular-AI bin 已有大量卸载调度理论；本条目是<em>语义</em>卸载的具体、测试床实测实例——经 5G 传输的是学习到的任务表示而非压缩像素——应用于真实机器人感知任务（用于 SLAM 的基准标记位姿）。拟合的 RTT 模型与依赖 γ 的最优分割结果，为推理任意 DNN 流水线在 5G 链路上的切分位置提供可复用的量化模板；与 AprilTag 相当的精度表明该语义压缩对下游任务基本无损。与边缘-LLM 卸载条目互补，覆盖了带有清晰分割点成本模型的视觉/机器人工作负载。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2608.09620v1/Figure_2_CSCN_2026.jpg",
+          "caption_en": "System architecture: UGV robot, 5G infrastructure (disaggregated gNB), and edge server integration for split-inference SLAM",
+          "caption_zh": "系统架构：UGV 机器人、5G 基础设施（分解式 gNB）与边缘服务器的分割推理 SLAM 集成"
+        },
+        {
+          "url": "https://arxiv.org/html/2608.09620v1/fig_split_cost.png",
+          "caption_en": "Split-point cost analysis: end-to-end cost minimum shifts with onboard-compute ratio γ",
+          "caption_zh": "分割点成本分析：端到端成本最优随板载算力比 γ 移动"
+        }
+      ],
+      "search_blob": "a semantic communication approach to fiducial marker processing in 5g-enabled edge slam 面向 5g 边缘 slam 中基准标记处理的语义通信方法 mec semantic-communication split-inference 5g-nr edge-offload slam this paper (boris radovanovic, vukan ninkovic, katarina vidojevic, buda bajic papuga, dejan vukobratovic — university of novi sad and the institute for ai research and development of serbia; arxiv 10 aug 2026) applies a **semantic-communication / split-inference** design to fiducial-marker perception for robots that offload to a 5g edge server. rather than shipping raw camera images (bandwidth-heavy) or fully processing on-board (compute-heavy), the robot runs the first *k* blocks of a deep fiducial-marker network (deeptag-style), then transmits a compact learned intermediate representation **z** over 5g; the edge server runs the remaining blocks and performs slam. the intermediate feature is \"task-oriented semantic information\" — it suppresses redundancy while preserving what pose estimation needs. 本文（boris radovanovic、vukan ninkovic、katarina vidojevic、buda bajic papuga、dejan vukobratovic——诺维萨德大学与塞尔维亚人工智能研究与发展研究所；2026 年 8 月 10 日 arxiv）将**语义通信/分割推理**设计应用于机器人向 5g 边缘服务器卸载的基准标记（fiducial marker）感知。机器人不发送原始相机图像（占带宽），也不完全在本地处理（占算力），而是运行深度基准标记网络（deeptag 类）的前 *k* 块，再通过 5g 传输紧凑的学习中间表示 **z**；边缘服务器运行其余块并执行 slam。该中间特征是\"面向任务的语义信息\"——抑制冗余、保留位姿估计所需内容。 academic-paper cellular"
+    },
+    {
       "id": "2026-08-09_makerfabs-matouch-mauwb-positioning-board",
       "date_found": "2026-08-09",
       "technology": "uwb",
@@ -4366,6 +4458,37 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "on a general theoretical framework for radio frequency fingerprint-based authentication 面向射频指纹认证的通用理论框架 rf-fingerprint device-authentication physical-layer-security theory 802.11 this paper (yuanyu zhang, jianing wang, shuangrui zhao, yulong shen — xidian university; pinchang zhang — tarim university; xiaohong jiang — future university hakodate; arxiv 7 aug 2026, routed from the cs.cr security sweep) is a **theory paper**, not a new algorithm. it argues that radio-frequency fingerprint (rff) authentication — identifying a device from the hardware imperfections stamped onto its transmitted signal — \"remains largely empirical\" and lacks a fundamental theory explaining *why* rffs reliably identify devices and *when* the evidence stops being trustworthy. high accuracy on a particular dataset does not answer either question. the contribution is an organizing framework, deliberately free of benchmarking, that ties rff formation to a set of authentication properties. 本文（张远宇、王佳宁、赵双睿、沈玉龙——西安电子科技大学；张品畅——塔里木大学；姜晓红——公立函馆未来大学；2026 年 8 月 7 日 arxiv，经 cs.cr 安全扫描路由）是一篇**理论论文**，而非新算法。作者指出射频指纹（rff）认证——通过发射信号中打上的硬件缺陷识别设备——\"在很大程度上仍是经验性的\"，缺乏解释 rff *为何*能可靠识别设备、以及*何时*证据不再可信的基础理论。在特定数据集上的高准确率无法回答这两个问题。其贡献是一个有意不做基准测试的组织性框架，将 rff 形成与一组认证性质联系起来。 academic-paper wifi"
+    },
+    {
+      "id": "2026-08-12_arxiv-evoric-llm-ppo-oran-ric",
+      "date_found": "2026-08-12",
+      "technology": "cellular",
+      "date_published": "2026-08-07",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "EvoRIC: Reinforcement Learning Fine-Tuned LLM-empowered RAN Intelligent Control Toward Autonomous O-RAN",
+      "title_zh": "EvoRIC：面向自主 O-RAN 的强化学习微调 LLM 赋能 RAN 智能控制",
+      "url": "https://arxiv.org/abs/2608.06789",
+      "topics": [
+        "O-RAN",
+        "RIC",
+        "LLM",
+        "PPO",
+        "RLFT",
+        "IAB"
+      ],
+      "topic_primary": "open-ran",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-12_arxiv-evoric-llm-ppo-oran-ric.md",
+      "summary_short_en": "EvoRIC (Lingyan Bao, Jemin Lee, Tony Q.S. Quek; arXiv, submitted 23 Apr 2026, revised 7 Aug 2026) is a hierarchical framework that puts a large language model inside the O-RAN control loop as a decision-making agent that improves through reinforcement learning. The core mechanism is a **reinforcement-learning fine-tuning (RLFT)** scheme in which the **LLM operates as the actor within a Proximal Policy Optimization (PPO) agent**, refining its semantic reasoning through interaction with the wireless environment so that its outputs align with measured network-performance metrics rather than generic pretraining objectives.",
+      "summary_short_zh": "EvoRIC（Lingyan Bao、Jemin Lee、Tony Q.S. Quek；arXiv，2026 年 4 月 23 日提交，8 月 7 日修订）是一个分层框架，将大语言模型置于 O-RAN 控制回路中，作为通过强化学习不断改进的决策智能体。核心机制是**强化学习微调（RLFT）**方案：**LLM 作为近端策略优化（PPO）智能体中的 actor**，通过与无线环境交互精炼其语义推理，使输出对齐实测网络性能指标，而非泛化的预训练目标。",
+      "body_html_en": "<h3>Summary</h3>\n<p>EvoRIC (Lingyan Bao, Jemin Lee, Tony Q.S. Quek; arXiv, submitted 23 Apr 2026, revised 7 Aug 2026) is a hierarchical framework that puts a large language model inside the O-RAN control loop as a decision-making agent that improves through reinforcement learning. The core mechanism is a <strong>reinforcement-learning fine-tuning (RLFT)</strong> scheme in which the <strong>LLM operates as the actor within a Proximal Policy Optimization (PPO) agent</strong>, refining its semantic reasoning through interaction with the wireless environment so that its outputs align with measured network-performance metrics rather than generic pretraining objectives.</p>\n<p>The framework maps onto O-RAN's two-tier RIC split: the <strong>non-real-time RIC</strong> hosts global model updates (the fine-tuning loop), while the <strong>near-real-time RIC</strong> runs local execution of the learned policy. The authors evaluate within integrated access and backhaul (IAB) networks, presenting the approach as a step toward autonomous O-RAN operation where an LLM-based controller adapts online instead of relying on hand-tuned or narrowly-trained control policies. (This entry is abstract-level: the arXiv HTML rendering was not yet available at ingest, so headline numbers and baseline comparisons are not captured here.)</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Mechanism:</strong> LLM as the actor in a PPO agent; reinforcement-learning fine-tuning (RLFT) aligns its reasoning with network-performance rewards.</li><li><strong>O-RAN mapping:</strong> non-RT RIC = global model updates; near-RT RIC = local policy execution.</li><li><strong>Evaluation:</strong> within integrated access and backhaul (IAB) networks; framed toward autonomous O-RAN.</li><li><strong>Status:</strong> submitted Apr 2026, revised Aug 2026; abstract-only ingest (HTML not yet rendered).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB already tracks LLM-for-RAN control (e.g. LLM gNB config, agentic-RAN work); EvoRIC's specific angle is using RLFT to make the LLM itself the trainable PPO actor inside the standard non-RT/near-RT RIC split, and validating it on IAB networks. That places it in the growing &quot;LLM-as-controller&quot; corner of the open-RAN / cellular-AI bins. Novelty is moderate (2) at abstract level — LLM-empowered RIC control is an active area and the contribution is a particular fine-tuning formulation rather than a new architectural primitive; worth revisiting for headline numbers once the full text renders.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>EvoRIC（Lingyan Bao、Jemin Lee、Tony Q.S. Quek；arXiv，2026 年 4 月 23 日提交，8 月 7 日修订）是一个分层框架，将大语言模型置于 O-RAN 控制回路中，作为通过强化学习不断改进的决策智能体。核心机制是<strong>强化学习微调（RLFT）</strong>方案：<strong>LLM 作为近端策略优化（PPO）智能体中的 actor</strong>，通过与无线环境交互精炼其语义推理，使输出对齐实测网络性能指标，而非泛化的预训练目标。</p>\n<p>该框架映射到 O-RAN 两级 RIC 划分：<strong>非实时 RIC</strong> 承载全局模型更新（微调回路），<strong>近实时 RIC</strong> 运行所学策略的本地执行。作者在集成接入与回传（IAB）网络中评测，将该方法定位为迈向自主 O-RAN 运行的一步——基于 LLM 的控制器在线自适应，而非依赖手工调参或窄训练的控制策略。（本条目为摘要级：入库时 arXiv HTML 渲染尚不可用，故未收录具体数字与基线对比。）</p>\n<h3>技术要点</h3>\n<ul><li><strong>机制：</strong> LLM 作为 PPO 智能体中的 actor；强化学习微调（RLFT）使其推理对齐网络性能奖励。</li><li><strong>O-RAN 映射：</strong> 非实时 RIC = 全局模型更新；近实时 RIC = 本地策略执行。</li><li><strong>评测：</strong> 在集成接入与回传（IAB）网络中；面向自主 O-RAN。</li><li><strong>状态：</strong> 2026 年 4 月提交、8 月修订；摘要级入库（HTML 尚未渲染）。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 已跟踪 LLM 用于 RAN 控制（如 LLM gNB 配置、agentic-RAN 工作）；EvoRIC 的具体切入点是用 RLFT 使 LLM 本身成为标准非实时/近实时 RIC 划分内可训练的 PPO actor，并在 IAB 网络上验证。这将其置于开放 RAN / cellular-AI bin 中日益增多的&quot;LLM 作为控制器&quot;一角。摘要级新颖性中等（2）——LLM 赋能 RIC 控制是活跃领域，贡献是特定微调表述而非新架构原语；待全文渲染后可回访具体数字。</p>",
+      "images": [],
+      "search_blob": "evoric: reinforcement learning fine-tuned llm-empowered ran intelligent control toward autonomous o-ran evoric：面向自主 o-ran 的强化学习微调 llm 赋能 ran 智能控制 o-ran ric llm ppo rlft iab evoric (lingyan bao, jemin lee, tony q.s. quek; arxiv, submitted 23 apr 2026, revised 7 aug 2026) is a hierarchical framework that puts a large language model inside the o-ran control loop as a decision-making agent that improves through reinforcement learning. the core mechanism is a **reinforcement-learning fine-tuning (rlft)** scheme in which the **llm operates as the actor within a proximal policy optimization (ppo) agent**, refining its semantic reasoning through interaction with the wireless environment so that its outputs align with measured network-performance metrics rather than generic pretraining objectives. evoric（lingyan bao、jemin lee、tony q.s. quek；arxiv，2026 年 4 月 23 日提交，8 月 7 日修订）是一个分层框架，将大语言模型置于 o-ran 控制回路中，作为通过强化学习不断改进的决策智能体。核心机制是**强化学习微调（rlft）**方案：**llm 作为近端策略优化（ppo）智能体中的 actor**，通过与无线环境交互精炼其语义推理，使输出对齐实测网络性能指标，而非泛化的预训练目标。 academic-paper cellular"
     },
     {
       "id": "2026-08-12_arxiv-whitenet-overlapping-80211-signal-id",
