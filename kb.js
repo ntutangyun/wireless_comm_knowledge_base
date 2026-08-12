@@ -1,13 +1,13 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-08-09",
-  "last_scanned": "2026-08-09",
+  "last_updated": "2026-08-12",
+  "last_scanned": "2026-08-12",
   "topic_counts": {
     "6G": 55,
     "802.11bn": 43,
     "agentic-AI": 40,
     "LEO": 39,
-    "security": 37,
+    "security": 38,
     "MAC-layer": 37,
     "O-RAN": 36,
     "products": 36,
@@ -21,22 +21,22 @@ window.KB_DATA = {
     "Starlink": 17,
     "direct-to-device": 16,
     "NTN": 16,
+    "802.11": 15,
     "MLO": 15,
     "PHY-layer": 15,
     "UWB": 14,
     "AI-RAN": 14,
     "802.11bf": 14,
     "BLE": 13,
-    "802.11": 13,
+    "FCC": 13,
     "6GHz": 13,
-    "FCC": 12,
     "CSI": 12,
     "network-slicing": 12,
     "digital-twin": 11,
+    "spectrum": 11,
     "LLM": 11,
     "NearLink": 11,
     "802.11ax": 11,
-    "spectrum": 10,
     "energy-efficiency": 10,
     "802.11bp": 10,
     "SparkLink": 10,
@@ -68,6 +68,7 @@ window.KB_DATA = {
     "LLM-agent": 6,
     "SLE": 6,
     "AFC": 6,
+    "regulation": 6,
     "OFDMA": 6,
     "measurement": 6,
     "PQC": 6,
@@ -89,7 +90,6 @@ window.KB_DATA = {
     "backhaul": 5,
     "intent-based-networking": 5,
     "NGSO": 5,
-    "regulation": 5,
     "massive-MIMO": 5,
     "QoS": 5,
     "Co-BF": 5,
@@ -122,6 +122,7 @@ window.KB_DATA = {
     "AoA": 4,
     "802.15.4ab": 4,
     "802.11az": 4,
+    "device-authentication": 3,
     "HARQ": 3,
     "standards": 3,
     "HDT": 3,
@@ -172,10 +173,12 @@ window.KB_DATA = {
     "DW3000": 2,
     "ESP32": 2,
     "IPv6": 2,
+    "RF-fingerprint": 2,
+    "physical-layer-security": 2,
+    "deep-learning": 2,
     "sensing": 2,
     "Part-15": 2,
     "OneWeb": 2,
-    "device-authentication": 2,
     "keystroke-inference": 2,
     "digital-key": 2,
     "UWB-radar": 2,
@@ -276,6 +279,7 @@ window.KB_DATA = {
     "Channel-Sounding": 2,
     "seamless-roaming": 2,
     "MU-MIMO": 2,
+    "6-GHz": 2,
     "Wi-Fi 9": 2,
     "healthcare": 2,
     "MRSS": 2,
@@ -294,6 +298,9 @@ window.KB_DATA = {
     "dev-kit": 1,
     "6LoWPAN": 1,
     "IP-Link": 1,
+    "theory": 1,
+    "spectrum-monitoring": 1,
+    "signal-classification": 1,
     "physical-AI": 1,
     "active-inference": 1,
     "schedulability": 1,
@@ -302,7 +309,6 @@ window.KB_DATA = {
     "GPU": 1,
     "remote-control": 1,
     "Agriculture-4.0": 1,
-    "RF-fingerprint": 1,
     "cell-free-MIMO": 1,
     "RHS": 1,
     "Telesat": 1,
@@ -378,7 +384,6 @@ window.KB_DATA = {
     "survey": 1,
     "802.11bu": 1,
     "evaluation-methodology": 1,
-    "deep-learning": 1,
     "learning-to-optimize": 1,
     "New-Glenn": 1,
     "Falcon-9": 1,
@@ -740,7 +745,6 @@ window.KB_DATA = {
     "scheduler": 1,
     "spectral-efficiency": 1,
     "T-Mobile": 1,
-    "6-GHz": 1,
     "distance-reduction-attack": 1,
     "ToA": 1,
     "uplink-optimization": 1,
@@ -817,7 +821,6 @@ window.KB_DATA = {
     "security-privacy": 1,
     "BFI": 1,
     "beamforming-feedback": 1,
-    "physical-layer-security": 1,
     "key-generation": 1,
     "key-establishment": 1,
     "LiFi": 1,
@@ -879,6 +882,8 @@ window.KB_DATA = {
     "L-moments": 1,
     "WPA2": 1,
     "penetration-testing": 1,
+    "geofencing": 1,
+    "U-NII": 1,
     "Eutelsat": 1,
     "Airbus": 1,
     "Gen2": 1,
@@ -908,14 +913,14 @@ window.KB_DATA = {
   "primary_topic_counts": {
     "cellular-ai": 28,
     "wifi8-uhr": 28,
+    "security-privacy": 26,
     "wifi7-deployment": 25,
     "6g-vision": 24,
-    "security-privacy": 24,
     "sensing-csi": 21,
     "5g-nr": 20,
     "open-ran": 20,
+    "spectrum-policy": 17,
     "leo-constellations": 16,
-    "spectrum-policy": 16,
     "sat-direct-device": 14,
     "mapc-cosr": 13,
     "uwb-ranging": 11,
@@ -951,8 +956,8 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 244,
-    "industry-news": 83,
+    "academic-paper": 246,
+    "industry-news": 84,
     "ieee-document": 31,
     "product": 21,
     "satellite-news": 18,
@@ -961,8 +966,8 @@ window.KB_DATA = {
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 244,
-    "industry": 122,
+    "academia": 246,
+    "industry": 123,
     "standards": 41
   },
   "technologies_vocab": {
@@ -2314,7 +2319,8 @@ window.KB_DATA = {
       "entries_secondary": [
         "2026-08-03_arxiv-nr-wifi-6ghz-coexistence-testbed",
         "2026-05-28_wifinow-uk-eu-upper-6ghz-regulation",
-        "2026-05-21_fcc-6ghz-rule-changes"
+        "2026-05-21_fcc-6ghz-rule-changes",
+        "2026-08-12_fcc-6ghz-geofenced-variable-power-order"
       ],
       "by_type_primary": {
         "academic-paper": [
@@ -2378,6 +2384,7 @@ window.KB_DATA = {
         "2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz",
         "2026-05-04_ofcom-better-together-6ghz-uk",
         "2026-08-03_fcc-covered-list-foreign-routers",
+        "2026-08-12_fcc-6ghz-geofenced-variable-power-order",
         "2026-05-04_eu-rspg-upper-6ghz-decision",
         "2026-05-01_arxiv-llm-6ghz-wifi-nru-coexistence"
       ],
@@ -2406,6 +2413,7 @@ window.KB_DATA = {
           "2026-05-21_fcc-6ghz-rule-changes",
           "2026-05-04_ofcom-better-together-6ghz-uk",
           "2026-08-03_fcc-covered-list-foreign-routers",
+          "2026-08-12_fcc-6ghz-geofenced-variable-power-order",
           "2026-05-04_eu-rspg-upper-6ghz-decision"
         ],
         "ieee-document": [
@@ -2436,6 +2444,8 @@ window.KB_DATA = {
         "2026-05-01_arxiv-aiml-csi-feedback-compression"
       ],
       "entries_secondary": [
+        "2026-08-12_arxiv-rff-authentication-theory-framework",
+        "2026-08-12_arxiv-whitenet-overlapping-80211-signal-id",
         "2026-08-06_arxiv-horffi-open-set-rf-fingerprint",
         "2026-08-06_arxiv-fm4wifi-flow-matching-cosr",
         "2026-07-09_ieee-mentor-misc-groups-preplenary-digest",
@@ -2617,6 +2627,8 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Security & privacy))\n    Attacks\n      AirSnitch client-isolation (NDSS'26)\n      CSI-RFF microsignals\n      StateFi FSM fingerprinting\n      VWattacker VoWiFi\n      Rural deployment surface\n    Defenses\n      PHY-preamble signatures (CE)\n      Runtime MAC re-randomization\n      Secure FTM (cross to ftm-ranging)\n    Standards activity\n      TGbi EPPKE\n      TGbt post-quantum / crypto agility\n    Watch\n      WPA3 successor at IETF/IEEE\n      Sensing-privacy regulation\n      RFF rotation + MAC re-randomization",
       "diagram_mmd_zh": "mindmap\n  root((安全与隐私))\n    攻击\n      AirSnitch 客户端隔离（NDSS'26）\n      CSI-RFF 微信号\n      StateFi FSM 指纹\n      VWattacker VoWiFi\n      乡村部署攻击面\n    防御\n      PHY 前导码签名（CE）\n      运行时 MAC 再随机化\n      安全 FTM（关联 ftm-ranging）\n    标准活动\n      TGbi EPPKE\n      TGbt 后量子 / 加密敏捷\n    关注\n      WPA3 后继在 IETF/IEEE\n      感知隐私监管\n      RFF 轮换 + MAC 再随机化",
       "entries_primary": [
+        "2026-08-12_arxiv-rff-authentication-theory-framework",
+        "2026-08-12_arxiv-whitenet-overlapping-80211-signal-id",
         "2026-08-06_arxiv-horffi-open-set-rf-fingerprint",
         "2026-08-07_ieee-tgbi-d6-sa-recirc-94pct",
         "2026-08-06_arxiv-airkey-wifi-acoustic-pin-inference",
@@ -2662,6 +2674,8 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-12_arxiv-rff-authentication-theory-framework",
+          "2026-08-12_arxiv-whitenet-overlapping-80211-signal-id",
           "2026-08-06_arxiv-horffi-open-set-rf-fingerprint",
           "2026-08-06_arxiv-airkey-wifi-acoustic-pin-inference",
           "2026-08-05_arxiv-airkey-ack-csi-acoustic-pin-inference",
@@ -4311,6 +4325,93 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>蓝牙技术联盟（Bluetooth SIG）的&quot;开发中规范&quot;页面现已列出 <strong>IP Link</strong> 项目——定义在 Bluetooth LE 上原生传输 IPv6 数据包的规范。该协议提供 6LoWPAN 适配层接口（6LoWPAN 是 IETF 的头部压缩方案，可将 IPv6 头压缩到受限无线链路能承载的尺寸，最初为 802.15.4 设计），支持单播与多播流量，可承载于面向连接或无连接的 BLE 承载之上。目标是让蓝牙设备与互联网服务器直接进行 IP 通信——中间不再需要私有网关做协议翻译。</p>\n<p>据 SIG 页面，该项目近期已完成互操作性测试，规范草案已公开，目标 <strong>2026 年秋季</strong>通过（adoption）。这使 IP Link 与高数据吞吐（HDT，约 8 Mbps LE）和更高频段项目（BLE 进入 5/6 GHz）并列为当前 BLE 路线图的第三大支柱——这一项瞄准的是 IoT 集成，而非速率或频谱。</p>\n<p>更早的 IPv6 over BLE 尝试已有先例：RFC 7668（2015 年，基于 6LoWPAN 的 IPv6 over BLE）及其网状网扩展 RFC 9159 采用有限，部分原因是它们早于扩展广播（Extended Advertising）、带响应周期广播（PAwR）等现代 BLE 特性。由 SIG 原生制定、带无连接承载支持并经正式互操作测试的规范则完全不同：它把 IP 可达性变成可认证的蓝牙特性，而非少有协议栈实现的 IETF 叠加层。</p>\n<h3>技术要点</h3>\n<ul><li>通过 6LoWPAN 适配层接口（面向受限链路的头部压缩）在 BLE 上传输 IPv6 数据包。</li><li>同时支持单播与多播流量——BLE 上的多播意味着使用广播/无连接承载，这是 RFC 7668 所不具备的能力。</li><li>面向连接与无连接承载均在范围内。</li><li>互操作性测试近期已完成；规范草案已公开供审阅。</li><li>目标通过时间：2026 年秋季——SIG 当前规范开发路线图上最近的具体里程碑。</li><li>与 HDT（8 Mbps LE）和更高频段项目（5/6 GHz BLE）并列于 SIG 的活跃项目组合。</li></ul>\n<h3>意义与新意</h3>\n<p>本 KB 的蓝牙主线此前跟踪了 SIG 的三线扩张——速率（2026-08-05_bluetooth-sig-hdt-draft-spec-public-review）、频谱（2026-07-10_wfa-bluetooth-sig-6ghz-coexistence）、测距（2026-07-11_bluetooth-core-63-release）——而本条目是<em>组网</em>战线的第一条：让 BLE 设备成为一等 IP 端点。若如期于今秋通过，IP Link 将使传感器级 BLE 设备可经任何具备 IP 能力的边界路由器直接与云服务通信，与 Thread 的核心价值主张正面相撞（Thread 是 802.15.4 上的 6LoWPAN；IP Link 是 BLE 上的 6LoWPAN）。对 Matter 生态而言——目前 BLE 仅用于配网，运行期交给 Thread/Wi-Fi——原生 BLE IP 承载可能改变低带宽配件的传输选型。</p>",
       "images": [],
       "search_blob": "bluetooth sig 'ip link' project: ipv6 over bluetooth le via 6lowpan, targeting fall 2026 adoption 蓝牙技术联盟 ip link 项目：基于 6lowpan 的 ipv6 over ble，目标 2026 年秋季通过 ble ipv6 6lowpan ip-link iot the bluetooth sig's specifications-in-development page now lists **ip link**, a specification project defining native transport of ipv6 packets over bluetooth le. the protocol provides a 6lowpan adaptation-layer interface (the ietf's compression scheme that squeezes ipv6 headers down to fit constrained radio links, originally built for 802.15.4) and supports both unicast and multicast traffic, carried over either connection-oriented or connectionless ble bearers. the goal is direct ip-based communication between bluetooth devices and internet servers — no proprietary gateway translation layer in between. 蓝牙技术联盟（bluetooth sig）的\"开发中规范\"页面现已列出 **ip link** 项目——定义在 bluetooth le 上原生传输 ipv6 数据包的规范。该协议提供 6lowpan 适配层接口（6lowpan 是 ietf 的头部压缩方案，可将 ipv6 头压缩到受限无线链路能承载的尺寸，最初为 802.15.4 设计），支持单播与多播流量，可承载于面向连接或无连接的 ble 承载之上。目标是让蓝牙设备与互联网服务器直接进行 ip 通信——中间不再需要私有网关做协议翻译。 bluetooth-spec bluetooth"
+    },
+    {
+      "id": "2026-08-12_arxiv-rff-authentication-theory-framework",
+      "date_found": "2026-08-12",
+      "technology": "wifi",
+      "date_published": "2026-08-07",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "On a General Theoretical Framework for Radio Frequency Fingerprint-Based Authentication",
+      "title_zh": "面向射频指纹认证的通用理论框架",
+      "url": "https://arxiv.org/abs/2608.06805",
+      "topics": [
+        "RF-fingerprint",
+        "device-authentication",
+        "physical-layer-security",
+        "theory",
+        "802.11"
+      ],
+      "topic_primary": "security-privacy",
+      "topics_secondary": [
+        "ai-for-wifi"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-12_arxiv-rff-authentication-theory-framework.md",
+      "summary_short_en": "This paper (Yuanyu Zhang, Jianing Wang, Shuangrui Zhao, Yulong Shen — Xidian University; Pinchang Zhang — Tarim University; Xiaohong Jiang — Future University Hakodate; arXiv 7 Aug 2026, routed from the cs.CR security sweep) is a **theory paper**, not a new algorithm. It argues that radio-frequency fingerprint (RFF) authentication — identifying a device from the hardware imperfections stamped onto its transmitted signal — \"remains largely empirical\" and lacks a fundamental theory explaining *why* RFFs reliably identify devices and *when* the evidence stops being trustworthy. High accuracy on a particular dataset does not answer either question. The contribution is an organizing framework, deliberately free of benchmarking, that ties RFF formation to a set of authentication properties.",
+      "summary_short_zh": "本文（张远宇、王佳宁、赵双睿、沈玉龙——西安电子科技大学；张品畅——塔里木大学；姜晓红——公立函馆未来大学；2026 年 8 月 7 日 arXiv，经 cs.CR 安全扫描路由）是一篇**理论论文**，而非新算法。作者指出射频指纹（RFF）认证——通过发射信号中打上的硬件缺陷识别设备——\"在很大程度上仍是经验性的\"，缺乏解释 RFF *为何*能可靠识别设备、以及*何时*证据不再可信的基础理论。在特定数据集上的高准确率无法回答这两个问题。其贡献是一个有意不做基准测试的组织性框架，将 RFF 形成与一组认证性质联系起来。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper (Yuanyu Zhang, Jianing Wang, Shuangrui Zhao, Yulong Shen — Xidian University; Pinchang Zhang — Tarim University; Xiaohong Jiang — Future University Hakodate; arXiv 7 Aug 2026, routed from the cs.CR security sweep) is a <strong>theory paper</strong>, not a new algorithm. It argues that radio-frequency fingerprint (RFF) authentication — identifying a device from the hardware imperfections stamped onto its transmitted signal — &quot;remains largely empirical&quot; and lacks a fundamental theory explaining <em>why</em> RFFs reliably identify devices and <em>when</em> the evidence stops being trustworthy. High accuracy on a particular dataset does not answer either question. The contribution is an organizing framework, deliberately free of benchmarking, that ties RFF formation to a set of authentication properties.</p>\n<p>The framework has two halves. First, a <strong>cascaded formation model</strong> traces the fingerprint across the transmission chain: transmitter-side intrinsic imperfections (oscillator, power amplifier, modulator, filter) create device-dependent features z_T = Φ_T(x); the channel (fading, interference, mobility) transforms observability so that physical uniqueness at the transmitter does not guarantee separability at the receiver; and receiver processing (synchronization, equalization, feature extraction) produces the <em>observed</em> fingerprint ẑ_R. Intrinsic (transmitter) and observed (receiver) RFF spaces are kept distinct — a distinction the paper argues much empirical work blurs.</p>\n<p>Second, four <strong>authentication properties</strong> are formalized as viewpoints rather than theorems. <em>Uniqueness</em>: whether different devices have physically distinct intrinsic RFFs — analyzed via a collision-oriented view (population dispersion and collision probability, quantified by collision entropy) rather than assuming randomness implies diversity. <em>Stability</em> and <em>distinguishability</em>: a paired &quot;observation-region&quot; view in which each device is a distribution, and authentication works only when intra-device variation stays smaller than inter-device separation under practical conditions. <em>Unforgeability</em>: a &quot;cascaded error-propagation&quot; view in which an attacker's small estimation mismatches compound through their own RF chain, making stable forgery hard — a stronger security notion than one-shot similarity matching. The paper contains no numerical experiments; it closes with communication-authentication co-design principles (selective compensation of features that hurt communication but help authentication; context-aware normalization; joint resource allocation over observation length / thresholds / verification frequency; and integration of freshness / challenge-response / temporal-consistency checks).</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Type:</strong> foundational/conceptual framework (no experiments, no formal theorems-with-proofs) for RFF-based authentication.</li><li><strong>Cascaded formation model:</strong> transmitter intrinsic imperfections → channel transformation → receiver observation; separates <em>intrinsic</em> (Tx) from <em>observed</em> (Rx) RFF spaces.</li><li><strong>Four properties:</strong> uniqueness (collision-oriented, collision entropy); stability + distinguishability (observation-region geometry — intra- vs inter-device spread); unforgeability (cascaded error propagation through attacker's RF chain).</li><li><strong>Co-design principles:</strong> selective feature compensation, context-aware normalization, joint resource allocation (observation length / thresholds / verification frequency), and freshness/challenge-response/temporal-consistency integration.</li><li><strong>Validated on:</strong> nothing — it is explicitly a theory paper meant to guide future formal work.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's RFF entries so far are empirical methods — CSI-RFF (closed-set, ~99% with 20 measurements) and <code>2026-08-06_arxiv-horffi-open-set-rf-fingerprint</code> (open-set rejection via a variational information bottleneck). This paper is their theoretical counterpart: it supplies the vocabulary (intrinsic vs observed RFF, collision entropy, observation-region geometry, cascaded forgery error) for reasoning about <em>when</em> an RFF authenticator can be trusted, and reframes RFF from a standalone recognition task into a system-level trust problem coupled to the communication link. Its novelty is moderate (novelty 2): it introduces no new mechanism or measurement, and the four properties echo established biometric/physical-layer-security notions — but assembling them into one RFF-specific formation-to-trust framework, with the intrinsic-vs-observed separation made explicit, is a useful scaffolding that the empirical entries in this bin can be read against.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文（张远宇、王佳宁、赵双睿、沈玉龙——西安电子科技大学；张品畅——塔里木大学；姜晓红——公立函馆未来大学；2026 年 8 月 7 日 arXiv，经 cs.CR 安全扫描路由）是一篇<strong>理论论文</strong>，而非新算法。作者指出射频指纹（RFF）认证——通过发射信号中打上的硬件缺陷识别设备——&quot;在很大程度上仍是经验性的&quot;，缺乏解释 RFF <em>为何</em>能可靠识别设备、以及<em>何时</em>证据不再可信的基础理论。在特定数据集上的高准确率无法回答这两个问题。其贡献是一个有意不做基准测试的组织性框架，将 RFF 形成与一组认证性质联系起来。</p>\n<p>框架分两部分。其一，<strong>级联形成模型</strong>追踪指纹在发射链上的形成：发射端固有缺陷（振荡器、功放、调制器、滤波器）产生设备相关特征 z_T = Φ_T(x)；信道（衰落、干扰、移动性）改变可观测性，使发射端的物理唯一性不保证接收端的可分性；接收处理（同步、均衡、特征提取）产生<em>观测到的</em>指纹 ẑ_R。论文将固有（发射）与观测（接收）RFF 空间明确区分——它认为很多经验工作模糊了这一区分。</p>\n<p>其二，将四种<strong>认证性质</strong>形式化为视角而非定理。<em>唯一性</em>：不同设备是否具有物理上不同的固有 RFF——以碰撞导向视角（总体离散度与碰撞概率，用碰撞熵量化）分析，而非假定随机性即意味着多样性。<em>稳定性</em>与<em>可区分性</em>：配对的&quot;观测区域&quot;视角，每个设备是一个分布，仅当设备内变化小于设备间分离时认证才成立。<em>不可伪造性</em>：级联误差传播视角，攻击者的微小估计失配会在其自身 RF 链中累积，使稳定伪造困难。论文无数值实验，最后给出通信-认证协同设计原则。</p>\n<h3>技术要点</h3>\n<ul><li><strong>类型：</strong> RFF 认证的基础/概念框架（无实验、无带证明的形式定理）。</li><li><strong>级联形成模型：</strong> 发射端固有缺陷 → 信道变换 → 接收观测；区分<em>固有</em>（Tx）与<em>观测</em>（Rx）RFF 空间。</li><li><strong>四性质：</strong> 唯一性（碰撞导向、碰撞熵）；稳定性 + 可区分性（观测区域几何——设备内 vs 设备间散布）；不可伪造性（攻击者 RF 链中的级联误差传播）。</li><li><strong>协同设计原则：</strong> 选择性特征补偿、上下文感知归一化、联合资源分配、以及新鲜性/挑战-应答/时间一致性集成。</li><li><strong>验证：</strong> 无——明确是一篇指导后续形式化工作的理论论文。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 目前的 RFF 条目均为经验方法——CSI-RFF（闭集，20 次测量约 99%）与 <code>2026-08-06_arxiv-horffi-open-set-rf-fingerprint</code>（经变分信息瓶颈的开集拒识）。本文是它们的理论对应物：提供推理 RFF 认证器<em>何时</em>可信的词汇（固有 vs 观测 RFF、碰撞熵、观测区域几何、级联伪造误差），并将 RFF 从独立识别任务重构为与通信链路耦合的系统级信任问题。其新颖性中等（novelty 2）：未引入新机制或测量，四性质呼应既有生物特征/物理层安全概念——但将其组装为一个 RFF 专属的&quot;形成到信任&quot;框架、并明确区分固有与观测，是该 bin 中经验条目可据以解读的有用支架。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2608.06805v1/x2.png",
+          "caption_en": "Cascaded formation and evolution of the RF fingerprint across the transmitter–channel–receiver chain",
+          "caption_zh": "射频指纹在发射机–信道–接收机链上的级联形成与演化"
+        },
+        {
+          "url": "https://arxiv.org/html/2608.06805v1/x4.png",
+          "caption_en": "Observation-region geometry: intrinsic RFF differences at the transmitter may not guarantee receiver-side separation",
+          "caption_zh": "观测区域几何：发射端固有 RFF 差异未必保证接收端可分"
+        }
+      ],
+      "search_blob": "on a general theoretical framework for radio frequency fingerprint-based authentication 面向射频指纹认证的通用理论框架 rf-fingerprint device-authentication physical-layer-security theory 802.11 this paper (yuanyu zhang, jianing wang, shuangrui zhao, yulong shen — xidian university; pinchang zhang — tarim university; xiaohong jiang — future university hakodate; arxiv 7 aug 2026, routed from the cs.cr security sweep) is a **theory paper**, not a new algorithm. it argues that radio-frequency fingerprint (rff) authentication — identifying a device from the hardware imperfections stamped onto its transmitted signal — \"remains largely empirical\" and lacks a fundamental theory explaining *why* rffs reliably identify devices and *when* the evidence stops being trustworthy. high accuracy on a particular dataset does not answer either question. the contribution is an organizing framework, deliberately free of benchmarking, that ties rff formation to a set of authentication properties. 本文（张远宇、王佳宁、赵双睿、沈玉龙——西安电子科技大学；张品畅——塔里木大学；姜晓红——公立函馆未来大学；2026 年 8 月 7 日 arxiv，经 cs.cr 安全扫描路由）是一篇**理论论文**，而非新算法。作者指出射频指纹（rff）认证——通过发射信号中打上的硬件缺陷识别设备——\"在很大程度上仍是经验性的\"，缺乏解释 rff *为何*能可靠识别设备、以及*何时*证据不再可信的基础理论。在特定数据集上的高准确率无法回答这两个问题。其贡献是一个有意不做基准测试的组织性框架，将 rff 形成与一组认证性质联系起来。 academic-paper wifi"
+    },
+    {
+      "id": "2026-08-12_arxiv-whitenet-overlapping-80211-signal-id",
+      "date_found": "2026-08-12",
+      "technology": "wifi",
+      "date_published": "2026-08-06",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "WhiteNet: Robust Identification of Overlapping IEEE 802.11 Signals Across Unseen Channels",
+      "title_zh": "WhiteNet：跨未见信道的重叠 IEEE 802.11 信号稳健识别",
+      "url": "https://arxiv.org/abs/2608.06581",
+      "topics": [
+        "spectrum-monitoring",
+        "signal-classification",
+        "deep-learning",
+        "802.11",
+        "security"
+      ],
+      "topic_primary": "security-privacy",
+      "topics_secondary": [
+        "ai-for-wifi"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-08-12_arxiv-whitenet-overlapping-80211-signal-id.md",
+      "summary_short_en": "WhiteNet (Ildi Alla, Vincent Lenders; arXiv 6 Aug 2026, routed from the cs.CR security sweep) tackles a practical spectrum-monitoring problem: a deep-learning classifier that identifies which IEEE 802.11 protocols are present in an overlapping (co-channel) capture works well when the test channel matches training, but collapses when deployed under different propagation conditions. Prior classifiers (T-PRIME, ResNet, CV-TRN) can look strong in-distribution yet fall apart on a genuinely held-out channel. WhiteNet closes most of that gap without needing any target-condition data.",
+      "summary_short_zh": "WhiteNet（Ildi Alla、Vincent Lenders；2026 年 8 月 6 日 arXiv，经 cs.CR 安全扫描路由）解决一个实际的频谱监测问题：识别重叠（同信道）采样中存在哪些 IEEE 802.11 协议的深度学习分类器，在测试信道与训练一致时表现良好，但部署到不同传播条件下会急剧退化。既有分类器（T-PRIME、ResNet、CV-TRN）在同分布下看似很强，在真正留出的信道上却崩溃。WhiteNet 在无需任何目标条件数据的前提下弥合了大部分差距。",
+      "body_html_en": "<h3>Summary</h3>\n<p>WhiteNet (Ildi Alla, Vincent Lenders; arXiv 6 Aug 2026, routed from the cs.CR security sweep) tackles a practical spectrum-monitoring problem: a deep-learning classifier that identifies which IEEE 802.11 protocols are present in an overlapping (co-channel) capture works well when the test channel matches training, but collapses when deployed under different propagation conditions. Prior classifiers (T-PRIME, ResNet, CV-TRN) can look strong in-distribution yet fall apart on a genuinely held-out channel. WhiteNet closes most of that gap without needing any target-condition data.</p>\n<p>The core idea is <strong>spectral whitening</strong>, a physics-grounded preprocessing step with no learned parameters. It exploits a scale separation: the wireless channel's frequency response |H(f)|² varies slowly (coherence bandwidth &gt;1 MHz indoors), while the protocol-discriminative structure (OFDM subcarrier spacing, guard intervals) lives at the tens-to-hundreds-of-kHz scale. WhiteNet estimates the channel-dominated power spectral envelope by circular moving-average smoothing of the received spectrum, applies a noise floor to avoid amplifying deep fades, divides it out, and inverse-transforms back to whitened I/Q. This suppresses the slow channel envelope while preserving the fast modulation signature — derived entirely from the observation itself, no channel knowledge required. Measured spectral-envelope divergence across sessions drops 55× (3.45 dB → 0.063 dB), and a t-SNE of the network's bottleneck shows session separability falling from 88.9% to 59.4%, confirming the representation became channel-invariant.</p>\n<p>To avoid expensive multi-transmitter field collection, the authors build a <strong>synthetic overlap mixer</strong> that composites realistic co-channel signals from single-protocol over-the-air captures: per-transmitter impairments (multipath, carrier frequency offset, spectral tilt) are applied before summation, and shared receiver impairments (anti-aliasing filter, phase noise, AGC with soft clipping, I/Q imbalance, DC offset) after — the receiver nonlinearity creating intermodulation products that naive linear addition misses. A U-Net encoder–decoder with a non-local attention bottleneck is trained through a five-phase curriculum (synthetic single → real single → synthetic overlap → bandwidth-scaled overlap → real overlap with progressive stochastic whitening).</p>\n<p>On an entirely unseen session (S3), exact-match accuracy at 25% overlap rises +26.0 points (47.6% → 73.6%) and the in-distribution-to-held-out gap narrows from 40.0 to 8.0 points — at 889K parameters, giving 2.3× the held-out accuracy of T-PRIME (73.6% vs 32.2%) with <strong>7.7× fewer parameters</strong>. Two-phase knowledge distillation yields edge models down to 10K parameters (3.1 ms / 33.7 mJ on a Jetson), with the 604K &quot;Edge-L&quot; retaining 84% of teacher accuracy.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem:</strong> channel-robust multi-label 802.11 protocol identification in overlapping captures, without target-domain data.</li><li><strong>Spectral whitening:</strong> parameter-free preprocessing that divides out the slow channel envelope (estimated by circular moving-average smoothing + noise floor) while preserving subcarrier-scale modulation; exploits channel-coherence-vs-subcarrier scale separation. Defaults (W=256, δ=−30 dB) need no tuning (broad ablation plateaus).</li><li><strong>Synthetic overlap mixer:</strong> per-TX impairments before summation + shared-RX impairments (incl. soft clipping ℛ(x)=κ·tanh(x/κ)) after; receiver nonlinearity critical (+26 pp vs naive addition).</li><li><strong>Model:</strong> U-Net encoder–decoder, non-local attention bottleneck, multi-label per-protocol sigmoid over {11ax, 11b, 11g, 11n}; 5-phase training curriculum with progressive stochastic whitening in the final real-overlap phase.</li><li><strong>Results:</strong> held-out OV25 exact-match 47.6%→73.6% (+26 pp); 2.3× T-PRIME accuracy with 7.7× fewer params (889K); envelope divergence −55×; distillation to 10K-param edge models (Jetson 3.1 ms / 33.7 mJ).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's security-privacy and RF-identification cluster has mostly covered <em>device</em>-level fingerprinting (CSI-RFF closed-set; <code>2026-08-06_arxiv-horffi-open-set-rf-fingerprint</code> open-set) and de-anonymisation. WhiteNet is a different point on the map: <em>protocol</em>-level overlap identification for wideband spectrum monitoring, where the hard part is channel robustness across unseen environments rather than device identity. Its contribution is methodological and unusually transferable — a parameter-free, physics-grounded whitening front-end that any I/Q classifier could adopt, plus a synthetic-overlap generation recipe that reduces dependence on costly multi-transmitter OTA campaigns, and a distillation path to 10K-parameter edge sensors. The held-out evaluation discipline (a genuinely separate session, not augmentation-based domain shift) is stronger than most prior work in this niche, which is what lifts it to novelty 3.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>WhiteNet（Ildi Alla、Vincent Lenders；2026 年 8 月 6 日 arXiv，经 cs.CR 安全扫描路由）解决一个实际的频谱监测问题：识别重叠（同信道）采样中存在哪些 IEEE 802.11 协议的深度学习分类器，在测试信道与训练一致时表现良好，但部署到不同传播条件下会急剧退化。既有分类器（T-PRIME、ResNet、CV-TRN）在同分布下看似很强，在真正留出的信道上却崩溃。WhiteNet 在无需任何目标条件数据的前提下弥合了大部分差距。</p>\n<p>核心是<strong>谱白化（spectral whitening）</strong>——一个无学习参数、基于物理的预处理步骤。它利用尺度分离：无线信道频响 |H(f)|² 变化缓慢（室内相干带宽 &gt;1 MHz），而协议判别性结构（OFDM 子载波间隔、保护间隔）存在于数十至数百 kHz 尺度。WhiteNet 通过对接收谱做循环滑动平均估计信道主导的功率谱包络，施加噪声门限以避免放大深衰落，将其除去，再逆变换回白化 I/Q。这抑制了缓慢的信道包络、保留了快速的调制特征，且完全从观测自身导出，无需信道先验。跨会话谱包络散度下降 55 倍（3.45 dB → 0.063 dB），瓶颈特征的 t-SNE 显示会话可分性从 88.9% 降至 59.4%，证实表示已变得信道不变。</p>\n<p>为避免昂贵的多发射机现场采集，作者构建了<strong>合成重叠混合器</strong>，从单协议空口采样合成逼真的同信道信号：先施加每发射机损伤（多径、载波频偏、谱倾斜）再求和，然后施加共享接收机损伤（抗混叠滤波、相位噪声、带软削波的 AGC、IQ 失衡、直流偏置），接收机非线性产生的互调分量是朴素线性叠加所缺失的。一个带非局部注意力瓶颈的 U-Net 编解码器通过五阶段课程训练。</p>\n<p>在完全未见的会话（S3）上，25% 重叠下精确匹配准确率提升 +26.0 个百分点（47.6% → 73.6%），同分布到留出的差距从 40.0 收窄至 8.0 个百分点——参数量 889K，留出准确率达 T-PRIME 的 2.3 倍（73.6% vs 32.2%），而<strong>参数少 7.7 倍</strong>。两阶段知识蒸馏得到最小 10K 参数的边缘模型（Jetson 上 3.1 ms / 33.7 mJ）。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题：</strong> 无目标域数据下，重叠采样中的信道稳健多标签 802.11 协议识别。</li><li><strong>谱白化：</strong> 无参数预处理，除去缓慢信道包络（循环滑动平均 + 噪声门限估计）、保留子载波尺度调制；利用信道相干带宽与子载波尺度分离。默认 W=256、δ=−30 dB 无需调参。</li><li><strong>合成重叠混合器：</strong> 求和前每发射机损伤 + 求和后共享接收机损伤（含软削波 κ·tanh(x/κ)）；接收机非线性关键（较朴素叠加 +26 pp）。</li><li><strong>模型：</strong> U-Net 编解码器 + 非局部注意力瓶颈 + 多标签 per-协议 sigmoid（{11ax, 11b, 11g, 11n}）；五阶段课程，最终真实重叠阶段渐进随机白化。</li><li><strong>结果：</strong> 留出 OV25 精确匹配 47.6%→73.6%（+26 pp）；准确率为 T-PRIME 的 2.3 倍且参数少 7.7 倍（889K）；包络散度 −55×；蒸馏至 10K 参数边缘模型（Jetson 3.1 ms / 33.7 mJ）。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的 security-privacy 与射频识别簇此前多覆盖<em>设备</em>级指纹（CSI-RFF 闭集；<code>2026-08-06_arxiv-horffi-open-set-rf-fingerprint</code> 开集）与去匿名。WhiteNet 处于不同位置：面向宽带频谱监测的<em>协议</em>级重叠识别，难点在于跨未见环境的信道稳健性而非设备身份。其贡献在方法论且异常可迁移——无参数、基于物理的白化前端可被任意 I/Q 分类器采用，合成重叠生成配方降低对昂贵多发射机空口采集的依赖，并给出到 10K 参数边缘传感器的蒸馏路径。其留出评测规范（真正独立的会话，而非基于增广的域偏移）强于该细分领域多数前作，故 novelty 3。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2608.06581v1/x1.png",
+          "caption_en": "WhiteNet concept: channel conditions reshape the spectrum and cause misclassification (a); spectral whitening removes the channel envelope while preserving protocol-discriminative features (b)",
+          "caption_zh": "WhiteNet 概念：信道条件重塑频谱导致误分类（a）；谱白化除去信道包络并保留协议判别特征（b）"
+        },
+        {
+          "url": "https://arxiv.org/html/2608.06581v1/x3.png",
+          "caption_en": "System overview: single-protocol OTA captures are synthetically mixed with per-transmitter impairments, then spectrally whitened before multi-label classification",
+          "caption_zh": "系统概览：单协议空口采样合成混合每发射机损伤，再谱白化后做多标签分类"
+        },
+        {
+          "url": "https://arxiv.org/html/2608.06581v1/x4.png",
+          "caption_en": "Whitening effect: spectral-envelope divergence across sessions drops 3.45 dB → 0.063 dB (a); t-SNE bottleneck session separability drops 88.9% → 59.4% (b)",
+          "caption_zh": "白化效果：跨会话谱包络散度 3.45 dB → 0.063 dB（a）；瓶颈 t-SNE 会话可分性 88.9% → 59.4%（b）"
+        }
+      ],
+      "search_blob": "whitenet: robust identification of overlapping ieee 802.11 signals across unseen channels whitenet：跨未见信道的重叠 ieee 802.11 信号稳健识别 spectrum-monitoring signal-classification deep-learning 802.11 security whitenet (ildi alla, vincent lenders; arxiv 6 aug 2026, routed from the cs.cr security sweep) tackles a practical spectrum-monitoring problem: a deep-learning classifier that identifies which ieee 802.11 protocols are present in an overlapping (co-channel) capture works well when the test channel matches training, but collapses when deployed under different propagation conditions. prior classifiers (t-prime, resnet, cv-trn) can look strong in-distribution yet fall apart on a genuinely held-out channel. whitenet closes most of that gap without needing any target-condition data. whitenet（ildi alla、vincent lenders；2026 年 8 月 6 日 arxiv，经 cs.cr 安全扫描路由）解决一个实际的频谱监测问题：识别重叠（同信道）采样中存在哪些 ieee 802.11 协议的深度学习分类器，在测试信道与训练一致时表现良好，但部署到不同传播条件下会急剧退化。既有分类器（t-prime、resnet、cv-trn）在同分布下看似很强，在真正留出的信道上却崩溃。whitenet 在无需任何目标条件数据的前提下弥合了大部分差距。 academic-paper wifi"
     },
     {
       "id": "2026-08-09_arxiv-holonic-digital-twins-physical-ai",
@@ -16208,6 +16309,37 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>WiFiPenTester（Al-Sinani 与 Mitchell，2026 年 1 月 30 日提交，35 页）是一个&quot;治理优先&quot;的框架：它把大语言模型（LLM）放进 Wi-Fi 渗透测试流程的<strong>决策支持</strong>环节，同时让每一个射频动作都处于明确的人工控制之下。其设计原则直截了当——<strong>&quot;生成式 AI 只提供建议，绝不做决定&quot;</strong>。LLM 依据被动采集的元数据对候选目标排序、评估攻击可行性、推荐策略，但在架构上被禁止触发任何无线发射：推理路径与执行路径被严格隔离。</p>\n<p>流水线为：被动侦察（<code>airodump-ng</code> 采集信标/探测响应 → BSSID、ESSID、加密类型、信道、RSSI、客户端数）→ 元数据归一化器（把原始工具输出转成结构化 JSON）→ 提示词构造器（将模型设定为&quot;资深无线渗透测试专家&quot;角色）→ LLM 接口（OpenAI <code>gpt-4o-mini</code>，并抽象支持 Claude、Gemini 或本地模型）→ 人在环（HITL）门控：在调用 LLM 之前（附带 token/费用估算）与任何射频活动之前均需操作员批准 → 常规执行工具（<code>aireplay-ng</code> 去认证、<code>aircrack-ng</code>/hashcat/John 字典破解）→ 协议感知的握手验证 → 证据归档（按会话保存全部提示词、响应、命令、时间戳与 PCAP）。</p>\n<p>两项机制使它区别于&quot;把 aircrack-ng 套上 ChatGPT&quot;的简单工具：<strong>把有限自治作为硬性要求</strong>（双重批准门；任何射频前必须显式确认监听模式；模型输出无法直接执行），以及<strong>把成本意识作为显式系统约束</strong>（交互式&quot;LLM 预算门&quot;在每次提交前计算累计 token 数与 API 费用并要求操作员确认）。所有过程均记录，可审计、可复现。</p>\n<p>评测在 Kali 虚拟机（Windows 11 上的 VirtualBox 7，Intel Core Ultra 7）配合外接 MediaTek MT7601U USB 网卡（透传以支持监听与注入）上进行，针对获授权的实验室 AP。模型一贯把信号更强、有活跃客户端、认证更弱的网络评为更高可行性，&quot;常与专家判断一致&quot;，但明确是概率性而非确定性的。作者坦承局限：提示词敏感性（重排元数据偶尔改变排序）、时间变动性（侦察阶段判为可行的目标在主动阶段有时抓不到握手），以及概念验证中对 WPA3-SAE 的支持有限。</p>\n<h3>技术要点</h3>\n<ul><li><strong>推理/执行严格隔离</strong> —— LLM 只产出建议性 JSON，没有任何发射无线帧的通路；所有主动射频（去认证、抓包、破解）均由操作员门控。</li><li><strong>双重批准门</strong> —— 一道在调用 LLM 之前（展示费用估算），一道在任何发射之前；监听模式必须显式确认。</li><li><strong>预算感知执行</strong> —— &quot;LLM 预算门&quot;在提交前计算 token 数与 API 费用并要求确认，把开销当作一等约束。</li><li><strong>以证据为中心的会话</strong> —— 每次提示词、响应、命令、时间戳与原始 PCAP 都归档到结构化会话目录，便于审计与复现。</li><li><strong>工具栈</strong> —— <code>airodump-ng</code>（侦察）、<code>aireplay-ng</code>（去认证/注入）、<code>aircrack-ng</code>/hashcat/John（WPA/WPA2 字典破解）、<code>iw</code>/<code>iwconfig</code>（监听模式）；LLM 为 <code>gpt-4o-mini</code>，带服务商抽象层。</li><li><strong>诚实的局限</strong> —— 目标排序为概率性（非确定性）、对提示词顺序敏感、侦察到主动阶段存在时间变动性、概念验证对 WPA3-SAE 覆盖有限。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 已在跟踪用于 Wi-Fi 运行与管理的智能体/LLM 系统，但它们面向的是网络<em>优化</em>（速率控制、MAPC 配置、漫游智能体）。WiFiPenTester 是&quot;智能体 AI × Wi-Fi <em>安全评估</em>&quot;交叉处的首个条目：把 LLM 用于攻防审计闭环，而非吞吐。它的贡献与其说是攻击自动化（底层 aircrack-ng 链条是标准做法），不如说是<strong>治理脚手架</strong>——一种把生成式模型严格限定为&quot;仅建议、预算受限、全程审计&quot;的具体范式，尤其是在它紧邻可发射射频的工具时。&quot;生成式 AI 只建议、绝不决定&quot;的架构才是可迁移的核心思想：同样的有限自治 + 证据归档外壳，可推广到任何连接了会产生物理后果的无线动作的智能体。作者对提示词敏感性与概率性排序的坦诚，也为&quot;在真实射频审计中能多大程度信任 LLM 的可行性评估&quot;提供了有益的现实校准。</p>",
       "images": [],
       "search_blob": "wifipentester: advancing wireless ethical hacking with governed genai wifipentester：以受管控的生成式 ai 推进无线渗透测试 802.11 security wpa2 agentic-ai llm-agent penetration-testing wifipentester (al-sinani and mitchell, submitted 30 jan 2026, 35 pages) is a governance-first framework that inserts a large language model into the *decision-support* layer of a wi-fi penetration-testing workflow while keeping every radio-frequency action under explicit human control. the stated design principle is blunt: **\"genai advises, but never decides.\"** the llm ranks candidate targets, estimates attack feasibility, and recommends strategy from passively-captured metadata, but it is architecturally forbidden from triggering any wireless transmission — the reasoning path and the execution path are kept strictly separate. wifipentester（al-sinani 与 mitchell，2026 年 1 月 30 日提交，35 页）是一个\"治理优先\"的框架：它把大语言模型（llm）放进 wi-fi 渗透测试流程的**决策支持**环节，同时让每一个射频动作都处于明确的人工控制之下。其设计原则直截了当——**\"生成式 ai 只提供建议，绝不做决定\"**。llm 依据被动采集的元数据对候选目标排序、评估攻击可行性、推荐策略，但在架构上被禁止触发任何无线发射：推理路径与执行路径被严格隔离。 academic-paper wifi"
+    },
+    {
+      "id": "2026-08-12_fcc-6ghz-geofenced-variable-power-order",
+      "date_found": "2026-08-12",
+      "technology": "wifi",
+      "date_published": "2026-01-29",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "FCC creates Geofenced Variable Power (GVP) 6 GHz device class for higher-power indoor and outdoor Wi-Fi",
+      "title_zh": "FCC 设立地理围栏可变功率（GVP）6 GHz 设备类别，支持更高功率的室内外 Wi-Fi",
+      "url": "https://www.federalregister.gov/documents/2026/02/25/2026-03744/unlicensed-use-of-the-6-ghz-band-expanding-flexible-use-in-mid-band-spectrum-between-37-and-24-ghz",
+      "topics": [
+        "6-GHz",
+        "spectrum",
+        "FCC",
+        "regulation",
+        "geofencing",
+        "U-NII"
+      ],
+      "topic_primary": "spectrum-policy",
+      "topics_secondary": [
+        "wifi7-deployment"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-12_fcc-6ghz-geofenced-variable-power-order.md",
+      "summary_short_en": "On **29 January 2026** the US FCC adopted an Order (voted at the January Open Commission Meeting; Federal Register publication 25 Feb 2026) that creates a new class of unlicensed 6 GHz device: the **Geofenced Variable Power (GVP)** access point. GVP fills the gap between the two existing 6 GHz unlicensed modes — Low Power Indoor (LPI, indoor-only, ~5 dBm/MHz PSD, no coordination) and Standard Power (higher power but AFC-coordinated and effectively fixed/outdoor-capable). A GVP device can operate **both indoors and outdoors at higher power than LPI**, without the full Automated Frequency Coordination database transaction, by instead relying on onboard geolocation plus geofencing.",
+      "summary_short_zh": "**2026 年 1 月 29 日**，美国 FCC 通过一项命令（在 1 月全体委员会会议上表决；联邦公报 2 月 25 日刊出），设立了一类新的 6 GHz 免许可设备：**地理围栏可变功率（GVP）**接入点。GVP 填补了现有两种 6 GHz 免许可模式之间的空档——低功率室内（LPI，仅室内、约 5 dBm/MHz PSD、无需协调）与标准功率（功率更高但需 AFC 协调、基本固定/可室外）。GVP 设备可**在室内外以高于 LPI 的功率运行**，无需完整的自动频率协调数据库交互，而是依靠板载地理定位加地理围栏。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On <strong>29 January 2026</strong> the US FCC adopted an Order (voted at the January Open Commission Meeting; Federal Register publication 25 Feb 2026) that creates a new class of unlicensed 6 GHz device: the <strong>Geofenced Variable Power (GVP)</strong> access point. GVP fills the gap between the two existing 6 GHz unlicensed modes — Low Power Indoor (LPI, indoor-only, ~5 dBm/MHz PSD, no coordination) and Standard Power (higher power but AFC-coordinated and effectively fixed/outdoor-capable). A GVP device can operate <strong>both indoors and outdoors at higher power than LPI</strong>, without the full Automated Frequency Coordination database transaction, by instead relying on onboard geolocation plus geofencing.</p>\n<p>The permitted operating limits are <strong>up to 11 dBm/MHz EIRP power spectral density and 24 dBm EIRP</strong>, in the U-NII-5 and U-NII-7 portions of the 6 GHz band (5.925–7.125 GHz). Client devices must transmit <strong>6 dB below</strong> the access point's authorized power. In place of AFC, each GVP access point must determine its own location and consult a <strong>geofencing system that computes exclusion zones</strong> around protected incumbents — licensed fixed microwave links and radio-astronomy observatories — and must refrain from operating on the specific frequencies prohibited at its location. The Commission also sought comment on further flexibilities (composite standard-power/LPI access points at additional power under certain conditions; LPI operation aboard cruise ships).</p>\n<p>This is captured here as a deliberate <strong>quarterly regulatory backfill</strong> (found 2026-08-12): the order is a January 2026 policy shock that had not been recorded in this KB. Its significance is that it materially expands where and how hot unlicensed 6 GHz Wi-Fi can run in the US — enabling higher-power outdoor unlicensed operation via a lighter-weight geofencing obligation than AFC — and it sits alongside the KB's other 6 GHz regulatory entries (the FCC BEL/LPI-PSD proposals, UK/EU/South Africa/Costa Rica full-band and standard-power moves).</p>\n<h3>Key technical points</h3>\n<ul><li><strong>New device class:</strong> Geofenced Variable Power (GVP) 6 GHz access point — indoor <strong>and</strong> outdoor, higher power than LPI, no AFC transaction.</li><li><strong>Power limits:</strong> up to 11 dBm/MHz EIRP PSD and 24 dBm EIRP in U-NII-5 and U-NII-7 (5.925–7.125 GHz); client devices 6 dB below the AP.</li><li><strong>Protection mechanism:</strong> onboard geolocation + a geofencing system that computes exclusion zones around licensed microwave links and radio-astronomy sites; the AP must avoid prohibited frequencies at its location (replaces the AFC database query).</li><li><strong>Status/date:</strong> adopted 29 Jan 2026 (January Open Commission Meeting); Federal Register 25 Feb 2026. Further-flexibility items (composite SP/LPI power, cruise-ship LPI) were put out for comment.</li><li><strong>Ingest note:</strong> quarterly regulatory backfill — a January policy shock not previously in the KB.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's 6 GHz regulatory coverage so far captures the FCC's <em>proposed</em> indoor boosts (BEL in AFC, LPI PSD 5→8 dBm/MHz — <code>2026-05-21_fcc-6ghz-rule-changes</code>) and a wave of international full-band / standard-power adoptions (UK Ofcom, EU, South Africa, Costa Rica). The GVP Order is a distinct and already-<em>adopted</em> structural change: a third US unlicensed operating mode that unlocks higher-power <strong>outdoor</strong> unlicensed 6 GHz on a geofencing obligation rather than AFC. For Wi-Fi 6E/7/8 that is the regulatory precondition for a class of higher-power outdoor and mixed indoor/outdoor deployments (campus, venue, fixed-wireless-adjacent) that LPI cannot serve and full standard-power/AFC makes cumbersome. It also introduces geofencing (geolocation + dynamic exclusion zones) as a coordination primitive parallel to AFC — worth watching as other regulators weigh similar mid-band flexibilities.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p><strong>2026 年 1 月 29 日</strong>，美国 FCC 通过一项命令（在 1 月全体委员会会议上表决；联邦公报 2 月 25 日刊出），设立了一类新的 6 GHz 免许可设备：<strong>地理围栏可变功率（GVP）</strong>接入点。GVP 填补了现有两种 6 GHz 免许可模式之间的空档——低功率室内（LPI，仅室内、约 5 dBm/MHz PSD、无需协调）与标准功率（功率更高但需 AFC 协调、基本固定/可室外）。GVP 设备可<strong>在室内外以高于 LPI 的功率运行</strong>，无需完整的自动频率协调数据库交互，而是依靠板载地理定位加地理围栏。</p>\n<p>允许的运行上限为 <strong>11 dBm/MHz EIRP 功率谱密度与 24 dBm EIRP</strong>，位于 6 GHz 频段的 U-NII-5 与 U-NII-7 部分（5.925–7.125 GHz）。客户端设备发射功率须<strong>低于接入点授权功率 6 dB</strong>。GVP 接入点不使用 AFC，而须确定自身位置并查询<strong>计算排除区的地理围栏系统</strong>——排除区围绕受保护的在用者（持照固定微波链路与射电天文台）——并在其所在位置须避免使用被禁止的特定频率。委员会还就进一步灵活性征求意见（特定条件下的复合标准功率/LPI 接入点更高功率；LPI 在邮轮上运行）。</p>\n<p>此条目作为有意的<strong>季度监管回填</strong>（2026-08-12 发现）：该命令是尚未记入本 KB 的 2026 年 1 月政策变动。其意义在于实质性拓展了美国大功率免许可 6 GHz Wi-Fi 的运行场景——通过比 AFC 更轻量的地理围栏义务实现更高功率的室外免许可运行——并与 KB 中其他 6 GHz 监管条目并列。</p>\n<h3>技术要点</h3>\n<ul><li><strong>新设备类别：</strong> 地理围栏可变功率（GVP）6 GHz 接入点——室内<strong>与</strong>室外、功率高于 LPI、无需 AFC 交互。</li><li><strong>功率上限：</strong> U-NII-5 与 U-NII-7（5.925–7.125 GHz）最高 11 dBm/MHz EIRP PSD 与 24 dBm EIRP；客户端低于 AP 6 dB。</li><li><strong>保护机制：</strong> 板载地理定位 + 计算排除区的地理围栏系统（围绕持照微波链路与射电天文台）；AP 须在其位置避开被禁频率（替代 AFC 数据库查询）。</li><li><strong>状态/日期：</strong> 2026 年 1 月 29 日通过；联邦公报 2 月 25 日。进一步灵活性事项（复合 SP/LPI 功率、邮轮 LPI）已征求意见。</li><li><strong>入库说明：</strong> 季度监管回填——此前未入 KB 的 1 月政策变动。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 目前的 6 GHz 监管覆盖记录了 FCC <em>提议</em>的室内增强（AFC 纳入 BEL、LPI PSD 5→8 dBm/MHz——<code>2026-05-21_fcc-6ghz-rule-changes</code>）以及一波国际全频段/标准功率采纳（英国 Ofcom、欧盟、南非、哥斯达黎加）。GVP 命令是一项不同且已<em>通过</em>的结构性变化：美国第三种免许可运行模式，以地理围栏义务（而非 AFC）解锁更高功率的<strong>室外</strong>免许可 6 GHz。对 Wi-Fi 6E/7/8 而言，这是 LPI 无法服务、而完整标准功率/AFC 又繁琐的一类高功率室外及室内外混合部署（园区、场馆、临近固定无线）的监管前提。它还将地理围栏（地理定位 + 动态排除区）引入为与 AFC 并行的协调原语——值得关注其他监管机构是否权衡类似的中频段灵活性。</p>",
+      "images": [],
+      "search_blob": "fcc creates geofenced variable power (gvp) 6 ghz device class for higher-power indoor and outdoor wi-fi fcc 设立地理围栏可变功率（gvp）6 ghz 设备类别，支持更高功率的室内外 wi-fi 6-ghz spectrum fcc regulation geofencing u-nii on **29 january 2026** the us fcc adopted an order (voted at the january open commission meeting; federal register publication 25 feb 2026) that creates a new class of unlicensed 6 ghz device: the **geofenced variable power (gvp)** access point. gvp fills the gap between the two existing 6 ghz unlicensed modes — low power indoor (lpi, indoor-only, ~5 dbm/mhz psd, no coordination) and standard power (higher power but afc-coordinated and effectively fixed/outdoor-capable). a gvp device can operate **both indoors and outdoors at higher power than lpi**, without the full automated frequency coordination database transaction, by instead relying on onboard geolocation plus geofencing. **2026 年 1 月 29 日**，美国 fcc 通过一项命令（在 1 月全体委员会会议上表决；联邦公报 2 月 25 日刊出），设立了一类新的 6 ghz 免许可设备：**地理围栏可变功率（gvp）**接入点。gvp 填补了现有两种 6 ghz 免许可模式之间的空档——低功率室内（lpi，仅室内、约 5 dbm/mhz psd、无需协调）与标准功率（功率更高但需 afc 协调、基本固定/可室外）。gvp 设备可**在室内外以高于 lpi 的功率运行**，无需完整的自动频率协调数据库交互，而是依靠板载地理定位加地理围栏。 industry-news wifi"
     },
     {
       "id": "2026-05-04_arxiv-comagent-multi-llm-wireless",
