@@ -426,26 +426,6 @@ window.SOURCES_DATA = {
       "technology": "wifi"
     },
     {
-      "id": "twitter-wifi-experts",
-      "name": "Twitter — WiFi research experts (search)",
-      "url": "",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [],
-      "notes": "Twitter scraping is unreliable; web-search captures the few tweets that get indexed.",
-      "technology": "wifi"
-    },
-    {
-      "id": "linkedin-wifi-news",
-      "name": "LinkedIn — WiFi industry posts (search)",
-      "url": "",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [],
-      "notes": "Auth-walled; we rely on Google's index of public posts.",
-      "technology": "wifi"
-    },
-    {
       "id": "ces-wifi-coverage",
       "name": "CES — WiFi 8 / 802.11bn coverage (Jan)",
       "url": "",
