@@ -22,10 +22,10 @@ window.KB_DATA = {
     "MLO": 16,
     "direct-to-device": 16,
     "NTN": 16,
+    "UWB": 15,
     "802.11": 15,
     "PHY-layer": 15,
     "BLE": 14,
-    "UWB": 14,
     "AI-RAN": 14,
     "802.11bf": 14,
     "network-slicing": 13,
@@ -130,6 +130,7 @@ window.KB_DATA = {
     "5G-SA": 3,
     "formal-verification": 3,
     "semantic-communication": 3,
+    "deep-learning": 3,
     "Wi-Fi-7": 3,
     "enterprise": 3,
     "AIOps": 3,
@@ -195,12 +196,12 @@ window.KB_DATA = {
     "tracking": 2,
     "FlexRIC": 2,
     "E2SM": 2,
+    "localization": 2,
     "DW3000": 2,
     "ESP32": 2,
     "IPv6": 2,
     "RF-fingerprint": 2,
     "physical-layer-security": 2,
-    "deep-learning": 2,
     "sensing": 2,
     "Part-15": 2,
     "OneWeb": 2,
@@ -323,6 +324,9 @@ window.KB_DATA = {
     "split-inference": 1,
     "edge-offload": 1,
     "SLAM": 1,
+    "CIR": 1,
+    "NLoS": 1,
+    "trajectory-prediction": 1,
     "market-forecast": 1,
     "integrity-monitoring": 1,
     "CORS": 1,
@@ -511,7 +515,6 @@ window.KB_DATA = {
     "dataset": 1,
     "geolocation": 1,
     "TDOA": 1,
-    "localization": 1,
     "clock-synchronization": 1,
     "TDMA": 1,
     "Wi-Fi-offload": 1,
@@ -946,7 +949,7 @@ window.KB_DATA = {
     "mapc-cosr": 14,
     "sat-direct-device": 14,
     "amp-iot": 12,
-    "uwb-ranging": 11,
+    "uwb-ranging": 12,
     "cellular-security": 10,
     "sat-ai": 10,
     "agentic-wifi": 10,
@@ -979,7 +982,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 258,
+    "academic-paper": 259,
     "industry-news": 85,
     "ieee-document": 34,
     "product": 21,
@@ -989,7 +992,7 @@ window.KB_DATA = {
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 258,
+    "academia": 259,
     "industry": 124,
     "standards": 44
   },
@@ -4096,6 +4099,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-13_ssrn-delay-compensated-uwb-localization",
         "2026-08-09_makerfabs-matouch-mauwb-positioning-board",
         "2026-08-05_nxp-trimension-ncj29d6-bmw-digital-key",
         "2026-07-28_apple-google-uwb-indoor-gps-platform",
@@ -4115,6 +4119,10 @@ window.KB_DATA = {
         "2026-05-21_jcb-uwb-payments-japan"
       ],
       "by_type_primary": {
+        "academic-paper": [
+          "2026-08-13_ssrn-delay-compensated-uwb-localization",
+          "2026-06-29_arxiv-ab-sync-uwb-tdoa-clock-sync"
+        ],
         "product": [
           "2026-08-09_makerfabs-matouch-mauwb-positioning-board",
           "2026-08-05_murata-uwb-factory-tracking-sub1m",
@@ -4128,9 +4136,6 @@ window.KB_DATA = {
           "2026-06-12_imec-802154ab-nba-receiver-rfic2026",
           "2026-05-24_spark-sr1120-le-uwb-wwc-pitch",
           "2026-06-04_calterah-dubhe-uwb-soc-802154ab"
-        ],
-        "academic-paper": [
-          "2026-06-29_arxiv-ab-sync-uwb-tdoa-clock-sync"
         ]
       }
     },
@@ -4729,6 +4734,35 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "a semantic communication approach to fiducial marker processing in 5g-enabled edge slam 面向 5g 边缘 slam 中基准标记处理的语义通信方法 mec semantic-communication split-inference 5g-nr edge-offload slam this paper (boris radovanovic, vukan ninkovic, katarina vidojevic, buda bajic papuga, dejan vukobratovic — university of novi sad and the institute for ai research and development of serbia; arxiv 10 aug 2026) applies a **semantic-communication / split-inference** design to fiducial-marker perception for robots that offload to a 5g edge server. rather than shipping raw camera images (bandwidth-heavy) or fully processing on-board (compute-heavy), the robot runs the first *k* blocks of a deep fiducial-marker network (deeptag-style), then transmits a compact learned intermediate representation **z** over 5g; the edge server runs the remaining blocks and performs slam. the intermediate feature is \"task-oriented semantic information\" — it suppresses redundancy while preserving what pose estimation needs. 本文（boris radovanovic、vukan ninkovic、katarina vidojevic、buda bajic papuga、dejan vukobratovic——诺维萨德大学与塞尔维亚人工智能研究与发展研究所；2026 年 8 月 10 日 arxiv）将**语义通信/分割推理**设计应用于机器人向 5g 边缘服务器卸载的基准标记（fiducial marker）感知。机器人不发送原始相机图像（占带宽），也不完全在本地处理（占算力），而是运行深度基准标记网络（deeptag 类）的前 *k* 块，再通过 5g 传输紧凑的学习中间表示 **z**；边缘服务器运行其余块并执行 slam。该中间特征是\"面向任务的语义信息\"——抑制冗余、保留位姿估计所需内容。 academic-paper cellular"
+    },
+    {
+      "id": "2026-08-13_ssrn-delay-compensated-uwb-localization",
+      "date_found": "2026-08-13",
+      "technology": "uwb",
+      "date_published": "2026-08-09",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Real-Time Delay-Compensated UWB Localization for Dynamic Agents via Deep Trajectory Prediction",
+      "title_zh": "基于深度轨迹预测的动态目标实时时延补偿 UWB 定位",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5786581",
+      "topics": [
+        "UWB",
+        "localization",
+        "CIR",
+        "NLoS",
+        "deep-learning",
+        "trajectory-prediction"
+      ],
+      "topic_primary": "uwb-ranging",
+      "topics_secondary": [],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-13_ssrn-delay-compensated-uwb-localization.md",
+      "summary_short_en": "Somayeh Modaberi and Behrouz Far (University of Calgary; SSRN preprint, surfaced via the 9 Aug 2026 Wi-Fi NOW roundup) tackle a practical flaw in UWB positioning of *moving* targets: by the time a position fix is computed and delivered, the agent has moved on — processing and system latency turn an accurate measurement into a stale answer. Their framework predicts the agent's position **at the time the result actually becomes available**, not at measurement time.",
+      "summary_short_zh": "Somayeh Modaberi 与 Behrouz Far（卡尔加里大学；SSRN 预印本，经 2026 年 8 月 9 日 Wi-Fi NOW 综述发现）解决 UWB 定位*运动*目标的一个实际缺陷：位置解算并送达时目标已经移动——处理与系统时延把精确测量变成过时答案。其框架预测**结果实际可用时刻**的目标位置，而非测量时刻的位置。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Somayeh Modaberi and Behrouz Far (University of Calgary; SSRN preprint, surfaced via the 9 Aug 2026 Wi-Fi NOW roundup) tackle a practical flaw in UWB positioning of <em>moving</em> targets: by the time a position fix is computed and delivered, the agent has moved on — processing and system latency turn an accurate measurement into a stale answer. Their framework predicts the agent's position <strong>at the time the result actually becomes available</strong>, not at measurement time.</p>\n<p>The predictor is a deep sequence model fed two complementary inputs: the <strong>Channel Impulse Response (CIR)</strong> — whose multipath structure lets the model recognize and correct non-line-of-sight (NLoS) range bias — and <strong>recent motion history</strong>, which captures the agent's dynamics. The authors benchmark CNN-Transformer, pure Transformer and LSTM architectures against a constant-velocity baseline on a large public UWB dataset (~491k samples across four environments). The CNN-Transformer hybrid wins with <strong>0.26 m mean error and 85% of fixes within 0.5 m</strong>, with predictions aligned to the actual system delay for real-time operation.</p>\n<p>(SSRN blocks anonymous fetches; summarized from the Wi-Fi NOW coverage, the SSRN listing snippet, and the companion University of Calgary thesis record — full-text verification pending.)</p>\n<h3>Key technical points</h3>\n<ul><li>Problem: system/processing latency makes UWB fixes stale for moving agents; solution predicts position at result-delivery time.</li><li>Inputs: CIR (multipath signature → NLoS bias correction) + recent trajectory history (agent dynamics).</li><li>Benchmark: CNN-Transformer vs Transformer vs LSTM vs constant-velocity; ~491k samples, 4 environments.</li><li>Result: 0.26 m mean error, 85% within 0.5 m (CNN-Transformer), delay-aligned prediction.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's UWB-ranging bin tracks accuracy improvements (transformer ranging-error correction, AB-Sync TDOA clock sync) but this is the first entry to treat <em>latency itself</em> as the error source — reframing localization as short-horizon trajectory forecasting synchronized to system delay. For robot/AGV tracking (the Murata factory-tracking entry's domain) this is the difference between a position log and a control input.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Somayeh Modaberi 与 Behrouz Far（卡尔加里大学；SSRN 预印本，经 2026 年 8 月 9 日 Wi-Fi NOW 综述发现）解决 UWB 定位<em>运动</em>目标的一个实际缺陷：位置解算并送达时目标已经移动——处理与系统时延把精确测量变成过时答案。其框架预测<strong>结果实际可用时刻</strong>的目标位置，而非测量时刻的位置。</p>\n<p>预测器是深度序列模型，输入两类互补信息：<strong>信道冲激响应（CIR）</strong>——其多径结构使模型能识别并校正非视距（NLoS）测距偏差；以及<strong>近期运动历史</strong>——刻画目标动力学。作者在大型公开 UWB 数据集（约 49.1 万样本、4 种环境）上对比 CNN-Transformer、纯 Transformer、LSTM 与恒速基线：CNN-Transformer 混合架构最优，<strong>平均误差 0.26 m，85% 定位结果在 0.5 m 以内</strong>，且预测与实际系统时延对齐以保证实时性。</p>\n<p>（SSRN 拒绝匿名抓取；本条目依据 Wi-Fi NOW 报道、SSRN 列表摘要及卡尔加里大学论文库记录撰写，全文核验待后续。）</p>\n<h3>技术要点</h3>\n<ul><li>问题：系统/处理时延使运动目标的 UWB 定位过时；方案预测结果送达时刻的位置。</li><li>输入：CIR（多径特征 → NLoS 偏差校正）+ 近期轨迹历史（目标动力学）。</li><li>对比：CNN-Transformer vs Transformer vs LSTM vs 恒速基线；约 49.1 万样本、4 种环境。</li><li>结果：平均误差 0.26 m，85% 在 0.5 m 内（CNN-Transformer），时延对齐预测。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的 UWB 测距类目跟踪的是精度改进（Transformer 测距误差校正、AB-Sync TDOA 时钟同步），本条目首次把<em>时延本身</em>视为误差来源——将定位重构为与系统时延同步的短时轨迹预测。对机器人/AGV 跟踪（Murata 工厂跟踪条目的场景），这是&quot;位置日志&quot;与&quot;控制输入&quot;之间的差别。</p>",
+      "images": [],
+      "search_blob": "real-time delay-compensated uwb localization for dynamic agents via deep trajectory prediction 基于深度轨迹预测的动态目标实时时延补偿 uwb 定位 uwb localization cir nlos deep-learning trajectory-prediction somayeh modaberi and behrouz far (university of calgary; ssrn preprint, surfaced via the 9 aug 2026 wi-fi now roundup) tackle a practical flaw in uwb positioning of *moving* targets: by the time a position fix is computed and delivered, the agent has moved on — processing and system latency turn an accurate measurement into a stale answer. their framework predicts the agent's position **at the time the result actually becomes available**, not at measurement time. somayeh modaberi 与 behrouz far（卡尔加里大学；ssrn 预印本，经 2026 年 8 月 9 日 wi-fi now 综述发现）解决 uwb 定位*运动*目标的一个实际缺陷：位置解算并送达时目标已经移动——处理与系统时延把精确测量变成过时答案。其框架预测**结果实际可用时刻**的目标位置，而非测量时刻的位置。 academic-paper uwb"
     },
     {
       "id": "2026-08-13_delloro-enterprise-wifi7-forecast",
