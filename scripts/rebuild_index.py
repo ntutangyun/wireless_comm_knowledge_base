@@ -389,6 +389,7 @@ TYPE_TO_CATEGORY = {
     "uwb-spec":        "standards",
     "nearlink-spec":   "standards",
     "satellite-news":  "industry",
+    "community-signal": "industry",
 }
 
 
