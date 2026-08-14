@@ -1,18 +1,18 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-08-13",
-  "last_scanned": "2026-08-13",
+  "last_updated": "2026-08-14",
+  "last_scanned": "2026-08-14",
   "topic_counts": {
     "6G": 58,
     "802.11bn": 45,
     "security": 43,
-    "agentic-AI": 40,
+    "agentic-AI": 41,
     "O-RAN": 39,
     "LEO": 39,
     "MAC-layer": 37,
     "products": 36,
     "scheduling": 33,
-    "802.11be": 28,
+    "802.11be": 29,
     "WiFi-sensing": 24,
     "5G-NR": 19,
     "Starlink": 19,
@@ -95,6 +95,7 @@ window.KB_DATA = {
     "massive-MIMO": 5,
     "QoS": 5,
     "Co-BF": 5,
+    "enterprise": 4,
     "TGbp": 4,
     "orchestration": 4,
     "GNSS": 4,
@@ -132,7 +133,6 @@ window.KB_DATA = {
     "semantic-communication": 3,
     "deep-learning": 3,
     "Wi-Fi-7": 3,
-    "enterprise": 3,
     "AIOps": 3,
     "spoofing": 3,
     "device-authentication": 3,
@@ -182,6 +182,7 @@ window.KB_DATA = {
     "WPA3": 3,
     "roaming": 3,
     "Apple": 3,
+    "private-5G": 2,
     "IMMW": 2,
     "TWT": 2,
     "power-save": 2,
@@ -314,6 +315,7 @@ window.KB_DATA = {
     "Ericsson": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "convergence": 1,
     "TGbq": 1,
     "P2P": 1,
     "PPDU": 1,
@@ -544,7 +546,6 @@ window.KB_DATA = {
     "device-fingerprinting": 1,
     "5G-TSN": 1,
     "traffic-shaping": 1,
-    "private-5G": 1,
     "Lyapunov": 1,
     "simulator": 1,
     "cellular-load-forecasting": 1,
@@ -956,10 +957,10 @@ window.KB_DATA = {
     "sat-direct-device": 14,
     "amp-iot": 12,
     "uwb-ranging": 12,
+    "agentic-wifi": 11,
     "starlink": 11,
     "cellular-security": 10,
     "sat-ai": 10,
-    "agentic-wifi": 10,
     "ntn": 9,
     "network-slicing": 8,
     "rtwt-latency": 8,
@@ -989,7 +990,7 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 259,
-    "industry-news": 85,
+    "industry-news": 86,
     "ieee-document": 34,
     "product": 21,
     "satellite-news": 18,
@@ -1000,7 +1001,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 259,
-    "industry": 127,
+    "industry": 128,
     "standards": 44
   },
   "technologies_vocab": {
@@ -2363,6 +2364,7 @@ window.KB_DATA = {
         "2026-07-26_apple-n1-wifi7-chip-iphone17"
       ],
       "entries_secondary": [
+        "2026-08-14_celona-orion-converged-wireless-fabric",
         "2026-08-03_arxiv-nr-wifi-6ghz-coexistence-testbed",
         "2026-05-28_wifinow-uk-eu-upper-6ghz-regulation",
         "2026-05-21_fcc-6ghz-rule-changes",
@@ -2611,6 +2613,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Agentic Wi-Fi))\n    Agent shapes\n      Orchestration\n      Troubleshooting\n      Policy code generation\n      Multi-agent collaboration\n    Academic frameworks\n      WirelessBench (3-tier hierarchy)\n      WirelessAgent++ (MCTS workflow)\n      ComAgent multi-LLM PPAR\n      IntelliCISE security threat model\n    Industry\n      HPE Aruba+Mist unified\n      TP-Link Aireal cloud GPT\n    Standards adjacency\n      AI Offload SG (March 2026)\n    Watch\n      AI Offload SG to TG?\n      Safety / hallucination benchmarks\n      Production false-positive landings\n      LLM-controller attack surface",
       "diagram_mmd_zh": "mindmap\n  root((智能体 Wi-Fi))\n    智能体形态\n      编排\n      故障排查\n      策略代码生成\n      多智能体协作\n    学术框架\n      WirelessBench（三层认知）\n      WirelessAgent++（MCTS 工作流）\n      ComAgent 多 LLM PPAR\n      IntelliCISE 安全威胁模型\n    工业\n      HPE Aruba+Mist 统一\n      TP-Link Aireal 云端 GPT\n    标准邻接\n      AI Offload SG（2026-03）\n    关注\n      AI Offload SG 升 TG？\n      安全 / 幻觉基准\n      生产环境误报落地\n      LLM 控制器攻击面",
       "entries_primary": [
+        "2026-08-14_celona-orion-converged-wireless-fabric",
         "2026-07-11_ieee-mentor-ai-offload-sg-digest",
         "2026-05-19_arxiv-composable-agentic-nextg",
         "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest",
@@ -2643,6 +2646,10 @@ window.KB_DATA = {
         "2026-05-01_arxiv-on-device-llm-roaming"
       ],
       "by_type_primary": {
+        "industry-news": [
+          "2026-08-14_celona-orion-converged-wireless-fabric",
+          "2026-05-01_hpe-aruba-mist-unified-2026"
+        ],
         "ieee-document": [
           "2026-07-11_ieee-mentor-ai-offload-sg-digest",
           "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest"
@@ -2657,9 +2664,6 @@ window.KB_DATA = {
         ],
         "product": [
           "2026-05-04_tp-link-aireal-ces2026"
-        ],
-        "industry-news": [
-          "2026-05-01_hpe-aruba-mist-unified-2026"
         ]
       }
     },
@@ -2778,6 +2782,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-on-device-llm-roaming"
       ],
       "entries_secondary": [
+        "2026-08-14_celona-orion-converged-wireless-fabric",
         "2026-05-18_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-27_networkworld-wifi8-edge-ai-platform",
         "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
@@ -4371,6 +4376,48 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-08-14_celona-orion-converged-wireless-fabric",
+      "date_found": "2026-08-14",
+      "technology": "wifi",
+      "date_published": "2026-08-13",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Celona Orion: AI-driven converged fabric for private 5G, Wi-Fi 7, public cellular and satellite",
+      "title_zh": "Celona Orion：面向专网 5G、Wi-Fi 7、公网蜂窝与卫星的 AI 驱动融合无线平台",
+      "url": "https://wifinowglobal.com/news/celona-says-new-ai-driven-orion-platform-ushers-in-convergence-of-private-5g-wi-fi-cellular-satellite/",
+      "topics": [
+        "agentic-AI",
+        "802.11be",
+        "private-5G",
+        "enterprise",
+        "convergence"
+      ],
+      "topic_primary": "agentic-wifi",
+      "topics_secondary": [
+        "wifi7-deployment",
+        "roaming-mobility"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-14_celona-orion-converged-wireless-fabric.md",
+      "summary_short_en": "Celona — until now a private-5G-native enterprise vendor with about 225 enterprise customers — announced Orion (13 Aug 2026, reported by Wi-Fi NOW's Claus Hetting), a unified \"wireless fabric\" that folds private 5G, Wi-Fi 7, public cellular, and Starlink satellite connectivity into a single converged enterprise networking solution. Wi-Fi 7 access points are included in the subscription at no extra cost, positioning Wi-Fi as a first-class citizen alongside Celona's original private-cellular offering rather than as a competing silo. The hardware remains physically separate (distinct base stations and APs, for propagation reasons); the convergence happens in the management and client layers.",
+      "summary_short_zh": "Celona——此前以企业专网 5G 为主业、拥有约 225 家企业客户——于 2026 年 8 月 13 日发布 Orion 平台（Wi-Fi NOW 的 Claus Hetting 报道）：一个把专网 5G、Wi-Fi 7、公网蜂窝和 Starlink 卫星连接整合为单一\"无线织物（wireless fabric）\"的融合企业组网方案。Wi-Fi 7 AP（无线接入点）以订阅内免费形式提供，使 Wi-Fi 与 Celona 原有的专网蜂窝业务并列为一等公民，而非相互竞争的孤岛。硬件层面仍保持分离（基站与 AP 各自独立，出于传播特性差异）；融合发生在管理层与终端侧。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Celona — until now a private-5G-native enterprise vendor with about 225 enterprise customers — announced Orion (13 Aug 2026, reported by Wi-Fi NOW's Claus Hetting), a unified &quot;wireless fabric&quot; that folds private 5G, Wi-Fi 7, public cellular, and Starlink satellite connectivity into a single converged enterprise networking solution. Wi-Fi 7 access points are included in the subscription at no extra cost, positioning Wi-Fi as a first-class citizen alongside Celona's original private-cellular offering rather than as a competing silo. The hardware remains physically separate (distinct base stations and APs, for propagation reasons); the convergence happens in the management and client layers.</p>\n<p>Two mechanisms stand out. First, the management layer — &quot;Orchestrator AI&quot; with &quot;Celona Brain&quot; — is described as &quot;the agentic OS for converged wireless&quot;: AI agents that collaborate with the enterprise's own LLM platforms, with the stated goal of shifting wireless teams from hands-on operators to infrastructure orchestrators. Second, on the client side, Celona released <strong>AerConnect</strong>, an open-source wireless agent that handles device-level multi-network connectivity (choosing/steering between Wi-Fi, private 5G, public cellular, satellite). CEO Rajeev Shah emphasises AerConnect is 100% open source and explicitly not tied to Celona infrastructure.</p>\n<p>The announcement is a signal of where enterprise wireless is converging: the differentiation is moving out of the radio and into (a) an agentic, LLM-integrated network-operations layer and (b) a client-side connection-steering agent that treats Wi-Fi and cellular as interchangeable underlays.</p>\n<h3>Key technical points</h3>\n<ul><li>Orion converges four access technologies under one platform: private 5G (deterministic campus coverage), Wi-Fi 7 (high-bandwidth applications, subscription-bundled APs), public cellular (guest/remote), and Starlink satellite (remote sites).</li><li>Hardware stays separate per technology; convergence is at the management plane (&quot;Orchestrator AI&quot; / &quot;Celona Brain&quot;) and the client (&quot;AerConnect&quot;).</li><li>The management layer is framed as an &quot;agentic OS&quot;: AI agents that interoperate with enterprise LLM platforms for network operations.</li><li>AerConnect is an open-source client-side wireless agent for multi-network steering, usable without Celona infrastructure.</li><li>Celona claims this is the first single-vendor convergence of all four access types; it serves ~225 enterprise customers today.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB already tracks enterprise-management convergence (HPE Aruba Central + Mist) and agentic network operations (Cisco AgenticOps, the agentic-wifi bin), but this is the first entry where a vendor (a) bundles Wi-Fi 7 as a no-extra-cost component of a private-5G-led subscription, (b) adds satellite as a fourth managed access leg, and (c) ships an <em>open-source client-side</em> steering agent. AerConnect is the notable piece for the Wi-Fi community: client-side multi-access steering has historically been OS-proprietary (Windows/Android OEM logic) or standards-driven (ANDSF, 3GPP ATSSS); an open-source, infrastructure-agnostic agent is a new point in that design space and worth watching for how it interacts with Wi-Fi roaming (802.11r/k/v) and MLO device behaviour.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Celona——此前以企业专网 5G 为主业、拥有约 225 家企业客户——于 2026 年 8 月 13 日发布 Orion 平台（Wi-Fi NOW 的 Claus Hetting 报道）：一个把专网 5G、Wi-Fi 7、公网蜂窝和 Starlink 卫星连接整合为单一&quot;无线织物（wireless fabric）&quot;的融合企业组网方案。Wi-Fi 7 AP（无线接入点）以订阅内免费形式提供，使 Wi-Fi 与 Celona 原有的专网蜂窝业务并列为一等公民，而非相互竞争的孤岛。硬件层面仍保持分离（基站与 AP 各自独立，出于传播特性差异）；融合发生在管理层与终端侧。</p>\n<p>两个机制值得注意。其一，管理层&quot;Orchestrator AI&quot;+&quot;Celona Brain&quot;被称为&quot;融合无线的智能体操作系统（agentic OS）&quot;：AI 智能体可与企业自有的 LLM 平台协作，目标是让无线运维团队从&quot;操作者&quot;转变为&quot;基础设施编排者&quot;。其二，终端侧发布了 <strong>AerConnect</strong>——一个开源的无线智能体，负责设备级多网络连接（在 Wi-Fi、专网 5G、公网蜂窝、卫星之间选择与切换）。CEO Rajeev Shah 强调 AerConnect 完全开源，且不绑定 Celona 基础设施。</p>\n<p>该发布标志着企业无线的融合方向：差异化正从射频层转移到（a）与 LLM 集成的智能体化网络运维层，以及（b）把 Wi-Fi 与蜂窝视为可互换底层的终端侧连接调度智能体。</p>\n<h3>技术要点</h3>\n<ul><li>Orion 在一个平台下融合四种接入技术：专网 5G（园区确定性覆盖）、Wi-Fi 7（大带宽应用，AP 含在订阅内）、公网蜂窝（访客/远程）、Starlink 卫星（偏远站点）。</li><li>各技术硬件保持独立；融合发生在管理面（&quot;Orchestrator AI&quot; / &quot;Celona Brain&quot;）与终端侧（&quot;AerConnect&quot;）。</li><li>管理层被定位为&quot;智能体操作系统&quot;：AI 智能体与企业 LLM 平台协作完成网络运维。</li><li>AerConnect 是开源的终端侧无线智能体，负责多网络选择与切换，不绑定 Celona 基础设施。</li><li>Celona 称这是首个单厂商四接入融合方案；目前拥有约 225 家企业客户。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 已收录企业管理面融合（HPE Aruba Central + Mist）与智能体化网络运维（Cisco AgenticOps 及 agentic-wifi 主题），但本条目是首个同时具备以下三点的厂商动作：（a）把 Wi-Fi 7 作为专网 5G 订阅的免费组件捆绑；（b）把卫星纳入第四条受管接入路径；（c）发布<em>开源终端侧</em>调度智能体。对 Wi-Fi 社区而言，AerConnect 是最值得关注的部分：终端侧多接入调度历来要么是操作系统私有逻辑（Windows/Android OEM），要么由标准驱动（ANDSF、3GPP ATSSS）；一个开源、不绑定基础设施的智能体是该设计空间中的新点位，值得关注其与 Wi-Fi 漫游（802.11r/k/v）及 MLO 终端行为的交互。</p>",
+      "images": [
+        {
+          "url": "https://wifinowevents.s3.amazonaws.com/uploads/2026/08/CelonaHero-1-1024x409.png",
+          "caption_en": "Celona Orion converged wireless fabric overview",
+          "caption_zh": "Celona Orion 融合无线平台概览"
+        },
+        {
+          "url": "https://wifinowevents.s3.amazonaws.com/uploads/2026/08/Screenshot-2026-08-13-at-11.01.27-1024x852.png",
+          "caption_en": "Orion platform architecture screenshot",
+          "caption_zh": "Orion 平台架构截图"
+        }
+      ],
+      "search_blob": "celona orion: ai-driven converged fabric for private 5g, wi-fi 7, public cellular and satellite celona orion：面向专网 5g、wi-fi 7、公网蜂窝与卫星的 ai 驱动融合无线平台 agentic-ai 802.11be private-5g enterprise convergence celona — until now a private-5g-native enterprise vendor with about 225 enterprise customers — announced orion (13 aug 2026, reported by wi-fi now's claus hetting), a unified \"wireless fabric\" that folds private 5g, wi-fi 7, public cellular, and starlink satellite connectivity into a single converged enterprise networking solution. wi-fi 7 access points are included in the subscription at no extra cost, positioning wi-fi as a first-class citizen alongside celona's original private-cellular offering rather than as a competing silo. the hardware remains physically separate (distinct base stations and aps, for propagation reasons); the convergence happens in the management and client layers. celona——此前以企业专网 5g 为主业、拥有约 225 家企业客户——于 2026 年 8 月 13 日发布 orion 平台（wi-fi now 的 claus hetting 报道）：一个把专网 5g、wi-fi 7、公网蜂窝和 starlink 卫星连接整合为单一\"无线织物（wireless fabric）\"的融合企业组网方案。wi-fi 7 ap（无线接入点）以订阅内免费形式提供，使 wi-fi 与 celona 原有的专网蜂窝业务并列为一等公民，而非相互竞争的孤岛。硬件层面仍保持分离（基站与 ap 各自独立，出于传播特性差异）；融合发生在管理层与终端侧。 industry-news wifi"
+    },
     {
       "id": "2026-08-13_ieee-mentor-tgbq-digest",
       "date_found": "2026-08-13",
