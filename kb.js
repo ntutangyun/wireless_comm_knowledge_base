@@ -3,12 +3,12 @@ window.KB_DATA = {
   "last_updated": "2026-08-14",
   "last_scanned": "2026-08-14",
   "topic_counts": {
-    "6G": 58,
+    "6G": 59,
     "802.11bn": 45,
     "security": 43,
     "agentic-AI": 41,
-    "O-RAN": 39,
-    "LEO": 39,
+    "LEO": 40,
+    "O-RAN": 40,
     "MAC-layer": 37,
     "products": 36,
     "scheduling": 33,
@@ -18,33 +18,34 @@ window.KB_DATA = {
     "Starlink": 19,
     "MAPC": 18,
     "5G": 18,
+    "direct-to-device": 17,
+    "NTN": 17,
     "IoT": 17,
     "MLO": 16,
-    "direct-to-device": 16,
-    "NTN": 16,
+    "BLE": 15,
     "UWB": 15,
     "802.11": 15,
     "PHY-layer": 15,
-    "BLE": 14,
     "AI-RAN": 14,
     "802.11bf": 14,
     "network-slicing": 13,
     "FCC": 13,
     "6GHz": 13,
+    "digital-twin": 12,
     "LLM": 12,
     "CSI": 12,
+    "ISAC": 11,
     "mmWave": 11,
-    "digital-twin": 11,
     "spectrum": 11,
     "NearLink": 11,
     "802.11ax": 11,
-    "ISAC": 10,
     "privacy": 10,
     "energy-efficiency": 10,
     "802.11bp": 10,
     "SparkLink": 10,
     "3GPP": 9,
     "UAV": 9,
+    "resource-allocation": 8,
     "xApp": 8,
     "RIC": 8,
     "URLLC": 8,
@@ -54,8 +55,9 @@ window.KB_DATA = {
     "generative-AI": 8,
     "Co-SR": 7,
     "beamforming": 7,
+    "MEC": 7,
+    "D2D": 7,
     "Wi-Fi-8": 7,
-    "resource-allocation": 7,
     "OpenAirInterface": 7,
     "AI-native": 7,
     "NPCA": 7,
@@ -63,13 +65,12 @@ window.KB_DATA = {
     "reinforcement-learning": 7,
     "XR": 7,
     "AMP": 6,
-    "MEC": 6,
+    "handover": 6,
     "IAB": 6,
     "edge-AI": 6,
     "machine-learning": 6,
     "backscatter": 6,
     "5G-Advanced": 6,
-    "D2D": 6,
     "LLM-agent": 6,
     "SLE": 6,
     "AFC": 6,
@@ -86,7 +87,6 @@ window.KB_DATA = {
     "BlueBird": 5,
     "802.11bi": 5,
     "MARL": 5,
-    "handover": 5,
     "FiRa": 5,
     "5G-core": 5,
     "backhaul": 5,
@@ -138,6 +138,7 @@ window.KB_DATA = {
     "device-authentication": 3,
     "PPO": 3,
     "HARQ": 3,
+    "Channel-Sounding": 3,
     "standards": 3,
     "HDT": 3,
     "MCS": 3,
@@ -183,6 +184,7 @@ window.KB_DATA = {
     "roaming": 3,
     "Apple": 3,
     "private-5G": 2,
+    "FSO": 2,
     "IMMW": 2,
     "TWT": 2,
     "power-save": 2,
@@ -196,6 +198,7 @@ window.KB_DATA = {
     "SRS": 2,
     "attestation": 2,
     "tracking": 2,
+    "S-band": 2,
     "FlexRIC": 2,
     "E2SM": 2,
     "localization": 2,
@@ -209,6 +212,8 @@ window.KB_DATA = {
     "sensing": 2,
     "Part-15": 2,
     "OneWeb": 2,
+    "low-power": 2,
+    "secure-ranging": 2,
     "keystroke-inference": 2,
     "digital-key": 2,
     "UWB-radar": 2,
@@ -298,7 +303,6 @@ window.KB_DATA = {
     "ISLA": 2,
     "Nordic": 2,
     "BT-LE": 2,
-    "Channel-Sounding": 2,
     "seamless-roaming": 2,
     "MU-MIMO": 2,
     "6-GHz": 2,
@@ -316,6 +320,14 @@ window.KB_DATA = {
     "Rel-19": 2,
     "R-TWT": 2,
     "convergence": 1,
+    "x-haul": 1,
+    "analog-radio-over-fiber": 1,
+    "ROADM": 1,
+    "RAN-densification": 1,
+    "constellation-operations": 1,
+    "SDN": 1,
+    "resilience": 1,
+    "co-simulation": 1,
     "TGbq": 1,
     "P2P": 1,
     "PPDU": 1,
@@ -324,11 +336,19 @@ window.KB_DATA = {
     "Asuswrt-Merlin": 1,
     "router": 1,
     "proportional-fairness": 1,
+    "edge-LLM": 1,
+    "KV-cache": 1,
+    "water-filling": 1,
     "passive-radar": 1,
     "TPM": 1,
     "PKI": 1,
     "MILCOM": 1,
     "Wi-Fi-P2P": 1,
+    "3GPP-Rel-17": 1,
+    "3GPP-Rel-18": 1,
+    "L-band": 1,
+    "neutral-host": 1,
+    "constellation-procurement": 1,
     "split-inference": 1,
     "edge-offload": 1,
     "SLAM": 1,
@@ -358,6 +378,9 @@ window.KB_DATA = {
     "GPU": 1,
     "remote-control": 1,
     "Agriculture-4.0": 1,
+    "Bluetooth-6": 1,
+    "CAN-FD": 1,
+    "Cyber-Resilience-Act": 1,
     "cell-free-MIMO": 1,
     "RHS": 1,
     "Telesat": 1,
@@ -533,7 +556,6 @@ window.KB_DATA = {
     "TSL100": 1,
     "ASIL-B": 1,
     "wireless-battery-management": 1,
-    "secure-ranging": 1,
     "stadium": 1,
     "air-interface": 1,
     "neural-receiver": 1,
@@ -587,7 +609,6 @@ window.KB_DATA = {
     "MCX": 1,
     "MCPTT": 1,
     "FRMCS": 1,
-    "FSO": 1,
     "fiber-placement": 1,
     "phase-ranging": 1,
     "tag-free": 1,
@@ -760,7 +781,6 @@ window.KB_DATA = {
     "gossip": 1,
     "ESB": 1,
     "protocol-hybrid": 1,
-    "low-power": 1,
     "CES": 1,
     "Ambient-IoT": 1,
     "802.11ah": 1,
@@ -921,7 +941,6 @@ window.KB_DATA = {
     "Gen2": 1,
     "SpaceX": 1,
     "NR-NTN": 1,
-    "S-band": 1,
     "n252": 1,
     "Keysight": 1,
     "nRF54L": 1,
@@ -947,14 +966,14 @@ window.KB_DATA = {
     "wifi8-uhr": 28,
     "wifi7-deployment": 27,
     "security-privacy": 27,
-    "6g-vision": 25,
+    "6g-vision": 26,
     "open-ran": 22,
     "sensing-csi": 21,
     "5g-nr": 20,
+    "leo-constellations": 17,
     "spectrum-policy": 17,
-    "leo-constellations": 16,
+    "sat-direct-device": 15,
     "mapc-cosr": 14,
-    "sat-direct-device": 14,
     "amp-iot": 12,
     "uwb-ranging": 12,
     "agentic-wifi": 11,
@@ -964,11 +983,11 @@ window.KB_DATA = {
     "ntn": 9,
     "network-slicing": 8,
     "rtwt-latency": 8,
+    "bt-channel-sounding": 7,
     "ai-for-wifi": 7,
+    "mec": 6,
     "bt-le": 6,
     "cellular-massive-mimo": 6,
-    "bt-channel-sounding": 6,
-    "mec": 5,
     "ngso-regulation": 5,
     "wifi-for-ai": 5,
     "nearlink-slb": 4,
@@ -989,19 +1008,19 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 259,
-    "industry-news": 86,
+    "academic-paper": 262,
+    "industry-news": 87,
     "ieee-document": 34,
     "product": 21,
-    "satellite-news": 18,
+    "satellite-news": 19,
     "bluetooth-spec": 4,
     "proposal": 4,
     "community-signal": 3,
     "nearlink-spec": 2
   },
   "category_counts": {
-    "academia": 259,
-    "industry": 128,
+    "academia": 262,
+    "industry": 130,
     "standards": 44
   },
   "technologies_vocab": {
@@ -2968,6 +2987,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-14_arxiv-radio-optical-confluence-edge-ran",
         "2026-08-13_arxiv-isac-3gpp-5ga-to-6g-evolution",
         "2026-08-09_arxiv-holonic-digital-twins-physical-ai",
         "2026-08-03_arxiv-packetized-energy-6g-ran",
@@ -3029,6 +3049,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-14_arxiv-radio-optical-confluence-edge-ran",
           "2026-08-13_arxiv-isac-3gpp-5ga-to-6g-evolution",
           "2026-08-09_arxiv-holonic-digital-twins-physical-ai",
           "2026-08-03_arxiv-packetized-energy-6g-ran",
@@ -3181,6 +3202,7 @@ window.KB_DATA = {
         "2026-07-11_oran-security-update-2026"
       ],
       "entries_secondary": [
+        "2026-08-14_arxiv-radio-optical-confluence-edge-ran",
         "2026-08-12_arxiv-bvlos-drones-oran-5g-slicing",
         "2026-08-08_arxiv-5g-isac-uav-oran-sensing",
         "2026-08-05_arxiv-fedcritic-mimo-serverless-6g-ran",
@@ -3306,6 +3328,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-14_arxiv-impactho-kv-cache-edge-llm-handover",
         "2026-08-12_arxiv-5g-edge-slam-semantic-fiducial",
         "2026-08-08_arxiv-balance-hybrid-speculative-edge-llm",
         "2026-07-11_arxiv-mores-distributed-llm-inference",
@@ -3313,6 +3336,7 @@ window.KB_DATA = {
         "2026-06-30_arxiv-subedge-subscriber-centric-mec-6g"
       ],
       "entries_secondary": [
+        "2026-08-14_arxiv-radio-optical-confluence-edge-ran",
         "2026-08-09_arxiv-holonic-digital-twins-physical-ai",
         "2026-08-05_arxiv-opa-online-slice-admission-pricing",
         "2026-08-04_arxiv-oran-energy-latency-ai-placement",
@@ -3328,6 +3352,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-14_arxiv-impactho-kv-cache-edge-llm-handover",
           "2026-08-12_arxiv-5g-edge-slam-semantic-fiducial",
           "2026-08-08_arxiv-balance-hybrid-speculative-edge-llm",
           "2026-07-11_arxiv-mores-distributed-llm-inference",
@@ -3381,6 +3406,7 @@ window.KB_DATA = {
         "2026-05-21_kddi-ericsson-ai-uplink-ropt"
       ],
       "entries_secondary": [
+        "2026-08-14_arxiv-impactho-kv-cache-edge-llm-handover",
         "2026-08-12_arxiv-5g-edge-slam-semantic-fiducial",
         "2026-08-12_arxiv-evoric-llm-ppo-oran-ric",
         "2026-08-09_arxiv-holonic-digital-twins-physical-ai",
@@ -3644,6 +3670,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-14_arxiv-dtsn-digital-twin-satellite-networks",
         "2026-08-05_telesat-lightspeed-225-sats-mda-expansion",
         "2026-08-04_arxiv-leo-los-skyline-proactive-handover",
         "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
@@ -3662,6 +3689,7 @@ window.KB_DATA = {
         "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
       ],
       "entries_secondary": [
+        "2026-08-14_space42-equatys-d2d-satellite-procurement",
         "2026-08-07_ast-bluebird-11-13-launch",
         "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
         "2026-08-05_ast-spacemobile-japan-rakuten-d2c-live",
@@ -3692,14 +3720,8 @@ window.KB_DATA = {
         "2026-05-30_arxiv-5g-nr-ntn-survey-roadmap"
       ],
       "by_type_primary": {
-        "satellite-news": [
-          "2026-08-05_telesat-lightspeed-225-sats-mda-expansion",
-          "2026-07-26_south-korea-k-starlink-2035-ratified",
-          "2026-07-04_amazon-leo-396-sats-initial-service",
-          "2026-07-13_reliance-jio-sovereign-leo-constellation",
-          "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
-        ],
         "academic-paper": [
+          "2026-08-14_arxiv-dtsn-digital-twin-satellite-networks",
           "2026-08-04_arxiv-leo-los-skyline-proactive-handover",
           "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
           "2026-06-26_arxiv-all-optical-satellite-burst-size",
@@ -3710,6 +3732,13 @@ window.KB_DATA = {
           "2026-06-03_arxiv-robust-rb-allocation-satellite",
           "2026-05-29_arxiv-quantum-safe-ike-satellite",
           "2026-05-21_arxiv-leo-mmwave-subthz-relay"
+        ],
+        "satellite-news": [
+          "2026-08-05_telesat-lightspeed-225-sats-mda-expansion",
+          "2026-07-26_south-korea-k-starlink-2035-ratified",
+          "2026-07-04_amazon-leo-396-sats-initial-service",
+          "2026-07-13_reliance-jio-sovereign-leo-constellation",
+          "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
         ],
         "industry-news": [
           "2026-05-24_amazon-leo-300-satellites-may-2026"
@@ -3759,6 +3788,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Satellite direct-to-device))\n    Operators\n      Starlink direct-to-cell\n      AST SpaceMobile BlueBird\n      Apple / Globalstar SOS\n    Spectrum\n      EchoStar 65 MHz mid-band (AWS-3/4, H-Block)\n      Earlier FCC D2C spectrum denial\n    Strategy shift 2026\n      Retail Starlink Mobile ambitions\n      Possible terrestrial buildout\n    Hardware\n      Block 2 BlueBird 2,400 sq ft arrays\n      989 Mbps peak D2D measured\n    Watch\n      EchoStar transfer ~Nov 2027\n      Gen2 100x capacity claim\n      AST 45-60 satellites by end-2026\n      3GPP NTN handset support",
       "diagram_mmd_zh": "mindmap\n  root((卫星直连手机))\n    运营方\n      Starlink 直连蜂窝\n      AST SpaceMobile BlueBird\n      Apple / Globalstar 紧急求救\n    频谱\n      EchoStar 65 MHz 中频段（AWS-3/4、H-Block）\n      此前 FCC 否决 D2C 频谱申请\n    2026 战略转向\n      Starlink Mobile 零售野心\n      可能自建地面网络\n    硬件\n      Block 2 BlueBird 2,400 平方英尺阵列\n      实测 989 Mbps 峰值 D2D\n    待关注\n      EchoStar 转让 ~2027 年 11 月\n      Gen2 百倍容量宣称\n      AST 年底 45-60 颗\n      3GPP NTN 终端支持",
       "entries_primary": [
+        "2026-08-14_space42-equatys-d2d-satellite-procurement",
         "2026-08-07_ast-bluebird-11-13-launch",
         "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
         "2026-08-05_ast-spacemobile-japan-rakuten-d2c-live",
@@ -3786,6 +3816,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "satellite-news": [
+          "2026-08-14_space42-equatys-d2d-satellite-procurement",
           "2026-08-07_ast-bluebird-11-13-launch",
           "2026-08-05_ast-spacemobile-japan-rakuten-d2c-live",
           "2026-07-24_starlink-fastweb-italy-d2c-trial",
@@ -3833,6 +3864,7 @@ window.KB_DATA = {
         "2026-06-13_arxiv-space-data-centers-orbital-computing"
       ],
       "entries_secondary": [
+        "2026-08-14_arxiv-dtsn-digital-twin-satellite-networks",
         "2026-08-08_arxiv-aoi-ntn-energy-harvesting-probe",
         "2026-08-04_arxiv-leo-los-skyline-proactive-handover",
         "2026-07-07_arxiv-bridge-beam-hopping-leo-drl",
@@ -3928,6 +3960,7 @@ window.KB_DATA = {
         "2026-05-30_nordic-nrf54lm20b-npu-ble-soc"
       ],
       "entries_secondary": [
+        "2026-08-14_silabs-bg2b-coin-cell-channel-sounding-soc",
         "2026-08-05_ceva-actions-ats296x-hdt-audio-socs",
         "2026-07-06_nordic-nrf54l15-tag-channel-sounding",
         "2026-07-26_arxiv-snatcher-find-my-ble-tracking",
@@ -4022,6 +4055,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-14_silabs-bg2b-coin-cell-channel-sounding-soc",
         "2026-07-06_nordic-nrf54l15-tag-channel-sounding",
         "2026-05-24_arxiv-connectionless-ble-cs-pawr",
         "2026-05-26_arxiv-toa-ranging-ngd-attack-bt-cs",
@@ -4034,6 +4068,10 @@ window.KB_DATA = {
         "2026-05-30_nordic-nrf54lm20b-npu-ble-soc"
       ],
       "by_type_primary": {
+        "industry-news": [
+          "2026-08-14_silabs-bg2b-coin-cell-channel-sounding-soc",
+          "2026-08-03_metirionic-cs-distance-angle-mars"
+        ],
         "product": [
           "2026-07-06_nordic-nrf54l15-tag-channel-sounding"
         ],
@@ -4044,9 +4082,6 @@ window.KB_DATA = {
         "bluetooth-spec": [
           "2026-07-11_bluetooth-core-63-release",
           "2026-05-24_bluetooth-core-6-3-spec-release"
-        ],
-        "industry-news": [
-          "2026-08-03_metirionic-cs-distance-angle-mars"
         ]
       }
     },
@@ -4068,6 +4103,7 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-08-13_arxiv-association-privacy-wifi-p2p-ble",
+        "2026-08-14_silabs-bg2b-coin-cell-channel-sounding-soc",
         "2026-05-26_arxiv-toa-ranging-ngd-attack-bt-cs"
       ],
       "by_type_primary": {
@@ -4419,6 +4455,71 @@ window.KB_DATA = {
       "search_blob": "celona orion: ai-driven converged fabric for private 5g, wi-fi 7, public cellular and satellite celona orion：面向专网 5g、wi-fi 7、公网蜂窝与卫星的 ai 驱动融合无线平台 agentic-ai 802.11be private-5g enterprise convergence celona — until now a private-5g-native enterprise vendor with about 225 enterprise customers — announced orion (13 aug 2026, reported by wi-fi now's claus hetting), a unified \"wireless fabric\" that folds private 5g, wi-fi 7, public cellular, and starlink satellite connectivity into a single converged enterprise networking solution. wi-fi 7 access points are included in the subscription at no extra cost, positioning wi-fi as a first-class citizen alongside celona's original private-cellular offering rather than as a competing silo. the hardware remains physically separate (distinct base stations and aps, for propagation reasons); the convergence happens in the management and client layers. celona——此前以企业专网 5g 为主业、拥有约 225 家企业客户——于 2026 年 8 月 13 日发布 orion 平台（wi-fi now 的 claus hetting 报道）：一个把专网 5g、wi-fi 7、公网蜂窝和 starlink 卫星连接整合为单一\"无线织物（wireless fabric）\"的融合企业组网方案。wi-fi 7 ap（无线接入点）以订阅内免费形式提供，使 wi-fi 与 celona 原有的专网蜂窝业务并列为一等公民，而非相互竞争的孤岛。硬件层面仍保持分离（基站与 ap 各自独立，出于传播特性差异）；融合发生在管理层与终端侧。 industry-news wifi"
     },
     {
+      "id": "2026-08-14_arxiv-radio-optical-confluence-edge-ran",
+      "date_found": "2026-08-14",
+      "technology": "cellular",
+      "date_published": "2026-08-13",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Radio-Optical Confluence in Intelligent Edge Networks",
+      "title_zh": "智能边缘网络中的无线-光融通架构",
+      "url": "https://arxiv.org/abs/2608.13098",
+      "topics": [
+        "6G",
+        "x-haul",
+        "analog-radio-over-fiber",
+        "ROADM",
+        "FSO",
+        "RAN-densification"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "open-ran",
+        "mec"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-14_arxiv-radio-optical-confluence-edge-ran.md",
+      "summary_short_en": "Gupta, Dass, Raj, Natalino, Ruffini, Monti and Kilper (Trinity College Dublin / CONNECT + Chalmers; OFC 2026 paper, arXiv 13 Aug 2026) argue that densified radio access networks should move past radio-optical **convergence** (co-existing systems) to **confluence**: one unified mesh transport where fiber, free-space optics (FSO), mmWave and sub-THz links carry both access and x-haul under common control, with radio waveforms and digital coherent traffic sharing the same optical spectrum.",
+      "summary_short_zh": "Gupta、Dass、Raj、Natalino、Ruffini、Monti 与 Kilper（都柏林圣三一学院 / CONNECT + 查尔姆斯理工；OFC 2026 论文，2026 年 8 月 13 日 arXiv）主张：密集化无线接入网应超越无线-光**汇聚**（系统并存），走向**融通（confluence）**——光纤、自由空间光（FSO）、mmWave 与亚太赫兹链路组成统一网状传输，在共同控制下同时承载接入与 x-haul，无线波形与数字相干流量共享同一光谱。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Gupta, Dass, Raj, Natalino, Ruffini, Monti and Kilper (Trinity College Dublin / CONNECT + Chalmers; OFC 2026 paper, arXiv 13 Aug 2026) argue that densified radio access networks should move past radio-optical <strong>convergence</strong> (co-existing systems) to <strong>confluence</strong>: one unified mesh transport where fiber, free-space optics (FSO), mmWave and sub-THz links carry both access and x-haul under common control, with radio waveforms and digital coherent traffic sharing the same optical spectrum.</p>\n<p>Two experimental anchors: (1) coexistence of <strong>600 Gbps digital coherent optical traffic alongside a 6 Gbps 16-QAM OFDM analog-radio-over-fiber signal over a 77 km loop</strong> with negligible cross-interference, showing ARoF and DCO can share flex-grid WDM infrastructure; (2) a 10-ROADM ring topology study where adding 40% ROADM bypass links cuts average hop count 3.4 → 2.8, and just 5% RU-to-RU bypass connections approaches fully-meshed performance — small numbers of mesh cross-links buy most of the latency benefit. Control is a load-aware shortest-path (Dijkstra) routing over the unified radio-optical topology.</p>\n<h3>Key technical points</h3>\n<ul><li>Confluence architecture: unified mesh from metro core (CU/DU processing) to edge RUs via PON or ROADM chains; fiber + FSO + mmWave/sub-THz as interchangeable transport segments under common control.</li><li>Spectrum sharing: analog radio-over-fiber and digital coherent optical signals coexist on flex-grid WDM — 600 Gbps DCO + 6 Gbps ARoF, 77 km, negligible penalty.</li><li>Topology economics: 40% ROADM bypass → hop count 3.4 → 2.8; 5% RU-RU bypass links ≈ full-mesh latency performance.</li><li>Hybrid fiber-FSO-wireless builds are argued to cut deployment cost vs fully-fibered densification without coverage loss.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's RAN-architecture thread has covered compute placement (O-RAN energy-latency splits), fronthaul over GPU (OCUDU) and microwave/satellite backhaul twins — this is the first entry on the <strong>transport substrate itself as a co-designed radio-optical mesh</strong>. The quantified claims (ARoF/DCO spectral coexistence at metro distance; tiny bypass fractions capturing most mesh latency gains) give 6G x-haul planning concrete design rules, and the author set (Kilper/Ruffini/Monti) sits at the center of the optical-wireless integration community — expect follow-on testbed papers along this line.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Gupta、Dass、Raj、Natalino、Ruffini、Monti 与 Kilper（都柏林圣三一学院 / CONNECT + 查尔姆斯理工；OFC 2026 论文，2026 年 8 月 13 日 arXiv）主张：密集化无线接入网应超越无线-光<strong>汇聚</strong>（系统并存），走向<strong>融通（confluence）</strong>——光纤、自由空间光（FSO）、mmWave 与亚太赫兹链路组成统一网状传输，在共同控制下同时承载接入与 x-haul，无线波形与数字相干流量共享同一光谱。</p>\n<p>两个实验锚点：（1）<strong>600 Gbps 数字相干光流量与 6 Gbps 16-QAM OFDM 模拟光载无线（ARoF）信号在 77 km 环路上共存</strong>，交叉干扰可忽略，表明 ARoF 与 DCO 可共享灵活栅格 WDM 基础设施；（2）10 节点 ROADM 环拓扑研究：增加 40% ROADM 旁路链路使平均跳数 3.4 → 2.8，仅 5% 的 RU-RU 旁路连接即可逼近全网状性能——少量网状横向链路即可换取大部分时延收益。控制面为统一无线-光拓扑上的负载感知最短路（Dijkstra）路由。</p>\n<h3>技术要点</h3>\n<ul><li>融通架构：从城域核心（CU/DU 处理）经 PON 或 ROADM 链到边缘 RU 的统一网状网；光纤 + FSO + mmWave/亚太赫兹作为共同控制下可互换的传输段。</li><li>频谱共享：模拟光载无线与数字相干光信号在灵活栅格 WDM 上共存——600 Gbps DCO + 6 Gbps ARoF、77 km、损伤可忽略。</li><li>拓扑经济性：40% ROADM 旁路使跳数 3.4 → 2.8；5% RU-RU 旁路链路 ≈ 全网状时延性能。</li><li>论证混合光纤-FSO-无线建网可在不损失覆盖的前提下显著低于全光纤密集化的部署成本。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库的 RAN 架构脉络此前覆盖了算力放置（O-RAN 能耗-时延分割）、GPU 前传（OCUDU）与微波/卫星回传孪生——本条是第一条关于<strong>传输底座本身作为无线-光协同设计网状网</strong>的条目。量化结论（城域距离上 ARoF/DCO 频谱共存；极小旁路比例即可获得大部分网状时延收益）为 6G x-haul 规划提供了具体设计规则；作者群（Kilper/Ruffini/Monti）处于光-无线融合社区的核心，可期待该方向的后续试验床论文。</p>",
+      "images": [],
+      "search_blob": "radio-optical confluence in intelligent edge networks 智能边缘网络中的无线-光融通架构 6g x-haul analog-radio-over-fiber roadm fso ran-densification gupta, dass, raj, natalino, ruffini, monti and kilper (trinity college dublin / connect + chalmers; ofc 2026 paper, arxiv 13 aug 2026) argue that densified radio access networks should move past radio-optical **convergence** (co-existing systems) to **confluence**: one unified mesh transport where fiber, free-space optics (fso), mmwave and sub-thz links carry both access and x-haul under common control, with radio waveforms and digital coherent traffic sharing the same optical spectrum. gupta、dass、raj、natalino、ruffini、monti 与 kilper（都柏林圣三一学院 / connect + 查尔姆斯理工；ofc 2026 论文，2026 年 8 月 13 日 arxiv）主张：密集化无线接入网应超越无线-光**汇聚**（系统并存），走向**融通（confluence）**——光纤、自由空间光（fso）、mmwave 与亚太赫兹链路组成统一网状传输，在共同控制下同时承载接入与 x-haul，无线波形与数字相干流量共享同一光谱。 academic-paper cellular"
+    },
+    {
+      "id": "2026-08-14_arxiv-dtsn-digital-twin-satellite-networks",
+      "date_found": "2026-08-14",
+      "technology": "satellite",
+      "date_published": "2026-08-13",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Digital Twin Satellite Networks: A Paradigm for Intelligent, Efficient, and Resilient Operations",
+      "title_zh": "数字孪生卫星网络：面向智能、高效与弹性运行的范式",
+      "url": "https://arxiv.org/abs/2608.12865",
+      "topics": [
+        "digital-twin",
+        "LEO",
+        "constellation-operations",
+        "ISAC",
+        "SDN",
+        "O-RAN",
+        "resilience",
+        "co-simulation"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "sat-ai"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-14_arxiv-dtsn-digital-twin-satellite-networks.md",
+      "summary_short_en": "This magazine-style paradigm paper (Mustafa Alhassan, Peng Hu — University of Manitoba; arXiv 13 Aug 2026, submitted to IEEE Aerospace and Electronic Systems Magazine) proposes the **Digital Twin Satellite Network (DTSN)**: a closed-loop framework that keeps a ground-hosted virtual replica synchronized with a physical LEO constellation so that predictive intelligence and resilience-oriented control can run off-board, respecting the satellites' strict Size, Weight, and Power (SWaP) limits. The architecture spans two domains (physical space segment, virtual DT segment) in four layers — system hardware (bus, reaction wheels, fast steering mirrors, laser communication terminals), system software (NASA 42 physics engine for orbital dynamics), communication software (telemetry pipeline, optical-ISL protocols, an ISAC interface that translates spacecraft attitude behavior into optical link-quality metrics), and computing software (predictive modules offloaded to the centralized ground twin). Attitude telemetry (roll/pitch/yaw) streams to the twin at 10 Hz over a deterministic pipeline; the twin evaluates network conditions and sends reconfiguration commands preemptively. SDN provides the centralized control split and O-RAN the disaggregated RIC-style hooks.",
+      "summary_short_zh": "这篇杂志型范式论文（Mustafa Alhassan、Peng Hu——加拿大曼尼托巴大学；2026 年 8 月 13 日 arXiv，投稿 IEEE Aerospace and Electronic Systems Magazine）提出**数字孪生卫星网络（DTSN）**：一个闭环框架，使部署在地面的虚拟副本与物理 LEO 星座保持同步，从而将预测智能与面向弹性的控制卸载到星外运行，以满足卫星严格的体积、重量与功耗（SWaP）约束。架构横跨两个域（物理空间段、虚拟孪生段）、共四层——系统硬件（星体平台、反作用轮、快速转向镜、激光通信终端）、系统软件（NASA 42 物理引擎负责轨道动力学）、通信软件（遥测管线、光学星间链路协议、将航天器姿态行为翻译为光链路质量指标的 ISAC 接口）、计算软件（卸载到集中式地面孪生的预测模块）。姿态遥测（滚转/俯仰/偏航）经确定性管线以 10 Hz 流入孪生体；孪生体评估网络状态并**预先**下发重构指令。SDN 提供集中控制分离，O-RAN 提供解耦的 RIC 式接口。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This magazine-style paradigm paper (Mustafa Alhassan, Peng Hu — University of Manitoba; arXiv 13 Aug 2026, submitted to IEEE Aerospace and Electronic Systems Magazine) proposes the <strong>Digital Twin Satellite Network (DTSN)</strong>: a closed-loop framework that keeps a ground-hosted virtual replica synchronized with a physical LEO constellation so that predictive intelligence and resilience-oriented control can run off-board, respecting the satellites' strict Size, Weight, and Power (SWaP) limits. The architecture spans two domains (physical space segment, virtual DT segment) in four layers — system hardware (bus, reaction wheels, fast steering mirrors, laser communication terminals), system software (NASA 42 physics engine for orbital dynamics), communication software (telemetry pipeline, optical-ISL protocols, an ISAC interface that translates spacecraft attitude behavior into optical link-quality metrics), and computing software (predictive modules offloaded to the centralized ground twin). Attitude telemetry (roll/pitch/yaw) streams to the twin at 10 Hz over a deterministic pipeline; the twin evaluates network conditions and sends reconfiguration commands preemptively. SDN provides the centralized control split and O-RAN the disaggregated RIC-style hooks.</p>\n<p>The validation is a constellation-scale cross-domain co-simulation: NASA 42 generates master telemetry for a 60-satellite Walker Delta constellation (6 planes) which a Python DT bridge ingests. Over a 600-second flight window, three overlapping disturbances are handled without service interruption: a kinematic pitch drift on spacecraft 1 (predictive rerouting fires before optical SNR crosses the 15.0 dB floor), an instantaneous laser-diode burnout on spacecraft 15 at T=200 s (zero-latency bypass via a precomputed alternative path), and a jamming attack on spacecraft 30 at T=300–350 s driving SNR from 25 dB to a −25 dB noise floor (dynamic node isolation, then reintegration after exponential sensor recovery with τ=1.5 s). Open challenges: twin-synchronization delay over long propagation paths, onboard compute/storage limits, the accuracy-vs-overhead modeling trade-off, and disambiguating similar fault symptoms with different physical causes.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DTSN closed loop:</strong> physical space segment + ground-hosted virtual twin; 10 Hz attitude telemetry in, preemptive reconfiguration commands out; compute offloaded off-board to respect SWaP.</li><li><strong>Four layers:</strong> hardware (bus/reaction wheels/FSM/LCT) → physics software (NASA 42) → communication software (telemetry, O-ISL, ISAC interface) → computing software (predictive intelligence).</li><li><strong>Paradigm fusion:</strong> ISAC maps attitude dynamics to optical-ISL quality; SDN gives the centralized control split; O-RAN gives disaggregation and RIC-style edge hooks.</li><li><strong>Co-simulation:</strong> NASA 42 + Python DT bridge, 60-satellite Walker Delta (6 planes), 600 s window, attitudes/velocities/disturbances/hardware states/security threats simulated.</li><li><strong>Demo results:</strong> pitch-drift predictive rerouting before the 15 dB SNR floor; zero-latency bypass of a laser-diode burnout via precomputed paths; jamming (−25 dB floor) isolated and reintegrated (τ=1.5 s recovery) — uninterrupted operations under all three concurrent threats.</li><li><strong>Open challenges:</strong> twin-sync delay over long propagation distances, SWaP-limited onboard compute, accuracy-vs-overhead trade-off, fault-symptom disambiguation.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first digital-twin entry in the satellite bin, and it opens a distinct operations axis: prior leo-constellations entries cover scheduling, beam hopping, routing, handover, and traffic prediction as individual learned controllers, whereas DTSN proposes the <em>substrate</em> those controllers would run on — a continuously synchronized ground twin that absorbs the constellation's compute burden and closes the loop preemptively. The concrete co-simulation recipe (NASA 42 physics + Python twin bridge, attitude-to-optical-SNR mapping via ISAC) is a reusable evaluation pattern for anyone studying optical-ISL resilience, and the three-threat demo (drift, burnout, jamming) spans fault classes usually studied separately. Novelty 2: a well-executed paradigm/magazine paper with simulation evidence rather than new algorithms or on-orbit data.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>这篇杂志型范式论文（Mustafa Alhassan、Peng Hu——加拿大曼尼托巴大学；2026 年 8 月 13 日 arXiv，投稿 IEEE Aerospace and Electronic Systems Magazine）提出<strong>数字孪生卫星网络（DTSN）</strong>：一个闭环框架，使部署在地面的虚拟副本与物理 LEO 星座保持同步，从而将预测智能与面向弹性的控制卸载到星外运行，以满足卫星严格的体积、重量与功耗（SWaP）约束。架构横跨两个域（物理空间段、虚拟孪生段）、共四层——系统硬件（星体平台、反作用轮、快速转向镜、激光通信终端）、系统软件（NASA 42 物理引擎负责轨道动力学）、通信软件（遥测管线、光学星间链路协议、将航天器姿态行为翻译为光链路质量指标的 ISAC 接口）、计算软件（卸载到集中式地面孪生的预测模块）。姿态遥测（滚转/俯仰/偏航）经确定性管线以 10 Hz 流入孪生体；孪生体评估网络状态并<strong>预先</strong>下发重构指令。SDN 提供集中控制分离，O-RAN 提供解耦的 RIC 式接口。</p>\n<p>验证为星座级跨域联合仿真：NASA 42 为 60 星 Walker Delta 星座（6 个轨道面）生成主遥测，Python 孪生桥接层实时摄取。在 600 秒飞行窗口内，三个相互叠加的扰动均被无中断处理：1 号星的俯仰漂移（在光学 SNR 跌破 15.0 dB 下限前触发预测性重路由）、15 号星 T=200 s 的激光二极管瞬时烧毁（经预计算备用路径实现零延迟旁路）、30 号星 T=300–350 s 的干扰攻击（SNR 从 25 dB 被压至 −25 dB 噪声底；动态隔离节点，随后按指数传感恢复 τ=1.5 s 重新并网）。开放挑战：长传播路径上的孪生同步时延、星上计算/存储受限、模型精度与开销的权衡、以及物理机理不同但症状相似的故障判别。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DTSN 闭环：</strong> 物理空间段 + 地面虚拟孪生；10 Hz 姿态遥测流入，预先重构指令流出；计算卸载到星外以满足 SWaP。</li><li><strong>四层架构：</strong> 硬件（平台/反作用轮/快速转向镜/激光终端）→ 物理软件（NASA 42）→ 通信软件（遥测、光学星间链路、ISAC 接口）→ 计算软件（预测智能）。</li><li><strong>范式融合：</strong> ISAC 将姿态动力学映射为光学星间链路质量；SDN 提供集中控制分离；O-RAN 提供解耦与 RIC 式边缘接口。</li><li><strong>联合仿真：</strong> NASA 42 + Python 孪生桥，60 星 Walker Delta（6 轨道面），600 秒窗口，仿真姿态/速度/扰动/硬件状态/安全威胁。</li><li><strong>演示结果：</strong> 俯仰漂移在 15 dB SNR 下限前预测性重路由；激光二极管烧毁经预计算路径零延迟旁路；干扰（−25 dB 噪声底）被隔离并重新并网（τ=1.5 s 恢复）——三重并发威胁下运行不中断。</li><li><strong>开放挑战：</strong> 长传播路径孪生同步时延、SWaP 受限星上算力、精度与开销权衡、故障症状判别。</li></ul>\n<h3>意义与新意</h3>\n<p>这是知识库卫星 bin 中首个数字孪生条目，开辟了一条独立的运行维度：此前 leo-constellations 条目将调度、跳波束、路由、切换、流量预测作为各自独立的学习型控制器，而 DTSN 提出的是这些控制器赖以运行的<em>基座</em>——一个持续同步的地面孪生，承接星座的计算负担并预先闭环。其具体联合仿真配方（NASA 42 物理 + Python 孪生桥、经 ISAC 的姿态到光学 SNR 映射）对研究光学星间链路弹性者是可复用的评估范式；三重威胁演示（漂移、烧毁、干扰）横跨通常被分开研究的故障类别。Novelty 2：执行扎实的范式/杂志论文，依据为仿真证据而非新算法或在轨数据。</p>",
+      "images": [],
+      "search_blob": "digital twin satellite networks: a paradigm for intelligent, efficient, and resilient operations 数字孪生卫星网络：面向智能、高效与弹性运行的范式 digital-twin leo constellation-operations isac sdn o-ran resilience co-simulation this magazine-style paradigm paper (mustafa alhassan, peng hu — university of manitoba; arxiv 13 aug 2026, submitted to ieee aerospace and electronic systems magazine) proposes the **digital twin satellite network (dtsn)**: a closed-loop framework that keeps a ground-hosted virtual replica synchronized with a physical leo constellation so that predictive intelligence and resilience-oriented control can run off-board, respecting the satellites' strict size, weight, and power (swap) limits. the architecture spans two domains (physical space segment, virtual dt segment) in four layers — system hardware (bus, reaction wheels, fast steering mirrors, laser communication terminals), system software (nasa 42 physics engine for orbital dynamics), communication software (telemetry pipeline, optical-isl protocols, an isac interface that translates spacecraft attitude behavior into optical link-quality metrics), and computing software (predictive modules offloaded to the centralized ground twin). attitude telemetry (roll/pitch/yaw) streams to the twin at 10 hz over a deterministic pipeline; the twin evaluates network conditions and sends reconfiguration commands preemptively. sdn provides the centralized control split and o-ran the disaggregated ric-style hooks. 这篇杂志型范式论文（mustafa alhassan、peng hu——加拿大曼尼托巴大学；2026 年 8 月 13 日 arxiv，投稿 ieee aerospace and electronic systems magazine）提出**数字孪生卫星网络（dtsn）**：一个闭环框架，使部署在地面的虚拟副本与物理 leo 星座保持同步，从而将预测智能与面向弹性的控制卸载到星外运行，以满足卫星严格的体积、重量与功耗（swap）约束。架构横跨两个域（物理空间段、虚拟孪生段）、共四层——系统硬件（星体平台、反作用轮、快速转向镜、激光通信终端）、系统软件（nasa 42 物理引擎负责轨道动力学）、通信软件（遥测管线、光学星间链路协议、将航天器姿态行为翻译为光链路质量指标的 isac 接口）、计算软件（卸载到集中式地面孪生的预测模块）。姿态遥测（滚转/俯仰/偏航）经确定性管线以 10 hz 流入孪生体；孪生体评估网络状态并**预先**下发重构指令。sdn 提供集中控制分离，o-ran 提供解耦的 ric 式接口。 academic-paper satellite"
+    },
+    {
       "id": "2026-08-13_ieee-mentor-tgbq-digest",
       "date_found": "2026-08-13",
       "technology": "wifi",
@@ -4631,6 +4732,37 @@ window.KB_DATA = {
       "search_blob": "ambsentry: mitigating sensing eavesdropping in isac systems by harnessing ambient iot devices ambsentry：利用环境物联网设备抵御 isac 系统中的感知窃听 isac security ambient-iot beamforming 6g ambsentry (zhang, bai, jantti, han, masouros; arxiv 12 aug 2026, cs.cr, routed from the shared cs.cr security sweep) addresses a threat class unique to integrated sensing and communication: a passive eavesdropper can process the isac downlink's reflections to extract sensitive target information (range, velocity of people/objects in the sensed scene) — an attack that data encryption cannot touch, because the leak happens at the physical channel, not the payload. ambsentry（zhang、bai、jantti、han、masouros；2026 年 8 月 12 日 arxiv，cs.cr，经共享 cs.cr 安全扫描路由）针对通感一体化特有的威胁：被动窃听者可处理 isac 下行反射信号，提取被感知场景中的敏感目标信息（人员/物体的距离、速度）——数据加密对此无能为力，因为泄露发生在物理信道而非载荷。 academic-paper cellular"
     },
     {
+      "id": "2026-08-14_arxiv-impactho-kv-cache-edge-llm-handover",
+      "date_found": "2026-08-14",
+      "technology": "cellular",
+      "date_published": "2026-08-11",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "ImpactHO: Importance-Aware KV Cache Transfer for Multi-User Edge LLM Handover",
+      "title_zh": "ImpactHO：多用户边缘大模型切换中的重要性感知 KV 缓存传输",
+      "url": "https://arxiv.org/abs/2608.10545",
+      "topics": [
+        "MEC",
+        "edge-LLM",
+        "handover",
+        "KV-cache",
+        "resource-allocation",
+        "water-filling"
+      ],
+      "topic_primary": "mec",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-08-14_arxiv-impactho-kv-cache-edge-llm-handover.md",
+      "summary_short_en": "Kim, Song, Lee, Jung and Kim (POSTECH + Ajou, arXiv 11 Aug 2026) treat a mobile user's **LLM inference context as first-class handover state**: when a user moves between edge nodes hosting shared LLMs, the accumulated key-value (KV) cache — ~9.66 Gbit for an 8K-token context on Qwen3-8B in BF16 — must migrate over a shared, bandwidth-constrained backhaul within a mobility time window. ImpactHO scores KV entries by importance, transmits them in descending order, and allocates backhaul across concurrently handing-over users.",
+      "summary_short_zh": "Kim、Song、Lee、Jung 与 Kim（POSTECH + 亚洲大学，2026 年 8 月 11 日 arXiv）把移动用户的 **LLM 推理上下文当作一等切换状态**：当用户在承载共享 LLM 的边缘节点间移动时，累积的键值（KV）缓存——Qwen3-8B BF16 下 8K token 上下文约 9.66 Gbit——必须在移动时间窗内经共享的受限回传链路迁移。ImpactHO 按重要性给 KV 条目打分、按降序传输，并在并发切换用户间分配回传带宽。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Kim, Song, Lee, Jung and Kim (POSTECH + Ajou, arXiv 11 Aug 2026) treat a mobile user's <strong>LLM inference context as first-class handover state</strong>: when a user moves between edge nodes hosting shared LLMs, the accumulated key-value (KV) cache — ~9.66 Gbit for an 8K-token context on Qwen3-8B in BF16 — must migrate over a shared, bandwidth-constrained backhaul within a mobility time window. ImpactHO scores KV entries by importance, transmits them in descending order, and allocates backhaul across concurrently handing-over users.</p>\n<p>The enabling empirical finding: partial-cache inference accuracy vs. fraction transferred follows a <strong>sigmoid with R² &gt; 0.99</strong> across models (Qwen3-8B/14B, Llama-3.1-8B) and context lengths (4K–16K) on the RULER benchmark; importance ordering pulls the inflection down to ~6.5% of the cache, so almost the whole curve is concave. That concavity turns multi-user backhaul allocation into a convex problem with a closed-form <strong>weighted water-filling</strong> solution (cache size as the weight), plus an admission policy for the scarce-bandwidth regime. At 4 handovers/s, 20 Gbps backhaul and a 500 ms window it reaches 93.7% average accuracy — within 0.5 pp of the 94.1% full-cache ceiling — and 98.2–99.5% of a clairvoyant bound across loads; transfer beats compute-side re-prefill (e.g. 590 ms vs 1566 ms at 16K context).</p>\n<h3>Key technical points</h3>\n<ul><li>System: multi-user edge-LLM handover; per-user KV cache fraction x_i, shared backhaul B, slotted scheduling; importance-ordered transmission of KV entries.</li><li>Utility model: algebraic sigmoid fit of accuracy vs. cache fraction, R² &gt; 0.99; concavity anchor τ ≈ 0.065 under importance ordering (Fast KVzip).</li><li>Allocation: closed-form weighted water-filling — interior users equalize marginal accuracy gain per transmitted bit A_i'(y)/L_i; bisection search per slot, O(N log(λ/ε)).</li><li>Ablations: importance ordering keeps &gt;90% accuracy at 8 users/s vs 20.2% with random ordering; admission control cuts sub-τ starvation 20.8% → 0.65% at 12 users/s; robust over Δt 20–100 ms and windows 200–1000 ms.</li><li>Latency: importance-aware transfer 229/353/590 ms (4K/8K/16K) vs 300/676/1566 ms pure re-prefill.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first entry treating <strong>LLM inference state migration as a radio-adjacent network resource-allocation problem</strong> — the mobility-management counterpart of BALANCE's edge-inference serving entry (2026-08-08). The structural insight is transferable: any AI service whose quality-vs-bytes curve is sigmoidal under importance ordering admits water-filling-style multi-user scheduling. As edge-hosted assistants proliferate, &quot;context handover&quot; could become a standardization topic alongside classical UE-context transfer in Xn/N2 mobility — this paper supplies the utility model and the allocation math such work would need.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Kim、Song、Lee、Jung 与 Kim（POSTECH + 亚洲大学，2026 年 8 月 11 日 arXiv）把移动用户的 <strong>LLM 推理上下文当作一等切换状态</strong>：当用户在承载共享 LLM 的边缘节点间移动时，累积的键值（KV）缓存——Qwen3-8B BF16 下 8K token 上下文约 9.66 Gbit——必须在移动时间窗内经共享的受限回传链路迁移。ImpactHO 按重要性给 KV 条目打分、按降序传输，并在并发切换用户间分配回传带宽。</p>\n<p>关键经验发现：部分缓存推理精度随已传输比例呈 <strong>R² &gt; 0.99 的 Sigmoid 曲线</strong>（RULER 基准，Qwen3-8B/14B、Llama-3.1-8B，4K–16K 上下文）；重要性排序把拐点压到缓存的约 6.5%，使曲线几乎全程处于凹区。该凹性把多用户回传分配化为凸问题，得到闭式<strong>加权注水解</strong>（缓存大小为权重），并配稀缺带宽下的准入策略。在 4 次切换/秒、20 Gbps 回传、500 ms 窗口下平均精度 93.7%——距 94.1% 全缓存上限仅 0.5 个百分点——各负载下达先知上界的 98.2–99.5%；传输方案优于计算侧重预填（16K 上下文 590 ms 对 1566 ms）。</p>\n<h3>技术要点</h3>\n<ul><li>系统：多用户边缘 LLM 切换；每用户 KV 缓存比例 x_i、共享回传 B、分槽调度；KV 条目按重要性排序传输。</li><li>效用模型：精度对缓存比例的代数 Sigmoid 拟合，R² &gt; 0.99；重要性排序（Fast KVzip）下凹性锚点 τ ≈ 0.065。</li><li>分配：闭式加权注水——内点用户的每比特边际精度增益 A_i'(y)/L_i 相等；每槽二分搜索，O(N log(λ/ε))。</li><li>消融：8 用户/秒下重要性排序保持 &gt;90% 精度，随机排序仅 20.2%；准入控制把 12 用户/秒下低于 τ 的饥饿率从 20.8% 降至 0.65%；对 Δt 20–100 ms、窗口 200–1000 ms 稳健。</li><li>时延：重要性感知传输 229/353/590 ms（4K/8K/16K）对纯重预填 300/676/1566 ms。</li></ul>\n<h3>意义与新意</h3>\n<p>这是知识库中第一条把 <strong>LLM 推理状态迁移当作近无线侧网络资源分配问题</strong>的条目——与 BALANCE 边缘推理服务条目（2026-08-08）形成移动性管理侧的对位。其结构性洞见可迁移：任何在重要性排序下&quot;质量-字节&quot;曲线呈 Sigmoid 的 AI 服务都可用注水式多用户调度。随着边缘托管助手普及，&quot;上下文切换&quot;可能与 Xn/N2 移动性中的经典 UE 上下文转移并列成为标准化议题——本文提供了此类工作所需的效用模型与分配数学。</p>",
+      "images": [],
+      "search_blob": "impactho: importance-aware kv cache transfer for multi-user edge llm handover impactho：多用户边缘大模型切换中的重要性感知 kv 缓存传输 mec edge-llm handover kv-cache resource-allocation water-filling kim, song, lee, jung and kim (postech + ajou, arxiv 11 aug 2026) treat a mobile user's **llm inference context as first-class handover state**: when a user moves between edge nodes hosting shared llms, the accumulated key-value (kv) cache — ~9.66 gbit for an 8k-token context on qwen3-8b in bf16 — must migrate over a shared, bandwidth-constrained backhaul within a mobility time window. impactho scores kv entries by importance, transmits them in descending order, and allocates backhaul across concurrently handing-over users. kim、song、lee、jung 与 kim（postech + 亚洲大学，2026 年 8 月 11 日 arxiv）把移动用户的 **llm 推理上下文当作一等切换状态**：当用户在承载共享 llm 的边缘节点间移动时，累积的键值（kv）缓存——qwen3-8b bf16 下 8k token 上下文约 9.66 gbit——必须在移动时间窗内经共享的受限回传链路迁移。impactho 按重要性给 kv 条目打分、按降序传输，并在并发切换用户间分配回传带宽。 academic-paper cellular"
+    },
+    {
       "id": "2026-08-13_arxiv-organic-6g-conversational-orchestration",
       "date_found": "2026-08-13",
       "technology": "cellular",
@@ -4752,6 +4884,40 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Jangid、Engelmann 与 Lin（2026 年 8 月 11 日 arXiv，cs.CR；经共享 cs.CR 安全扫描路由）研究一类他们称为<strong>关联推断</strong>的隐私攻击：能捕获无线帧但不持有任何密钥的攻击者，通过重放或中继关联阶段的流量，推断<em>哪些设备彼此关联</em>（同一主人、同一信任组、曾经配对），进而实现用户画像与跟踪。攻击面是 Wi-Fi P2P 与低功耗蓝牙（BLE）都为之优化的认证快速重连路径：共享密钥或互在允许列表（allowlist）中的设备，对重连探测的响应行为与陌生设备不同，而这种<em>响应行为差异</em>本身就是识别信号——即便所有载荷都已加密。</p>\n<p>具体而言，脆弱流程包括 Wi-Fi P2P 组建/邀请/重连，以及 BLE 基于允许列表的广播与连接建立。攻击者重放捕获到的邀请帧或定向广播——或将其中继到另一地点——即可获得两设备是否存在关联的&quot;是/否&quot;预言机，使 MAC 地址随机化失效：因为标识符不再是地址，而是<em>关系</em>本身。</p>\n<p>作者对协议做形式化建模，并针对关联推断属性及既有安全属性（良好认证、帧不透明性、无去同步）验证所提修复。缓解手段有三：<strong>条件无关响应</strong>（设备无论是否认识对端，对重连激励的应答完全一致）、<strong>抗重放</strong>（新鲜性绑定使捕获的关联材料一次性失效）、<strong>距离约束</strong>（以往返时延约束挫败中继）。分析发现了新旧多个漏洞，且论文报告其设计修改建议已获 <strong>Wi-Fi Alliance 与 Bluetooth SIG 双双确认</strong>。</p>\n<h3>技术要点</h3>\n<ul><li><strong>攻击类别：</strong>关联推断——重放/中继关联阶段流量，构成无需密钥的设备关系&quot;是/否&quot;预言机；因标识符是关系而非地址，MAC 随机化失效。</li><li><strong>脆弱流程：</strong>Wi-Fi P2P 组建/邀请/认证重连；BLE 允许列表广播与连接建立。</li><li><strong>方法：</strong>协议形式化建模；针对关联推断及良好认证、帧不透明性、无去同步属性验证修复。</li><li><strong>缓解：</strong>条件无关响应；新鲜性绑定的抗重放；对抗中继的距离约束。</li><li><strong>影响：</strong>记录新旧漏洞；设计修改获 Wi-Fi Alliance 与 Bluetooth SIG 确认。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的设备隐私脉络此前集中在 MAC 随机化下对单个设备的<em>指纹识别</em>（2026-06-26_arxiv-ml-mac-randomization-privacy：IE+时序特征以 89.6% 重识别 22 台设备）。本文开辟了另一维度：仅用重放的协议激励泄露设备间的<em>关系图</em>而非设备身份——IE/时序归一化类防御对此完全无效。该工作天然跨技术（同样的允许列表重连模式出现在 Wi-Fi P2P 与 BLE 中），而 WFA 与 Bluetooth SIG 的双重确认与两组织的 6 GHz 共存联合工作（2026-07-10_wfa-bluetooth-sig-6ghz-coexistence）相呼应——标准侧对横跨 Wi-Fi/蓝牙问题的关注明显上升。其条件无关响应缓解与 KB 感知保护条目中已跟踪的按请求响应保护方向一脉相承，此处应用于关联隐私。</p>",
       "images": [],
       "search_blob": "association-based privacy attacks in wireless protocols: formal modeling and mitigation 无线协议中基于关联的隐私攻击：形式化建模与缓解 security privacy wi-fi-p2p ble formal-verification tracking jangid, engelmann and lin (arxiv 11 aug 2026, cs.cr; routed from the shared cs.cr security sweep) study a privacy attack class they call **association inference**: an attacker who can capture wireless frames — but holds no cryptographic keys — replays or relays association-phase traffic to learn *which devices belong together* (same owner, same trust group, previously paired), and from there profiles and tracks users. the attack surface is the authenticated-reconnection fast path that both wi-fi p2p and bluetooth low energy optimize for: devices that share keys or sit on each other's allowlists answer reconnection probes differently from strangers, and that *difference in response behaviour* is itself an identifying signal, even when all payloads are encrypted. jangid、engelmann 与 lin（2026 年 8 月 11 日 arxiv，cs.cr；经共享 cs.cr 安全扫描路由）研究一类他们称为**关联推断**的隐私攻击：能捕获无线帧但不持有任何密钥的攻击者，通过重放或中继关联阶段的流量，推断*哪些设备彼此关联*（同一主人、同一信任组、曾经配对），进而实现用户画像与跟踪。攻击面是 wi-fi p2p 与低功耗蓝牙（ble）都为之优化的认证快速重连路径：共享密钥或互在允许列表（allowlist）中的设备，对重连探测的响应行为与陌生设备不同，而这种*响应行为差异*本身就是识别信号——即便所有载荷都已加密。 academic-paper wifi"
+    },
+    {
+      "id": "2026-08-14_space42-equatys-d2d-satellite-procurement",
+      "date_found": "2026-08-14",
+      "technology": "satellite",
+      "date_published": "2026-08-10",
+      "type": "satellite-news",
+      "category": "industry",
+      "title_en": "Space42–Viasat Equatys direct-to-device venture enters satellite procurement: up to 2,800 satellites on a neutral-host 'Space TowerCo' model",
+      "title_zh": "Space42 与 Viasat 的 Equatys 手机直连合资公司进入卫星采购阶段：中立主机“太空铁塔公司”模式下最多 2,800 颗卫星",
+      "url": "https://satnews.com/2026/08/10/space42-advances-equatys-direct-to-device-joint-venture-into-satellite-procurement-phase/",
+      "topics": [
+        "direct-to-device",
+        "D2D",
+        "NTN",
+        "3GPP-Rel-17",
+        "3GPP-Rel-18",
+        "L-band",
+        "S-band",
+        "neutral-host",
+        "constellation-procurement"
+      ],
+      "topic_primary": "sat-direct-device",
+      "topics_secondary": [
+        "leo-constellations"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-14_space42-equatys-d2d-satellite-procurement.md",
+      "summary_short_en": "Equatys — the direct-to-device joint venture established by Space42 (the UAE AI-and-space firm formed from the Bayanat–Yahsat merger) and Viasat — announced on 10 August 2026 that it is moving into its initial **constellation procurement phase** (SatNews, 10 Aug 2026). The venture is structured as a neutral-host **\"Space TowerCo\"**: instead of each mobile operator building or leasing its own fleet, regional MNOs lease non-terrestrial-network capacity from a shared constellation, with Space42 and Viasat as anchor tenants and third-party MNOs to follow. The planned architecture is up to **2,800 satellites across 60 orbital planes in three altitude layers**, with Rocket Lab emerging as the primary candidate for the satellite bus. On spectrum, Equatys aggregates **over 100 MHz of L-band and S-band** mobile-satellite spectrum rights across some 160 international markets, and the system is aligned with **3GPP Release 17/18 NTN** specifications — targeting unmodified smartphones and IoT devices. About **$600 million** is allocated to the 2026–2027 manufacturing phase, with commercial service targeted before the end of the decade. Viasat CEO Mark Dankberg characterized the capacity expansion as \"orders of magnitude,\" with constellation funding to trigger further operational disclosures.",
+      "summary_short_zh": "Equatys——由 Space42（Bayanat 与 Yahsat 合并组成的阿联酋 AI 与航天公司）和 Viasat 设立的手机直连（D2D）合资公司——于 2026 年 8 月 10 日宣布进入初始**星座采购阶段**（SatNews，2026 年 8 月 10 日）。该公司采用中立主机的**\"太空铁塔公司（Space TowerCo）\"**模式：区域移动运营商无需自建或独租星座，而是从共享星座租用非地面网络（NTN）容量；Space42 与 Viasat 为锚定租户，第三方运营商随后加入。规划架构为**最多 2,800 颗卫星、60 个轨道面、三个高度层**，Rocket Lab 成为卫星平台的主要候选制造商。频谱方面，Equatys 汇聚了横跨约 160 个国际市场的**超过 100 MHz L 频段与 S 频段**移动卫星频谱权利，系统对齐 **3GPP Release 17/18 NTN** 规范——面向未改装智能手机与物联网设备。**约 6 亿美元**已划拨用于 2026–2027 年制造阶段，商用服务目标在本十年末之前。Viasat CEO Mark Dankberg 称容量扩展将达\"数个数量级\"，星座融资落地后将披露更多运营细节。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Equatys — the direct-to-device joint venture established by Space42 (the UAE AI-and-space firm formed from the Bayanat–Yahsat merger) and Viasat — announced on 10 August 2026 that it is moving into its initial <strong>constellation procurement phase</strong> (SatNews, 10 Aug 2026). The venture is structured as a neutral-host <strong>&quot;Space TowerCo&quot;</strong>: instead of each mobile operator building or leasing its own fleet, regional MNOs lease non-terrestrial-network capacity from a shared constellation, with Space42 and Viasat as anchor tenants and third-party MNOs to follow. The planned architecture is up to <strong>2,800 satellites across 60 orbital planes in three altitude layers</strong>, with Rocket Lab emerging as the primary candidate for the satellite bus. On spectrum, Equatys aggregates <strong>over 100 MHz of L-band and S-band</strong> mobile-satellite spectrum rights across some 160 international markets, and the system is aligned with <strong>3GPP Release 17/18 NTN</strong> specifications — targeting unmodified smartphones and IoT devices. About <strong>$600 million</strong> is allocated to the 2026–2027 manufacturing phase, with commercial service targeted before the end of the decade. Viasat CEO Mark Dankberg characterized the capacity expansion as &quot;orders of magnitude,&quot; with constellation funding to trigger further operational disclosures.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Event:</strong> Equatys (Space42 + Viasat JV) enters initial constellation procurement, announced 10 Aug 2026.</li><li><strong>Model:</strong> neutral-host &quot;Space TowerCo&quot; — MNOs lease shared NTN capacity rather than building fleets; anchor tenants Space42 and Viasat.</li><li><strong>Constellation:</strong> up to 2,800 satellites, 60 orbital planes, three altitude layers; Rocket Lab primary bus candidate.</li><li><strong>Spectrum/standards:</strong> &gt;100 MHz aggregated L-/S-band MSS spectrum across ~160 markets; 3GPP Rel-17/18 NTN; unmodified smartphones + IoT.</li><li><strong>Money/timeline:</strong> ~$600M for 2026–2027 manufacturing; commercial service before decade's end.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the fourth constellation-scale direct-to-device entrant tracked in the KB — after Starlink's operating direct-to-cell fleet, AST SpaceMobile's 13 BlueBirds, and Amazon Leo's 5,105-satellite FCC filing — and the first from the Middle East, giving the D2D race a fourth regulatory-and-capital bloc. Two things distinguish it structurally: the <strong>neutral-host wholesale model</strong> (every other entrant sells through bilateral operator deals; Equatys is architected from day one as shared infrastructure, the space analogue of a tower company), and the <strong>licensed L-/S-band MSS spectrum position spanning ~160 markets</strong> — contrasting with Starlink's leased terrestrial spectrum and AST's per-operator arrangements, and sidestepping the unlicensed-band route the FCC's ET 26-169 proceeding is opening. Procurement start, bus selection, and the $600M manufacturing allocation move it from paper venture to funded program; watch the bus contract award and first launch as the next landing events.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Equatys——由 Space42（Bayanat 与 Yahsat 合并组成的阿联酋 AI 与航天公司）和 Viasat 设立的手机直连（D2D）合资公司——于 2026 年 8 月 10 日宣布进入初始<strong>星座采购阶段</strong>（SatNews，2026 年 8 月 10 日）。该公司采用中立主机的<strong>&quot;太空铁塔公司（Space TowerCo）&quot;</strong>模式：区域移动运营商无需自建或独租星座，而是从共享星座租用非地面网络（NTN）容量；Space42 与 Viasat 为锚定租户，第三方运营商随后加入。规划架构为<strong>最多 2,800 颗卫星、60 个轨道面、三个高度层</strong>，Rocket Lab 成为卫星平台的主要候选制造商。频谱方面，Equatys 汇聚了横跨约 160 个国际市场的<strong>超过 100 MHz L 频段与 S 频段</strong>移动卫星频谱权利，系统对齐 <strong>3GPP Release 17/18 NTN</strong> 规范——面向未改装智能手机与物联网设备。<strong>约 6 亿美元</strong>已划拨用于 2026–2027 年制造阶段，商用服务目标在本十年末之前。Viasat CEO Mark Dankberg 称容量扩展将达&quot;数个数量级&quot;，星座融资落地后将披露更多运营细节。</p>\n<h3>技术要点</h3>\n<ul><li><strong>事件：</strong> Equatys（Space42 + Viasat 合资）进入初始星座采购阶段，2026 年 8 月 10 日宣布。</li><li><strong>模式：</strong> 中立主机&quot;太空铁塔公司&quot;——运营商租用共享 NTN 容量而非自建星座；锚定租户为 Space42 与 Viasat。</li><li><strong>星座：</strong> 最多 2,800 颗卫星、60 个轨道面、三个高度层；Rocket Lab 为主要平台候选。</li><li><strong>频谱/标准：</strong> 跨约 160 个市场汇聚 &gt;100 MHz L/S 频段 MSS 频谱；3GPP Rel-17/18 NTN；未改装手机 + 物联网。</li><li><strong>资金/时间线：</strong> 约 6 亿美元用于 2026–2027 制造；本十年末前商用。</li></ul>\n<h3>意义与新意</h3>\n<p>这是知识库跟踪的第四个星座级手机直连玩家——此前有 Starlink 已运营的直连星座、AST SpaceMobile 的 13 颗 BlueBird、Amazon Leo 的 5,105 星 FCC 申请——也是首个来自中东的玩家，为 D2D 竞赛加入第四个监管与资本板块。其结构性差异有二：<strong>中立主机批发模式</strong>（其他玩家均通过双边运营商协议售卖；Equatys 从第一天起就按共享基础设施架构设计，是铁塔公司的太空类比），以及<strong>横跨约 160 个市场的 L/S 频段 MSS 许可频谱布局</strong>——与 Starlink 租用地面频谱、AST 逐运营商安排形成对比，也绕开了 FCC ET 26-169 程序正在开放的非授权频段路线。采购启动、平台选型与 6 亿美元制造拨款使其从纸面合资走向有资金的工程；后续着陆事件关注平台合同授予与首次发射。</p>",
+      "images": [],
+      "search_blob": "space42–viasat equatys direct-to-device venture enters satellite procurement: up to 2,800 satellites on a neutral-host 'space towerco' model space42 与 viasat 的 equatys 手机直连合资公司进入卫星采购阶段：中立主机“太空铁塔公司”模式下最多 2,800 颗卫星 direct-to-device d2d ntn 3gpp-rel-17 3gpp-rel-18 l-band s-band neutral-host constellation-procurement equatys — the direct-to-device joint venture established by space42 (the uae ai-and-space firm formed from the bayanat–yahsat merger) and viasat — announced on 10 august 2026 that it is moving into its initial **constellation procurement phase** (satnews, 10 aug 2026). the venture is structured as a neutral-host **\"space towerco\"**: instead of each mobile operator building or leasing its own fleet, regional mnos lease non-terrestrial-network capacity from a shared constellation, with space42 and viasat as anchor tenants and third-party mnos to follow. the planned architecture is up to **2,800 satellites across 60 orbital planes in three altitude layers**, with rocket lab emerging as the primary candidate for the satellite bus. on spectrum, equatys aggregates **over 100 mhz of l-band and s-band** mobile-satellite spectrum rights across some 160 international markets, and the system is aligned with **3gpp release 17/18 ntn** specifications — targeting unmodified smartphones and iot devices. about **$600 million** is allocated to the 2026–2027 manufacturing phase, with commercial service targeted before the end of the decade. viasat ceo mark dankberg characterized the capacity expansion as \"orders of magnitude,\" with constellation funding to trigger further operational disclosures. equatys——由 space42（bayanat 与 yahsat 合并组成的阿联酋 ai 与航天公司）和 viasat 设立的手机直连（d2d）合资公司——于 2026 年 8 月 10 日宣布进入初始**星座采购阶段**（satnews，2026 年 8 月 10 日）。该公司采用中立主机的**\"太空铁塔公司（space towerco）\"**模式：区域移动运营商无需自建或独租星座，而是从共享星座租用非地面网络（ntn）容量；space42 与 viasat 为锚定租户，第三方运营商随后加入。规划架构为**最多 2,800 颗卫星、60 个轨道面、三个高度层**，rocket lab 成为卫星平台的主要候选制造商。频谱方面，equatys 汇聚了横跨约 160 个国际市场的**超过 100 mhz l 频段与 s 频段**移动卫星频谱权利，系统对齐 **3gpp release 17/18 ntn** 规范——面向未改装智能手机与物联网设备。**约 6 亿美元**已划拨用于 2026–2027 年制造阶段，商用服务目标在本十年末之前。viasat ceo mark dankberg 称容量扩展将达\"数个数量级\"，星座融资落地后将披露更多运营细节。 satellite-news satellite"
     },
     {
       "id": "2026-08-12_arxiv-bvlos-drones-oran-5g-slicing",
@@ -5497,6 +5663,39 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>HoRFFI（Zeng、Shen、Zhang、Shen、Tan、Song；2026 年 8 月 5 日提交 arXiv，投稿 IEEE INFOCOM 2026；经 cs.CR 安全扫描路由）研究<strong>开放集射频指纹识别（RFFI）</strong>——利用发射信号中硬件缺陷特征进行物理层设备认证。它针对的实际问题是&quot;开放度&quot;：部署中的认证器不仅要识别已注册设备，还必须<strong>拒绝从未训练过的未知设备</strong>，且只能使用有限的标注训练数据。假设每个测试设备在训练时都见过的闭集 RFFI 模型在此场景下表现很差。</p>\n<p>方法核心是<strong>相似度增强变分信息瓶颈（SVIB）</strong>监督机制。变分信息瓶颈压缩所学表示，仅保留设备判别性信息、丢弃无关变化；相似度增强项塑造该表示，使新颖/未知类别更易分离，从而提升对训练集之外设备与条件的迁移性。这正是系统能以有限标注实现未知设备拒识的原因。</p>\n<p>在公开的 <strong>LoRa 与 Wi-Fi</strong> RFFI 数据集上评测，HoRFFI 在新颖类准确率与 AUC（开放集判别指标）上较基线取得提升。该论文为投稿（尚未接收），摘要除相对提升论断外未给出具体设备型号或绝对准确率数字。</p>\n<h3>技术要点</h3>\n<ul><li><strong>任务：</strong> 开放集 RFFI——认证已注册设备<em>并</em>拒绝未知/未见设备，且标注数据有限。</li><li><strong>SVIB：</strong> 变分信息瓶颈（丢弃无关信息、保留设备判别特征）+ 提升新颖类分离与迁移性的相似度增强项。</li><li><strong>数据集：</strong> 公开 LoRa 与 Wi-Fi RFFI 数据集；指标为新颖类准确率与 AUC。</li><li><strong>状态：</strong> 投稿 IEEE INFOCOM 2026（尚未接收）；仅摘要级细节。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 中已有一条基于 CSI 的射频指纹条目（CSI-RFF，20 次测量约 99%），其工作于闭集、高信噪比场景。HoRFFI 处于设计空间的不同位置：它是<strong>开放集/高开放度</strong>的——即拒绝从未注册设备这一更难、更贴近部署的问题——且是一种在 Wi-Fi 与 LoRa 上均验证的通用 RFFI 表示学习方法，而非专用于 Wi-Fi CSI 的技术。其新颖性为中等（变分信息瓶颈 RFFI 已有前作；相似度增强 + 开放度框架是新增量），故 novelty 2。作为 security-privacy bin 中日益增多的 Wi-Fi 识别/去匿名工作的防御方对应物，具有相关性。</p>",
       "images": [],
       "search_blob": "horffi: high-openness rf fingerprint identification with a similarity-enhanced variational information bottleneck horffi：基于相似度增强变分信息瓶颈的高开放度射频指纹识别 rf-fingerprint device-authentication machine-learning security 802.11 horffi (zeng, shen, zhang, shen, tan, song; arxiv 5 aug 2026, submitted to ieee infocom 2026; routed from the cs.cr security sweep) addresses **open-set rf fingerprint identification (rffi)** — physical-layer device authentication from hardware-imperfection signatures in the transmitted signal. the practical problem it targets is \"openness\": a deployed authenticator must not only recognise enrolled devices but also **reject unknown devices it was never trained on**, and it must do so with only limited labelled training data. closed-set rffi models that assume every test device was seen during training fail badly in this regime. horffi（zeng、shen、zhang、shen、tan、song；2026 年 8 月 5 日提交 arxiv，投稿 ieee infocom 2026；经 cs.cr 安全扫描路由）研究**开放集射频指纹识别（rffi）**——利用发射信号中硬件缺陷特征进行物理层设备认证。它针对的实际问题是\"开放度\"：部署中的认证器不仅要识别已注册设备，还必须**拒绝从未训练过的未知设备**，且只能使用有限的标注训练数据。假设每个测试设备在训练时都见过的闭集 rffi 模型在此场景下表现很差。 academic-paper wifi"
+    },
+    {
+      "id": "2026-08-14_silabs-bg2b-coin-cell-channel-sounding-soc",
+      "date_found": "2026-08-14",
+      "technology": "bluetooth",
+      "date_published": "2026-08-04",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Silicon Labs BG2B: 1.1 µA coin-cell Bluetooth 6 SoC with full Channel Sounding (Mode 3 + NADM + Inline PCT) claiming both Apple and Google ranging-spec compliance",
+      "title_zh": "Silicon Labs BG2B：1.1 µA 纽扣电池级蓝牙 6 SoC，完整信道探测（Mode 3 + NADM + Inline PCT），宣称同时符合苹果与谷歌测距互操作规范",
+      "url": "https://www.cnx-software.com/2026/08/04/bg2b-lowest-power-bluetooth-le-soc-from-silicon-labs/",
+      "topics": [
+        "BLE",
+        "Channel-Sounding",
+        "Bluetooth-6",
+        "low-power",
+        "secure-ranging",
+        "CAN-FD",
+        "Cyber-Resilience-Act"
+      ],
+      "topic_primary": "bt-channel-sounding",
+      "topics_secondary": [
+        "bt-le",
+        "bt-security"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-14_silabs-bg2b-coin-cell-channel-sounding-soc.md",
+      "summary_short_en": "Silicon Labs announced the **BG2B** on August 4, 2026 — its lowest-power Bluetooth LE SoC to date and the company's first to bring the **full Bluetooth 6 Channel Sounding feature set to a coin-cell-class part**. The Arm Cortex-M33 (80 MHz) SoC sleeps at **1.1 µA (EM2, 16 kB RAM retention)** / 0.17 µA in EM4, runs at 23 µA/MHz, and draws 3.1 mA in RX — 14–15% lower MCU active current than the incumbent BG22/BG22L. Radio: BLE 6 with Channel Sounding plus 2.4 GHz proprietary modes, +8 dBm TX, −106.8 dBm sensitivity at 125 kbps.",
+      "summary_short_zh": "Silicon Labs 于 2026 年 8 月 4 日发布 **BG2B**——该公司迄今功耗最低的蓝牙 LE SoC，也是其首款把**完整蓝牙 6 信道探测（Channel Sounding）特性集带入纽扣电池级器件**的芯片。这颗 Arm Cortex-M33（80 MHz）SoC 睡眠电流 **1.1 µA（EM2，保留 16 kB RAM）**、EM4 深睡 0.17 µA，运行功耗 23 µA/MHz，接收电流 3.1 mA——MCU 有效电流比现役 BG22/BG22L 低 14–15%。射频侧：BLE 6 + 信道探测，兼容 2.4 GHz 私有协议，发射功率 +8 dBm，125 kbps 下灵敏度 −106.8 dBm。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Silicon Labs announced the <strong>BG2B</strong> on August 4, 2026 — its lowest-power Bluetooth LE SoC to date and the company's first to bring the <strong>full Bluetooth 6 Channel Sounding feature set to a coin-cell-class part</strong>. The Arm Cortex-M33 (80 MHz) SoC sleeps at <strong>1.1 µA (EM2, 16 kB RAM retention)</strong> / 0.17 µA in EM4, runs at 23 µA/MHz, and draws 3.1 mA in RX — 14–15% lower MCU active current than the incumbent BG22/BG22L. Radio: BLE 6 with Channel Sounding plus 2.4 GHz proprietary modes, +8 dBm TX, −106.8 dBm sensitivity at 125 kbps.</p>\n<p>The Channel Sounding implementation is the notable part: BG2B supports <strong>Mode 3</strong> (concurrent phase-based ranging <em>and</em> round-trip-time measurement — CS's most secure variant), the <strong>Normalized Attack Detector Metric (NADM)</strong> for detecting relay/interception attempts, and <strong>Inline Phase Correction Term (Inline PCT)</strong> for oscillator-offset correction (the Core 6.3 accuracy feature). Silicon Labs claims compliance with <strong>both Apple's and Google's Bluetooth Channel Sounding interoperability specifications</strong> — positioning against Nordic's nRF54L15, which has publicly demonstrated interop only with Google's Pixel 10 ranging stack. Security is Secure Vault High (PSA Level 3 target), announced five weeks before the EU Cyber Resilience Act's Article 14 vulnerability-reporting deadline (September 11, 2026). Distinctive integration: a <strong>CAN-FD controller</strong> on a BLE SoC, targeting wireless diagnostics for vehicles and industrial equipment. Availability is early-engagement now, volume launch 2027; accuracy claims are so far unverified by independent benchmarks.</p>\n<h3>Key technical points</h3>\n<ul><li>Cortex-M33 @ 80 MHz, 1016 kB flash, 64/128 kB SRAM; QFN40 (5×5 mm) and QFN48 (6×6 mm) packages.</li><li>Power: 1.1 µA EM2 sleep (16 kB retention), 1.5 µA (128 kB), 0.17 µA EM4; 23 µA/MHz active; RX 3.1 mA, TX 4.1 mA @ 0 dBm.</li><li>Channel Sounding: Mode 3 (concurrent PBR + RTT), NADM attack detection, Inline PCT oscillator-offset correction — the full secure-ranging stack, not a PBR-only subset.</li><li>Claimed conformance to both Apple and Google CS interoperability specifications — the cross-ecosystem smartphone-ranging claim no competitor has made publicly.</li><li>Secure Vault High: hardware AES/ChaCha20-Poly1305/SHA/ECDSA/Ed25519, TRNG, TrustZone, secure boot; PSA Level 3 target, timed against the EU CRA enforcement calendar.</li><li>1× CAN-FD interface plus 2× 12-bit 1 Msps ADCs, 4× constant-current LED sinks, PDM mic input — unusual peripheral mix pairing BLE ranging with wired industrial/automotive buses.</li><li>Target: secure ranging/digital key, asset tracking, electronic shelf labels, vehicle diagnostics; early access now, launch 2027.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's Channel Sounding thread so far tracks Nordic silicon (nRF54L15 Tag, 2026-07-06), measurement innovation (Metirionic angle-from-CS, 2026-08-03), and test tooling (R&amp;S/Realtek HDT, 2026-07-13) — this is the <strong>first Silicon Labs entry and the first CS part positioned on power budget rather than feature count</strong>: full Mode-3 secure ranging in a chip meant to sit on one coin cell for years, which is exactly the profile of the door locks, tags, and shelf labels CS is supposed to unlock. Two ecosystem signals stand out. First, the claim of conformance to <em>both</em> Apple's and Google's CS interoperability specs is the first public acknowledgment that smartphone-side CS ranging now has two competing certification targets — silicon vendors are being forced to certify against both, an interop-fragmentation dynamic worth tracking as CS deployments scale. Second, the launch is explicitly timed to the EU Cyber Resilience Act's September 2026 enforcement — the first KB evidence of the CRA directly shaping Bluetooth silicon positioning. Caveat: accuracy claims are vendor-stated, with no independent benchmarks until volume availability in 2027.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Silicon Labs 于 2026 年 8 月 4 日发布 <strong>BG2B</strong>——该公司迄今功耗最低的蓝牙 LE SoC，也是其首款把<strong>完整蓝牙 6 信道探测（Channel Sounding）特性集带入纽扣电池级器件</strong>的芯片。这颗 Arm Cortex-M33（80 MHz）SoC 睡眠电流 <strong>1.1 µA（EM2，保留 16 kB RAM）</strong>、EM4 深睡 0.17 µA，运行功耗 23 µA/MHz，接收电流 3.1 mA——MCU 有效电流比现役 BG22/BG22L 低 14–15%。射频侧：BLE 6 + 信道探测，兼容 2.4 GHz 私有协议，发射功率 +8 dBm，125 kbps 下灵敏度 −106.8 dBm。</p>\n<p>其信道探测实现是亮点：BG2B 支持 <strong>Mode 3</strong>（相位测距 PBR 与往返时延 RTT 并发——CS 最安全的模式）、用于检测中继/截获攻击的 <strong>NADM</strong>（归一化攻击检测度量），以及修正振荡器偏移的 <strong>Inline PCT</strong>（内联相位校正项，Core 6.3 的精度特性）。Silicon Labs 宣称同时符合<strong>苹果与谷歌两家的蓝牙信道探测互操作规范</strong>——直接对位 Nordic nRF54L15（后者目前只公开演示过与谷歌 Pixel 10 测距栈的互操作）。安全侧为 Secure Vault High（目标 PSA Level 3 认证），发布时点恰在欧盟《网络弹性法案》第 14 条漏洞报告义务生效（2026 年 9 月 11 日）前五周。集成上的独特之处：BLE SoC 上集成 <strong>CAN-FD 控制器</strong>，面向车辆与工业设备的无线诊断。目前为早期客户合作阶段，2027 年量产上市；精度指标尚无独立基准测试验证。</p>\n<h3>技术要点</h3>\n<ul><li>Cortex-M33 @ 80 MHz，1016 kB 闪存，64/128 kB SRAM；QFN40（5×5 mm）与 QFN48（6×6 mm）封装。</li><li>功耗：EM2 睡眠 1.1 µA（保留 16 kB）/1.5 µA（128 kB），EM4 0.17 µA；运行 23 µA/MHz；接收 3.1 mA，发射 4.1 mA @ 0 dBm。</li><li>信道探测：Mode 3（PBR + RTT 并发）、NADM 攻击检测、Inline PCT 振荡器偏移校正——完整安全测距栈，而非仅 PBR 子集。</li><li>宣称同时符合苹果与谷歌的 CS 互操作规范——目前尚无竞品公开做出的跨生态手机测距声明。</li><li>Secure Vault High：硬件 AES/ChaCha20-Poly1305/SHA/ECDSA/Ed25519、TRNG、TrustZone、安全启动；目标 PSA Level 3，节奏对准欧盟 CRA 执法时间表。</li><li>1× CAN-FD 接口，另有 2× 12 位 1 Msps ADC、4× 恒流 LED 驱动、PDM 麦克风输入——把 BLE 测距与有线工业/车载总线并置的少见外设组合。</li><li>目标场景：安全测距/数字钥匙、资产追踪、电子价签、车辆诊断；现处早期合作阶段，2027 年上市。</li></ul>\n<h3>意义与新意</h3>\n<p>本 KB 的信道探测主线迄今覆盖 Nordic 硅片（nRF54L15 Tag，2026-07-06）、测量创新（Metirionic CS 测角，2026-08-03）与测试工装（R&amp;S/Realtek HDT，2026-07-13）——本条是<strong>第一条 Silicon Labs 条目，也是第一款以功耗预算而非特性数量定位的 CS 器件</strong>：在一颗准备靠单粒纽扣电池运行数年的芯片里放入完整 Mode-3 安全测距，恰是 CS 想要解锁的门锁、标签、电子价签的目标画像。两个生态信号值得注意。其一，宣称同时符合苹果与谷歌两套 CS 互操作规范，首次公开印证手机侧 CS 测距已形成两个相互竞争的认证目标——芯片厂被迫双重认证，这种互操作碎片化动态在 CS 规模化部署中值得持续跟踪。其二，发布节奏明确对准欧盟《网络弹性法案》2026 年 9 月的执法节点——KB 中第一份 CRA 直接影响蓝牙芯片市场定位的证据。注意：精度指标均为厂商自述，2027 年量产前没有独立基准测试。</p>",
+      "images": [],
+      "search_blob": "silicon labs bg2b: 1.1 µa coin-cell bluetooth 6 soc with full channel sounding (mode 3 + nadm + inline pct) claiming both apple and google ranging-spec compliance silicon labs bg2b：1.1 µa 纽扣电池级蓝牙 6 soc，完整信道探测（mode 3 + nadm + inline pct），宣称同时符合苹果与谷歌测距互操作规范 ble channel-sounding bluetooth-6 low-power secure-ranging can-fd cyber-resilience-act silicon labs announced the **bg2b** on august 4, 2026 — its lowest-power bluetooth le soc to date and the company's first to bring the **full bluetooth 6 channel sounding feature set to a coin-cell-class part**. the arm cortex-m33 (80 mhz) soc sleeps at **1.1 µa (em2, 16 kb ram retention)** / 0.17 µa in em4, runs at 23 µa/mhz, and draws 3.1 ma in rx — 14–15% lower mcu active current than the incumbent bg22/bg22l. radio: ble 6 with channel sounding plus 2.4 ghz proprietary modes, +8 dbm tx, −106.8 dbm sensitivity at 125 kbps. silicon labs 于 2026 年 8 月 4 日发布 **bg2b**——该公司迄今功耗最低的蓝牙 le soc，也是其首款把**完整蓝牙 6 信道探测（channel sounding）特性集带入纽扣电池级器件**的芯片。这颗 arm cortex-m33（80 mhz）soc 睡眠电流 **1.1 µa（em2，保留 16 kb ram）**、em4 深睡 0.17 µa，运行功耗 23 µa/mhz，接收电流 3.1 ma——mcu 有效电流比现役 bg22/bg22l 低 14–15%。射频侧：ble 6 + 信道探测，兼容 2.4 ghz 私有协议，发射功率 +8 dbm，125 kbps 下灵敏度 −106.8 dbm。 industry-news bluetooth"
     },
     {
       "id": "2026-08-07_ieee-tgbi-d6-sa-recirc-94pct",
