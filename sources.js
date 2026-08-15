@@ -905,7 +905,7 @@ window.SOURCES_DATA = {
     {
       "id": "nordic-devzone",
       "name": "Nordic Semiconductor DevZone Blog",
-      "url": "https://devzone.nordicsemi.com/blogs/",
+      "url": "https://devzone.nordicsemi.com/nordic/nordic-blog/b/blog",
       "kind": "html",
       "category": "industry",
       "topics_hint": [
@@ -913,7 +913,7 @@ window.SOURCES_DATA = {
         "bt-location",
         "bt-channel-sounding"
       ],
-      "notes": "Nordic's official engineering blog. nRF54L15/54L20 coverage expected.",
+      "notes": "Nordic's official engineering blog. nRF54L15/54L20 coverage expected. URL updated 2026-08-14 (user-approved 11b): /blogs/ now 404s; /nordic/nordic-blog/b/blog is the canonical Discourse-style listing.",
       "technology": "bluetooth"
     },
     {
