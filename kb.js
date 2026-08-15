@@ -1,14 +1,14 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-08-14",
-  "last_scanned": "2026-08-14",
+  "last_updated": "2026-08-15",
+  "last_scanned": "2026-08-15",
   "topic_counts": {
     "6G": 59,
     "802.11bn": 45,
     "security": 43,
     "agentic-AI": 41,
+    "O-RAN": 41,
     "LEO": 40,
-    "O-RAN": 40,
     "MAC-layer": 37,
     "products": 36,
     "scheduling": 33,
@@ -22,7 +22,7 @@ window.KB_DATA = {
     "NTN": 17,
     "IoT": 17,
     "MLO": 16,
-    "BLE": 15,
+    "BLE": 16,
     "UWB": 15,
     "802.11": 15,
     "PHY-layer": 15,
@@ -100,6 +100,8 @@ window.KB_DATA = {
     "orchestration": 4,
     "GNSS": 4,
     "indoor-positioning": 4,
+    "spectrum-sharing": 4,
+    "rApp": 4,
     "AST-SpaceMobile": 4,
     "latency": 4,
     "LE-Audio": 4,
@@ -152,7 +154,6 @@ window.KB_DATA = {
     "SLB": 3,
     "P-EDCA": 3,
     "energy-saving": 3,
-    "spectrum-sharing": 3,
     "positioning": 3,
     "SIGCOMM": 3,
     "high-density": 3,
@@ -177,7 +178,6 @@ window.KB_DATA = {
     "phased-array": 3,
     "radar": 3,
     "cellular-ai": 3,
-    "rApp": 3,
     "spectrum-policy": 3,
     "802.11ac": 3,
     "WPA3": 3,
@@ -362,11 +362,23 @@ window.KB_DATA = {
     "dev-kit": 1,
     "6LoWPAN": 1,
     "IP-Link": 1,
+    "federal-spectrum": 1,
+    "3.5GHz": 1,
+    "radar-coexistence": 1,
+    "radionavigation": 1,
+    "MINLP": 1,
+    "Sionna-RT": 1,
     "UAV-swarm": 1,
     "PNT": 1,
     "anchor-recovery": 1,
     "theory": 1,
     "RLFT": 1,
+    "advertising": 1,
+    "power-measurement": 1,
+    "nRF54L15": 1,
+    "PPK2": 1,
+    "coin-cell": 1,
+    "energy-budget": 1,
     "service-plans": 1,
     "spectrum-monitoring": 1,
     "signal-classification": 1,
@@ -983,10 +995,10 @@ window.KB_DATA = {
     "ntn": 9,
     "network-slicing": 8,
     "rtwt-latency": 8,
+    "bt-le": 7,
     "bt-channel-sounding": 7,
     "ai-for-wifi": 7,
     "mec": 6,
-    "bt-le": 6,
     "cellular-massive-mimo": 6,
     "ngso-regulation": 5,
     "wifi-for-ai": 5,
@@ -995,11 +1007,11 @@ window.KB_DATA = {
     "bt-location": 4,
     "ftm-ranging": 4,
     "mmwave-bq": 3,
+    "cellular-spectrum": 3,
     "nearlink-automotive": 3,
     "mlo": 3,
     "uwb-fi-ra": 3,
     "sat-iot": 2,
-    "cellular-spectrum": 2,
     "uwb-radar": 2,
     "roaming-mobility": 2,
     "energy-power-save": 1,
@@ -1008,7 +1020,7 @@ window.KB_DATA = {
     "bt-mesh": 1
   },
   "type_counts": {
-    "academic-paper": 262,
+    "academic-paper": 263,
     "industry-news": 87,
     "ieee-document": 34,
     "product": 21,
@@ -1016,10 +1028,11 @@ window.KB_DATA = {
     "bluetooth-spec": 4,
     "proposal": 4,
     "community-signal": 3,
-    "nearlink-spec": 2
+    "nearlink-spec": 2,
+    "tutorial": 1
   },
   "category_counts": {
-    "academia": 262,
+    "academia": 264,
     "industry": 130,
     "standards": 44
   },
@@ -2896,6 +2909,7 @@ window.KB_DATA = {
       "entries_secondary": [
         "2026-08-13_arxiv-isac-3gpp-5ga-to-6g-evolution",
         "2026-08-13_arxiv-battlefield-5g-tpm-ue-attestation",
+        "2026-08-15_arxiv-coordinated-federal-spectrum-coexistence-oran",
         "2026-08-07_arxiv-ocudu-gpu-cuda-5g-phy",
         "2026-07-28_arxiv-location-aware-nas-timers-ntn",
         "2026-08-05_fcc-upper-cband-auction-rules-adopted",
@@ -3204,6 +3218,7 @@ window.KB_DATA = {
       "entries_secondary": [
         "2026-08-14_arxiv-radio-optical-confluence-edge-ran",
         "2026-08-12_arxiv-bvlos-drones-oran-5g-slicing",
+        "2026-08-15_arxiv-coordinated-federal-spectrum-coexistence-oran",
         "2026-08-08_arxiv-5g-isac-uav-oran-sensing",
         "2026-08-05_arxiv-fedcritic-mimo-serverless-6g-ran",
         "2026-08-05_arxiv-leo-drl-meta-scheduler-ntn-slicing",
@@ -3519,6 +3534,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-15_arxiv-coordinated-federal-spectrum-coexistence-oran",
         "2026-08-05_fcc-upper-cband-auction-rules-adopted",
         "2026-06-13_arxiv-fr3-terrestrial-ntn-spectrum-sharing"
       ],
@@ -3529,11 +3545,12 @@ window.KB_DATA = {
         "2026-05-30_ericsson-mwc2026-6g-demos-apple-mediatek"
       ],
       "by_type_primary": {
+        "academic-paper": [
+          "2026-08-15_arxiv-coordinated-federal-spectrum-coexistence-oran",
+          "2026-06-13_arxiv-fr3-terrestrial-ntn-spectrum-sharing"
+        ],
         "industry-news": [
           "2026-08-05_fcc-upper-cband-auction-rules-adopted"
-        ],
-        "academic-paper": [
-          "2026-06-13_arxiv-fr3-terrestrial-ntn-spectrum-sharing"
         ]
       }
     },
@@ -3953,6 +3970,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "",
       "entries_primary": [
         "2026-08-09_bluetooth-sig-ip-link-ipv6-over-ble",
+        "2026-08-15_novelbits-ble-advertising-energy-four-decisions",
         "2026-08-04_arxiv-lightcal-crystal-free-ble-optical-calibration",
         "2026-08-05_bluetooth-sig-hdt-draft-spec-public-review",
         "2026-05-21_arxiv-enhanced-ble-esb-hybrid",
@@ -3977,6 +3995,9 @@ window.KB_DATA = {
         "bluetooth-spec": [
           "2026-08-09_bluetooth-sig-ip-link-ipv6-over-ble",
           "2026-08-05_bluetooth-sig-hdt-draft-spec-public-review"
+        ],
+        "tutorial": [
+          "2026-08-15_novelbits-ble-advertising-energy-four-decisions"
         ],
         "academic-paper": [
           "2026-08-04_arxiv-lightcal-crystal-free-ble-optical-calibration",
@@ -5182,6 +5203,52 @@ window.KB_DATA = {
       "search_blob": "bluetooth sig 'ip link' project: ipv6 over bluetooth le via 6lowpan, targeting fall 2026 adoption 蓝牙技术联盟 ip link 项目：基于 6lowpan 的 ipv6 over ble，目标 2026 年秋季通过 ble ipv6 6lowpan ip-link iot the bluetooth sig's specifications-in-development page now lists **ip link**, a specification project defining native transport of ipv6 packets over bluetooth le. the protocol provides a 6lowpan adaptation-layer interface (the ietf's compression scheme that squeezes ipv6 headers down to fit constrained radio links, originally built for 802.15.4) and supports both unicast and multicast traffic, carried over either connection-oriented or connectionless ble bearers. the goal is direct ip-based communication between bluetooth devices and internet servers — no proprietary gateway translation layer in between. 蓝牙技术联盟（bluetooth sig）的\"开发中规范\"页面现已列出 **ip link** 项目——定义在 bluetooth le 上原生传输 ipv6 数据包的规范。该协议提供 6lowpan 适配层接口（6lowpan 是 ietf 的头部压缩方案，可将 ipv6 头压缩到受限无线链路能承载的尺寸，最初为 802.15.4 设计），支持单播与多播流量，可承载于面向连接或无连接的 ble 承载之上。目标是让蓝牙设备与互联网服务器直接进行 ip 通信——中间不再需要私有网关做协议翻译。 bluetooth-spec bluetooth"
     },
     {
+      "id": "2026-08-15_arxiv-coordinated-federal-spectrum-coexistence-oran",
+      "date_found": "2026-08-15",
+      "technology": "cellular",
+      "date_published": "2026-08-07",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Coordinated Spectrum Coexistence Across Heterogeneous Commercial and Federal Services (AMRA / QGAA, O-RAN rApp)",
+      "title_zh": "跨异构商用与联邦业务的协同频谱共存：AMRA/QGAA 多业务资源分配与 O-RAN rApp 协调",
+      "url": "https://arxiv.org/abs/2608.07789",
+      "topics": [
+        "spectrum-sharing",
+        "federal-spectrum",
+        "3.5GHz",
+        "radar-coexistence",
+        "radionavigation",
+        "O-RAN",
+        "rApp",
+        "MINLP",
+        "Sionna-RT"
+      ],
+      "topic_primary": "cellular-spectrum",
+      "topics_secondary": [
+        "open-ran",
+        "5g-nr"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-08-15_arxiv-coordinated-federal-spectrum-coexistence-oran.md",
+      "summary_short_en": "Nguyen, Testolina, Johari, Polese and Melodia (Institute for Intelligent Networked Systems, Northeastern University; arXiv 7 Aug 2026; NSF CNS-2434081 + National Spectrum Consortium OT W15QKN-21-9-5599) formulate **four-service dynamic sharing of the congested 2.7–3.7 GHz federal band cluster** — cellular (3GPP NR PRB grid), RF sensing, radionavigation and radiolocation radar — as a single centralized resource-allocation problem, in contrast to the static partitions and CBRS-style coarse-grained tiers that leave spectrum idle at cellular peak. The coordinator is envisioned as an **rApp on the O-RAN Non-RT RIC** operating on seconds-to-minutes policy timescales, with an extended coordination plane through which sensing/navigation nodes publish activity schedules and accept PRB grants.",
+      "summary_short_zh": "Nguyen、Testolina、Johari、Polese 与 Melodia（美国东北大学智能网络系统研究所；2026 年 8 月 7 日 arXiv；NSF CNS-2434081 + 国家频谱联盟 OT W15QKN-21-9-5599）把**拥塞的 2.7–3.7 GHz 联邦频段簇内四类业务的动态共享**——蜂窝（3GPP NR PRB 网格）、射频感知、无线电导航、无线电定位雷达——建模为单一集中式资源分配问题，区别于在蜂窝峰值时段让频谱闲置的静态划分与 CBRS 式粗粒度分层。协调器设想为 **O-RAN 非实时 RIC 上的 rApp**，工作在秒到分钟的策略时标，并通过扩展协调面让感知/导航节点发布活动计划、接受 PRB 授权。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Nguyen, Testolina, Johari, Polese and Melodia (Institute for Intelligent Networked Systems, Northeastern University; arXiv 7 Aug 2026; NSF CNS-2434081 + National Spectrum Consortium OT W15QKN-21-9-5599) formulate <strong>four-service dynamic sharing of the congested 2.7–3.7 GHz federal band cluster</strong> — cellular (3GPP NR PRB grid), RF sensing, radionavigation and radiolocation radar — as a single centralized resource-allocation problem, in contrast to the static partitions and CBRS-style coarse-grained tiers that leave spectrum idle at cellular peak. The coordinator is envisioned as an <strong>rApp on the O-RAN Non-RT RIC</strong> operating on seconds-to-minutes policy timescales, with an extended coordination plane through which sensing/navigation nodes publish activity schedules and accept PRB grants.</p>\n<p>The joint problem grants each PRB in a shared pool (centred at 3.5 GHz, 20–100 MHz wide) to at most one service, schedules PRBs from transmitters to endpoints, and allocates power, maximizing weighted cellular sum-rate subject to a sensing SINR floor (γ_sen, default 3 dB), a <strong>CRLB-based position-error-bound (PEB) constraint for radionavigation</strong> (ε_max, default 2.83 m — the authors claim the first framework to admit navigation as an explicit coexisting service with a positioning-QoS constraint), radar duty cycles and power budgets. It is an NP-hard MINLP (0/1-knapsack reduction). Two solvers are given: <strong>AMRA</strong> (alternating multi-service resource allocation: binary-LP PRB assignment → binary-LP scheduling with affine QoS surrogates → SCA power allocation; O(N_iter·N_sca·(S_c·N·T)^3.5)) and <strong>QGAA</strong> (QoS-aware greedy alternating allocation: reserve PRBs for QoS violators, greedy marginal-benefit assignment, intra-service scheduling, water-filling-style power repair; linear in PRBs × slots × links).</p>\n<p>Evaluation uses the <strong>BostonTwin</strong> urban digital twin (tile BOS_G_5, ~11 km × 11 km) with <strong>Sionna-RT</strong> ray tracing, PPP deployments of 60/100 cellular Tx/Rx per km² and 30/50 per km² for each federal service, T = 10 slots of 1 ms, duty cycles (1, 0.2, 0.1, 0.1). AMRA at 50 MHz of <em>shared</em> spectrum already exceeds <em>dedicated</em> 20 MHz cellular; at 100 MHz pooled it matches or slightly beats a dedicated 100 MHz cellular allocation while simultaneously serving sensing, navigation and radar. QGAA tracks AMRA within roughly 10 % but runs in ~1 s at every density (AMRA: ~0.8 s → ~6 s → ~20 s for density factor ζ = 1/2/3). Tightening γ_sen erodes cellular sum-rate roughly linearly, while tightening ε_max produces a nonlinear &quot;convex collapse&quot;.</p>\n<h3>Key technical points</h3>\n<ul><li>Services: cellular (2–4 GHz), RF sensing (3.1–3.7 GHz), radionavigation and radiolocation (2.7–5.65 GHz); shared pool centred at 3.5 GHz; NR PRB granularity, proportional-fair-style cellular weights.</li><li>Decision variables: PRB grant x_i^(n)(t) ∈ {0,1}, link scheduling a_{i,k,u}^(n)(t) ∈ {0,1}, power p_{i,k}^(n)(t); inter-service exclusivity Σ_i x_i^(n)(t) ≤ 1; sensing SINR ≥ γ_sen; time-averaged CRLB PEB ≤ ε_max; per-service duty cycles.</li><li>AMRA: three-stage alternating decomposition (assignment / scheduling / SCA power), converges in a few outer iterations; QGAA: four-step greedy per slot with QoS reservation and power repair, O(|N|·T·Σ_i|S_i||U_i|).</li><li>Coordinator sits in the O-RAN Non-RT RIC as an rApp (policy timescale) — the authors position QGAA's linear cost as compatible with xApp-speed reaction; CBRS cited as the limited-dynamics predecessor.</li><li>BostonTwin + Sionna-RT site-specific evaluation; CVX/Mosek/Gurobi for AMRA sub-problems; sharing yields strictly more cellular capacity than a narrower exclusive allocation while meeting all federal QoS floors.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's spectrum-sharing thread so far covers terrestrial/NTN FR3 coexistence (2026-06-13) and the FCC upper C-band auction rules (2026-08-05); this is the first entry with an <strong>explicit multi-service optimization for the US 2.7–3.7 GHz federal cluster</strong> that treats radionavigation positioning accuracy (CRLB PEB) as a hard coexistence constraint alongside radar and sensing — exactly the band family now under NTIA repurposing study (see the 2026-08-15 NTIA 4.4 GHz entry). Placing the coordinator in the O-RAN Non-RT RIC ties dynamic federal sharing to the O-RAN control plane rather than to a CBRS-style external SAS, and the QGAA heuristic gives a runtime-feasible path. Limits: simulation-only (BostonTwin/Sionna-RT), homogeneous PPP deployments, and no learning-based or distributed variant yet — flagged by the authors as future work.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Nguyen、Testolina、Johari、Polese 与 Melodia（美国东北大学智能网络系统研究所；2026 年 8 月 7 日 arXiv；NSF CNS-2434081 + 国家频谱联盟 OT W15QKN-21-9-5599）把<strong>拥塞的 2.7–3.7 GHz 联邦频段簇内四类业务的动态共享</strong>——蜂窝（3GPP NR PRB 网格）、射频感知、无线电导航、无线电定位雷达——建模为单一集中式资源分配问题，区别于在蜂窝峰值时段让频谱闲置的静态划分与 CBRS 式粗粒度分层。协调器设想为 <strong>O-RAN 非实时 RIC 上的 rApp</strong>，工作在秒到分钟的策略时标，并通过扩展协调面让感知/导航节点发布活动计划、接受 PRB 授权。</p>\n<p>联合问题把共享池（中心 3.5 GHz，20–100 MHz 宽）内每个 PRB 最多授予一类业务，再从发射机向终端调度 PRB 并分配功率，目标是最大化加权蜂窝和速率，约束包括感知 SINR 下限（γ_sen，默认 3 dB）、<strong>基于 CRLB 的无线电导航定位误差界（PEB）约束</strong>（ε_max，默认 2.83 m——作者称这是首个把导航作为显式共存业务并施加定位 QoS 约束的框架）、雷达占空比与功率预算。该问题为 NP 难 MINLP（可归约自 0/1 背包）。给出两种求解器：<strong>AMRA</strong>（交替多业务资源分配：二元 LP 的 PRB 指派 → 带仿射 QoS 代理的二元 LP 调度 → SCA 功率分配；复杂度 O(N_iter·N_sca·(S_c·N·T)^3.5)）与 <strong>QGAA</strong>（QoS 感知贪心交替分配：先为 QoS 违约者预留 PRB、按边际收益贪心指派、业务内调度、注水式功率修复；对 PRB × 时隙 × 链路线性）。</p>\n<p>评估采用 <strong>BostonTwin</strong> 城市数字孪生（BOS_G_5 瓦片，约 11 km × 11 km）与 <strong>Sionna-RT</strong> 射线追踪，PPP 部署密度为蜂窝 60/100 Tx/Rx 每 km²、各联邦业务 30/50 每 km²，T = 10 个 1 ms 时隙，占空比 (1, 0.2, 0.1, 0.1)。AMRA 在 50 MHz <em>共享</em>频谱下已超过 <em>专用</em> 20 MHz 蜂窝；在 100 MHz 池化下与专用 100 MHz 蜂窝持平或略优，同时还服务感知、导航与雷达。QGAA 与 AMRA 差距约 10 % 以内，但在任何密度下约 1 s 完成（AMRA 在密度因子 ζ = 1/2/3 下约 0.8 s → 6 s → 20 s）。收紧 γ_sen 使蜂窝和速率近似线性下降，收紧 ε_max 则出现非线性&quot;凸塌陷&quot;。</p>\n<h3>技术要点</h3>\n<ul><li>业务：蜂窝（2–4 GHz）、射频感知（3.1–3.7 GHz）、无线电导航与定位（2.7–5.65 GHz）；共享池中心 3.5 GHz；NR PRB 粒度，比例公平式蜂窝权重。</li><li>决策变量：PRB 授权 x_i^(n)(t) ∈ {0,1}、链路调度 a_{i,k,u}^(n)(t) ∈ {0,1}、功率 p_{i,k}^(n)(t)；业务间互斥 Σ_i x_i^(n)(t) ≤ 1；感知 SINR ≥ γ_sen；时间平均 CRLB PEB ≤ ε_max；各业务占空比。</li><li>AMRA：三阶段交替分解（指派 / 调度 / SCA 功率），少数外层迭代即收敛；QGAA：每时隙四步贪心，含 QoS 预留与功率修复，O(|N|·T·Σ_i|S_i||U_i|)。</li><li>协调器以 rApp 形式驻留 O-RAN 非实时 RIC（策略时标）——作者认为 QGAA 的线性开销可兼容 xApp 级反应速度；CBRS 被引为动态性有限的前身。</li><li>BostonTwin + Sionna-RT 场址级评估；AMRA 子问题用 CVX/Mosek/Gurobi；在满足全部联邦 QoS 下限的同时，共享严格优于更窄的独占分配。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库的频谱共享线索此前有地面/NTN FR3 共存（2026-06-13）与 FCC 上 C 波段拍卖规则（2026-08-05）；本条是首个针对<strong>美国 2.7–3.7 GHz 联邦频段簇的显式多业务优化</strong>，把无线电导航定位精度（CRLB PEB）与雷达、感知一起作为硬共存约束——正是 NTIA 当前重新规划研究的频段家族（参见 2026-08-15 NTIA 4.4 GHz 条目）。把协调器放进 O-RAN 非实时 RIC，使动态联邦共享绑定于 O-RAN 控制面而非 CBRS 式外部 SAS，QGAA 启发式给出运行时可行路径。局限：仅仿真（BostonTwin/Sionna-RT）、同质 PPP 部署，尚无学习型或分布式变体——作者列为后续工作。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2608.07789v1/system_model_updated.png",
+          "caption_en": "Multi-service coexistence architecture with the O-RAN Non-RT RIC rApp coordinator",
+          "caption_zh": "以 O-RAN 非实时 RIC rApp 为协调器的多业务共存架构"
+        },
+        {
+          "url": "https://arxiv.org/html/2608.07789v1/system_diagram_multiservice.png",
+          "caption_en": "BostonTwin deployment region with cellular, sensing, navigation and radar nodes",
+          "caption_zh": "含蜂窝、感知、导航与雷达节点的 BostonTwin 部署区域"
+        }
+      ],
+      "search_blob": "coordinated spectrum coexistence across heterogeneous commercial and federal services (amra / qgaa, o-ran rapp) 跨异构商用与联邦业务的协同频谱共存：amra/qgaa 多业务资源分配与 o-ran rapp 协调 spectrum-sharing federal-spectrum 3.5ghz radar-coexistence radionavigation o-ran rapp minlp sionna-rt nguyen, testolina, johari, polese and melodia (institute for intelligent networked systems, northeastern university; arxiv 7 aug 2026; nsf cns-2434081 + national spectrum consortium ot w15qkn-21-9-5599) formulate **four-service dynamic sharing of the congested 2.7–3.7 ghz federal band cluster** — cellular (3gpp nr prb grid), rf sensing, radionavigation and radiolocation radar — as a single centralized resource-allocation problem, in contrast to the static partitions and cbrs-style coarse-grained tiers that leave spectrum idle at cellular peak. the coordinator is envisioned as an **rapp on the o-ran non-rt ric** operating on seconds-to-minutes policy timescales, with an extended coordination plane through which sensing/navigation nodes publish activity schedules and accept prb grants. nguyen、testolina、johari、polese 与 melodia（美国东北大学智能网络系统研究所；2026 年 8 月 7 日 arxiv；nsf cns-2434081 + 国家频谱联盟 ot w15qkn-21-9-5599）把**拥塞的 2.7–3.7 ghz 联邦频段簇内四类业务的动态共享**——蜂窝（3gpp nr prb 网格）、射频感知、无线电导航、无线电定位雷达——建模为单一集中式资源分配问题，区别于在蜂窝峰值时段让频谱闲置的静态划分与 cbrs 式粗粒度分层。协调器设想为 **o-ran 非实时 ric 上的 rapp**，工作在秒到分钟的策略时标，并通过扩展协调面让感知/导航节点发布活动计划、接受 prb 授权。 academic-paper cellular"
+    },
+    {
       "id": "2026-08-12_arxiv-rigid-covert-gnss-spoofing-uav-swarms",
       "date_found": "2026-08-12",
       "technology": "satellite",
@@ -5294,6 +5361,47 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>EvoRIC（Lingyan Bao、Jemin Lee、Tony Q.S. Quek；arXiv，2026 年 4 月 23 日提交，8 月 7 日修订）是一个分层框架，将大语言模型置于 O-RAN 控制回路中，作为通过强化学习不断改进的决策智能体。核心机制是<strong>强化学习微调（RLFT）</strong>方案：<strong>LLM 作为近端策略优化（PPO）智能体中的 actor</strong>，通过与无线环境交互精炼其语义推理，使输出对齐实测网络性能指标，而非泛化的预训练目标。</p>\n<p>该框架映射到 O-RAN 两级 RIC 划分：<strong>非实时 RIC</strong> 承载全局模型更新（微调回路），<strong>近实时 RIC</strong> 运行所学策略的本地执行。作者在集成接入与回传（IAB）网络中评测，将该方法定位为迈向自主 O-RAN 运行的一步——基于 LLM 的控制器在线自适应，而非依赖手工调参或窄训练的控制策略。（本条目为摘要级：入库时 arXiv HTML 渲染尚不可用，故未收录具体数字与基线对比。）</p>\n<h3>技术要点</h3>\n<ul><li><strong>机制：</strong> LLM 作为 PPO 智能体中的 actor；强化学习微调（RLFT）使其推理对齐网络性能奖励。</li><li><strong>O-RAN 映射：</strong> 非实时 RIC = 全局模型更新；近实时 RIC = 本地策略执行。</li><li><strong>评测：</strong> 在集成接入与回传（IAB）网络中；面向自主 O-RAN。</li><li><strong>状态：</strong> 2026 年 4 月提交、8 月修订；摘要级入库（HTML 尚未渲染）。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 已跟踪 LLM 用于 RAN 控制（如 LLM gNB 配置、agentic-RAN 工作）；EvoRIC 的具体切入点是用 RLFT 使 LLM 本身成为标准非实时/近实时 RIC 划分内可训练的 PPO actor，并在 IAB 网络上验证。这将其置于开放 RAN / cellular-AI bin 中日益增多的&quot;LLM 作为控制器&quot;一角。摘要级新颖性中等（2）——LLM 赋能 RIC 控制是活跃领域，贡献是特定微调表述而非新架构原语；待全文渲染后可回访具体数字。</p>",
       "images": [],
       "search_blob": "evoric: reinforcement learning fine-tuned llm-empowered ran intelligent control toward autonomous o-ran evoric：面向自主 o-ran 的强化学习微调 llm 赋能 ran 智能控制 o-ran ric llm ppo rlft iab evoric (lingyan bao, jemin lee, tony q.s. quek; arxiv, submitted 23 apr 2026, revised 7 aug 2026) is a hierarchical framework that puts a large language model inside the o-ran control loop as a decision-making agent that improves through reinforcement learning. the core mechanism is a **reinforcement-learning fine-tuning (rlft)** scheme in which the **llm operates as the actor within a proximal policy optimization (ppo) agent**, refining its semantic reasoning through interaction with the wireless environment so that its outputs align with measured network-performance metrics rather than generic pretraining objectives. evoric（lingyan bao、jemin lee、tony q.s. quek；arxiv，2026 年 4 月 23 日提交，8 月 7 日修订）是一个分层框架，将大语言模型置于 o-ran 控制回路中，作为通过强化学习不断改进的决策智能体。核心机制是**强化学习微调（rlft）**方案：**llm 作为近端策略优化（ppo）智能体中的 actor**，通过与无线环境交互精炼其语义推理，使输出对齐实测网络性能指标，而非泛化的预训练目标。 academic-paper cellular"
+    },
+    {
+      "id": "2026-08-15_novelbits-ble-advertising-energy-four-decisions",
+      "date_found": "2026-08-15",
+      "technology": "bluetooth",
+      "date_published": "2026-08-06",
+      "type": "tutorial",
+      "category": "academia",
+      "title_en": "Four BLE advertising decisions priced in joules: PPK2 measurements on nRF54L15 show TX-power asymmetry (~4:1), 0.33 µJ/byte payload cost, 42–60% scannable overhead, and interval as the only multiplier",
+      "title_zh": "用焦耳给四个 BLE 广播决策定价：nRF54L15 + PPK2 实测显示发射功率不对称（约 4:1）、负载 0.33 µJ/字节、可扫描广播开销 42–60%、广播间隔是唯一的乘数项",
+      "url": "https://novelbits.io/bluetooth-le-advertising-energy-four-decisions/",
+      "topics": [
+        "BLE",
+        "advertising",
+        "power-measurement",
+        "nRF54L15",
+        "PPK2",
+        "coin-cell",
+        "energy-budget"
+      ],
+      "topic_primary": "bt-le",
+      "topics_secondary": [],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-15_novelbits-ble-advertising-energy-four-decisions.md",
+      "summary_short_en": "Novel Bits (Mohammad Afaneh) published a bench study on August 6, 2026 that assigns a measured energy price to the four advertising-configuration decisions every BLE peripheral developer makes: transmit power, payload length, scannable vs non-scannable, and advertising interval. The rig is an nRF54L15-DK (PCA10156 v1.0.0) at 1.8 V, running nRF Connect SDK v3.3.0, measured with a Nordic Power Profiler Kit II in 30-second captures — legacy advertising, LE 1M PHY, all three primary channels (37/38/39). Per-event energy is derived by dividing captured charge by counted events; the resolvable difference floor is ±5.8%.",
+      "summary_short_zh": "Novel Bits（Mohammad Afaneh）于 2026 年 8 月 6 日发布一项台架实测，为每个 BLE 外设开发者都会做的四个广播配置决策——发射功率、负载长度、可扫描/不可扫描、广播间隔——标出实测的能量价格。测试平台是 nRF54L15-DK（PCA10156 v1.0.0），1.8 V 供电，运行 nRF Connect SDK v3.3.0，用 Nordic Power Profiler Kit II 做 30 秒抓取——传统（legacy）广播、LE 1M PHY、37/38/39 三个主广播信道。单次广播事件能量 = 抓取电荷量 ÷ 事件计数；可分辨差异下限为 ±5.8%。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Novel Bits (Mohammad Afaneh) published a bench study on August 6, 2026 that assigns a measured energy price to the four advertising-configuration decisions every BLE peripheral developer makes: transmit power, payload length, scannable vs non-scannable, and advertising interval. The rig is an nRF54L15-DK (PCA10156 v1.0.0) at 1.8 V, running nRF Connect SDK v3.3.0, measured with a Nordic Power Profiler Kit II in 30-second captures — legacy advertising, LE 1M PHY, all three primary channels (37/38/39). Per-event energy is derived by dividing captured charge by counted events; the resolvable difference floor is ±5.8%.</p>\n<p>Headline numbers: energy per advertising event scales from <strong>9.32 µJ at −40 dBm through 15.80 µJ at 0 dBm to 31.65 µJ at +8 dBm</strong> — so raising TX power by 8 dB costs about 4× more energy than lowering it by 8 dB refunds (measured 3.97:1; Nordic's datasheet-derived prediction is 3.6:1 and the Online Power Profiler predicts 3.2:1). Growing the payload from 17 to 27 bytes moves the event from 15.49 to 18.79 µJ (<strong>≈0.33 µJ per byte</strong>). Turning on scannability lifts the event to 23.33 µJ, an overhead that ranged <strong>42–60%</strong> depending on how many nearby scanners actually issued SCAN_REQs (i.e., it is environment-dependent, not a fixed tax). Sweeping the interval from 100 ms to 2 s leaves per-event energy flat at ~15.5 µJ (±3%) while average current drops <strong>86.8 µA → 10.6 µA (8×)</strong> and daily charge falls from 2.1 mAh to 0.26 mAh; the interval-sweep intercept exposes a ~6 µA baseline between events. A subtle detail: a nominal 100 ms interval yields ~286 events per 30 s rather than 300 because of the specification's mandated 0–10 ms random advDelay (mean ~5 ms).</p>\n<p>The author's resulting priority order for battery-life reviews is: interval first (it is the only multiplicative lever and usually sits at a default), scannability second (audit whether scan responses are needed at all, or move data into extended advertising), guard TX-power increases (expensive and rarely revisited), and watch payload growth (a small per-byte cost that compounds silently over a product's life). Stated limits: single board and session, legacy 1M PHY only (extended advertising and 2M/Coded PHY are follow-ups), uncontrolled temperature and ambient scan traffic, and TX power not verified with a spectrum analyzer.</p>\n<h3>Key technical points</h3>\n<ul><li>Rig: nRF54L15-DK + PPK2 at 1.8 V, NCS v3.3.0, legacy advertising on LE 1M PHY over channels 37/38/39; 30 s captures; ±5.8% resolvable-difference floor.</li><li>TX power vs energy/event: −40 dBm 9.32 µJ, −20 dBm 10.98 µJ, −8 dBm 11.80 µJ, 0 dBm 15.80 µJ, +4 dBm 20.73 µJ, +8 dBm 31.65 µJ — asymmetric (+8 dB costs ~4× what −8 dB saves).</li><li>Payload: 17 B → 27 B raises event energy 15.49 → 18.79 µJ, ≈0.33 µJ/byte (single size pair; treat as indicative).</li><li>Scannable advertising: 15.49 → 23.33 µJ, 42–60% overhead depending on ambient scanner population.</li><li>Interval 100 ms → 2 s: per-event energy flat (~15.5 µJ), average current 86.8 → 10.6 µA, daily charge 2.1 → 0.26 mAh; ~6 µA inter-event baseline; effective event rate is below nominal due to the spec's random advDelay.</li><li>Recommended review order: interval → scannability → TX power → payload.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's BLE bin so far holds silicon launches (nRF54L15 Tag 2026-07-06, nRF54LM20B 2026-05-30, Silicon Labs BG2B 2026-08-14), protocol work (Enhanced-BLE hybrid 2026-05-21, LightCal crystal-free 2026-08-04) and specification items — but no measured, reproducible energy-per-decision data for the most common BLE workload of all, connectionless advertising. This post supplies exactly that on the current-generation nRF54L15 with a documented method and uncertainty floor, and two of its findings are non-obvious enough to change design reviews: TX-power energy cost is strongly asymmetric around 0 dBm (so &quot;add 8 dB for margin&quot; is far pricier than &quot;drop 8 dB&quot; is cheap), and scannable-advertising overhead is a function of the RF environment rather than a fixed constant. It also grounds the coin-cell claims of the recent SoC entries in field-usable numbers (e.g., a 2 s beacon at 0 dBm on this part averages ~10.6 µA including a ~6 µA baseline). Caveats carried over from the source: single board/session, legacy 1M PHY only, payload conclusion from one size pair.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Novel Bits（Mohammad Afaneh）于 2026 年 8 月 6 日发布一项台架实测，为每个 BLE 外设开发者都会做的四个广播配置决策——发射功率、负载长度、可扫描/不可扫描、广播间隔——标出实测的能量价格。测试平台是 nRF54L15-DK（PCA10156 v1.0.0），1.8 V 供电，运行 nRF Connect SDK v3.3.0，用 Nordic Power Profiler Kit II 做 30 秒抓取——传统（legacy）广播、LE 1M PHY、37/38/39 三个主广播信道。单次广播事件能量 = 抓取电荷量 ÷ 事件计数；可分辨差异下限为 ±5.8%。</p>\n<p>核心数据：单次广播事件能量从 <strong>−40 dBm 的 9.32 µJ、0 dBm 的 15.80 µJ 升至 +8 dBm 的 31.65 µJ</strong>——发射功率上调 8 dB 多耗的能量约为下调 8 dB 省下能量的 4 倍（实测 3.97:1；Nordic 数据手册推算 3.6:1，在线功耗分析器预测 3.2:1）。负载从 17 字节增到 27 字节，单事件从 15.49 µJ 升到 18.79 µJ（<strong>约 0.33 µJ/字节</strong>）。打开可扫描后单事件升到 23.33 µJ，开销在 <strong>42–60%</strong> 之间浮动，取决于周边有多少扫描器真的发出 SCAN_REQ（即它是环境相关的，不是固定税）。间隔从 100 ms 扫到 2 s，单事件能量保持 ~15.5 µJ 不变（±3%），而平均电流从 <strong>86.8 µA 降到 10.6 µA（8 倍）</strong>，日耗电从 2.1 mAh 降到 0.26 mAh；间隔扫描的截距还暴露出事件之间约 6 µA 的底噪电流。一个细节：标称 100 ms 间隔在 30 秒内只产生约 286 次事件而非 300 次，原因是规范强制的 0–10 ms 随机 advDelay（均值约 5 ms）。</p>\n<p>作者由此给出的电池寿命评审优先级：先看间隔（唯一的乘数杠杆，且通常停留在默认值）；再审可扫描性（是否真的需要扫描响应，或把数据搬进扩展广播）；把关发射功率上调（贵且很少被回头审视）；盯住负载增长（单字节成本小，但在产品生命周期内悄悄累积）。声明的局限：单板单次会话、仅 legacy 1M PHY（扩展广播与 2M/Coded PHY 待后续）、温度与环境扫描流量未受控、发射功率未经频谱仪核验。</p>\n<h3>技术要点</h3>\n<ul><li>平台：nRF54L15-DK + PPK2，1.8 V，NCS v3.3.0，LE 1M PHY 上的 legacy 广播（37/38/39 信道）；30 s 抓取；可分辨差异下限 ±5.8%。</li><li>发射功率 vs 单事件能量：−40 dBm 9.32 µJ、−20 dBm 10.98 µJ、−8 dBm 11.80 µJ、0 dBm 15.80 µJ、+4 dBm 20.73 µJ、+8 dBm 31.65 µJ——不对称（+8 dB 的代价约为 −8 dB 收益的 4 倍）。</li><li>负载：17 B → 27 B，单事件 15.49 → 18.79 µJ，约 0.33 µJ/字节（仅一对尺寸，视为指示性）。</li><li>可扫描广播：15.49 → 23.33 µJ，开销 42–60%，取决于环境中扫描器数量。</li><li>间隔 100 ms → 2 s：单事件能量不变（~15.5 µJ），平均电流 86.8 → 10.6 µA，日耗电 2.1 → 0.26 mAh；事件间底噪约 6 µA；受规范随机 advDelay 影响，实际事件率低于标称。</li><li>建议评审顺序：间隔 → 可扫描性 → 发射功率 → 负载。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的 BLE 分箱迄今收录的是芯片发布（nRF54L15 Tag 2026-07-06、nRF54LM20B 2026-05-30、Silicon Labs BG2B 2026-08-14）、协议工作（Enhanced-BLE 混合 2026-05-21、LightCal 无晶振 2026-08-04）与规范条目——但还没有针对最常见的 BLE 负载即无连接广播的、可复现的&quot;每个决策耗多少能量&quot;实测数据。本文恰好在现役 nRF54L15 上给出了这类数据，并附方法与不确定度下限，其中两点足以改变设计评审的直觉：发射功率的能耗代价在 0 dBm 附近强烈不对称（&quot;加 8 dB 留余量&quot;远比&quot;降 8 dB 省电&quot;更贵），而可扫描广播的开销取决于射频环境而非固定常数。它也把近期 SoC 条目的纽扣电池宣称落到可用的数字上（例如该器件 0 dBm、2 s 信标平均约 10.6 µA，其中约 6 µA 是底噪）。沿用来源的注意事项：单板单次会话、仅 legacy 1M PHY、负载结论仅基于一对尺寸。</p>",
+      "images": [
+        {
+          "url": "https://storage.ghost.io/c/86/70/8670d5a8-12b7-448c-b3db-a85bc1fcdea7/content/images/2026/08/fig-four-decisions-range-1.png",
+          "caption_en": "Range of per-event energy for each of the four advertising decisions on nRF54L15",
+          "caption_zh": "nRF54L15 上四个广播决策各自的单事件能量范围"
+        },
+        {
+          "url": "https://storage.ghost.io/c/86/70/8670d5a8-12b7-448c-b3db-a85bc1fcdea7/content/images/2026/08/fig-interval-current-draw.png",
+          "caption_en": "Energy per event stays flat vs advertising interval while average current falls 8×",
+          "caption_zh": "单事件能量随广播间隔保持不变，平均电流下降 8 倍"
+        }
+      ],
+      "search_blob": "four ble advertising decisions priced in joules: ppk2 measurements on nrf54l15 show tx-power asymmetry (~4:1), 0.33 µj/byte payload cost, 42–60% scannable overhead, and interval as the only multiplier 用焦耳给四个 ble 广播决策定价：nrf54l15 + ppk2 实测显示发射功率不对称（约 4:1）、负载 0.33 µj/字节、可扫描广播开销 42–60%、广播间隔是唯一的乘数项 ble advertising power-measurement nrf54l15 ppk2 coin-cell energy-budget novel bits (mohammad afaneh) published a bench study on august 6, 2026 that assigns a measured energy price to the four advertising-configuration decisions every ble peripheral developer makes: transmit power, payload length, scannable vs non-scannable, and advertising interval. the rig is an nrf54l15-dk (pca10156 v1.0.0) at 1.8 v, running nrf connect sdk v3.3.0, measured with a nordic power profiler kit ii in 30-second captures — legacy advertising, le 1m phy, all three primary channels (37/38/39). per-event energy is derived by dividing captured charge by counted events; the resolvable difference floor is ±5.8%. novel bits（mohammad afaneh）于 2026 年 8 月 6 日发布一项台架实测，为每个 ble 外设开发者都会做的四个广播配置决策——发射功率、负载长度、可扫描/不可扫描、广播间隔——标出实测的能量价格。测试平台是 nrf54l15-dk（pca10156 v1.0.0），1.8 v 供电，运行 nrf connect sdk v3.3.0，用 nordic power profiler kit ii 做 30 秒抓取——传统（legacy）广播、le 1m phy、37/38/39 三个主广播信道。单次广播事件能量 = 抓取电荷量 ÷ 事件计数；可分辨差异下限为 ±5.8%。 tutorial bluetooth"
     },
     {
       "id": "2026-08-13_starlink-v5-dish-standby-removal",
