@@ -1,0 +1,55 @@
+---
+id: 2026-08-19_arxiv-aggressive-noma-dft-s-ofdm-device-to-satellite-uplink
+date_published: 2026-08-17
+date_found: 2026-08-19
+type: academic-paper
+technology: satellite
+title_en: "Aggressive non-orthogonal DFT-s-OFDM uplink for direct device-to-satellite: Surrey's DFT-s-NL receiver serves 16 UEs on 4 antennas, 2× the spectral efficiency of LMMSE and 40 % over DL-GAMP at 15 % of its complexity, with up to 6 dB lower PAPR"
+title_zh: "面向手机直连卫星上行的激进非正交 DFT-s-OFDM：萨里大学 DFT-s-NL 接收机以 4 天线服务 16 个 UE，频谱效率为 LMMSE 的 2 倍、比 DL-GAMP 高 40% 而复杂度仅 15%，PAPR 最多再降 6 dB"
+url: "https://arxiv.org/abs/2608.16361"
+source_quality: full
+topics: [direct-to-device, NTN-uplink, DFT-s-OFDM, NOMA, overloaded-MIMO, PAPR, power-amplifier-back-off, MU-MIMO-detection, tree-search, LLR, Doppler, DM-RS, CAMAD-2026]
+topic_primary: sat-direct-device
+topics_secondary: [leo-constellations]
+novelty_score: 3
+---
+
+## Summary (EN)
+Jayawardena and Nikitopoulos (Wireless Systems Lab / 6GIC, University of Surrey; Nikitopoulos also Noema Signal Labs; submitted 17 Aug 2026, eess.SP; accepted at IEEE CAMAD 2026) attack the uplink spectral-efficiency (SE) bottleneck of **direct device-to-satellite (D2S)** links, where extreme path loss and handset power caps push SNR to a few dB and suitable spectrum is scarce. Their thesis is that in exactly this low-SNR regime "aggressive" non-orthogonal transmission — letting the number of concurrently transmitting UEs K exceed the number of satellite receive antennas M by more than 2× — yields a *received-power* capacity gain that is independent of spatial multiplexing (each extra UE adds a rank-one term to the Wishart matrix HHᴴ, and at low SNR capacity is nearly linear in aggregate received power), and that pairing this with 3GPP's optional low-PAPR **DFT-s-OFDM** uplink waveform compounds the power-efficiency benefit on three fronts: DFT-s-OFDM's inherently lower PAPR versus OFDM, the further PAPR drop from the lower-order modulation each UE can fall back to when overloaded (16-QAM → QPSK → π/2-BPSK, ~6.5–7 dB → ~5.5–6 dB → ~1–2 dB at 10⁻³ CCDF), and fewer receive antennas / RF chains at the base station.
+
+The obstacle is detection: DFT precoding spreads each symbol across all N allocated subcarriers, so per-subcarrier MIMO detectors no longer apply, joint-subcarrier LMMSE scales cubically with N, and message-passing detectors (e.g. DL-GAMP) need sparse structure and ~50 iterations each with DFT/IDFT. The proposed **DFT-s-NL** receiver applies a regularized QR decomposition (λ = σ/√Pₜ, valid for K > M) to each per-subcarrier channel, performs successive per-user frequency-domain equalization from user K downward, IDFT-despreads to the time domain, demaps with a tree-search (fixed-complexity sphere or MultiSphere massively-parallel nonlinear, ~16 tree paths chosen from a channel-only preprocessing metric), re-spreads with the DFT to cancel that user's interference in the frequency domain, and accumulates distance metrics per subcarrier; the authors prove (via unitary invariance of Qˇ and F) that the max-log LLR can be computed independently per subcarrier without loss of optimality — the key complexity lever. Per received vector the cost is 3MK + nₜₚK(2log₂N + 3(K + (1+K)/2)) multiplications versus TK(4K + 6√|O| + 4log₂N) for DL-GAMP.
+
+Simulations use 3GPP TDL-A, 48 active subcarriers at 30 kHz, 100 ns delay spread, 2 GHz carrier, 4 dB SNR, MCS from the 3GPP tables. With a 4-antenna receiver, going from 4 → 8 → 16 UEs raises SE step-by-step over both an extended DFT-s-LMMSE and a DFT-s-SIC baseline the authors had to construct (no overloaded DFT-s-OFDM detector exists in the literature), while PAPR falls monotonically; the 8-UE case halves and the 16-UE case quarters the antenna/RF-chain count needed for equal throughput. In a 4×4 configuration DFT-s-NL reaches nearly 2× the SE of DFT-s-LMMSE and 40 % more than DL-GAMP at 15 % of DL-GAMP's multiplications (training excluded); joint-subcarrier processing is impractical even at 48 subcarriers. In an 8×8 setting with real 3GPP DM-RS-based channel estimation and radial speeds of 5–500 km/h (representative of LEO/MEO near zenith; 500 km/h is the current DM-RS mobility ceiling), DFT-s-NL delivers up to 2.2× the SE of LMMSE and stays robust to estimation error and Doppler. UEs are assumed pre-synchronized via the 3GPP NTN GNSS + ephemeris procedure. Headline PAPR reduction: up to 6 dB versus DFT-s-OFDM MIMO and 11 dB versus OFDM.
+
+## Summary (ZH)
+Jayawardena 与 Nikitopoulos（萨里大学无线系统实验室 / 6GIC；Nikitopoulos 兼 Noema Signal Labs；2026 年 8 月 17 日提交，eess.SP；已被 IEEE CAMAD 2026 接收）针对 **手机直连卫星（D2S）** 上行的频谱效率（SE）瓶颈——极端路损与手机功率上限把 SNR 压到几 dB，且合适频谱稀缺。其论点是：恰在此低 SNR 区间，"激进"非正交传输——让并发 UE 数 K 超过卫星接收天线数 M 达 2 倍以上——带来与空间复用无关的*接收功率*容量增益（每多一个 UE 就给 Wishart 矩阵 HHᴴ 增加一个秩一项，低 SNR 下容量近似线性于总接收功率）；再配以 3GPP 可选的低 PAPR **DFT-s-OFDM** 上行波形，功率效率在三方面叠加：DFT-s-OFDM 相对 OFDM 天然更低的 PAPR、过载时每个 UE 可退到更低阶调制带来的进一步 PAPR 下降（16-QAM → QPSK → π/2-BPSK，10⁻³ CCDF 处约 6.5–7 dB → 5.5–6 dB → 1–2 dB），以及基站更少的接收天线 / 射频链。
+
+难点在检测：DFT 预编码把每个符号扩展到全部 N 个子载波，逐子载波 MIMO 检测器失效，联合子载波 LMMSE 复杂度随 N 立方增长，消息传递检测器（如 DL-GAMP）需要稀疏结构且每次迭代（约 50 次）都要做 DFT/IDFT。所提 **DFT-s-NL** 接收机对每个子载波信道做正则化 QR 分解（λ = σ/√Pₜ，K > M 时仍适用），从用户 K 向下逐用户做频域连续均衡，IDFT 解扩到时域，用树搜索（固定复杂度球形或 MultiSphere 大规模并行非线性，约 16 条由仅依赖信道的预处理度量选出的树路径）解映射，再用 DFT 重新扩频以在频域消除该用户干扰，并逐子载波累计距离度量；作者借助 Qˇ 与 F 的酉不变性证明 max-log LLR 可逐子载波独立计算而不损失最优性——这是关键的复杂度杠杆。每接收向量的开销为 3MK + nₜₚK(2log₂N + 3(K + (1+K)/2)) 次乘法，对比 DL-GAMP 的 TK(4K + 6√|O| + 4log₂N)。
+
+仿真采用 3GPP TDL-A、48 个 30 kHz 有效子载波、100 ns 时延扩展、2 GHz 载波、4 dB SNR、按 3GPP 表选 MCS。4 天线接收下，UE 数从 4 → 8 → 16 逐级提升 SE，优于扩展的 DFT-s-LMMSE 及作者自行构造的 DFT-s-SIC 基线（文献中尚无过载 DFT-s-OFDM 检测器），PAPR 单调下降；同等吞吐下 8 UE 场景把天线 / 射频链数减半，16 UE 场景减为四分之一。4×4 配置中 DFT-s-NL 的 SE 接近 DFT-s-LMMSE 的 2 倍、比 DL-GAMP 高 40%，乘法数仅为 DL-GAMP 的 15%（不含训练）；即便只有 48 个子载波，联合子载波处理也不可行。8×8 配置下，用真实 3GPP DM-RS 信道估计与 5–500 km/h 径向速度（代表近天顶的 LEO/MEO；500 km/h 为当前 DM-RS 支持的移动性上限），DFT-s-NL 达 LMMSE 的 2.2 倍 SE，对估计误差与多普勒保持稳健。假设 UE 已按 3GPP NTN 的 GNSS + 星历流程预同步。PAPR 标称降幅：相对 DFT-s-OFDM MIMO 最多 6 dB，相对 OFDM 11 dB。
+
+## Key technical points (EN)
+- **Setting:** D2S uplink, K single-antenna UEs on the same N subcarriers to an M-antenna satellite receiver; DFT-s-OFDM with CP; block-diagonal per-subcarrier MU channel; SNR ≈ 4 dB.
+- **Gain mechanism:** overloaded regime K > M (K/M > 2) gives received-power capacity gain independent of spatial multiplexing, strongest at low SNR; conventional NOMA limit of 2 UEs per antenna/frequency element exceeded.
+- **Power efficiency:** DFT-s-OFDM PAPR ~1–2 dB (π/2-BPSK) to ~8–8.5 dB (256-QAM) vs 10.5–12 dB OFDM; overloading permits lower-order MCS → lower PAPR → smaller PA back-off; fewer BS RF chains.
+- **DFT-s-NL receiver:** regularized QR (λ = σ/√Pₜ) per subcarrier; successive frequency-domain equalization user K → 1; IDFT despread; FCSD / MPNL tree-search demapping (~16 paths, channel-only path selection); DFT re-spread for interference cancellation; per-subcarrier max-log LLR proven equivalent to joint LLR.
+- **Complexity:** per received vector 3MK + nₜₚK(2log₂N + 3(K+(1+K)/2)) vs DL-GAMP TK(4K + 6√|O| + 4log₂N); channel update 6MK².
+- **Results:** 4 Rx antennas, 4/8/16 UEs — SE rises with overloading, PAPR falls; RF chains halved (8 UE) / quartered (16 UE) for equal throughput; 4×4: ~2× LMMSE, +40 % vs DL-GAMP at 15 % complexity; 8×8 with 3GPP DM-RS estimation, 5–500 km/h: up to 2.2× LMMSE.
+- **Sim params:** TDL-A, 48 subcarriers @ 30 kHz, 100 ns delay spread, 2 GHz carrier, 3GPP MCS tables; UE pre-compensation of Doppler/delay via NTN GNSS + ephemeris.
+- **Headline PAPR:** −6 dB vs DFT-s-OFDM MIMO, −11 dB vs OFDM.
+
+## Key technical points (ZH)
+- **场景：** D2S 上行，K 个单天线 UE 在同一组 N 个子载波向 M 天线卫星接收机发送；带 CP 的 DFT-s-OFDM；逐子载波块对角多用户信道；SNR ≈ 4 dB。
+- **增益机理：** 过载区间 K > M（K/M > 2）产生与空间复用无关的接收功率容量增益，低 SNR 下最显著；突破每天线/每频率单元 2 个 UE 的传统 NOMA 上限。
+- **功率效率：** DFT-s-OFDM PAPR 约 1–2 dB（π/2-BPSK）至 8–8.5 dB（256-QAM），对比 OFDM 10.5–12 dB；过载允许更低阶 MCS → 更低 PAPR → 更小 PA 回退；基站射频链更少。
+- **DFT-s-NL 接收机：** 逐子载波正则化 QR（λ = σ/√Pₜ）；用户 K → 1 的频域连续均衡；IDFT 解扩；FCSD / MPNL 树搜索解映射（约 16 条路径，仅依赖信道选路径）；DFT 重扩频做干扰消除；逐子载波 max-log LLR 被证明等价于联合 LLR。
+- **复杂度：** 每接收向量 3MK + nₜₚK(2log₂N + 3(K+(1+K)/2))，对比 DL-GAMP 的 TK(4K + 6√|O| + 4log₂N)；信道更新 6MK²。
+- **结果：** 4 接收天线、4/8/16 UE——SE 随过载上升、PAPR 下降；同等吞吐下射频链减半（8 UE）/ 减为四分之一（16 UE）；4×4：约 LMMSE 的 2 倍、比 DL-GAMP 高 40% 而复杂度 15%；8×8 用 3GPP DM-RS 估计、5–500 km/h：最高达 LMMSE 的 2.2 倍。
+- **仿真参数：** TDL-A、48 个 30 kHz 子载波、100 ns 时延扩展、2 GHz 载波、3GPP MCS 表；UE 通过 NTN GNSS + 星历预补偿多普勒/时延。
+- **标称 PAPR：** 相对 DFT-s-OFDM MIMO −6 dB，相对 OFDM −11 dB。
+
+## Why it matters / what's new (EN)
+The KB's direct-to-device thread has so far covered the *system* side (Elveo/Lynk–Omnispace 2026-08-18, AST Block-2 2026-08-15/-07, Starlink PoP assignment 2026-08-17, Equatys 2026-08-14) and, on the waveform side, only the random-access preamble (2026-08-17 HFM PRACH for NTN Doppler) and positioning/synchronization (2026-08-15 SSB CRLB). This is the first entry on the **data-channel uplink receiver** for D2S, and it reframes the problem: rather than fighting the few-dB link budget with bigger satellite apertures (the AST route) or more spectrum (the EchoStar/2 GHz MSS route), it argues that low SNR is precisely where deliberate overloading — 4× more UEs than antennas — pays off, because aggregate received power, not spatial rank, is what capacity is short of. The pairing with DFT-s-OFDM is what makes it a satellite story: PAPR headroom converts directly into PA back-off, i.e. handset range/coverage and battery, and the paper quantifies the modulation-fallback PAPR cascade (16-QAM → π/2-BPSK) that overloading enables. The technical contribution — a per-subcarrier tree-search receiver whose LLR decomposition is proven optimal despite DFT spreading, at 15 % of DL-GAMP's cost — closes what the authors identify as a literature gap (no overloaded DFT-s-OFDM detector existed). Caveats: results are link-level simulations at a single 4 dB operating point with a 2 GHz carrier and only 48 subcarriers; the satellite receiver is modelled as a base station with M ≤ 8 antennas (not a large digitally beamformed array); UE synchronization is assumed via the 3GPP NTN GNSS/ephemeris procedure; and inter-beam interference, power control across UEs at very different path losses, and the tree-search's parallel-hardware footprint on a payload are not addressed.
+
+## Why it matters / what's new (ZH)
+知识库的手机直连脉络至今覆盖的是*系统*侧（Elveo/Lynk–Omnispace 2026-08-18、AST Block-2 2026-08-15/-07、Starlink PoP 分配 2026-08-17、Equatys 2026-08-14），波形侧仅有随机接入前导（2026-08-17 面向 NTN 多普勒的 HFM PRACH）与定位/同步（2026-08-15 SSB CRLB）。本条目是首个关于 D2S **数据信道上行接收机** 的条目，并重构了问题：不是靠更大卫星口径（AST 路线）或更多频谱（EchoStar / 2 GHz MSS 路线）去硬扛几 dB 的链路预算，而是主张低 SNR 恰是有意过载——UE 数达天线数 4 倍——的用武之地，因为容量所缺的是总接收功率而非空间秩。与 DFT-s-OFDM 的组合使其成为卫星故事：PAPR 余量直接转化为 PA 回退，即手机的距离/覆盖与续航，论文还量化了过载所允许的调制回退 PAPR 级联（16-QAM → π/2-BPSK）。技术贡献——一种逐子载波树搜索接收机，其 LLR 分解在 DFT 扩频下仍被证明最优、开销仅为 DL-GAMP 的 15%——填补了作者指出的文献空白（此前不存在过载 DFT-s-OFDM 检测器）。注意事项：结果为单一 4 dB 工作点、2 GHz 载波、仅 48 个子载波的链路级仿真；卫星接收机被建模为 M ≤ 8 天线的基站（而非大型数字波束赋形阵列）；假设 UE 通过 3GPP NTN GNSS/星历流程完成同步；波束间干扰、路损差异极大的 UE 间功控、以及树搜索并行硬件在载荷上的开销均未涉及。
