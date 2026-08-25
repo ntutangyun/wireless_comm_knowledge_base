@@ -1,7 +1,7 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-08-24",
-  "last_scanned": "2026-08-24",
+  "last_updated": "2026-08-25",
+  "last_scanned": "2026-08-25",
   "topic_counts": {
     "6G": 60,
     "O-RAN": 50,
@@ -20,9 +20,9 @@ window.KB_DATA = {
     "802.11bf": 22,
     "CSI": 22,
     "BLE": 22,
+    "ISAC": 20,
     "NearLink": 19,
     "IoT": 19,
-    "ISAC": 19,
     "5G-NR": 19,
     "NTN": 18,
     "MAPC": 18,
@@ -32,33 +32,33 @@ window.KB_DATA = {
     "LLM": 16,
     "FCC": 16,
     "MLO": 16,
+    "802.11bp": 15,
     "6GHz": 15,
     "spectrum": 15,
     "digital-twin": 15,
     "802.11": 15,
     "PHY-layer": 15,
-    "802.11bp": 14,
     "privacy": 13,
+    "AMP": 12,
+    "mmWave": 12,
     "xApp": 12,
     "802.11ax": 12,
     "SparkLink": 11,
     "SLE": 11,
-    "AMP": 11,
-    "mmWave": 11,
     "automotive": 11,
     "RIC": 10,
     "OpenAirInterface": 10,
     "machine-learning": 10,
     "3GPP": 10,
     "energy-efficiency": 10,
+    "TGbp": 9,
+    "ambient-power": 9,
     "QoS": 9,
     "resource-allocation": 9,
     "Wi-Fi-8": 9,
     "UAV": 9,
     "generative-AI": 9,
     "edge-AI": 8,
-    "TGbp": 8,
-    "ambient-power": 8,
     "massive-MIMO": 8,
     "channel-sounding": 8,
     "URLLC": 8,
@@ -97,7 +97,9 @@ window.KB_DATA = {
     "OFDMA": 6,
     "measurement": 6,
     "PQC": 6,
+    "PDT": 5,
     "SLB": 5,
+    "GNN": 5,
     "TGbt": 5,
     "Bluetooth": 5,
     "physical-layer-security": 5,
@@ -118,7 +120,6 @@ window.KB_DATA = {
     "Co-BF": 5,
     "UPF": 4,
     "benchmark": 4,
-    "PDT": 4,
     "T-Mobile": 4,
     "SDR": 4,
     "FWA": 4,
@@ -147,7 +148,6 @@ window.KB_DATA = {
     "ELR": 4,
     "congestion-control": 4,
     "UHR": 4,
-    "GNN": 4,
     "RTLS": 4,
     "LB291": 4,
     "Co-RTWT": 4,
@@ -158,6 +158,8 @@ window.KB_DATA = {
     "interoperability": 4,
     "WPA3": 4,
     "802.11az": 4,
+    "WPT": 3,
+    "beam-management": 3,
     "802.11ah": 3,
     "HaLow": 3,
     "Kubernetes": 3,
@@ -242,10 +244,14 @@ window.KB_DATA = {
     "spectrum-policy": 3,
     "roaming": 3,
     "Apple": 3,
+    "GSaaS": 2,
     "GB/T": 2,
     "national-standard": 2,
     "conformance-testing": 2,
+    "blockage": 2,
     "sub-GHz": 2,
+    "network-planning": 2,
+    "interference-management": 2,
     "zero-trust": 2,
     "evaluation-methodology": 2,
     "6G-NTN": 2,
@@ -289,7 +295,6 @@ window.KB_DATA = {
     "offline-RL": 2,
     "federated-RL": 2,
     "survey": 2,
-    "beam-management": 2,
     "5G-TSN": 2,
     "802.15.4z": 2,
     "RIS": 2,
@@ -350,7 +355,6 @@ window.KB_DATA = {
     "spectrum-pipeline": 2,
     "WiFi-6E": 2,
     "downlink": 2,
-    "WPT": 2,
     "ESP32-C3": 2,
     "VLM": 2,
     "DL-TDoA": 2,
@@ -447,7 +451,28 @@ window.KB_DATA = {
     "measurement-study": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "ground-station-as-a-service": 1,
+    "downlink-scheduling": 1,
+    "visibility-windows": 1,
+    "auction-mechanism": 1,
+    "truthful-bidding": 1,
+    "EDF": 1,
+    "critical-payment": 1,
+    "mechanism-design": 1,
+    "ground-segment": 1,
     "TC28": 1,
+    "pinching-antenna": 1,
+    "PASS": 1,
+    "FMCW-radar": 1,
+    "indoor-XR": 1,
+    "waveguide": 1,
+    "28GHz": 1,
+    "PCI": 1,
+    "physical-cell-identity": 1,
+    "combinatorial-optimization": 1,
+    "Chinese-remainder-theorem": 1,
+    "TS-38.211": 1,
+    "SON": 1,
     "zero-knowledge-proof": 1,
     "prompt-injection": 1,
     "auditability": 1,
@@ -1008,7 +1033,6 @@ window.KB_DATA = {
     "Map2Traj": 1,
     "SAC": 1,
     "Wasserstein": 1,
-    "network-planning": 1,
     "Purple-Mountain-Laboratories": 1,
     "TMF": 1,
     "network-orchestration": 1,
@@ -1127,7 +1151,6 @@ window.KB_DATA = {
     "SP": 1,
     "OBSS-PD": 1,
     "ground-station": 1,
-    "GSaaS": 1,
     "placement-optimization": 1,
     "gradient-free": 1,
     "Walker-Star": 1,
@@ -1145,7 +1168,6 @@ window.KB_DATA = {
     "6 GHz": 1,
     "market-data": 1,
     "contextual-bandit": 1,
-    "blockage": 1,
     "spectrum-aggregation": 1,
     "dual-connectivity": 1,
     "MOCN": 1,
@@ -1278,7 +1300,6 @@ window.KB_DATA = {
     "ToA": 1,
     "uplink-optimization": 1,
     "KDDI": 1,
-    "interference-management": 1,
     "WiFi-localization": 1,
     "meta-learning": 1,
     "diffusion": 1,
@@ -1457,19 +1478,19 @@ window.KB_DATA = {
   },
   "primary_topic_counts": {
     "cellular-ai": 36,
+    "6g-vision": 30,
     "wifi8-uhr": 30,
     "security-privacy": 30,
-    "6g-vision": 29,
     "wifi7-deployment": 28,
     "sensing-csi": 27,
-    "5g-nr": 25,
+    "5g-nr": 26,
     "open-ran": 24,
+    "leo-constellations": 22,
     "sat-direct-device": 22,
-    "leo-constellations": 21,
     "sat-ai": 20,
     "uwb-ranging": 20,
+    "amp-iot": 19,
     "spectrum-policy": 19,
-    "amp-iot": 18,
     "cellular-security": 15,
     "mapc-cosr": 14,
     "starlink": 13,
@@ -1503,9 +1524,9 @@ window.KB_DATA = {
     "uwb-security": 1
   },
   "type_counts": {
-    "academic-paper": 330,
+    "academic-paper": 333,
     "industry-news": 104,
-    "ieee-document": 38,
+    "ieee-document": 39,
     "product": 26,
     "satellite-news": 23,
     "community-signal": 7,
@@ -1516,9 +1537,9 @@ window.KB_DATA = {
     "uwb-spec": 1
   },
   "category_counts": {
-    "academia": 331,
+    "academia": 334,
     "industry": 160,
-    "standards": 51
+    "standards": 52
   },
   "technologies_vocab": {
     "technologies": [
@@ -2661,6 +2682,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((AMP-IoT / 20MHz IoT))\n    Standards\n      802.11bp Ambient Power\n      Wi-Fi CERTIFIED 7 at 20MHz\n    Energy harvesting\n      RF\n      Light\n      Vibration\n    TGbp mechanisms\n      AMP UL channel access\n      AMP receive procedure\n      AMP transmit spec\n      AMP triggering\n      AMP WPT control\n    Coexistence\n      BLE / Thread / Zigbee market\n      HPE Aruba 730 BLE 5.4 + Wi-Fi 7\n    Watch\n      TGbp draft progress\n      Coin-cell / no-battery designs\n      AMP-aware Wi-Fi 8 silicon",
       "diagram_mmd_zh": "mindmap\n  root((AMP-IoT / 20 MHz IoT))\n    标准化\n      802.11bp 环境取电\n      Wi-Fi CERTIFIED 7 20 MHz\n    能量收集\n      射频\n      光\n      振动\n    TGbp 机制\n      AMP 上行信道接入\n      AMP 接收过程\n      AMP 发送规范\n      AMP 触发\n      AMP WPT 控制\n    共存\n      BLE / Thread / Zigbee 市场\n      HPE Aruba 730 BLE 5.4 + Wi-Fi 7\n    关注\n      TGbp 草案进度\n      纽扣电池 / 无电池设计\n      AMP 感知的 Wi-Fi 8 硅片",
       "entries_primary": [
+        "2026-08-25_ieee-mentor-tgbp-wpt-digest",
         "2026-08-23_blink-xr-halow-extended-range-cameras",
         "2026-08-23_ieee-mentor-tgbp-security-profile-digest",
         "2026-08-23_morse-micro-halow-usb-dongle-designs",
@@ -2691,11 +2713,8 @@ window.KB_DATA = {
         "2026-05-01_qualcomm-wifi8-mwc2026"
       ],
       "by_type_primary": {
-        "product": [
-          "2026-08-23_blink-xr-halow-extended-range-cameras",
-          "2026-08-23_morse-micro-halow-usb-dongle-designs"
-        ],
         "ieee-document": [
+          "2026-08-25_ieee-mentor-tgbp-wpt-digest",
           "2026-08-23_ieee-mentor-tgbp-security-profile-digest",
           "2026-08-21_ieee-mentor-tgbp-amp-security-digest",
           "2026-08-18_ieee-mentor-tgbp-digest",
@@ -2706,6 +2725,10 @@ window.KB_DATA = {
           "2026-07-09_ieee-mentor-tgbp-preplenary-digest",
           "2026-05-18_ieee-mentor-tgbp-antwerp-digest",
           "2026-05-12_ieee-mentor-tgbp-antwerp-digest"
+        ],
+        "product": [
+          "2026-08-23_blink-xr-halow-extended-range-cameras",
+          "2026-08-23_morse-micro-halow-usb-dongle-designs"
         ],
         "academic-paper": [
           "2026-08-18_arxiv-batteryless-sounding-wifi8-mumimo",
@@ -3404,6 +3427,7 @@ window.KB_DATA = {
         "2026-08-13_ieee-mentor-tgbn-digest"
       ],
       "entries_secondary": [
+        "2026-08-25_ieee-mentor-tgbp-wpt-digest",
         "2026-08-23_blink-xr-halow-extended-range-cameras",
         "2026-08-23_morse-micro-halow-usb-dongle-designs",
         "2026-08-18_ieee-mentor-tgbp-digest",
@@ -3448,6 +3472,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-25_arxiv-pci-assignment-congruence-neural-solvers",
         "2026-08-23_arxiv-oai-symbol-domain-ofdm-radar-e2sm",
         "2026-08-17_arxiv-scaling-5g-tsn-bridges-industrial",
         "2026-08-08_arxiv-dtmc-proactive-harq-urllc-scheduling",
@@ -3475,6 +3500,7 @@ window.KB_DATA = {
         "2026-08-20_samsung-qualcomm-pc1-fwa-vran-validation"
       ],
       "entries_secondary": [
+        "2026-08-25_arxiv-pinching-antenna-sensing-anti-blockage",
         "2026-08-24_arxiv-orchra-stateful-cross-slice-migration",
         "2026-08-20_arxiv-oran-marl-v2x-sidelink-selection",
         "2026-08-19_arxiv-rrc-storm-attack-5g-oai-mitigation",
@@ -3520,6 +3546,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-25_arxiv-pci-assignment-congruence-neural-solvers",
           "2026-08-23_arxiv-oai-symbol-domain-ofdm-radar-e2sm",
           "2026-08-17_arxiv-scaling-5g-tsn-bridges-industrial",
           "2026-08-08_arxiv-dtmc-proactive-harq-urllc-scheduling",
@@ -3586,6 +3613,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-25_arxiv-pinching-antenna-sensing-anti-blockage",
         "2026-08-23_arxiv-emwm-electromagnetic-world-model-6g",
         "2026-08-19_arxiv-pmn-rainsense-rainfall-mobile-signals",
         "2026-08-14_arxiv-radio-optical-confluence-edge-ran",
@@ -3659,6 +3687,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-25_arxiv-pinching-antenna-sensing-anti-blockage",
           "2026-08-23_arxiv-emwm-electromagnetic-world-model-6g",
           "2026-08-19_arxiv-pmn-rainsense-rainfall-mobile-signals",
           "2026-08-14_arxiv-radio-optical-confluence-edge-ran",
@@ -4058,6 +4087,7 @@ window.KB_DATA = {
         "2026-05-21_kddi-ericsson-ai-uplink-ropt"
       ],
       "entries_secondary": [
+        "2026-08-25_arxiv-pci-assignment-congruence-neural-solvers",
         "2026-08-24_arxiv-z2act-verifiable-agentic-intent-oran",
         "2026-08-23_arxiv-learnware-csi-feedback-model-repository",
         "2026-08-23_arxiv-emwm-electromagnetic-world-model-6g",
@@ -4364,6 +4394,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-08-25_arxiv-star-gs-truthful-gsaas-scheduling",
         "2026-08-24_arxiv-fluid-kinetic-interference-leo-megaconstellations",
         "2026-08-20_arxiv-ground-space-gnss-reference-coordination",
         "2026-08-14_arxiv-dtsn-digital-twin-satellite-networks",
@@ -4435,6 +4466,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-08-25_arxiv-star-gs-truthful-gsaas-scheduling",
           "2026-08-24_arxiv-fluid-kinetic-interference-leo-megaconstellations",
           "2026-08-20_arxiv-ground-space-gnss-reference-coordination",
           "2026-08-14_arxiv-dtsn-digital-twin-satellite-networks",
@@ -4482,6 +4514,7 @@ window.KB_DATA = {
         "2026-07-22_sigcomm26-satellite-papers"
       ],
       "entries_secondary": [
+        "2026-08-25_arxiv-star-gs-truthful-gsaas-scheduling",
         "2026-08-18_arxiv-jammertest-2025-gnss-interference-dataset-ml",
         "2026-08-13_dishylink-community-starlink-telemetry-app",
         "2026-08-06_arxiv-hrrc-leo-remote-control-quantile",
@@ -5286,6 +5319,72 @@ window.KB_DATA = {
   },
   "entries": [
     {
+      "id": "2026-08-25_ieee-mentor-tgbp-wpt-digest",
+      "date_found": "2026-08-25",
+      "technology": "wifi",
+      "date_published": "2026-08-24",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 TGbp Mentor digest — 2026-08-25: ZTE opens the WPT control-plane thread with energizer-control and WPT-setup PDTs",
+      "title_zh": "IEEE 802.11 TGbp Mentor 摘要 — 2026-08-25：中兴以馈能器控制与 WPT 建立信令 PDT 开启无线供能控制面线程",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bp",
+      "topics": [
+        "TGbp",
+        "802.11bp",
+        "AMP",
+        "ambient-power",
+        "WPT",
+        "PDT"
+      ],
+      "topic_primary": "amp-iot",
+      "topics_secondary": [
+        "energy-power-save"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-08-25_ieee-mentor-tgbp-wpt-digest.md",
+      "summary_short_en": "TGbp uploaded two new proposed draft text (PDT) contributions on 24 August 2026, both from Zhanjing Bao (ZTE), that together open a wireless-power-transfer (WPT) control-plane thread: DCN 11-26-1559 \"PDT AMP WPT setup request and response frame\" and DCN 11-26-1560 \"PDT AMP energizer control.\" The pairing suggests normative signaling for how an AMP (ambient power) device and an energizer negotiate a power-delivery session — a setup request/response handshake plus ongoing control of the energizing waveform. This extends the WPT sub-thread that Huawei opened in late July with the WPT End-Time PDT (DCN 1502, see 2026-07-28_ieee-mentor-tgbp-digest) from a single timing parameter into session-establishment and energizer-management machinery.",
+      "summary_short_zh": "TGbp 于 2026 年 8 月 24 日上传了两份新的拟议草案文本（PDT）贡献，均出自 Zhanjing Bao（中兴通讯），二者共同开启了无线供能（WPT）控制面线程：DCN 11-26-1559 \"PDT AMP WPT setup request and response frame\"（WPT 建立请求/响应帧）与 DCN 11-26-1560 \"PDT AMP energizer control\"（馈能器控制）。这一配对表明其内容是 AMP（环境供能）设备与馈能器协商供能会话的规范信令——建立请求/响应握手，外加对馈能波形的持续控制。这将华为 7 月底以 WPT 结束时间 PDT（DCN 1502，见 2026-07-28_ieee-mentor-tgbp-digest）开启的 WPT 子线程，从单一时序参数扩展为会话建立与馈能器管理机制。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TGbp uploaded two new proposed draft text (PDT) contributions on 24 August 2026, both from Zhanjing Bao (ZTE), that together open a wireless-power-transfer (WPT) control-plane thread: DCN 11-26-1559 &quot;PDT AMP WPT setup request and response frame&quot; and DCN 11-26-1560 &quot;PDT AMP energizer control.&quot; The pairing suggests normative signaling for how an AMP (ambient power) device and an energizer negotiate a power-delivery session — a setup request/response handshake plus ongoing control of the energizing waveform. This extends the WPT sub-thread that Huawei opened in late July with the WPT End-Time PDT (DCN 1502, see 2026-07-28_ieee-mentor-tgbp-digest) from a single timing parameter into session-establishment and energizer-management machinery.</p>\n<p>A third TGbp document also surfaced on 24 August: DCN 11-26-1539 &quot;PDT Some PHY TBDs in D0.5&quot; (Alice Jialing Li Chen, Qualcomm). Its DCN was reserved earlier in the month but revision 0 was only uploaded now — a PHY clean-up contribution resolving open TBD placeholders in the D0.50 draft ahead of the predicted September first working-group letter ballot. Alongside the Infineon security trilogy completed last week (DCNs 1552/1554/1557) and the Huawei transmit/receive procedure updates (1546/1547), TGbp remains the only 802.11 task group producing substantive normative text during the pre-September-interim lull.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1560-00 · TGbp</strong> — &quot;PDT AMP energizer control.&quot; Zhanjing Bao (ZTE). Uploaded 24 Aug 2026. Normative text for controlling the energizer — the entity radiating the power-delivery waveform to ambient-power devices.</li><li><strong>DCN 11-26-1559-00 · TGbp</strong> — &quot;PDT AMP WPT setup request and response frame.&quot; Zhanjing Bao (ZTE). Uploaded 24 Aug 2026. Defines a request/response frame exchange for establishing a wireless-power-transfer session; complements Huawei's WPT End-Time PDT (DCN 1502, July).</li><li><strong>DCN 11-26-1539-00 · TGbp</strong> — &quot;PDT Some PHY TBDs in D0.5.&quot; Alice Jialing Li Chen (Qualcomm). Uploaded 24 Aug 2026 (DCN reserved earlier, first upload now). PHY TBD resolution in draft D0.50 ahead of the predicted September first WG letter ballot.</li><li>Also seen: DCN 11-26-1556-01 · TGbt — revision 1 of Mark Hamilton's (Ruckus) proposed comment-resolution procedure, an editorial rev of the process document digested 2026-08-23.</li><li>Document bodies are gated (Mentor per-doc downloads return 418/403 anonymously); only title/author/affiliation metadata are public.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The WPT control plane is the newest normative front in 802.11bp. Until now the amp-iot thread in this KB has tracked backscatter data transfer (transmit/receive procedures, channel access, triggering) and the security architecture (Infineon's trilogy); explicit energizer control and WPT session setup signaling — who powers whom, when, and under what negotiated terms — is a distinct third pillar, and ZTE's pairing of a setup handshake with an energizer-control PDT stakes it out as first-mover normative text. With Qualcomm simultaneously clearing PHY TBDs in D0.50, the contribution pattern reads as a coordinated final push to make the draft ballot-ready for the September interim — the nearest hard milestone on the 802.11 calendar (first WG letter ballot predicted September 2026 per the official Timelines page, still stamped 2026-08-06).</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TGbp 于 2026 年 8 月 24 日上传了两份新的拟议草案文本（PDT）贡献，均出自 Zhanjing Bao（中兴通讯），二者共同开启了无线供能（WPT）控制面线程：DCN 11-26-1559 &quot;PDT AMP WPT setup request and response frame&quot;（WPT 建立请求/响应帧）与 DCN 11-26-1560 &quot;PDT AMP energizer control&quot;（馈能器控制）。这一配对表明其内容是 AMP（环境供能）设备与馈能器协商供能会话的规范信令——建立请求/响应握手，外加对馈能波形的持续控制。这将华为 7 月底以 WPT 结束时间 PDT（DCN 1502，见 2026-07-28_ieee-mentor-tgbp-digest）开启的 WPT 子线程，从单一时序参数扩展为会话建立与馈能器管理机制。</p>\n<p>同日还出现了第三份 TGbp 文档：DCN 11-26-1539 &quot;PDT Some PHY TBDs in D0.5&quot;（Alice Jialing Li Chen，高通）。该 DCN 号本月早些时候即已预留，但第 0 版直到现在才上传——这是一份在预计 9 月首轮工作组函件投票前解决 D0.50 草案中待定（TBD）占位符的 PHY 清理贡献。加上上周补全的英飞凌安全三部曲（DCN 1552/1554/1557）与华为的收发流程更新（1546/1547），TGbp 仍是 9 月中期会议前沉寂期内唯一持续产出实质性规范文本的 802.11 任务组。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1560-00 · TGbp</strong> — &quot;PDT AMP energizer control&quot;。Zhanjing Bao（中兴）。2026 年 8 月 24 日上传。关于控制馈能器（向环境供能设备辐射供能波形的实体）的规范文本。</li><li><strong>DCN 11-26-1559-00 · TGbp</strong> — &quot;PDT AMP WPT setup request and response frame&quot;。Zhanjing Bao（中兴）。2026 年 8 月 24 日上传。定义建立无线供能会话的请求/响应帧交换；与华为 7 月的 WPT 结束时间 PDT（DCN 1502）互补。</li><li><strong>DCN 11-26-1539-00 · TGbp</strong> — &quot;PDT Some PHY TBDs in D0.5&quot;。Alice Jialing Li Chen（高通）。2026 年 8 月 24 日上传（DCN 号早前预留，现为首次上传）。在预计 9 月首轮工作组函件投票前解决 D0.50 草案中的 PHY 待定项。</li><li>另见：DCN 11-26-1556-01 · TGbt——Mark Hamilton（Ruckus）意见处理流程提案的第 1 版，为 2026-08-23 已摘要的流程文档的编辑性修订。</li><li>文档正文受限（Mentor 单文档下载对匿名访问返回 418/403）；仅标题/作者/机构元数据公开。</li></ul>\n<h3>意义与新意</h3>\n<p>WPT 控制面是 802.11bp 最新的规范化战线。此前本知识库的 amp-iot 线程跟踪的是反向散射数据传输（收发流程、信道接入、触发）与安全架构（英飞凌三部曲）；显式的馈能器控制与 WPT 会话建立信令——谁为谁供能、何时供能、以何种协商条件供能——是独立的第三支柱，中兴以建立握手与馈能器控制 PDT 的配对率先提交了这一方向的规范文本。与此同时高通清理 D0.50 中的 PHY 待定项，整体贡献模式呈现为面向 9 月中期会议使草案具备投票条件的协同冲刺——这是 802.11 日程上最近的硬性里程碑（官方 Timelines 页面预测 2026 年 9 月首轮工作组函件投票，页面时间戳仍为 2026-08-06）。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 tgbp mentor digest — 2026-08-25: zte opens the wpt control-plane thread with energizer-control and wpt-setup pdts ieee 802.11 tgbp mentor 摘要 — 2026-08-25：中兴以馈能器控制与 wpt 建立信令 pdt 开启无线供能控制面线程 tgbp 802.11bp amp ambient-power wpt pdt tgbp uploaded two new proposed draft text (pdt) contributions on 24 august 2026, both from zhanjing bao (zte), that together open a wireless-power-transfer (wpt) control-plane thread: dcn 11-26-1559 \"pdt amp wpt setup request and response frame\" and dcn 11-26-1560 \"pdt amp energizer control.\" the pairing suggests normative signaling for how an amp (ambient power) device and an energizer negotiate a power-delivery session — a setup request/response handshake plus ongoing control of the energizing waveform. this extends the wpt sub-thread that huawei opened in late july with the wpt end-time pdt (dcn 1502, see 2026-07-28_ieee-mentor-tgbp-digest) from a single timing parameter into session-establishment and energizer-management machinery. tgbp 于 2026 年 8 月 24 日上传了两份新的拟议草案文本（pdt）贡献，均出自 zhanjing bao（中兴通讯），二者共同开启了无线供能（wpt）控制面线程：dcn 11-26-1559 \"pdt amp wpt setup request and response frame\"（wpt 建立请求/响应帧）与 dcn 11-26-1560 \"pdt amp energizer control\"（馈能器控制）。这一配对表明其内容是 amp（环境供能）设备与馈能器协商供能会话的规范信令——建立请求/响应握手，外加对馈能波形的持续控制。这将华为 7 月底以 wpt 结束时间 pdt（dcn 1502，见 2026-07-28_ieee-mentor-tgbp-digest）开启的 wpt 子线程，从单一时序参数扩展为会话建立与馈能器管理机制。 ieee-document wifi"
+    },
+    {
+      "id": "2026-08-25_arxiv-star-gs-truthful-gsaas-scheduling",
+      "date_found": "2026-08-25",
+      "technology": "satellite",
+      "date_published": "2026-08-23",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "STAR-GS (IEEE ICNP 2026) — truthful, visibility-aware downlink scheduling for Ground Station as a Service: EDF schedulability + best-fit station assignment + critical-payment auction pricing, near-MILP revenue in polynomial time",
+      "title_zh": "STAR-GS（IEEE ICNP 2026）——面向\\\"地面站即服务\\\"的可激励真实报价、可见性感知的下行调度：EDF 可调度性检验 + 最紧适配地面站指派 + 关键支付拍卖定价，以多项式时间逼近 MILP 收益",
+      "url": "https://arxiv.org/abs/2608.22222",
+      "topics": [
+        "ground-station-as-a-service",
+        "GSaaS",
+        "downlink-scheduling",
+        "visibility-windows",
+        "auction-mechanism",
+        "truthful-bidding",
+        "EDF",
+        "critical-payment",
+        "mechanism-design",
+        "ground-segment"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "sat-iot"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-25_arxiv-star-gs-truthful-gsaas-scheduling.md",
+      "summary_short_en": "Wang, Wang, Gu, Guo and Yu (arxiv cs.NI/cs.ET/cs.GT, 23 Aug 2026; accepted to IEEE ICNP 2026) tackle the provider-side scheduling problem of **Ground Station as a Service (GSaaS)** — the commercial model in which a provider operates geo-distributed ground stations and leases downlink capacity on demand to satellite operators. Unlike vertically integrated mega-constellations (Starlink, Kuiper) with dedicated ground segments, most LEO satellites depend on shared GSaaS infrastructure, where three complications collide: **orbital visibility windows** make each satellite reachable from each station only during short, overlapping, but predictable contact intervals; downlink tasks carry hard **deadlines** (a missed deadline yields zero revenue); and task owners are **strategic bidders** with private valuations who may misreport bids to lower their payments or improve admission odds. The joint admission / station-assignment / bandwidth-allocation revenue-maximization problem is proven NP-hard (reduction from 0-1 knapsack).",
+      "summary_short_zh": "Wang、Wang、Gu、Guo 与 Yu（arxiv cs.NI/cs.ET/cs.GT，2026 年 8 月 23 日；已被 IEEE ICNP 2026 录用）研究**\"地面站即服务\"（GSaaS）**的供给侧调度问题——即由服务商运营地理分布的地面站群、按需向卫星运营商出租下行链路容量的商业模式。与拥有专用地面段的一体化巨型星座（Starlink、Kuiper）不同，大多数 LEO 卫星依赖共享的 GSaaS 基础设施，三重难点在此交汇：**轨道可见性窗口**使每颗卫星只能在短暂、相互重叠但可预测的过境区间内接入特定地面站；下行任务带有硬**截止期**（错过即零收益）；任务方是持有私有估值的**策略性竞标者**，可能虚报出价以压低支付或提高录取概率。联合的任务准入/地面站指派/带宽分配收益最大化问题被证明为 NP 难（从 0-1 背包问题归约）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Wang, Wang, Gu, Guo and Yu (arxiv cs.NI/cs.ET/cs.GT, 23 Aug 2026; accepted to IEEE ICNP 2026) tackle the provider-side scheduling problem of <strong>Ground Station as a Service (GSaaS)</strong> — the commercial model in which a provider operates geo-distributed ground stations and leases downlink capacity on demand to satellite operators. Unlike vertically integrated mega-constellations (Starlink, Kuiper) with dedicated ground segments, most LEO satellites depend on shared GSaaS infrastructure, where three complications collide: <strong>orbital visibility windows</strong> make each satellite reachable from each station only during short, overlapping, but predictable contact intervals; downlink tasks carry hard <strong>deadlines</strong> (a missed deadline yields zero revenue); and task owners are <strong>strategic bidders</strong> with private valuations who may misreport bids to lower their payments or improve admission odds. The joint admission / station-assignment / bandwidth-allocation revenue-maximization problem is proven NP-hard (reduction from 0-1 knapsack).</p>\n<p>STAR-GS decomposes this into four coupled pieces with proven properties. A key structural lemma converts fractional FDMA bandwidth sharing into an equivalent <strong>preemptive full-bandwidth schedule</strong>, so feasibility under fixed assignments reduces to a deadline-scheduling problem testable by an <strong>EDF (Earliest Deadline First) schedulability check</strong> (a returned feasible EDF schedule certifies feasibility, and deletion monotonicity holds — removing tasks never breaks feasibility). A <strong>best-fit ground-station assignment</strong> processes tasks in descending bid order and places each on the feasible station with the smallest residual slack, preserving loose stations for restrictive tasks. <strong>Bid-aware admission</strong> filters bids below a reserve price and greedily admits in descending bid order subject to EDF feasibility; <strong>critical-payment pricing</strong> charges each winner the smallest bid at which it would still win (binary search). Together (Theorem 2) the mechanism is dominant-strategy incentive compatible (truthful bidding is optimal regardless of others), individually rational, reserve-price protected, and polynomial-time.</p>\n<p>Evaluation uses a 24-satellite Walker LEO constellation (3 planes x 8) and 6 ground stations with Ansys-STK-generated visibility windows, a 24-hour horizon in 60-second slots, 80 Mbps per-station bandwidth, and tasks of 5-20 GB with bids 50-100 and 30-90-slot deadline slack. At 500 tasks STAR-GS earns the highest revenue — bid-agnostic EDF reaches only ~76.8% of it, highest-bid-first with naive assignment ~51.0%, satellite-centric best-visibility ~22.4%. Against a MILP optimum on 30-270-task instances, STAR-GS with critical-payment pricing achieves near-MILP revenue while the MILP's runtime blows past 32 s at 270 tasks vs STAR-GS at &lt;4 s for 300 tasks and ~20 s at 900 tasks.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem:</strong> GSaaS provider must jointly decide task admission, single-primary-station assignment (matching contact-reservation practice), and per-slot bandwidth allocation; payment accrues only for tasks fully downlinked before deadline; revenue maximization proven NP-hard (0-1 knapsack reduction).</li><li><strong>Model:</strong> task (i,k) = arrival A, deadline D, demand tau, private unit value v, unit bid; feasible service window = task lifetime intersected with satellite-station visibility windows; FDMA sharing of per-station bandwidth B_j (80 Mbps default); spectral efficiency eta_ij per link.</li><li><strong>Lemma 1 (structural):</strong> any fractional bandwidth allocation is equivalent to a preemptive full-bandwidth schedule — reduces feasibility to deadline scheduling.</li><li><strong>Algorithm 1 (EDF_Check):</strong> per slot, serve the serviceable unfinished task with earliest deadline at full bandwidth; returned schedule certifies feasibility (Lemma 2); deletion-monotone (Lemma 3).</li><li><strong>Algorithm 2 (best-fit assignment):</strong> descending-bid processing; among stations passing the tentative EDF check, pick the one with smallest residual slack (tightest fit) to keep flexible capacity for restrictive tasks.</li><li><strong>Algorithm 3 (admission + pricing):</strong> reserve-price filter rho; greedy descending-bid admission under EDF feasibility; critical payment = smallest winning bid found by binary search; monotone winner rule (Lemma 4) + threshold payment (Lemma 5) yield dominant-strategy incentive compatibility, individual rationality, reserve-price protection, polynomial runtime (Theorem 2).</li><li><strong>Evaluation:</strong> 24-sat Walker (3x8) + 6 stations, STK visibility, 24 h / 60 s slots, 300-task default (5-20 GB, bids 50-100, slack 30-90 slots); baselines TSN-MILP, CR-Throughput (greedy volume), EDF, HBF-NA, SC-BV.</li><li><strong>Results:</strong> at 500 tasks EDF ~76.8% / HBF-NA ~51.0% / SC-BV ~22.4% of STAR-GS revenue; near-MILP revenue at 30-270 tasks; runtime &lt;4 s @300 tasks, ~20 s @900 vs MILP 32+ s @270; acceptance ratio comparable to EDF but with higher-value task mix; robustness holds under heterogeneous station capacities and bursty arrivals (70% of tasks in 3 peaks); critical-payment revenue + owner utility = gross completed value (efficiency accounting).</li><li><strong>Future work (authors'):</strong> online arrivals, time-varying channels, dynamic station capacity, adaptive reserve pricing, multi-station task splitting.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first entry at the <strong>market-mechanism layer of the shared ground segment</strong> — the leo-constellations bin already covers ground-station <em>placement</em> (SCoRe, 06-13) and ground-station networks as <em>PNT infrastructure</em> (ground-to-space GNSS coordination, 08-20), but nothing on how a commercial GSaaS operator should sell contested downlink capacity. The framing matches where the industry actually is: AWS Ground Station, KSAT, Leaf Space and Azure Orbital-style offerings serve the long tail of smallsat/EO/IoT operators who cannot afford dedicated ground segments, and contention for short overlapping passes is the defining scarcity. The technical core is a clean marriage of two mature toolboxes — real-time-systems schedulability (EDF with a provable full-bandwidth-equivalence lemma) and single-parameter auction theory (monotone allocation + critical payments) — such that economic truthfulness and physical schedulability are guaranteed <em>simultaneously</em>, which neither greedy revenue heuristics nor bid-agnostic schedulers deliver (the ~2x revenue gap over highest-bid-first-naive shows assignment quality, not bidding, is where naive mechanisms lose). Novelty is scored 2 rather than 3 because the setting is simulation-only at modest scale (24 satellites, 6 stations) and the mechanism components are individually standard; the contribution is the certified composition. It also gives the bin a second game-theoretic entry after the L-COIN offloading paper (08-19), suggesting mechanism design is arriving in LEO operations research along multiple fronts.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Wang、Wang、Gu、Guo 与 Yu（arxiv cs.NI/cs.ET/cs.GT，2026 年 8 月 23 日；已被 IEEE ICNP 2026 录用）研究<strong>&quot;地面站即服务&quot;（GSaaS）</strong>的供给侧调度问题——即由服务商运营地理分布的地面站群、按需向卫星运营商出租下行链路容量的商业模式。与拥有专用地面段的一体化巨型星座（Starlink、Kuiper）不同，大多数 LEO 卫星依赖共享的 GSaaS 基础设施，三重难点在此交汇：<strong>轨道可见性窗口</strong>使每颗卫星只能在短暂、相互重叠但可预测的过境区间内接入特定地面站；下行任务带有硬<strong>截止期</strong>（错过即零收益）；任务方是持有私有估值的<strong>策略性竞标者</strong>，可能虚报出价以压低支付或提高录取概率。联合的任务准入/地面站指派/带宽分配收益最大化问题被证明为 NP 难（从 0-1 背包问题归约）。</p>\n<p>STAR-GS 将其分解为四个带有可证性质的耦合组件。一个关键结构引理将分数化的 FDMA 带宽共享转化为等价的<strong>可抢占全带宽调度</strong>，使固定指派下的可行性归结为可用 <strong>EDF（最早截止期优先）可调度性检验</strong>判定的截止期调度问题（EDF 给出可行调度即证明可行，且满足删除单调性——移除任务不破坏可行性）。<strong>最紧适配地面站指派</strong>按出价降序处理任务，将每个任务放到剩余松弛量最小的可行地面站，把宽松的站留给约束更紧的任务。<strong>出价感知准入</strong>先过滤低于保留价的出价，再按出价降序、以 EDF 可行性为约束贪心录取；<strong>关键支付定价</strong>向每个中标者收取其仍能中标的最小出价（二分搜索求得）。综合（定理 2）该机制满足占优策略激励相容（无论他人如何出价，真实报价最优）、个体理性、保留价保护，且多项式时间可解。</p>\n<p>评估采用 24 星 Walker LEO 星座（3 轨道面 x 8 星）与 6 个地面站，可见性窗口由 Ansys STK 生成，规划区间 24 小时、按 60 秒时隙离散（1440 隙），每站带宽 80 Mbps，任务量 5-20 GB、单位出价 50-100、截止期松弛 30-90 隙。在 500 任务负载下 STAR-GS 收益最高——不看出价的 EDF 仅达其约 76.8%，&quot;最高出价优先+朴素指派&quot;约 51.0%，&quot;卫星侧最佳可见性&quot;约 22.4%。与 30-270 任务规模上的 MILP 最优解相比，STAR-GS 配合关键支付定价可逼近 MILP 收益，而 MILP 在 270 任务时运行时间已超 32 秒，STAR-GS 在 300 任务时 &lt;4 秒、900 任务时约 20 秒。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题：</strong> GSaaS 服务商须联合决定任务准入、单一主站指派（贴合过境预约的工程实践）与逐时隙带宽分配；仅当任务在截止期前完整下传才产生收入；收益最大化被证明 NP 难（0-1 背包归约）。</li><li><strong>模型：</strong> 任务 (i,k) = 到达 A、截止期 D、数据量 tau、私有单位估值 v、单位出价；可行服务窗口 = 任务生存期与星-站可见性窗口之交；各站带宽 B_j（默认 80 Mbps）按 FDMA 共享；每链路谱效率 eta_ij。</li><li><strong>引理 1（结构性）：</strong> 任意分数化带宽分配等价于一个可抢占的全带宽调度——将可行性归结为截止期调度。</li><li><strong>算法 1（EDF_Check）：</strong> 每时隙对可服务的未完成任务中截止期最早者全带宽服务；返回的调度即可行性证书（引理 2）；满足删除单调性（引理 3）。</li><li><strong>算法 2（最紧适配指派）：</strong> 按出价降序处理；在通过试探性 EDF 检验的站中选剩余松弛量最小者（最紧适配），为受限任务保留弹性容量。</li><li><strong>算法 3（准入+定价）：</strong> 保留价 rho 过滤；EDF 可行性约束下按出价降序贪心准入；关键支付 = 二分搜索求得的最小中标出价；单调中标规则（引理 4）+ 门限支付（引理 5）给出占优策略激励相容、个体理性、保留价保护与多项式运行时间（定理 2）。</li><li><strong>评估：</strong> 24 星 Walker（3x8）+ 6 站、STK 可见性、24 小时/60 秒时隙、默认 300 任务（5-20 GB、出价 50-100、松弛 30-90 隙）；基线为 TSN-MILP、CR-Throughput（贪心吞吐）、EDF、HBF-NA、SC-BV。</li><li><strong>结果：</strong> 500 任务时 EDF 约 76.8%、HBF-NA 约 51.0%、SC-BV 约 22.4%（相对 STAR-GS 收益）；30-270 任务规模逼近 MILP 收益；运行时间 300 任务 &lt;4 秒、900 任务约 20 秒，MILP 在 270 任务已超 32 秒；录取率与 EDF 相当但任务价值构成更高；在异构站容量与突发到达（70% 任务集中于 3 个峰）下稳健；关键支付收入 + 任务方效用 = 完成任务总价值（效率核算成立）。</li><li><strong>未来方向（作者自述）：</strong> 在线到达、时变信道、动态站容量、自适应保留价、多站任务拆分。</li></ul>\n<h3>意义与新意</h3>\n<p>这是知识库在<strong>共享地面段的市场机制层面</strong>的第一条条目——leo-constellations 条目库已覆盖地面站<em>选址</em>（SCoRe，06-13）与作为 <em>PNT 基础设施</em>的地面站网络（星地 GNSS 协同，08-20），但此前没有任何条目讨论商业 GSaaS 运营商应如何出售受争抢的下行容量。这一问题设定切中行业现状：AWS Ground Station、KSAT、Leaf Space、Azure Orbital 类服务承接了无力自建专用地面段的小卫星/对地观测/物联网运营商长尾，短暂且相互重叠的过境窗口的争用正是核心稀缺性所在。技术内核是两套成熟工具箱的干净结合——实时系统可调度性分析（EDF 加可证的全带宽等价引理）与单参数拍卖理论（单调分配 + 关键支付）——使经济上的真实报价激励与物理上的可调度性得以<em>同时</em>保证，这是贪心收益启发式或不看出价的调度器都无法做到的（相对&quot;最高出价优先+朴素指派&quot;约 2 倍的收益差表明，朴素机制输在指派质量而非竞价环节）。新颖度评 2 而非 3，因为其验证仅为中等规模仿真（24 星、6 站）且各机制组件本身均为标准工具；贡献在于带证明的组合。本条目也使该条目库在 L-COIN 卸载论文（08-19）之后拥有第二条博弈论条目，显示机制设计正沿多条战线进入 LEO 运营研究。</p>",
+      "images": [],
+      "search_blob": "star-gs (ieee icnp 2026) — truthful, visibility-aware downlink scheduling for ground station as a service: edf schedulability + best-fit station assignment + critical-payment auction pricing, near-milp revenue in polynomial time star-gs（ieee icnp 2026）——面向\\\"地面站即服务\\\"的可激励真实报价、可见性感知的下行调度：edf 可调度性检验 + 最紧适配地面站指派 + 关键支付拍卖定价，以多项式时间逼近 milp 收益 ground-station-as-a-service gsaas downlink-scheduling visibility-windows auction-mechanism truthful-bidding edf critical-payment mechanism-design ground-segment wang, wang, gu, guo and yu (arxiv cs.ni/cs.et/cs.gt, 23 aug 2026; accepted to ieee icnp 2026) tackle the provider-side scheduling problem of **ground station as a service (gsaas)** — the commercial model in which a provider operates geo-distributed ground stations and leases downlink capacity on demand to satellite operators. unlike vertically integrated mega-constellations (starlink, kuiper) with dedicated ground segments, most leo satellites depend on shared gsaas infrastructure, where three complications collide: **orbital visibility windows** make each satellite reachable from each station only during short, overlapping, but predictable contact intervals; downlink tasks carry hard **deadlines** (a missed deadline yields zero revenue); and task owners are **strategic bidders** with private valuations who may misreport bids to lower their payments or improve admission odds. the joint admission / station-assignment / bandwidth-allocation revenue-maximization problem is proven np-hard (reduction from 0-1 knapsack). wang、wang、gu、guo 与 yu（arxiv cs.ni/cs.et/cs.gt，2026 年 8 月 23 日；已被 ieee icnp 2026 录用）研究**\"地面站即服务\"（gsaas）**的供给侧调度问题——即由服务商运营地理分布的地面站群、按需向卫星运营商出租下行链路容量的商业模式。与拥有专用地面段的一体化巨型星座（starlink、kuiper）不同，大多数 leo 卫星依赖共享的 gsaas 基础设施，三重难点在此交汇：**轨道可见性窗口**使每颗卫星只能在短暂、相互重叠但可预测的过境区间内接入特定地面站；下行任务带有硬**截止期**（错过即零收益）；任务方是持有私有估值的**策略性竞标者**，可能虚报出价以压低支付或提高录取概率。联合的任务准入/地面站指派/带宽分配收益最大化问题被证明为 np 难（从 0-1 背包问题归约）。 academic-paper satellite"
+    },
+    {
       "id": "2026-08-23_nearlink-slb-gb-standard-family-in-approval",
       "date_found": "2026-08-23",
       "technology": "nearlink",
@@ -5317,6 +5416,41 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>全国标准信息公共服务平台（std.samr.gov.cn）现已收录一组以 <strong>《星闪无线通信系统》</strong> 命名的推荐性国家标准计划分册；截至 2026-08-23，其中至少两个分册在平台项目进度条上已高亮 <strong>&quot;批准&quot;</strong> 阶段——即已完成起草、征求意见与审查，正待以 GB/T 形式正式发布。经平台详情页直接核实的有：<strong>第 101 部分《架构和通用要求》（计划号 20260704-T-469，状态&quot;正在批准&quot;）</strong> 与 <strong>第 202 部分《接入层 同步低时延宽带（SLB）设备技术要求和测试方法》（计划号 20260705-T-469，状态&quot;正在批准&quot;）</strong>。另有 <strong>第 201 部分《接入层 同步低时延宽带（SLB）空中接口技术要求》（计划号 20260073-T-469）</strong>，属 2026 年较早一批计划。平台索引中还可见 <strong>第 102 部分（媒体接入层标识）、第 203 部分（接入层 SLE 设备技术要求和测试方法）与第 301 部分（基础服务层 设备发现和传输控制）</strong>，显示出体系化的编号方案：1xx = 架构/通用，2xx = 接入层，3xx = 基础服务层。</p>\n<p>有两个制度层面的细节值得注意。其一是命名：与 2025 年 12 月发布、2026-07-01 实施的 GB/T 46803.1/.2-2025 不同（后者以&quot;基于极化码的低功耗无线通信网络&quot;这一通用表述规定了 SLE 物理层与数据链路层），本标准族在 GB 正式标题中<strong>直接使用&quot;星闪&quot;品牌名</strong>——该技术首次以自己的名字进入国家标准体系。其二是范围：这是 <strong>SLB（高吞吐、低时延）模式与基础服务层首次进入国标轨道</strong>，并且包含专门的<em>设备技术要求和测试方法</em>分册（202/203）——这正是认证方案所引用的规范性测试锚点。起草由中国电子技术标准化研究院（CESI）牵头，国际星闪联盟、华为、中兴、中国信通院、上海交通大学、清华大学、北京邮电大学等约 35 家单位参与，归口全国信息技术标准化技术委员会（TC28，由数据通信分会 SC6 执行）。项目周期 6 个月，发布后 6 个月正式实施。</p>\n<p>需说明的限定：平台页面未显示这些项目的计划下达或公示日期，无法锁定确切批次时间；&quot;批准&quot;阶段状态为 2026-08-23 观察所得；第 102/201/203/301 部分的标题来自平台检索索引而非逐页核实的详情页。该标准族目前完全没有媒体报道——仅能从一手来源获知。</p>\n<h3>技术要点</h3>\n<ul><li>《星闪无线通信系统》多分册国标计划族，编号体系化：1xx 架构/通用，2xx 接入层，3xx 基础服务层。</li><li>经 std.samr.gov.cn 详情页核实（2026-08-23）：第 101 部分架构（20260704-T-469）与第 202 部分 SLB 设备技术要求和测试方法（20260705-T-469），进度条均处于&quot;正在批准&quot;阶段。</li><li>第 201 部分 SLB 空中接口技术要求 = 计划号 20260073-T-469（2026 年较早批次）；第 102（媒体接入层标识）、第 203（SLE 设备技术要求和测试方法）、第 301（基础服务层 设备发现和传输控制）亦见于平台索引。</li><li>SLB 模式与基础服务层首次进入国家标准轨道；首次出现专门的设备测试方法分册——认证方案引用的规范性锚点。</li><li>GB 标题直接使用&quot;星闪&quot;品牌名，与 GB/T 46803.1/.2-2025 的通用命名（SLE 物理层+数据链路层，2025-12-02 发布，2026-07-01 实施）形成对照。</li><li>起草：CESI 牵头，国际星闪联盟、华为、中兴、信通院、上海交大、清华、北邮等约 35 家；归口 TC28、SC6 执行；项目周期 6 个月；发布后 6 个月实施。</li><li>平台页面未显示计划下达/公示日期；无任何媒体报道——纯一手来源发现。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 2026-06-05_nearlink-sle-gbt-46803-national-standard 条目所设观察项的落地：该条目指出 GB/T 46803 仅覆盖 SLE 一侧，并提示关注&quot;与之对应的 SLB 国标分册，以及引用这些 GB/T 编号的一致性/认证方案&quot;。如今两条线索都已可见：SLB 空口与设备测试分册已进入批准管线，而设备测试分册（202/203）正是 iSLA 认证方案（2026-08-17_nearlink-isla-certification-scheme：射频+协议+互操作测试范围、联盟目录+工信部型号核准双轨）在 GB/T 编号落地后可以挂靠的规范性引用。品牌化命名也标志着相对 46803 通用命名的制度升级——星闪以自己的名字被标准化，而非以匿名化的技术描述。后续关注：正式发布的 GB/T 编号与日期（各分册为 6 个月周期项目且已处批准阶段，发布可能在数月内落地）、发布的 SLB 空口文本与 iSLA 星闪 2.0 的一致性，以及认证方案是否从联盟 T/XS 标准重新锚定到 GB/T 标准族。</p>",
       "images": [],
       "search_blob": "brand-named 'sparklink wireless communication system' gb national-standard family surfaces: slb air-interface, device-test and service-layer parts reach the approval stage 以品牌命名的《星闪无线通信系统》国家标准族浮出水面：slb 空口、设备测试与基础服务层分册进入批准阶段 nearlink sparklink slb sle gb/t national-standard tc28 conformance-testing china's national public service platform for standards information (std.samr.gov.cn) now lists a multi-part family of recommended national-standard plans titled **《星闪无线通信系统》 (\"sparklink wireless communication system\")** — and, as of 2026-08-23, at least two of the parts show the **批准 (approval)** stage highlighted on the platform's project progress bar, i.e. they have passed drafting, public comment and review and are awaiting formal publication as gb/t standards. verified directly on the platform: **part 101 \"架构和通用要求\" (architecture and general requirements, plan no. 20260704-t-469, status 正在批准)** and **part 202 \"接入层 同步低时延宽带（slb）设备技术要求和测试方法\" (access layer — slb device technical requirements and test methods, plan no. 20260705-t-469, status 正在批准)**. a third part, **part 201 \"接入层 同步低时延宽带（slb）空中接口技术要求\" (access layer — slb air-interface technical requirements, plan no. 20260073-t-469)**, belongs to an earlier 2026 plan batch. the platform's index additionally surfaces **part 102 (媒体接入层标识 / mac-layer identifiers), part 203 (接入层 sle 设备技术要求和测试方法 / sle device requirements and test methods) and part 301 (基础服务层 设备发现和传输控制 / basic service layer — device discovery and transport control)**, indicating a systematically numbered family: 1xx = architecture/general, 2xx = access layer, 3xx = basic service layer. 全国标准信息公共服务平台（std.samr.gov.cn）现已收录一组以 **《星闪无线通信系统》** 命名的推荐性国家标准计划分册；截至 2026-08-23，其中至少两个分册在平台项目进度条上已高亮 **\"批准\"** 阶段——即已完成起草、征求意见与审查，正待以 gb/t 形式正式发布。经平台详情页直接核实的有：**第 101 部分《架构和通用要求》（计划号 20260704-t-469，状态\"正在批准\"）** 与 **第 202 部分《接入层 同步低时延宽带（slb）设备技术要求和测试方法》（计划号 20260705-t-469，状态\"正在批准\"）**。另有 **第 201 部分《接入层 同步低时延宽带（slb）空中接口技术要求》（计划号 20260073-t-469）**，属 2026 年较早一批计划。平台索引中还可见 **第 102 部分（媒体接入层标识）、第 203 部分（接入层 sle 设备技术要求和测试方法）与第 301 部分（基础服务层 设备发现和传输控制）**，显示出体系化的编号方案：1xx = 架构/通用，2xx = 接入层，3xx = 基础服务层。 nearlink-spec nearlink"
+    },
+    {
+      "id": "2026-08-25_arxiv-pinching-antenna-sensing-anti-blockage",
+      "date_found": "2026-08-25",
+      "technology": "cellular",
+      "date_published": "2026-08-22",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Sensing-Assisted Anti-Blockage Pinching-Antenna Systems for Indoor Immersive Communications",
+      "title_zh": "面向室内沉浸式通信的感知辅助抗遮挡夹持天线系统",
+      "url": "https://arxiv.org/abs/2608.21859",
+      "topics": [
+        "pinching-antenna",
+        "PASS",
+        "mmWave",
+        "blockage",
+        "FMCW-radar",
+        "ISAC",
+        "indoor-XR",
+        "waveguide",
+        "28GHz",
+        "beam-management"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "5g-nr"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-08-25_arxiv-pinching-antenna-sensing-anti-blockage.md",
+      "summary_short_en": "Yi Hong, Yalin Liu, Yulei Wang and Yaru Fu (Hong Kong Metropolitan University + South-Central Minzu University, Wuhan) present the first sensing-assisted anti-blockage design for pinching-antenna systems (PASS) — the emerging 6G radio-access concept in which a low-cost radiating point is mechanically \"pinched\" onto a ceiling-mounted dielectric waveguide and can slide along it. Prior PASS work optimizes antenna placement against stochastic blockage models; this paper instead has the pinching antenna characterize real obstacles in real time: an FMCW radar transceiver rides with the antenna, which performs controlled micro-movements along the waveguide during a sensing phase, forming a synthetic linear array from M collected chirps, then serves the user over a stable LoS link in the communication phase (a sensing-movement-communication frame with duty cycle η).",
+      "summary_short_zh": "香港都会大学与中南民族大学（武汉）的 Yi Hong、Yalin Liu、Yulei Wang、Yaru Fu 提出了首个面向夹持天线系统（PASS）的感知辅助抗遮挡设计。PASS 是新兴的 6G 无线接入概念：低成本辐射点被机械\"夹持\"在天花板介质波导上并可沿波导滑动。以往 PASS 工作基于随机遮挡模型优化天线位置；本文则让夹持天线实时刻画真实障碍物：FMCW 雷达收发器随天线移动，在感知阶段沿波导做受控微移动、由 M 个 chirp 构成合成线性阵列，在通信阶段以稳定 LoS 链路服务用户（感知-移动-通信帧结构，占空比 η）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Yi Hong, Yalin Liu, Yulei Wang and Yaru Fu (Hong Kong Metropolitan University + South-Central Minzu University, Wuhan) present the first sensing-assisted anti-blockage design for pinching-antenna systems (PASS) — the emerging 6G radio-access concept in which a low-cost radiating point is mechanically &quot;pinched&quot; onto a ceiling-mounted dielectric waveguide and can slide along it. Prior PASS work optimizes antenna placement against stochastic blockage models; this paper instead has the pinching antenna characterize real obstacles in real time: an FMCW radar transceiver rides with the antenna, which performs controlled micro-movements along the waveguide during a sensing phase, forming a synthetic linear array from M collected chirps, then serves the user over a stable LoS link in the communication phase (a sensing-movement-communication frame with duty cycle η).</p>\n<p>The sensing chain runs FFT to a delay-DOA feature matrix, median-based amplitude thresholding, beat-frequency ranging, user localization with elevation compensation, and obstacle-coordinate calibration. From the estimated obstacle position the system computes a physical blockage zone on the waveguide (the geometric shadow), dilates it into a robust blockage zone with a safety margin covering sensing uncertainty, latency and obstacle velocity, and restricts the antenna to the complementary safe zone — operating in safety mode (optimal position already safe) or escaping mode (boundary repositioning / zone crossing). A closed-form solution sets scanning velocity to the motor maximum and minimizes η subject to angular-resolution and QoS constraints. At 28 GHz / 400 MHz bandwidth in a 10x10x3 m room with a walking pedestrian (500 Mbps QoS), the design holds blockage-induced outage to 0.9% across user positions versus 29.5-64.1% for fixed/conventional baselines, sustaining 2,850-3,000 Mbps; sensitivity analysis shows v_p^max &gt;= 6 m/s and a 15-25 degree angular-resolution requirement are needed (a 30-degree / 12 m/s corner degrades sensing and pushes outage to 5.6%).</p>\n<h3>Key technical points</h3>\n<ul><li>First anti-blockage PASS design driven by real-time obstacle sensing rather than stochastic blockage models: an FMCW radar rides the mechanically movable pinching antenna on the ceiling waveguide.</li><li>Sensing-movement-communication frame: micro-movement at scanning velocity v_scan during T_s = ηT_frame builds a synthetic linear array; communication resumes for (1-η)T_frame.</li><li>Five-step sensing pipeline: FFT to delay-DOA matrix -&gt; median amplitude thresholding -&gt; beat-frequency distance/DoA estimation -&gt; user localization with elevation compensation -&gt; obstacle-coordinate calibration excluding the user's own return.</li><li>Blockage-zone geometry on the waveguide: physical shadow zone dilated into a robust zone (margin covers sensing error, latency, obstacle velocity); antenna operates in safety or escaping mode within the safe zone.</li><li>Closed-form duty-cycle optimum: v_scan<em> = v_p^max; η</em> = min(λ_s/(2 T_frame sin(Δθ_req) v_p^max), η_max), subject to (1-η)R_c &gt;= R_QoS.</li><li>Numbers (28 GHz, 400 MHz, 10x10x3 m, pedestrian R=0.25 m/H=1.8 m): outage 0.9% vs 29.5-64.1% baselines; throughput 2,850-3,000 Mbps; needs v_p^max &gt;= 6 m/s, Δθ_req 15-25 degrees (worst corner: 5.6% outage).</li><li>No 3GPP mechanism yet — PASS is a pre-standard 6G candidate technology; the contribution is the sensing/mobility protocol layer above the waveguide hardware.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first pinching-antenna entry, opening coverage of a 6G radio-access candidate that has generated a large research wave since NTT DOCOMO's original waveguide demonstration: instead of steering beams electronically around blockages, PASS physically relocates the radiating point. The paper is notable for moving PASS from placement theory to an operational protocol — a concrete sensing-movement-communication frame with a closed-form sensing duty cycle, plus a robust-blockage-zone construction that explicitly budgets sensing uncertainty and mechanical latency. The near-zero outage result (0.9% vs 29.5-64.1%) quantifies what mechanical antenna mobility buys in dynamic indoor blockage, the binding scenario for mmWave XR. It also lands squarely in the ISAC current running through the cellular bins (the radar and the communicator share the same moving aperture), but from a hardware angle no existing entry touches. Caveats: single-user, single-obstacle cylinder models, simulation-level evaluation, and no standards hook yet — watch for PASS appearing in 6G workshop/pre-standardization agendas.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>香港都会大学与中南民族大学（武汉）的 Yi Hong、Yalin Liu、Yulei Wang、Yaru Fu 提出了首个面向夹持天线系统（PASS）的感知辅助抗遮挡设计。PASS 是新兴的 6G 无线接入概念：低成本辐射点被机械&quot;夹持&quot;在天花板介质波导上并可沿波导滑动。以往 PASS 工作基于随机遮挡模型优化天线位置；本文则让夹持天线实时刻画真实障碍物：FMCW 雷达收发器随天线移动，在感知阶段沿波导做受控微移动、由 M 个 chirp 构成合成线性阵列，在通信阶段以稳定 LoS 链路服务用户（感知-移动-通信帧结构，占空比 η）。</p>\n<p>感知链路依次执行 FFT 得到时延-DOA 特征矩阵、基于中值的幅度门限、差拍频率测距、带仰角补偿的用户定位以及障碍物坐标校准。系统据此在波导上计算物理遮挡区（几何阴影），再按感知不确定性、时延与障碍物速度膨胀为鲁棒遮挡区，将天线限制在其补集安全区内——分为安全模式（最优位置本就安全）与逃逸模式（边界重定位/跨区）。闭式解将扫描速度设为电机上限，并在角分辨率与 QoS 约束下最小化 η。在 28 GHz / 400 MHz 带宽、10x10x3 m 房间、行走行人场景（500 Mbps QoS）下，遮挡致中断率在各用户位置保持 0.9%（固定/常规基线为 29.5%-64.1%），吞吐维持 2850-3000 Mbps；敏感性分析表明需要 v_p^max &gt;= 6 m/s 与 15-25 度角分辨率要求（30 度 / 12 m/s 极端配置使感知退化、中断升至 5.6%）。</p>\n<h3>技术要点</h3>\n<ul><li>首个以实时障碍物感知（而非随机遮挡模型）驱动的 PASS 抗遮挡设计：FMCW 雷达随可机械移动的夹持天线沿天花板波导运动。</li><li>感知-移动-通信帧结构：T_s = ηT_frame 内以扫描速度 v_scan 微移动构成合成线性阵列；其余 (1-η)T_frame 恢复通信。</li><li>五步感知流水线：FFT 得时延-DOA 矩阵 -&gt; 中值幅度门限 -&gt; 差拍频率测距/DoA 估计 -&gt; 带仰角补偿的用户定位 -&gt; 排除用户回波的障碍物坐标校准。</li><li>波导上的遮挡区几何：物理阴影区按感知误差、时延与障碍物速度膨胀为鲁棒区；天线在安全区内以安全/逃逸两模式运行。</li><li>闭式占空比最优解：v_scan<em> = v_p^max；η</em> = min(λ_s/(2 T_frame sin(Δθ_req) v_p^max), η_max)，约束 (1-η)R_c &gt;= R_QoS。</li><li>核心数字（28 GHz、400 MHz、10x10x3 m、行人 R=0.25 m/H=1.8 m）：中断率 0.9%（基线 29.5%-64.1%）；吞吐 2850-3000 Mbps；需 v_p^max &gt;= 6 m/s、Δθ_req 15-25 度（最差配置中断 5.6%）。</li><li>尚无 3GPP 机制——PASS 属预标准 6G 候选技术；贡献在波导硬件之上的感知/移动协议层。</li></ul>\n<h3>意义与新意</h3>\n<p>这是知识库首个夹持天线条目，开启了对一项 6G 无线接入候选技术的覆盖——自 NTT DOCOMO 最初的波导演示以来，该方向已形成大规模研究浪潮：PASS 不靠电子波束绕开遮挡，而是物理移动辐射点。本文的价值在于把 PASS 从布放理论推进到可运行协议——具体的感知-移动-通信帧结构、闭式感知占空比，以及显式预算感知不确定性与机械时延的鲁棒遮挡区构造。近零中断结果（0.9% 对 29.5%-64.1%）量化了机械天线移动性在动态室内遮挡（mmWave XR 的关键场景）中的收益。它也正落在贯穿蜂窝各栏目的 ISAC 潮流之中（雷达与通信共享同一移动孔径），但切入角度是现有条目未触及的硬件层。注意事项：单用户、单圆柱障碍物模型、仿真级评估、尚无标准挂钩——关注 PASS 进入 6G 研讨会/预标准化议程的信号。</p>",
+      "images": [],
+      "search_blob": "sensing-assisted anti-blockage pinching-antenna systems for indoor immersive communications 面向室内沉浸式通信的感知辅助抗遮挡夹持天线系统 pinching-antenna pass mmwave blockage fmcw-radar isac indoor-xr waveguide 28ghz beam-management yi hong, yalin liu, yulei wang and yaru fu (hong kong metropolitan university + south-central minzu university, wuhan) present the first sensing-assisted anti-blockage design for pinching-antenna systems (pass) — the emerging 6g radio-access concept in which a low-cost radiating point is mechanically \"pinched\" onto a ceiling-mounted dielectric waveguide and can slide along it. prior pass work optimizes antenna placement against stochastic blockage models; this paper instead has the pinching antenna characterize real obstacles in real time: an fmcw radar transceiver rides with the antenna, which performs controlled micro-movements along the waveguide during a sensing phase, forming a synthetic linear array from m collected chirps, then serves the user over a stable los link in the communication phase (a sensing-movement-communication frame with duty cycle η). 香港都会大学与中南民族大学（武汉）的 yi hong、yalin liu、yulei wang、yaru fu 提出了首个面向夹持天线系统（pass）的感知辅助抗遮挡设计。pass 是新兴的 6g 无线接入概念：低成本辐射点被机械\"夹持\"在天花板介质波导上并可沿波导滑动。以往 pass 工作基于随机遮挡模型优化天线位置；本文则让夹持天线实时刻画真实障碍物：fmcw 雷达收发器随天线移动，在感知阶段沿波导做受控微移动、由 m 个 chirp 构成合成线性阵列，在通信阶段以稳定 los 链路服务用户（感知-移动-通信帧结构，占空比 η）。 academic-paper cellular"
     },
     {
       "id": "2026-08-23_blink-xr-halow-extended-range-cameras",
@@ -5353,6 +5487,40 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "amazon's blink ships 802.11ah (wi-fi halow)-based extended-range cameras — sync module xr+ reaches up to 2,700 ft over sub-ghz 亚马逊 blink 推出基于 802.11ah（wi-fi halow）的超远距摄像头——sync module xr+ 借助亚 ghz 频段覆盖最远 2,700 英尺 802.11ah halow iot sub-ghz products amazon's blink smart-camera division has quietly become the first mass-market consumer brand to ship ieee 802.11ah (wi-fi halow)-class connectivity at scale. its new sync module xr+ hub, paired with blink outdoor 4 cameras, claims a camera-to-hub range of up to 2,700 feet (roughly 800 metres) — marketed as \"up to 10 times the usual wi-fi range\" — by operating in the unlicensed sub-ghz 900 mhz band rather than 2.4/5/6 ghz. wi-fi now's analysis (published 22 august 2026) reports that amazon does not advertise the technology as wi-fi halow: the 802.11ah basis was uncovered through fcc radio test reports, which reference \"general specs 802.11ah\" and an \"802.11ah stamped metal antenna.\" the implementation is proprietary (not wi-fi alliance halow-certified). 亚马逊旗下智能摄像头品牌 blink 悄然成为首个大规模出货 ieee 802.11ah（wi-fi halow）级连接的大众消费品牌。其新款 sync module xr+ 中枢与 blink outdoor 4 摄像头配合，宣称摄像头到中枢的距离可达 2,700 英尺（约 800 米）——营销口径为\"最高达普通 wi-fi 距离的 10 倍\"——其实现方式是工作在免许可的亚 ghz 900 mhz 频段，而非 2.4/5/6 ghz。wi-fi now 的分析（2026 年 8 月 22 日发表）指出，亚马逊并未将该技术宣传为 wi-fi halow：其 802.11ah 基础是通过 fcc 射频测试报告发现的——报告中提及\"general specs 802.11ah\"和\"802.11ah 冲压金属天线\"。该实现为私有方案（未经 wi-fi 联盟 halow 认证）。 product wifi"
+    },
+    {
+      "id": "2026-08-25_arxiv-pci-assignment-congruence-neural-solvers",
+      "date_found": "2026-08-25",
+      "technology": "cellular",
+      "date_published": "2026-08-21",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Congruence Decomposition with Neural Block Solvers for Large-Scale PCI Assignment",
+      "title_zh": "基于同余分解与神经块求解器的大规模 PCI 分配",
+      "url": "https://arxiv.org/abs/2608.21485",
+      "topics": [
+        "PCI",
+        "physical-cell-identity",
+        "network-planning",
+        "interference-management",
+        "GNN",
+        "combinatorial-optimization",
+        "Chinese-remainder-theorem",
+        "TS-38.211",
+        "SON"
+      ],
+      "topic_primary": "5g-nr",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-25_arxiv-pci-assignment-congruence-neural-solvers.md",
+      "summary_short_en": "A CUHK-Shenzhen / Sun Yat-sen / Tongji / UCAS / Columbia team with Huawei industry collaboration tackles Physical Cell Identity (PCI) assignment — the network-planning problem of giving each 5G cell one of 1008 PCI values so that modular interference is minimized. PCI determines the placement of synchronization signals, DMRS and uplink channel patterns per 3GPP TS 38.211, so cells whose PCIs are congruent mod 3, mod 4, mod 6 or mod 30 interfere on those resources; on top sit hard collision (neighbors sharing a PCI) and confusion (two cells with the same PCI sharing a common neighbor) constraints. The result is a large-scale multi-objective combinatorial problem that exact and heuristic methods struggle to scale to.",
+      "summary_short_zh": "香港中文大学（深圳）/中山大学/同济大学/中国科学院大学/哥伦比亚大学团队（与华为产业合作）研究物理小区标识（PCI）分配——为每个 5G 小区从 1008 个 PCI 值中选定一个、使模干扰最小化的网络规划问题。按 3GPP TS 38.211，PCI 决定同步信号、DMRS 与上行信道图样的资源位置，因此 PCI 在模 3、模 4、模 6、模 30 意义下同余的小区会在相应资源上互相干扰；其上还叠加硬约束：冲突（相邻小区同 PCI）与混淆（两个同 PCI 小区共享同一邻区）。这构成精确法与启发式方法都难以扩展的大规模多目标组合优化问题。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A CUHK-Shenzhen / Sun Yat-sen / Tongji / UCAS / Columbia team with Huawei industry collaboration tackles Physical Cell Identity (PCI) assignment — the network-planning problem of giving each 5G cell one of 1008 PCI values so that modular interference is minimized. PCI determines the placement of synchronization signals, DMRS and uplink channel patterns per 3GPP TS 38.211, so cells whose PCIs are congruent mod 3, mod 4, mod 6 or mod 30 interfere on those resources; on top sit hard collision (neighbors sharing a PCI) and confusion (two cells with the same PCI sharing a common neighbor) constraints. The result is a large-scale multi-objective combinatorial problem that exact and heuristic methods struggle to scale to.</p>\n<p>Their MMD-GPO framework decomposes the problem by its arithmetic structure: using the Chinese Remainder Theorem plus a &quot;su-adic&quot; decomposition that also handles non-coprime moduli, the multi-modular objective splits into blockwise Min-k-Partition subproblems. Each block is solved by a graph neural network that parametrizes a relaxed (probabilistic) assignment optimized by gradient descent, then rounded deterministically via conditional expectation — with a proof that the discrete solution never exceeds the relaxed objective — and residual collisions/confusions are cleaned up by greedy graph coloring. The paper proves blockwise characterization of modular equality, finite-step termination of the block coordinate descent, and the rounding bound. On synthetic random geometric graphs (N = 500/1000/2000 cells) MMD-GPO attains the lowest modular interference and eliminates all collisions and confusions while the strongest decomposition baseline (MMD-PMD) times out at N = 2000; on about 2,000 cells of a Beijing commercial network it cuts interference a further 2.8% versus MMD-PMD at a 2.04x speedup, and beats modular-interference-aware baselines by 3.4-53%, keeping zero collisions/confusions.</p>\n<h3>Key technical points</h3>\n<ul><li>Problem: assign PCI in {0,...,1007} per cell minimizing mod-3/4/6/30 congruence interference (SSS, DMRS, SRS resource mappings per TS 38.211) under zero-collision/zero-confusion constraints.</li><li>Congruence decomposition: CRT + su-adic decomposition splits the multi-modular objective into blockwise Min-k-Partition subproblems, covering non-coprime moduli that plain CRT cannot separate.</li><li>Neural block solver: GNN-parametrized relaxed assignment per block, gradient-descent optimized; conditional-expectation rounding provably never worse than the relaxation (Theorem IV.1); greedy coloring for residual collisions/confusions.</li><li>Theory: blockwise characterization of modular equality (Thm III.1) and finite-step termination of block coordinate descent (Thm III.2).</li><li>Synthetic scale test (RGG, N = 500/1000/2000): lowest modular interference of all baselines, all collisions/confusions eliminated; MMD-PMD baseline times out at N = 2000.</li><li>Real network (~2,000 cells, Beijing commercial deployment): -2.8% interference vs MMD-PMD at 2.04x speedup; 3.4-53% better than modular-interference-aware methods; zero collisions/confusions maintained.</li><li>Team: CUHK-Shenzhen, Sun Yat-sen, Tongji, UCAS, Columbia + Huawei collaboration; National Key R&amp;D / NSFC funded. Fresh v1 submitted 2026-08-21.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first network-planning/SON-layer entry: the cellular bins cover RAN control (xApps, schedulers), core procedures and spectrum, but nothing on the configuration-optimization problems operators actually run at deployment time, of which PCI assignment is the canonical example. Two things stand out. First, the arithmetic-first decomposition: rather than treating PCI as a generic graph-coloring instance, the method exploits the congruence structure that TS 38.211 itself induces (mod-3 SSS, mod-30 SRS interference), including the non-coprime moduli case — a genuinely standards-shaped formulation. Second, the validation is on a real ~2,000-cell Beijing commercial network with Huawei collaboration, not just synthetic graphs, and the practical win is scalability (2.04x, where the strongest baseline times out at 2,000 cells) with guaranteed zero collision/confusion. The per-objective interference gains are modest (2.8% over the best decomposition baseline), which is why this is a solid rather than spectacular result — but as dense 5G-Advanced/6G deployments push cell counts up, learning-assisted exact-structure solvers of this kind are a plausible SON trajectory to watch.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>香港中文大学（深圳）/中山大学/同济大学/中国科学院大学/哥伦比亚大学团队（与华为产业合作）研究物理小区标识（PCI）分配——为每个 5G 小区从 1008 个 PCI 值中选定一个、使模干扰最小化的网络规划问题。按 3GPP TS 38.211，PCI 决定同步信号、DMRS 与上行信道图样的资源位置，因此 PCI 在模 3、模 4、模 6、模 30 意义下同余的小区会在相应资源上互相干扰；其上还叠加硬约束：冲突（相邻小区同 PCI）与混淆（两个同 PCI 小区共享同一邻区）。这构成精确法与启发式方法都难以扩展的大规模多目标组合优化问题。</p>\n<p>其 MMD-GPO 框架按算术结构分解问题：利用中国剩余定理加上可处理非互素模数的&quot;su-adic&quot;分解，把多模目标拆成分块的 Min-k-Partition 子问题。每个块由图神经网络参数化松弛（概率）分配、以梯度下降优化，再经条件期望确定性舍入——并证明离散解不超过松弛目标值——残余冲突/混淆由贪心图着色清理。论文证明了模相等的分块刻画、块坐标下降的有限步终止以及舍入界。在合成随机几何图（N = 500/1000/2000 小区）上，MMD-GPO 取得最低模干扰并消除全部冲突与混淆，而最强分解基线 MMD-PMD 在 N = 2000 时超时；在北京商用网络约 2000 个小区上，相比 MMD-PMD 干扰再降 2.8%、提速 2.04 倍，并以 3.4%-53% 优于各模干扰感知基线，同时保持零冲突/零混淆。</p>\n<h3>技术要点</h3>\n<ul><li>问题：为每小区从 {0,...,1007} 分配 PCI，在零冲突/零混淆约束下最小化模 3/4/6/30 同余干扰（对应 TS 38.211 的 SSS、DMRS、SRS 资源映射）。</li><li>同余分解：CRT + su-adic 分解将多模目标拆为分块 Min-k-Partition 子问题，并覆盖普通 CRT 无法分离的非互素模数。</li><li>神经块求解器：每块用 GNN 参数化松弛分配、梯度下降优化；条件期望舍入被证明不劣于松弛解（定理 IV.1）；贪心着色清理残余冲突/混淆。</li><li>理论：模相等的分块刻画（定理 III.1）与块坐标下降有限步终止（定理 III.2）。</li><li>合成规模测试（RGG，N = 500/1000/2000）：全基线中模干扰最低、冲突/混淆全消除；MMD-PMD 基线在 N = 2000 超时。</li><li>真实网络（北京商用网约 2000 小区）：较 MMD-PMD 干扰再降 2.8%、提速 2.04 倍；优于各模干扰感知方法 3.4%-53%；保持零冲突/零混淆。</li><li>团队：港中深、中山、同济、国科大、哥大 + 华为合作；国家重点研发/自然科学基金资助。2026-08-21 提交的新 v1。</li></ul>\n<h3>意义与新意</h3>\n<p>这是知识库首个网络规划/SON 层条目：蜂窝各栏目已覆盖 RAN 控制（xApp、调度器）、核心网流程与频谱，但从未涉及运营商在部署时实际求解的配置优化问题，而 PCI 分配正是其中的典型代表。两点突出。其一，算术优先的分解：方法不把 PCI 当作一般图着色实例，而是利用 TS 38.211 本身诱导的同余结构（模 3 SSS、模 30 SRS 干扰），并覆盖非互素模数情形——是真正按标准形状建模的表述。其二，验证在华为合作的北京商用网约 2000 小区真实数据上完成，而非仅合成图；实际收益在可扩展性（2.04 倍提速，最强基线在 2000 小区即超时）并保证零冲突/零混淆。单项干扰增益不大（较最优分解基线 2.8%），因此这是扎实而非惊艳的结果——但随着密集 5G-A/6G 部署推高小区数，这类&quot;学习辅助 + 精确结构&quot;求解器是值得关注的 SON 走向。</p>",
+      "images": [],
+      "search_blob": "congruence decomposition with neural block solvers for large-scale pci assignment 基于同余分解与神经块求解器的大规模 pci 分配 pci physical-cell-identity network-planning interference-management gnn combinatorial-optimization chinese-remainder-theorem ts-38.211 son a cuhk-shenzhen / sun yat-sen / tongji / ucas / columbia team with huawei industry collaboration tackles physical cell identity (pci) assignment — the network-planning problem of giving each 5g cell one of 1008 pci values so that modular interference is minimized. pci determines the placement of synchronization signals, dmrs and uplink channel patterns per 3gpp ts 38.211, so cells whose pcis are congruent mod 3, mod 4, mod 6 or mod 30 interfere on those resources; on top sit hard collision (neighbors sharing a pci) and confusion (two cells with the same pci sharing a common neighbor) constraints. the result is a large-scale multi-objective combinatorial problem that exact and heuristic methods struggle to scale to. 香港中文大学（深圳）/中山大学/同济大学/中国科学院大学/哥伦比亚大学团队（与华为产业合作）研究物理小区标识（pci）分配——为每个 5g 小区从 1008 个 pci 值中选定一个、使模干扰最小化的网络规划问题。按 3gpp ts 38.211，pci 决定同步信号、dmrs 与上行信道图样的资源位置，因此 pci 在模 3、模 4、模 6、模 30 意义下同余的小区会在相应资源上互相干扰；其上还叠加硬约束：冲突（相邻小区同 pci）与混淆（两个同 pci 小区共享同一邻区）。这构成精确法与启发式方法都难以扩展的大规模多目标组合优化问题。 academic-paper cellular"
     },
     {
       "id": "2026-08-24_arxiv-z2act-verifiable-agentic-intent-oran",
