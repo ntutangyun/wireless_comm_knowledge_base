@@ -11,7 +11,7 @@ source_quality: full
 topics: [multi-AP, joint-reception, neural-receiver, LDPC, OFDM, channel-estimation, Sionna]
 topic_primary: mapc-cosr
 topics_secondary: [ai-for-wifi]
-novelty_score: 3
+novelty_score: 2
 ---
 
 ## Summary (EN)
@@ -56,7 +56,9 @@ Xavier Tardy（IETR–CNRS 6164 / CentraleSupélec 与 Orange Research）、Gré
 
 ## Why it matters / what's new (EN)
 
-The `mapc-cosr` bin has so far been about *transmit-side* multi-AP coordination — coordinated spatial reuse, coordinated beamforming, NPCA, DRU, and the MAPC configuration-generation work in `2026-08-06_arxiv-fm4wifi-flow-matching-cosr` and `2026-08-03_ieee-mentor-tgbp-digest`-era TGbn traffic. This paper is the first entry in that bin arguing the *receive* side: if several APs already hear the same station, the coordination dividend need not be spent on scheduling who transmits — it can be spent on removing a PHY overhead that has been treated as fixed since OFDM Wi-Fi began. The framing that pilots are optional above a two-AP threshold is a different lever from anything in the KB.
+The `mapc-cosr` bin has so far been about *transmit-side* multi-AP coordination — coordinated spatial reuse, coordinated beamforming, NPCA, DRU, and the MAPC configuration-generation work in `2026-08-06_arxiv-fm4wifi-flow-matching-cosr` and `2026-08-03_ieee-mentor-tgbp-digest`-era TGbn traffic. This is the bin's first entry arguing the *receive* side: if several APs already hear the same station, the coordination dividend need not be spent on scheduling who transmits — it can be spent on removing a PHY overhead that has been treated as fixed since OFDM Wi-Fi began.
+
+**Precedence note (added after publication).** This paper is not the first Transformer-based joint multi-AP uplink receiver. arXiv **2602.04728** ("Cross-Attention Transformer for Joint Multi-Receiver Uplink Neural Decoding", February 2026) already performed joint multi-AP OFDM uplink decoding without explicit channel estimates and explicitly reported robustness under *sparse* pilots, six months earlier. The present 4-page URSI summary builds on that line rather than opening it; its distinct contribution is the sharper claim — pilots dropped **entirely**, with a measured hard threshold at two cooperating APs — plus the ray-traced evaluation. The earlier paper is not yet a KB entry and is queued for ingest; `novelty_score` here was corrected 3 → 2 once the precedent surfaced.
 
 It also lands next to two adjacent entries and is worth reading against both. `2026-08-27_etri-ai-ran-neural-receiver-6g` covers the analogous neural-receiver push on the cellular side, where AI-RAN work has been pursuing learned demodulation for longer — the Wi-Fi framing here is distinguished by making multi-AP reception, not model size, the enabling resource. And `2026-08-26_arxiv-ray-traced-rss-fingerprint-localization` used the same Sionna RT digital-twin methodology for a completely different purpose (fingerprint augmentation for localisation), which is a sign that ray-traced synthetic channels are becoming the default evaluation substrate for Wi-Fi ML work rather than a novelty in themselves. Two cautions when weighing the result: this is a 4-page conference summary, and the reported wins are against a *single-link* perfect-CSI baseline, not against a multi-AP model-based joint receiver — so the comparison isolates the value of multi-AP reception, not the value of the Transformer over a classical joint-processing alternative.
 
