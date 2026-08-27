@@ -3,7 +3,7 @@ window.KB_DATA = {
   "last_updated": "2026-08-27",
   "last_scanned": "2026-08-27",
   "topic_counts": {
-    "6G": 61,
+    "6G": 62,
     "O-RAN": 51,
     "security": 48,
     "802.11bn": 47,
@@ -32,10 +32,10 @@ window.KB_DATA = {
     "digital-twin": 16,
     "LLM": 16,
     "FCC": 16,
+    "spectrum": 16,
     "MLO": 16,
     "802.11bp": 15,
     "6GHz": 15,
-    "spectrum": 15,
     "802.11": 15,
     "PHY-layer": 15,
     "xApp": 13,
@@ -171,6 +171,7 @@ window.KB_DATA = {
     "interference-management": 3,
     "Sionna-RT": 3,
     "USRP": 3,
+    "testbed": 3,
     "Sionna": 3,
     "WPT": 3,
     "RIS": 3,
@@ -260,7 +261,6 @@ window.KB_DATA = {
     "distributed-learning": 2,
     "7GHz": 2,
     "CSI-feedback": 2,
-    "testbed": 2,
     "RSSI": 2,
     "fingerprinting": 2,
     "28GHz": 2,
@@ -311,6 +311,9 @@ window.KB_DATA = {
     "person-identification": 2,
     "spectrum-monitoring": 2,
     "RAG": 2,
+    "terahertz": 2,
+    "THz": 2,
+    "India": 2,
     "AT&T": 2,
     "anomaly-detection": 2,
     "explainable-AI": 2,
@@ -757,6 +760,8 @@ window.KB_DATA = {
     "reranker": 1,
     "instruction-tuning": 1,
     "AI-native-network": 1,
+    "Bharat 6G": 1,
+    "national-program": 1,
     "SCS": 1,
     "special-temporary-authority": 1,
     "FirstNet": 1,
@@ -1055,7 +1060,6 @@ window.KB_DATA = {
     "deterministic-WiFi": 1,
     "Sub6": 1,
     "traffic-engineering": 1,
-    "THz": 1,
     "near-field": 1,
     "Bessel-beam": 1,
     "positioning-uncertainty": 1,
@@ -1166,7 +1170,6 @@ window.KB_DATA = {
     "low-latency": 1,
     "ECN": 1,
     "unlicensed-spectrum": 1,
-    "India": 1,
     "IN-SPACe": 1,
     "NLOS": 1,
     "NPN": 1,
@@ -1185,7 +1188,6 @@ window.KB_DATA = {
     "TEE": 1,
     "5G-AKA": 1,
     "802.11mc": 1,
-    "terahertz": 1,
     "optical-laser": 1,
     "TeraLink": 1,
     "NASA-CSLI": 1,
@@ -1534,7 +1536,7 @@ window.KB_DATA = {
   },
   "primary_topic_counts": {
     "cellular-ai": 37,
-    "6g-vision": 30,
+    "6g-vision": 31,
     "wifi8-uhr": 30,
     "security-privacy": 30,
     "wifi7-deployment": 29,
@@ -1581,7 +1583,7 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 342,
-    "industry-news": 104,
+    "industry-news": 105,
     "ieee-document": 39,
     "product": 26,
     "satellite-news": 23,
@@ -1594,7 +1596,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 343,
-    "industry": 162,
+    "industry": 163,
     "standards": 52
   },
   "technologies_vocab": {
@@ -3683,6 +3685,7 @@ window.KB_DATA = {
         "2026-08-25_arxiv-pinching-antenna-sensing-anti-blockage",
         "2026-08-23_arxiv-emwm-electromagnetic-world-model-6g",
         "2026-08-19_arxiv-pmn-rainsense-rainfall-mobile-signals",
+        "2026-08-27_iit-madras-bharat-6g-thz-testbed-6-39gbps",
         "2026-08-14_arxiv-radio-optical-confluence-edge-ran",
         "2026-08-13_arxiv-isac-3gpp-5ga-to-6g-evolution",
         "2026-08-09_arxiv-holonic-digital-twins-physical-ai",
@@ -3782,6 +3785,7 @@ window.KB_DATA = {
           "2026-05-30_arxiv-semantic-waveforms-ossdm-6g"
         ],
         "industry-news": [
+          "2026-08-27_iit-madras-bharat-6g-thz-testbed-6-39gbps",
           "2026-07-02_3gpp-6g-air-interface-decisions",
           "2026-07-09_3gpp-sa6-mcx-6g-study",
           "2026-07-07_ericsson-6g-ran-standardization-decisions",
@@ -4304,6 +4308,7 @@ window.KB_DATA = {
         "2026-06-13_arxiv-fr3-terrestrial-ntn-spectrum-sharing"
       ],
       "entries_secondary": [
+        "2026-08-27_iit-madras-bharat-6g-thz-testbed-6-39gbps",
         "2026-07-02_3gpp-6g-air-interface-decisions",
         "2026-06-18_arxiv-atomic-handover-6g-nnpn",
         "2026-07-07_ericsson-6g-ran-standardization-decisions",
@@ -7616,6 +7621,39 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>由 Farbod Tavakkoli 领衔、作者含 Kenneth Church、Gregory Diamos、Lina Bariah、Ali Maatouk 与 Imtiaz Karim 的大团队（2026 年 8 月 15 日 arXiv；<strong>被 ACM AI Leadership Summit 2026 Breakthrough Impact Highlights Track 接收</strong>）发布 <strong>Open Telco（OTel）</strong>——一个面向检索增强电信 AI 的开源基座，署名 100+ 领域专家，横跨 AT&amp;T、GSMA、学术界与技术伙伴。动机是作者认为该领域反复撞上的缺口：电信有好的<em>基准</em>，却缺少共享的<em>训练数据与后训练基线</em>，以使前沿 LLM 在 3GPP/O-RAN/GSMA 材料上可靠——尤其在 RAG 中，检索质量与&quot;上下文不足时的弃答&quot;和生成同等重要。</p>\n<p>OTel 提供四个精选数据集，共 <strong>326,767 条高置信示例</strong>，从 3GPP 规范、GSMA 文档、O-RAN 材料、RFC 与学术论文的约 110 万原始点提炼而来：OTel-Embedding（锚/正/负段落三元组）、OTel-Reranker（查询-段落相关性对）、OTel-LLM（带弃答标志的上下文接地指令微调）、OTel-Safety（上下文不足时训练弃答）。配套 <strong>30 个完整后训练基线模型</strong>：10 个嵌入模型（22M–8B）、3 个重排器（0.6B–8B）、17 个语言模型（270M–32B），基于 Gemma 3、Qwen 3、OLMo 3、Mistral 3 等。报告的后训练结果：嵌入检索 <strong>NDCG@10 93.5%</strong>、重排 <strong>MRR@10 0.952</strong>、语言模型正确率 <strong>88.2%</strong>。作者称截至 2026 年 5 月模型下载超 1600 万次、媒体报道 157+。全部托管于 Hugging Face、Apache-2.0，配模型/数据卡与 Croissant 1.1 元数据。局限：仅英文、以文本为中心（不含图表/结构化表格），且评估在留出的 OTel 分区而非完全独立基准，聚合分数可能掩盖子领域差异。</p>\n<h3>技术要点</h3>\n<ul><li>四数据集，326,767 条精选示例，源自约 110 万原始点（3GPP、GSMA、O-RAN、RFC、论文）：OTel-Embedding、OTel-Reranker、OTel-LLM（弃答标志）、OTel-Safety。</li><li>30 个后训练基线：10 嵌入（22M–8B）、3 重排（0.6B–8B）、17 语言模型（270M–32B）；基座含 Gemma 3、Qwen 3、OLMo 3、Mistral 3。</li><li>结果：检索 NDCG@10 93.5%、重排 MRR@10 0.952、语言模型正确率 88.2%。</li><li>RAG 优先：上下文不足时弃答作为一等训练目标（OTel-Safety）。</li><li>分发：Hugging Face、Apache-2.0、模型/数据卡 + Croissant 1.1；截至 2026 年 5 月下载超 1600 万。</li><li>局限：仅英文、文本为中心（无图表）、评估用留出 OTel 分区（非完全独立）、聚合分数掩盖子领域差异。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库多次记录电信 LLM 与智能体网络工作（2026-07-22 LLM/智能体 5G6G 教程、2026-06-03 AgentXGCore、2026-07-07 RANPilot），但那些是<em>消费</em> LLM；OTel 关注缺失的<em>供给侧</em>——共享、许可清晰的训练语料与 30 个即用后训练基线，专为电信 RAG，由以 AT&amp;T/GSMA 为核心的联盟贡献。相对以往 TeleQnA 式基准的新意在于：OTel 面向完整的 检索→重排→生成→弃答 流水线，为各阶段提供数据集，并把&quot;知道何时说不知道&quot;（OTel-Safety）当作可训练行为——这正是 LLM 基于 3GPP 文本作答时最致命的失败模式。它是生态/资源贡献而非新算法，诚实的限定（仅英文/文本、留出分区评估、聚合指标）意味着所报数字是起点参考而非独立基准结论；但 Apache-2.0 发布仍显著降低了构建网络管理副驾或规范问答助手的门槛。</p>",
       "images": [],
       "search_blob": "otel: building domain-specialized telecom llm foundations for intelligent networks otel：为智能网络构建领域专用的电信大模型基座 telecom-llm rag embedding reranker instruction-tuning 3gpp open-source foundation-models ai-native-network a large team led by farbod tavakkoli with authors including kenneth church, gregory diamos, lina bariah, ali maatouk and imtiaz karim (arxiv 15 aug 2026; **accepted at the acm ai leadership summit, breakthrough impact highlights track, 2026**) present **open telco (otel)**, an open-source foundation for retrieval-augmented telecom ai, credited to 100+ domain experts spanning at&t, gsma, academia and technology partners. the motivation is a gap the authors argue the field keeps hitting: telecom has good *benchmarks* but lacks shared *training data and post-trained baselines* to make frontier llms reliable on 3gpp/o-ran/gsma material, especially for rag where retrieval quality and abstention-under-insufficient-context matter as much as generation. 由 farbod tavakkoli 领衔、作者含 kenneth church、gregory diamos、lina bariah、ali maatouk 与 imtiaz karim 的大团队（2026 年 8 月 15 日 arxiv；**被 acm ai leadership summit 2026 breakthrough impact highlights track 接收**）发布 **open telco（otel）**——一个面向检索增强电信 ai 的开源基座，署名 100+ 领域专家，横跨 at&t、gsma、学术界与技术伙伴。动机是作者认为该领域反复撞上的缺口：电信有好的*基准*，却缺少共享的*训练数据与后训练基线*，以使前沿 llm 在 3gpp/o-ran/gsma 材料上可靠——尤其在 rag 中，检索质量与\"上下文不足时的弃答\"和生成同等重要。 academic-paper cellular"
+    },
+    {
+      "id": "2026-08-27_iit-madras-bharat-6g-thz-testbed-6-39gbps",
+      "date_found": "2026-08-27",
+      "technology": "cellular",
+      "date_published": "2026-08-14",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "India's Bharat 6G THz Testbed Demonstrates 6.39 Gbps: IIT Madras + SAMEER Build an Indigenous Terahertz Link",
+      "title_zh": "印度 Bharat 6G 太赫兹试验平台实现 6.39 Gbps：IIT Madras 与 SAMEER 建成自主太赫兹链路",
+      "url": "https://www.electronicsforu.com/news/india-advances-terahertz-wireless-for-6g",
+      "topics": [
+        "6G",
+        "terahertz",
+        "THz",
+        "testbed",
+        "India",
+        "Bharat 6G",
+        "spectrum",
+        "national-program"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "cellular-spectrum"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-08-27_iit-madras-bharat-6g-thz-testbed-6-39gbps.md",
+      "summary_short_en": "On 2026-08-14, researchers at IIT Madras demonstrated wireless data transmission at **6.39 Gbps** over the **Bharat 6G THz Testbed**, a terahertz-band experimental platform built in collaboration with **SAMEER** (Society for Applied Microwave Electronics Engineering & Research) with funding from India's **Telecom Technology Development Fund (TTDF)**. The demonstration is positioned as an indigenous capability milestone: India operating its own THz research platform rather than importing one, under the national **Bharat 6G** programme.",
+      "summary_short_zh": "2026 年 8 月 14 日，IIT Madras（印度理工学院马德拉斯分校）的研究人员在 **Bharat 6G 太赫兹试验平台**上演示了 **6.39 Gbps** 的无线数据传输。该平台由 IIT Madras 与 **SAMEER**（应用微波电子工程与研究学会）合作建设，资金来自印度**电信技术发展基金（TTDF）**。此次演示被定位为自主能力的里程碑：在国家 **Bharat 6G** 计划下，印度运行自己的太赫兹研究平台，而非依赖进口设备。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On 2026-08-14, researchers at IIT Madras demonstrated wireless data transmission at <strong>6.39 Gbps</strong> over the <strong>Bharat 6G THz Testbed</strong>, a terahertz-band experimental platform built in collaboration with <strong>SAMEER</strong> (Society for Applied Microwave Electronics Engineering &amp; Research) with funding from India's <strong>Telecom Technology Development Fund (TTDF)</strong>. The demonstration is positioned as an indigenous capability milestone: India operating its own THz research platform rather than importing one, under the national <strong>Bharat 6G</strong> programme.</p>\n<p>The testbed targets the terahertz range — broadly 300 GHz to 10 THz, sitting between millimetre wave and infrared — which is the leading candidate spectrum for 6G's highest-rate short-range links because of the very wide contiguous channels available there. The stated application targets are extended reality, robotics, autonomous systems, and densely connected infrastructure.</p>\n<p>Public reporting is thin on engineering specifics: the exact carrier frequency within the THz range, modulation scheme, link distance, and which subsystems are domestically fabricated were not disclosed in the available coverage, and no primary press release from IIT Madras or India's Press Information Bureau surfaced. The 6.39 Gbps figure and the institutional/funding structure are the load-bearing facts; treat the rest as unverified pending a primary source or a published paper.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>6.39 Gbps</strong> demonstrated on the Bharat 6G THz Testbed; demonstration dated 2026-08-14, trade-press coverage 2026-08-17/18.</li><li><strong>THz band</strong> — reported only as the broad 300 GHz–10 THz range; the specific carrier was not disclosed.</li><li><strong>Institutions</strong>: IIT Madras (demonstrating), SAMEER (collaborating; India's government microwave/RF research lab), TTDF (funding, under the Department of Telecommunications).</li><li><strong>Framing is sovereignty, not peak rate</strong> — 6.39 Gbps is not a record for THz links in the global literature; the claim being made is <em>indigenous</em> end-to-end capability.</li><li><strong>Undisclosed</strong>: modulation, link distance, antenna/front-end architecture, degree of domestic fabrication. No primary press release located.</li><li>Positioned within the wider Bharat 6G programme (Bharat 6G Alliance, ~90 members as of July 2026) and India's stated ambition to contribute to global 6G standardisation.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The technical result is modest by global standards; the <em>strategic</em> signal is not. THz research platforms have until now been concentrated in the US, EU, China, Japan, and Korea. India standing up a nationally-funded THz testbed — and publicising it in sovereignty terms — is a fourth-bloc entrant in the 6G spectrum race, and the Bharat 6G Alliance's stated goal is to convert domestic capability into contributed 3GPP/ITU standards positions. For a KB whose 6g-vision bin is dominated by European and East Asian vendor roadmaps, this is the first Indian national-programme entry.</p>\n<p>This entry is also a <strong>deliberate late pickup</strong>, ingested 13 days after the event. It is documented as such because the miss was structural rather than incidental: the cellular scout carries 23 sources and none of them cover India, Korea, or Japan (no Bharat 6G / DoT / PIB / ETRI / NICT source existed), so a national 6G milestone had no path into the pipeline at all — it eventually arrived via a social-media echo. The source set has been extended in response. Watch for: a published paper or primary release with the real link parameters; whether the testbed is opened to Bharat 6G Alliance members; and India's contributions into 3GPP Release 21 / ITU IMT-2030 discussions.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026 年 8 月 14 日，IIT Madras（印度理工学院马德拉斯分校）的研究人员在 <strong>Bharat 6G 太赫兹试验平台</strong>上演示了 <strong>6.39 Gbps</strong> 的无线数据传输。该平台由 IIT Madras 与 <strong>SAMEER</strong>（应用微波电子工程与研究学会）合作建设，资金来自印度<strong>电信技术发展基金（TTDF）</strong>。此次演示被定位为自主能力的里程碑：在国家 <strong>Bharat 6G</strong> 计划下，印度运行自己的太赫兹研究平台，而非依赖进口设备。</p>\n<p>该平台面向太赫兹频段——大致为 300 GHz 至 10 THz，位于毫米波与红外之间——这是 6G 最高速率短距链路的首选候选频谱，因为该频段可提供极宽的连续信道。官方提出的应用目标包括扩展现实、机器人、自主系统以及高密度互联基础设施。</p>\n<p>公开报道在工程细节上很薄：太赫兹范围内的确切载波频率、调制方式、链路距离，以及哪些子系统为本土制造，均未在现有报道中披露；也未检索到 IIT Madras 或印度新闻局（PIB）的一手新闻稿。6.39 Gbps 这一数字与机构/资金结构是可靠事实，其余内容在获得一手来源或论文之前应视为未经证实。</p>\n<h3>技术要点</h3>\n<ul><li>在 Bharat 6G 太赫兹试验平台上演示 <strong>6.39 Gbps</strong>；演示日期 2026-08-14，行业媒体报道于 2026-08-17/18。</li><li><strong>太赫兹频段</strong>——仅报道为 300 GHz–10 THz 的宽泛范围，未披露具体载波频率。</li><li><strong>参与机构</strong>：IIT Madras（演示方）、SAMEER（合作方，印度政府微波/射频研究机构）、TTDF（资助方，隶属电信部）。</li><li><strong>核心叙事是自主可控，而非峰值速率</strong>——6.39 Gbps 在全球太赫兹链路文献中并非纪录；其主张在于<em>端到端自主</em>能力。</li><li><strong>未披露</strong>：调制方式、链路距离、天线/前端架构、国产化程度。未找到一手新闻稿。</li><li>该成果处于更广泛的 Bharat 6G 计划框架内（Bharat 6G 联盟，截至 2026 年 7 月约 90 家成员），呼应印度参与全球 6G 标准化的目标。</li></ul>\n<h3>意义与新意</h3>\n<p>以全球标准衡量，这一技术结果并不突出；但其<em>战略</em>信号并不平凡。太赫兹研究平台此前集中于美国、欧盟、中国、日本与韩国。印度建成由国家资助的太赫兹试验平台，并以自主可控的叙事对外公布，意味着 6G 频谱竞赛中出现了第四个阵营；而 Bharat 6G 联盟明确的目标，是把国内能力转化为在 3GPP/ITU 中的标准贡献。对于 6g-vision 主题下长期由欧洲与东亚厂商路线图主导的知识库而言，这是第一条印度国家计划条目。</p>\n<p>本条目同时是一次<strong>有意的迟到补录</strong>，在事件发生 13 天后才收录。之所以专门记录，是因为这次遗漏属于结构性问题而非偶然：cellular scout 共有 23 个源，其中没有任何一个覆盖印度、韩国或日本（不存在 Bharat 6G / 电信部 / PIB / ETRI / NICT 源），因此一项国家级 6G 里程碑根本没有进入流水线的路径，最终只能通过社交媒体回声抵达。源集合已据此扩充。后续关注：披露真实链路参数的论文或一手稿件；该平台是否向 Bharat 6G 联盟成员开放；以及印度在 3GPP Release 21 / ITU IMT-2030 中的贡献。</p>",
+      "images": [],
+      "search_blob": "india's bharat 6g thz testbed demonstrates 6.39 gbps: iit madras + sameer build an indigenous terahertz link 印度 bharat 6g 太赫兹试验平台实现 6.39 gbps：iit madras 与 sameer 建成自主太赫兹链路 6g terahertz thz testbed india bharat 6g spectrum national-program on 2026-08-14, researchers at iit madras demonstrated wireless data transmission at **6.39 gbps** over the **bharat 6g thz testbed**, a terahertz-band experimental platform built in collaboration with **sameer** (society for applied microwave electronics engineering & research) with funding from india's **telecom technology development fund (ttdf)**. the demonstration is positioned as an indigenous capability milestone: india operating its own thz research platform rather than importing one, under the national **bharat 6g** programme. 2026 年 8 月 14 日，iit madras（印度理工学院马德拉斯分校）的研究人员在 **bharat 6g 太赫兹试验平台**上演示了 **6.39 gbps** 的无线数据传输。该平台由 iit madras 与 **sameer**（应用微波电子工程与研究学会）合作建设，资金来自印度**电信技术发展基金（ttdf）**。此次演示被定位为自主能力的里程碑：在国家 **bharat 6g** 计划下，印度运行自己的太赫兹研究平台，而非依赖进口设备。 industry-news cellular"
     },
     {
       "id": "2026-08-20_ast-fcc-sta-800mhz-handset-test-grain",
