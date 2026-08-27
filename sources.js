@@ -787,7 +787,7 @@ window.SOURCES_DATA = {
     {
       "id": "arxiv-api-satellite",
       "name": "arxiv API — satellite/LEO/NTN across cs.NI + eess.SP + cs.IT + eess.SY",
-      "url": "http://export.arxiv.org/api/query?search_query=%28abs%3Asatellite+OR+abs%3ALEO+OR+abs%3A%22non-terrestrial%22%29+AND+%28cat%3Acs.NI+OR+cat%3Aeess.SP+OR+cat%3Acs.IT+OR+cat%3Aeess.SY%29&sortBy=submittedDate&sortOrder=descending&max_results=40",
+      "url": "https://export.arxiv.org/api/query?search_query=%28abs%3Asatellite+OR+abs%3ALEO+OR+abs%3A%22non-terrestrial%22%29+AND+%28cat%3Acs.NI+OR+cat%3Aeess.SP+OR+cat%3Acs.IT+OR+cat%3Aeess.SY%29&sortBy=submittedDate&sortOrder=descending&max_results=40",
       "kind": "api",
       "category": "academia",
       "topics_hint": [
@@ -956,7 +956,7 @@ window.SOURCES_DATA = {
     {
       "id": "arxiv-api-ble",
       "name": "arxiv API — BLE papers",
-      "url": "http://export.arxiv.org/api/query?search_query=all:bluetooth+AND+all:low+energy&sortBy=submittedDate&sortOrder=descending&max_results=10",
+      "url": "https://export.arxiv.org/api/query?search_query=all:bluetooth+AND+all:low+energy&sortBy=submittedDate&sortOrder=descending&max_results=10",
       "kind": "html",
       "category": "academia",
       "topics_hint": [
@@ -1146,7 +1146,7 @@ window.SOURCES_DATA = {
     {
       "id": "arxiv-api-uwb",
       "name": "arxiv API — UWB papers",
-      "url": "http://export.arxiv.org/api/query?search_query=all:ultra-wideband+OR+all:802.15.4z+OR+all:FiRa&sortBy=submittedDate&sortOrder=descending&max_results=10",
+      "url": "https://export.arxiv.org/api/query?search_query=all:ultra-wideband+OR+all:802.15.4z+OR+all:FiRa&sortBy=submittedDate&sortOrder=descending&max_results=10",
       "kind": "html",
       "category": "academia",
       "topics_hint": [
