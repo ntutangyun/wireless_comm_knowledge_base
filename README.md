@@ -6,6 +6,30 @@ Each entry is a single Markdown file with YAML frontmatter, summarising one find
 
 The static viewer at the root of this repo (`index.html`) renders all entries with a EN / 中文 toggle, full-text search across both languages, and faceted filters. Open it directly in a browser, or browse the GitHub Pages mirror.
 
+## Technology domains
+
+Entries carry a `technology` field and the viewer groups them by domain:
+
+| id | Domain |
+|----|--------|
+| `wifi` | Wi-Fi (802.11) |
+| `cellular` | Cellular (4G/5G/6G) |
+| `satellite` | Satellite / LEO |
+| `bluetooth` | Bluetooth |
+| `uwb` | Ultra-Wideband (UWB) |
+| `nearlink` | NearLink / SparkLink |
+| `edge-ai` | Edge AI / Edge Computing |
+
+The first six are radio technologies. `edge-ai` is the adjacent compute domain —
+on-device inference, model compression, edge AI silicon and NPUs, AI PCs,
+computation offloading across the device-edge-cloud split, edge-cloud
+orchestration, federated learning, and the home setups where a Wi-Fi gateway,
+hub or assistant is itself the compute node. Findings whose substance is a radio
+mechanism belong in the radio domain that owns it, not here.
+
+The full domain and topic vocabularies live in `technologies.json` and
+`topics.json`.
+
 ## Layout
 
 ```

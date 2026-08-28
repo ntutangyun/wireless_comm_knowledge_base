@@ -1030,14 +1030,20 @@ def main(argv: list[str]) -> int:
     # dropped because it represents internal scout configuration.
     sources_payload = None
     skills_dir = data_root.parent / ".claude" / "skills"
-    techs = ["wifi", "cellular", "satellite", "bluetooth", "uwb", "nearlink"]
+    # Technology ids come from technologies.json, so adding a domain there is
+    # enough - no hardcoded list to keep in sync. Scout folders use
+    # underscores, hence the id -> folder translation below (edge-ai ->
+    # edge_ai_research_scout).
+    techs = [t["id"] for t in tech_vocab.get("technologies", [])] or [
+        "wifi", "cellular", "satellite", "bluetooth", "uwb", "nearlink"]
     keep_keys = ("id", "name", "url", "kind", "category",
                  "topics_hint", "notes", "technology")
     sanitised = []
     last_updated = None
     found_any = False
     for tech in techs:
-        candidate = skills_dir / f"{tech}_research_scout" / "sources.yaml"
+        folder = tech.replace("-", "_")
+        candidate = skills_dir / f"{folder}_research_scout" / "sources.yaml"
         if not candidate.exists():
             continue
         try:
