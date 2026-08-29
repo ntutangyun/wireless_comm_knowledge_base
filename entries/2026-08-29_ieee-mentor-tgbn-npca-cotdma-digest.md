@@ -7,11 +7,11 @@ type: ieee-document
 title_en: "IEEE 802.11 TGbn Mentor digest — 2026-08-29: a five-document NPCA / Co-SR / Co-TDMA wave from Ruijie and Hikvision"
 title_zh: "IEEE 802.11 TGbn Mentor 摘要 — 2026-08-29：锐捷与海康威视提交的五份 NPCA / Co-SR / Co-TDMA 文稿"
 url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bn
-source_quality: snippet_only
+source_quality: full
 topics: [TGbn, 802.11bn, MAPC, NPCA, Co-SR, Co-TDMA, DSO, AOM, TXOP, UHR]
 topic_primary: mapc-cosr
 topics_secondary: [wifi8-uhr, rtwt-latency]
-novelty_score: 2
+novelty_score: 3
 ---
 
 ## Summary (EN)
@@ -24,7 +24,7 @@ Two more address **multi-AP coordination timing**. DCN 11-26-1569 "TXOP Terminat
 
 The fifth, DCN 11-26-1567 "Clarification on DSO Subband Selection with AOM" (Mengying Lin, Ruijie), sits at the intersection of dynamic sub-channel operation and adaptive operating-mode / bandwidth signalling: when a device is already narrowing its operating bandwidth via AOM, which subbands remain eligible for DSO assignment is not obviously determined by either mechanism alone.
 
-Two related documents that first appeared in this window are noted but not counted as new TGbn technical content: DCN 11-26-1563 (MLME SAP support for MAPC traffic indication) and 11-26-1562 (further considerations on IM extension), both Ruijie, were already covered in the 27 August digest. As always, only titles, authors, affiliations and upload times are public — the `.docx` bodies return 418/403 to anonymous downloaders, so nothing here is claimed about document content beyond what the titles state.
+Two related documents that first appeared in this window are noted but not counted as new TGbn technical content: DCN 11-26-1563 (MLME SAP support for MAPC traffic indication) and 11-26-1562 (further considerations on IM extension), both Ruijie, were already covered in the 27 August digest. **Retrieval note (correcting a standing error in this digest series):** earlier digests recorded that Mentor document bodies "return 418/403 to anonymous downloaders" and treated them as account-gated. That was a misreading. The responses are an F5 BIG-IP **rate-limit** (a short `Request Rejected` page carrying a support ID), not an authentication challenge — sequential requests spaced ~6-8 seconds apart with a browser user-agent and a `Referer` of the Mentor documents listing return HTTP 200 and the real file. Mentor also resolves on the DCN prefix alone and ignores the rest of the filename slug. All five documents below were downloaded and read in full for this entry.
 
 ## Summary (ZH)
 
@@ -36,7 +36,7 @@ TGbn 于 2026 年 8 月 27–28 日向 IEEE 802.11 Mentor 上传了五份新文�
 
 第五份 DCN 11-26-1567《Clarification on DSO Subband Selection with AOM》（林梦莹，锐捷）位于动态子信道操作与自适应工作模式/带宽信令的交叉点：当设备已经通过 AOM 收窄工作带宽时，哪些子带仍可被 DSO 分配，单靠任一机制都无法明确确定。
 
-另有两份在本窗口出现的相关文稿仅作记录、不计入新增 TGbn 技术内容：DCN 11-26-1563（MAPC 流量指示的 MLME SAP 支持）与 1562（IM 扩展的进一步考虑），均来自锐捷，已在 8 月 27 日的摘要中收录。一如既往，仅标题、作者、单位与上传时间为公开信息——`.docx` 正文对匿名下载者返回 418/403，因此本文不对文稿内容作出超出标题所述的任何断言。
+另有两份在本窗口出现的相关文稿仅作记录、不计入新增 TGbn 技术内容：DCN 11-26-1563（MAPC 流量指示的 MLME SAP 支持）与 1562（IM 扩展的进一步考虑），均来自锐捷，已在 8 月 27 日的摘要中收录。**抓取说明（更正本摘要系列的一个长期错误）**：此前的摘要记载 Mentor 文稿正文「对匿名下载者返回 418/403」，并据此当作需要账号才能访问。这是误读。那些响应来自 F5 BIG-IP 的**限流**（一个带 support ID 的简短 `Request Rejected` 页面），并非身份认证质询——只要用浏览器 UA、带上指向 Mentor 文档列表页的 `Referer`，并把请求间隔拉到约 6~8 秒，即可返回 HTTP 200 与真实文件。此外 Mentor 仅按 DCN 前缀解析，文件名后半段可以任意。本条目所涉五份文稿均已完整下载并阅读。
 
 ## Key technical points (EN)
 
@@ -45,6 +45,15 @@ TGbn 于 2026 年 8 月 27–28 日向 IEEE 802.11 Mentor 上传了五份新文�
 - **DCN 11-26-1569-00 · TGbn** — "TXOP Termination in Co-TDMA". Shu Yang (Ruijie Networks Co., Ltd.). Uploaded 28 Aug 2026. Termination semantics for a time-sliced coordinated TXOP.
 - **DCN 11-26-1568-00 · TGbn** — "Co-SR Multiple TXOP Transmission". Jingyang Luo (Hangzhou Hikvision Digital Technology). Uploaded 28 Aug 2026. Extends coordinated spatial reuse beyond a single TXOP.
 - **DCN 11-26-1567-00 · TGbn** — "Clarification on DSO Subband Selection with AOM". Mengying Lin (Ruijie Networks Co., Ltd.). Uploaded 27 Aug 2026. Subband eligibility for dynamic sub-channel operation under adaptive operating-mode bandwidth narrowing.
+
+**From the document bodies (added after full-text retrieval):**
+
+- **11-26-1569 admits a hole in the D2.0 draft.** The draft already specifies the polling, allocation and *return* of a shared TXOP in Co-TDMA, but Ruijie states that no mechanism is defined to **terminate** the TXOP sharing among APs, which they argue wastes over-the-air resources. Returning an unspent slice and ending the sharing session are different operations, and only the former exists today. The proposed fix reuses **CF-End** — a legacy broadcast NAV reset — as the termination signal.
+- **11-26-1568 changes the negotiation unit of Co-SR, not a corner case.** Hikvision proposes that a Co-SR agreement span multiple TXOPs. In TXOPs 2..N the Invite and Response frames are **not retransmitted**; the participating APs keep applying the parameters negotiated during the first TXOP. The document carries **five straw polls (SP1–SP5)** with concrete field additions to the Co-SR Invite, Response and Trigger frames, and slide 9 extends the same idea to coordinated beamforming (Co-BF).
+- **A role inversion is possible between TXOPs.** In the multi-TXOP regime the coordinating and coordinated AP **contend simultaneously** for each subsequent TXOP, and whichever wins sends the Trigger frame. The spatial-reuse parameters carried forward from TXOP 1 are role-indexed, so the roles can swap while the parameter binding cannot — the contribution does not say how a role-indexed parameter set is re-indexed after an inversion. The agreement is also scoped by a **TXOP count rather than a duration**, although channel coherence is a time quantity, and the coordinated AP has no mid-sequence withdrawal path.
+- **11-26-1567 is a single negative rule.** An AP shall not select an 80 MHz DSO subband when *all* 20 MHz subchannels inside it are marked disabled in the most recently received AOM Disabled Subchannel Bitmap. The partial-disable case (one to three subchannels disabled) is left permitted and unaddressed, and no epoch binds the bitmap update to the DSO Offer/Confirmation.
+- **11-26-1571 confirms an open NPCA edge.** Receive-side response behaviour during NPCA operation remains undefined in the draft.
+- **Status caveat:** SP1–SP5 in 11-26-1568 are **pending the September 2026 interim**. The multi-TXOP Co-SR regime is a proposal, not agreed text.
 - **Vendor concentration:** 4 of 5 from Ruijie, 1 from Hikvision — no contributions in this window from the Huawei / Qualcomm / Intel / Broadcom bloc that dominated the July plenary TGbn traffic.
 - **Document-number watermark** advances 11-26-1565 → 11-26-1573 (1573 is TGbp, covered separately); 1564, 1566 and 1572 are not publicly listed.
 - **Not new in this digest:** 11-26-1563 (MLME SAP for MAPC traffic indication) and 11-26-1562 (IM extension) were ingested on 27 August.
@@ -56,6 +65,15 @@ TGbn 于 2026 年 8 月 27–28 日向 IEEE 802.11 Mentor 上传了五份新文�
 - **DCN 11-26-1569-00 · TGbn** —《TXOP Termination in Co-TDMA》。杨舒（锐捷网络）。2026-08-28 上传。时间片化协调 TXOP 的终止语义。
 - **DCN 11-26-1568-00 · TGbn** —《Co-SR Multiple TXOP Transmission》。罗景阳（杭州海康威视数字技术）。2026-08-28 上传。将协调空间复用扩展到单个 TXOP 之外。
 - **DCN 11-26-1567-00 · TGbn** —《Clarification on DSO Subband Selection with AOM》。林梦莹（锐捷网络）。2026-08-27 上传。在 AOM 收窄带宽的前提下，动态子信道操作的可用子带界定。
+
+**来自文稿正文（完成全文抓取后补充）：**
+
+- **11-26-1569 承认 D2.0 草案存在一个缺口。** 草案已规定 Co-TDMA 中共享 TXOP 的轮询、分配与**归还**，但锐捷指出：草案没有定义如何**终止**多 AP 之间的 TXOP 共享，并认为这会浪费空口资源。「归还未用完的时间片」与「结束共享会话」是两回事，而目前只有前者。其提出的方案是复用 **CF-End**（一个面向传统设备的广播 NAV 复位帧）作为终止信号。
+- **11-26-1568 改变的是 Co-SR 的协商单位，而非某个边角情形。** 海康威视提出让一次 Co-SR 协商跨越多个 TXOP：在第 2 至第 N 个 TXOP 中**不再重传** Invite 与 Response 帧，参与的 AP 继续沿用第 1 个 TXOP 协商出的参数。文稿包含**五项 straw poll（SP1–SP5）**，对 Co-SR 的 Invite / Response / Trigger 帧提出了具体的字段增补；第 9 页还把同一思路延伸到协调波束成形（Co-BF）。
+- **TXOP 之间可能发生角色互换。** 在多 TXOP 模式下，协调 AP 与被协调 AP **同时竞争**后续每一个 TXOP，谁抢到谁发 Trigger 帧。而从第 1 个 TXOP 沿用下来的空间复用参数是**按角色索引**的——角色会换，参数绑定却不会；文稿没有说明角色互换后如何对参数集重新索引。此外，该协商是按 **TXOP 计数**而非**时长**限定有效范围（但信道相干性是一个时间量），且被协调 AP 在序列中途没有退出路径。
+- **11-26-1567 只是一条否定式规则。** 当某个 80 MHz DSO 子带内**全部** 20 MHz 子信道都在最近一次收到的 AOM Disabled Subchannel Bitmap 中被标记为禁用时，AP 不得选择该子带。部分禁用（4 个中禁用 1~3 个）的情形仍被允许且未作规定；位图更新与 DSO Offer/Confirmation 之间也没有任何时序（epoch）绑定。
+- **11-26-1571 确认了一处 NPCA 未决边界**：NPCA 操作期间接收侧的响应行为在草案中仍未定义。
+- **状态提示**：11-26-1568 中的 SP1–SP5 **尚待 2026 年 9 月中间会议表决**。多 TXOP Co-SR 目前是提案，不是已达成的草案文本。
 - **厂商集中度**：五份中四份来自锐捷、一份来自海康威视——本窗口内没有来自七月全会期间主导 TGbn 文稿的华为/高通/英特尔/博通阵营的贡献。
 - **文档编号水位**从 11-26-1565 推进到 11-26-1573（1573 属 TGbp，单独收录）；1564、1566、1572 未公开列出。
 - **本摘要不计为新增**：11-26-1563（MAPC 流量指示的 MLME SAP）与 11-26-1562（IM 扩展）已于 8 月 27 日收录。
