@@ -49,9 +49,11 @@ Bluetooth SIG 于 **2026 年 5 月 6 日发布 Bluetooth Core 规范 6.3**，是
   - Command and event masks widened.
   - Backward-compatible — legacy stacks unbroken.
 - **Classic-LE RF limit alignment**:
-  - BR/EDR and LE radio transmit/receive specs harmonised.
+  - BR/EDR and LE radio transmit/receive specs harmonised — specifically the **ACP (adjacent-channel power)** and **C/I (carrier-to-interference)** limits are relaxed onto common targets.
   - Enables single tuned RF front-end for dual-mode (TWS) silicon.
   - Concrete benefit: smaller PA backoff, simpler filter chains, lower current at same TX power.
+- **Per-PHY RTT precision declaration**: the controller declares round-trip-time precision separately for **1M / 2M / 2M 2BT** PHYs, enabling mode-aware ranging and isochronous-audio synchronisation.
+- **Roadmap**: bi-annual cadence confirmed, with **HDT (High Data Throughput) confirmed for 2026** among 50+ enhancement projects; the HCI mask widening above is explicitly forward headroom for LE Audio / HDT features (the SIG's own "running out of bits" framing).
 - **Target markets**: TWS earbuds, headsets, professional monitors, hearing aids; forward-positioned for AI-edge audio + industrial mesh.
 
 ## Key technical points (ZH)
@@ -65,9 +67,11 @@ Bluetooth SIG 于 **2026 年 5 月 6 日发布 Bluetooth Core 规范 6.3**，是
   - 命令与事件掩码加宽。
   - 向后兼容 —— 遗留协议栈不受破坏。
 - **Classic-LE 射频限制对齐**：
-  - BR/EDR 与 LE 的发送/接收规范一致化。
+  - BR/EDR 与 LE 的发送/接收规范一致化——具体是把 **ACP（邻道功率）** 与 **C/I（载波干扰比）** 限值放宽到共同目标。
   - 使双模（TWS）硅片能采用单一调优的射频前端。
   - 具体收益：更小的 PA 回退、更简单的滤波链、相同 TX 功率下更低电流。
+- **按 PHY 的 RTT 精度声明**：控制器分别针对 **1M / 2M / 2M 2BT** 三种 PHY 声明往返时间精度，支持模式感知测距与等时音频同步。
+- **路线图**：确认半年发布节奏；**HDT（高数据吞吐）确认于 2026 年推出**，位列 50 余个增强项目之中。上文的 HCI 掩码扩容正是为 LE Audio / HDT 预留的前向空间（SIG 自称「比特告急」）。
 - **目标市场**：TWS 耳塞、头戴、专业监听、助听器；面向未来定位 AI 边缘音频 + 工业网状。
 
 ## Why it matters / what's new (EN)
