@@ -3,6 +3,7 @@ id: 2026-09-01_ieee-mentor-ucm-tig-digest
 date_published: 2026-08-31
 date_found: 2026-09-01
 type: ieee-document
+technology: wifi
 title_en: "IEEE 802.11 UCM TIG Mentor digest — first appearance"
 title_zh: "IEEE 802.11 UCM TIG Mentor 摘要 — 首次出现"
 url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=UCM%20TIG
