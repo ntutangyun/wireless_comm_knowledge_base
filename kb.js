@@ -1,12 +1,12 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-08-31",
-  "last_scanned": "2026-08-31",
+  "last_updated": "2026-09-01",
+  "last_scanned": "2026-09-01",
   "topic_counts": {
-    "6G": 67,
-    "O-RAN": 54,
+    "6G": 69,
+    "O-RAN": 56,
     "802.11bn": 51,
-    "security": 47,
+    "security": 49,
     "agentic-AI": 43,
     "LEO": 42,
     "products": 41,
@@ -15,56 +15,57 @@ window.KB_DATA = {
     "scheduling": 34,
     "UWB": 32,
     "802.11be": 31,
+    "BLE": 27,
+    "CSI": 27,
     "Starlink": 26,
     "NearLink": 26,
-    "CSI": 26,
-    "BLE": 26,
     "direct-to-device": 23,
     "802.11bf": 23,
+    "MAPC": 22,
     "NTN": 22,
     "IoT": 22,
     "ISAC": 22,
-    "MAPC": 21,
     "5G-NR": 20,
+    "FCC": 19,
+    "network-slicing": 19,
     "5G": 19,
     "AI-RAN": 19,
-    "FCC": 18,
+    "MLO": 18,
     "spectrum": 18,
-    "network-slicing": 18,
     "LLM": 17,
     "SparkLink": 17,
     "SLE": 17,
-    "MLO": 17,
     "802.11bp": 16,
     "digital-twin": 16,
     "6GHz": 15,
     "PHY-layer": 15,
+    "xApp": 14,
     "802.11ax": 14,
     "mmWave": 14,
     "802.11": 14,
     "AMP": 13,
     "energy-efficiency": 13,
     "beamforming": 13,
-    "xApp": 13,
     "privacy": 13,
     "automotive": 13,
+    "OpenAirInterface": 12,
     "3GPP": 12,
-    "OpenAirInterface": 11,
     "TGbp": 10,
     "ambient-power": 10,
+    "UAV": 10,
     "Wi-Fi-8": 10,
     "GNSS": 10,
     "QoS": 10,
     "RIC": 10,
     "machine-learning": 10,
+    "LLM-agent": 9,
     "massive-MIMO": 9,
     "5G-Advanced": 9,
     "URLLC": 9,
     "resource-allocation": 9,
-    "UAV": 9,
     "generative-AI": 9,
     "AI-native": 9,
-    "LLM-agent": 8,
+    "OFDMA": 8,
     "handover": 8,
     "NPCA": 8,
     "Co-SR": 8,
@@ -74,8 +75,9 @@ window.KB_DATA = {
     "802.11bq": 8,
     "Wi-Fi 7": 8,
     "XR": 8,
+    "ray-tracing": 7,
+    "rApp": 7,
     "open-source": 7,
-    "OFDMA": 7,
     "intent-based-networking": 7,
     "indoor-positioning": 7,
     "AST-SpaceMobile": 7,
@@ -90,14 +92,14 @@ window.KB_DATA = {
     "FiRa": 7,
     "802.11bt": 7,
     "reinforcement-learning": 7,
+    "TGbn": 6,
     "Sionna": 6,
-    "ray-tracing": 6,
     "PDT": 6,
     "UHR": 6,
     "interoperability": 6,
+    "NPU": 6,
     "federated-learning": 6,
     "OpenHarmony": 6,
-    "rApp": 6,
     "Bluetooth": 6,
     "physical-layer-security": 6,
     "SLB": 6,
@@ -111,12 +113,12 @@ window.KB_DATA = {
     "regulation": 6,
     "measurement": 6,
     "PQC": 6,
+    "SpaceX": 5,
     "TGm": 5,
     "REVmf": 5,
-    "TGbn": 5,
+    "phased-array": 5,
     "spoofing": 5,
     "vRAN": 5,
-    "NPU": 5,
     "802.11ac": 5,
     "FR3": 5,
     "spectrum-sharing": 5,
@@ -138,13 +140,17 @@ window.KB_DATA = {
     "backhaul": 5,
     "RTLS": 5,
     "Co-BF": 5,
+    "Walker-Delta": 4,
+    "Near-RT-RIC": 4,
+    "FlexRIC": 4,
+    "RIS": 4,
     "LEO-PNT": 4,
     "S-band": 4,
+    "5G-SA": 4,
     "private-5G": 4,
     "on-device-LLM": 4,
     "inter-satellite-links": 4,
     "orbital-computing": 4,
-    "phased-array": 4,
     "MU-MIMO": 4,
     "USRP": 4,
     "testbed": 4,
@@ -152,7 +158,6 @@ window.KB_DATA = {
     "multi-agent-RL": 4,
     "benchmark": 4,
     "T-Mobile": 4,
-    "SpaceX": 4,
     "Wi-Fi-7": 4,
     "SDR": 4,
     "FWA": 4,
@@ -182,6 +187,14 @@ window.KB_DATA = {
     "carrier-aggregation": 4,
     "WPA3": 4,
     "802.11az": 4,
+    "Ka-band": 3,
+    "IMMW": 3,
+    "R-TWT": 3,
+    "transformer": 3,
+    "reconfigurable-intelligent-surface": 3,
+    "post-quantum-cryptography": 3,
+    "zero-trust": 3,
+    "O-Cloud": 3,
     "QoE": 3,
     "Co-TDMA": 3,
     "DSO": 3,
@@ -194,7 +207,9 @@ window.KB_DATA = {
     "uplink": 3,
     "MCX": 3,
     "energy-harvesting": 3,
+    "Jetson": 3,
     "PNT": 3,
+    "quantization": 3,
     "NWDAF": 3,
     "control-plane": 3,
     "nRF54L15": 3,
@@ -206,7 +221,6 @@ window.KB_DATA = {
     "Sionna-RT": 3,
     "RSSI": 3,
     "WPT": 3,
-    "RIS": 3,
     "measurement-study": 3,
     "beam-management": 3,
     "802.11ah": 3,
@@ -218,7 +232,6 @@ window.KB_DATA = {
     "spoofing-detection": 3,
     "jitter": 3,
     "mid-band": 3,
-    "Walker-Delta": 3,
     "NFC": 3,
     "Ofcom": 3,
     "standard-power": 3,
@@ -237,12 +250,10 @@ window.KB_DATA = {
     "foundation-models": 3,
     "terahertz": 3,
     "India": 3,
-    "FlexRIC": 3,
     "industrial-IoT": 3,
     "test-equipment": 3,
     "adversarial-ML": 3,
     "power-control": 3,
-    "5G-SA": 3,
     "formal-verification": 3,
     "localization": 3,
     "foundation-model": 3,
@@ -289,12 +300,17 @@ window.KB_DATA = {
     "omlox": 3,
     "roaming": 3,
     "Apple": 3,
+    "Ku-band": 2,
+    "interference": 2,
+    "TGbq": 2,
+    "speculative-decoding": 2,
+    "power-allocation": 2,
     "maintenance": 2,
+    "NOMA": 2,
     "adaptive-bitrate": 2,
     "video-streaming": 2,
     "Walker-constellation": 2,
     "channel-model": 2,
-    "Ka-band": 2,
     "preamble": 2,
     "PPDU": 2,
     "TXOP": 2,
@@ -315,14 +331,12 @@ window.KB_DATA = {
     "GPS": 2,
     "multipath": 2,
     "JEPA": 2,
-    "transformer": 2,
     "factor-graph": 2,
     "polarization": 2,
     "OpenWrt": 2,
     "lossless-audio": 2,
     "TWS": 2,
     "channel-estimation": 2,
-    "reconfigurable-intelligent-surface": 2,
     "resource-orchestration": 2,
     "E2": 2,
     "near-RT-RIC": 2,
@@ -331,11 +345,10 @@ window.KB_DATA = {
     "GPU": 2,
     "spectral-efficiency": 2,
     "Nvidia": 2,
+    "GGUF": 2,
     "time-synchronization": 2,
-    "post-quantum-cryptography": 2,
     "Walker-Star": 2,
-    "Jetson": 2,
-    "quantization": 2,
+    "llama.cpp": 2,
     "NEF": 2,
     "PCF": 2,
     "industrial-5G": 2,
@@ -369,7 +382,6 @@ window.KB_DATA = {
     "sub-GHz": 2,
     "AoI": 2,
     "network-planning": 2,
-    "zero-trust": 2,
     "evaluation-methodology": 2,
     "6G-NTN": 2,
     "800MHz": 2,
@@ -395,7 +407,6 @@ window.KB_DATA = {
     "simulator": 2,
     "monostatic-sensing": 2,
     "SLM": 2,
-    "Near-RT-RIC": 2,
     "Simu5G": 2,
     "CTDE": 2,
     "device-fingerprinting": 2,
@@ -425,7 +436,6 @@ window.KB_DATA = {
     "synchronization": 2,
     "RFI": 2,
     "FSO": 2,
-    "IMMW": 2,
     "power-save": 2,
     "community-tools": 2,
     "coverage": 2,
@@ -531,7 +541,6 @@ window.KB_DATA = {
     "in-orbit-AI": 2,
     "LPI": 2,
     "spatial-reuse": 2,
-    "O-Cloud": 2,
     "LE-UWB": 2,
     "Samsung": 2,
     "benchmarking": 2,
@@ -556,11 +565,59 @@ window.KB_DATA = {
     "WPA2": 2,
     "chipset": 2,
     "Rel-19": 2,
-    "R-TWT": 2,
+    "Viasat": 1,
+    "EPFD": 1,
+    "GSO-NGSO-coordination": 1,
+    "spectrum-dispute": 1,
+    "beam-steering": 1,
+    "testing": 1,
+    "AT-commands": 1,
+    "BleuIO": 1,
+    "GATT": 1,
+    "advertising-data": 1,
+    "data-length-extension": 1,
+    "CI": 1,
+    "UCM-TIG": 1,
+    "channel-modeling": 1,
+    "multi-device-edge-inference": 1,
+    "uplink-downlink-mode-selection": 1,
+    "draft-length-control": 1,
+    "token-goodput": 1,
+    "multi-satellite-MIMO": 1,
+    "cooperative-precoding": 1,
+    "knowledge-distillation": 1,
+    "decentralized-inference": 1,
+    "statistical-CSI": 1,
+    "angle-error-correction": 1,
+    "WMMSE": 1,
     "ANA": 1,
     "Element-ID": 1,
     "MDR": 1,
     "style-guide": 1,
+    "transmissive-RIS": 1,
+    "vehicular-terminal": 1,
+    "direct-to-satellite": 1,
+    "D2S": 1,
+    "antenna-architecture": 1,
+    "beam-tracking": 1,
+    "link-budget": 1,
+    "task-orchestration": 1,
+    "multi-agent-reinforcement-learning": 1,
+    "diffusion-policy": 1,
+    "Dec-POMDP": 1,
+    "GPU-memory-constraint": 1,
+    "mobile-AIGC": 1,
+    "peer-offloading": 1,
+    "conflict-mitigation": 1,
+    "E2-interface": 1,
+    "safety-certificate": 1,
+    "quantum-security": 1,
+    "quantum-authentication": 1,
+    "power-domain": 1,
+    "channel-state-information": 1,
+    "SIC": 1,
+    "pilot-spoofing": 1,
+    "threat-taxonomy": 1,
     "ABR": 1,
     "replay-verification": 1,
     "RobustMPC": 1,
@@ -578,6 +635,12 @@ window.KB_DATA = {
     "coupling-gain": 1,
     "D0.5": 1,
     "AOM": 1,
+    "soft-isolation": 1,
+    "BVLOS": 1,
+    "ground-control-station": 1,
+    "C2-link": 1,
+    "timeliness-attack": 1,
+    "state-staleness": 1,
     "signals-of-opportunity": 1,
     "DSSS": 1,
     "watermarking": 1,
@@ -718,6 +781,10 @@ window.KB_DATA = {
     "metasurface": 1,
     "DMA": 1,
     "off-grid": 1,
+    "embedded-module": 1,
+    "robotics-compute": 1,
+    "NPU-generation-refresh": 1,
+    "entry-level-edge-AI": 1,
     "ASIC": 1,
     "TTI": 1,
     "CUDA": 1,
@@ -727,7 +794,6 @@ window.KB_DATA = {
     "IQ-8275": 1,
     "Arduino": 1,
     "TOPS": 1,
-    "GGUF": 1,
     "Zephyr": 1,
     "STM32H5": 1,
     "edge-agent": 1,
@@ -746,7 +812,6 @@ window.KB_DATA = {
     "downlink-bottleneck": 1,
     "workload-characterization": 1,
     "prefill-decode": 1,
-    "llama.cpp": 1,
     "energy-per-token": 1,
     "IISWC-2026": 1,
     "edge-SoC": 1,
@@ -917,6 +982,12 @@ window.KB_DATA = {
     "activity-recognition": 1,
     "sleep-monitoring": 1,
     "contactless-healthcare": 1,
+    "model-compression": 1,
+    "pruning": 1,
+    "neural-architecture-search": 1,
+    "GPU-less-CPU-inference": 1,
+    "hardware-agnostic-optimization": 1,
+    "tactical-edge": 1,
     "4K-QAM": 1,
     "Multi-RU": 1,
     "2.7 GHz": 1,
@@ -1016,7 +1087,6 @@ window.KB_DATA = {
     "IMC-PRIMES": 1,
     "NTN-uplink": 1,
     "DFT-s-OFDM": 1,
-    "NOMA": 1,
     "overloaded-MIMO": 1,
     "PAPR": 1,
     "power-amplifier-back-off": 1,
@@ -1102,7 +1172,6 @@ window.KB_DATA = {
     "multi-orbit": 1,
     "LEO-MEO-GEO": 1,
     "handover-management": 1,
-    "power-allocation": 1,
     "MAPPO": 1,
     "TarMAC": 1,
     "PRACH": 1,
@@ -1130,7 +1199,6 @@ window.KB_DATA = {
     "constellation-operations": 1,
     "resilience": 1,
     "co-simulation": 1,
-    "TGbq": 1,
     "P2P": 1,
     "TSF": 1,
     "firmware": 1,
@@ -1220,7 +1288,6 @@ window.KB_DATA = {
     "5G-NTN": 1,
     "optical-ISL": 1,
     "Mil-Ka": 1,
-    "Ku-band": 1,
     "sovereign-connectivity": 1,
     "V2G": 1,
     "vehicle-to-grid": 1,
@@ -1240,7 +1307,6 @@ window.KB_DATA = {
     "physical-AI": 1,
     "active-inference": 1,
     "schedulability": 1,
-    "speculative-decoding": 1,
     "specification-process": 1,
     "publication-train": 1,
     "Open-Fronthaul": 1,
@@ -1769,7 +1835,6 @@ window.KB_DATA = {
     "interference-mitigation": 1,
     "CSMA/CA": 1,
     "DAG-scheduling": 1,
-    "interference": 1,
     "10G-PON": 1,
     "fiber-access": 1,
     "open-source-hardware": 1,
@@ -1902,6 +1967,13 @@ window.KB_DATA = {
     "StarLink-audio": 1,
     "L2HC": 1,
     "Kirin-A3": 1,
+    "Wi-Fi-router": 1,
+    "Docker": 1,
+    "Home-Assistant": 1,
+    "Frigate": 1,
+    "tri-core-architecture": 1,
+    "AI-Game-Boost": 1,
+    "WiFi-Insight": 1,
     "WEP": 1,
     "industrial-WiFi": 1,
     "OT": 1,
@@ -1909,29 +1981,29 @@ window.KB_DATA = {
   },
   "primary_topic_counts": {
     "cellular-ai": 39,
+    "wifi8-uhr": 33,
     "6g-vision": 33,
-    "wifi8-uhr": 32,
     "sensing-csi": 31,
     "security-privacy": 30,
     "wifi7-deployment": 30,
-    "leo-constellations": 28,
-    "open-ran": 28,
+    "leo-constellations": 29,
+    "open-ran": 29,
     "5g-nr": 27,
     "sat-ai": 26,
-    "sat-direct-device": 24,
+    "sat-direct-device": 25,
     "uwb-ranging": 22,
+    "cellular-security": 21,
     "amp-iot": 20,
     "spectrum-policy": 19,
-    "cellular-security": 18,
     "mapc-cosr": 17,
     "starlink": 14,
     "network-slicing": 13,
     "nearlink-sle": 12,
     "agentic-wifi": 11,
-    "ngso-regulation": 9,
+    "ngso-regulation": 10,
+    "bt-le": 9,
     "cellular-spectrum": 9,
     "ntn": 9,
-    "bt-le": 8,
     "nearlink-slb": 8,
     "uwb-fi-ra": 8,
     "cellular-massive-mimo": 8,
@@ -1946,40 +2018,41 @@ window.KB_DATA = {
     "bt-security": 5,
     "uwb-radar": 5,
     "bt-location": 5,
+    "mmwave-bq": 4,
+    "mlo": 4,
     "sat-iot": 4,
-    "mmwave-bq": 3,
-    "mlo": 3,
+    "edge-ai-silicon": 3,
+    "edge-model-efficiency": 3,
+    "compute-offloading": 2,
     "bt-mesh": 2,
-    "edge-ai-silicon": 2,
     "energy-power-save": 2,
     "bt-le-audio": 2,
-    "edge-model-efficiency": 2,
+    "home-edge-ai": 2,
     "roaming-mobility": 2,
+    "edge-orchestration": 1,
     "redcap-iot": 1,
     "edge-federated-learning": 1,
-    "compute-offloading": 1,
     "edge-ai-networking": 1,
-    "home-edge-ai": 1,
     "ai-pc": 1,
     "uwb-security": 1
   },
   "type_counts": {
-    "academic-paper": 378,
+    "academic-paper": 387,
     "industry-news": 127,
-    "ieee-document": 43,
-    "product": 31,
-    "satellite-news": 27,
+    "ieee-document": 46,
+    "product": 33,
+    "satellite-news": 28,
     "community-signal": 9,
     "nearlink-spec": 4,
     "proposal": 4,
+    "tutorial": 3,
     "bluetooth-spec": 3,
-    "tutorial": 2,
     "uwb-spec": 1
   },
   "category_counts": {
-    "academia": 380,
-    "industry": 194,
-    "standards": 55
+    "academia": 390,
+    "industry": 197,
+    "standards": 58
   },
   "technologies_vocab": {
     "technologies": [
@@ -3024,6 +3097,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((MLO))\n    Modes\n      STR\n      NSTR\n      SLO\n    Mechanics\n      Link-add / link-remove\n      Per-link MAC privacy\n      Cross-link consistency\n    Research\n      DRL + LSTM cross-layer\n      MAB + LLM channel allocation\n      Traffic-allocation policies\n    Deployment 2026\n      500M certified Wi-Fi 7 devices\n      Cisco Georgetown 6000 APs\n      HPE Aruba 730 UTB\n      RUCKUS / Nokia OLAN\n    Bridges\n      mapc-cosr (multi-AP only)\n      roaming-mobility (MLO-roam)\n      energy-power-save (per-link cost)",
       "diagram_mmd_zh": "mindmap\n  root((MLO 多链路操作))\n    模式\n      STR\n      NSTR\n      SLO\n    机制\n      链路增删\n      每链路 MAC 隐私\n      跨链路一致性\n    研究\n      DRL + LSTM 跨层\n      MAB + LLM 信道分配\n      流量分配策略\n    2026 部署\n      5 亿台已认证 Wi-Fi 7 设备\n      Cisco Georgetown 6000 AP\n      HPE Aruba 730 UTB\n      RUCKUS / Nokia OLAN\n    桥接\n      mapc-cosr（仅多 AP）\n      roaming-mobility（MLO-roam）\n      energy-power-save（每链路开销）",
       "entries_primary": [
+        "2026-09-01_ieee-mentor-tgbn-mlo-rtwt-digest",
         "2026-07-09_arxiv-evoomg-staged-madrl-legacy-mlo",
         "2026-05-01_arxiv-mlo-drl-lstm-cross-layer",
         "2026-05-02_arxiv-mab-llm-mlo-channel-allocation"
@@ -3041,6 +3115,9 @@ window.KB_DATA = {
         "2026-05-01_arxiv-25-years-tutorial"
       ],
       "by_type_primary": {
+        "ieee-document": [
+          "2026-09-01_ieee-mentor-tgbn-mlo-rtwt-digest"
+        ],
         "academic-paper": [
           "2026-07-09_arxiv-evoomg-staged-madrl-legacy-mlo",
           "2026-05-01_arxiv-mlo-drl-lstm-cross-layer",
@@ -3081,6 +3158,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-ma-mab-spatial-reuse"
       ],
       "entries_secondary": [
+        "2026-09-01_ieee-mentor-tgbn-mlo-rtwt-digest",
         "2026-08-31_asus-rog-gt-bn98-quad-band-wifi8-gamescom",
         "2026-07-24_arxiv-wifi8-uhr-mechanisms-verification",
         "2026-07-09_ieee-mentor-tgbn-preplenary-digest",
@@ -3145,6 +3223,7 @@ window.KB_DATA = {
         "2026-05-03_arxiv-rtwt-rta-delay-model"
       ],
       "entries_secondary": [
+        "2026-09-01_ieee-mentor-tgbn-mlo-rtwt-digest",
         "2026-08-29_ieee-mentor-tgbn-npca-cotdma-digest",
         "2026-08-27_arxiv-wici-wireless-gpu-offload-llm",
         "2026-08-26_arxiv-age-optimal-twt-wifi-status-updating",
@@ -3222,6 +3301,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-bf-ax-coexistence-ns3"
       ],
       "entries_secondary": [
+        "2026-09-01_ieee-mentor-ucm-tig-digest",
         "2026-08-19_hn-bfid-beamforming-feedback-person-identification",
         "2026-08-20_arxiv-glocfm-geometry-aware-wifi-localization",
         "2026-08-05_arxiv-airkey-ack-csi-acoustic-pin-inference",
@@ -3397,11 +3477,13 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((mmWave / 802.11bq))\n    Architecture question\n      Standalone 60 GHz beacons\n      Sub-7 GHz coordination only\n    Bands\n      60 GHz\n      Sub-7 GHz pairing\n    Coupled-plane optimization\n      Sub-7 GHz contention (CW/CCA/RTS-CTS)\n      mmWave delivery (beamwidth/MCS margin)\n      Grouped feasible CMAB\n      Decentralized, local feedback\n      arxiv-cmab-802-11bq-multi-ap-mmwave-throughput\n    Cross-references\n      Plenary readouts (secondary)\n      Multiband passive sensing (TRN)\n      Links to mapc-cosr (Co-SR/Co-BF)\n      Links to ai-for-wifi (bandit/RL tuning)\n    Watch\n      802.11bq draft progress\n      mmWave + Wi-Fi 7/8 dual-radio silicon\n      More learning-based mmWave/sub-7 config",
       "diagram_mmd_zh": "mindmap\n  root((毫米波 / 802.11bq))\n    架构争议\n      独立 60 GHz 信标\n      仅 sub-7 GHz 协调\n    频段\n      60 GHz\n      sub-7 GHz 配对\n    交叉引用\n      全会综述（次要）\n      多频段被动感知（TRN）\n    关注\n      802.11bq 草案进度\n      mmWave + Wi-Fi 7/8 双射频硅片\n      sub-7 / mmWave 调度原语",
       "entries_primary": [
+        "2026-09-01_ieee-mentor-tgbq-digest",
         "2026-08-13_ieee-mentor-tgbq-digest",
         "2026-06-03_arxiv-cmab-802-11bq-multi-ap-mmwave-throughput",
         "2026-05-12_ieee-mentor-tgbq-antwerp-digest"
       ],
       "entries_secondary": [
+        "2026-09-01_ieee-mentor-ucm-tig-digest",
         "2026-08-31_ieee-802-11-revmf-d30-mdr-report",
         "2026-07-24_arxiv-wifi8-uhr-mechanisms-verification",
         "2026-07-14_ieee-mentor-montreal-plenary-midweek-digest",
@@ -3416,6 +3498,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "ieee-document": [
+          "2026-09-01_ieee-mentor-tgbq-digest",
           "2026-08-13_ieee-mentor-tgbq-digest",
           "2026-05-12_ieee-mentor-tgbq-antwerp-digest"
         ],
@@ -3438,6 +3521,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Wi-Fi 8 / 802.11bn / UHR))\n    Schedule 2026\n      D1.3 approved Jan Victoria\n      March plenary - no D2.0 ratify\n      D2.0 ballot slipped May to Jul\n      Ratify target May 2028\n    Study groups\n      AIML TIG/SC\n      AI Offload SG\n      WNG SC\n    Vendor positioning\n      Qualcomm AI-Native MWC 2026\n      Broadcom unified CES 2026\n      MediaTek Filogic 8000\n      Intel four-pillar WWC\n      Gemtek / Quectel\n    Background reading\n      25-year Wi-Fi tutorial\n      AIML CSI feedback survey\n    Watch\n      July 2026 D2.0 ballot\n      AI Offload SG charter\n      Wi-Fi 9 / WNG contributions",
       "diagram_mmd_zh": "mindmap\n  root((Wi-Fi 8 / 802.11bn / UHR))\n    2026 进度\n      D1.3 于 Jan Victoria 批准\n      3 月全会未通过 D2.0\n      D2.0 投票从 5 月推迟至 7 月\n      批准目标 2028-05\n    研究组\n      AIML TIG/SC\n      AI Offload SG\n      WNG SC\n    厂商站位\n      Qualcomm AI-Native（MWC 2026）\n      Broadcom 统一栈（CES 2026）\n      MediaTek Filogic 8000\n      Intel 四支柱（WWC）\n      Gemtek / Quectel\n    背景阅读\n      Wi-Fi 25 年综述\n      AIML CSI 反馈综述\n    关注\n      2026-07 D2.0 投票\n      AI Offload SG 立项\n      Wi-Fi 9 / WNG 贡献",
       "entries_primary": [
+        "2026-09-01_ieee-mentor-ucm-tig-digest",
         "2026-08-31_ieee-802-11-revmf-d30-mdr-report",
         "2026-08-31_asus-rog-gt-bn98-quad-band-wifi8-gamescom",
         "2026-08-19_ieee-mentor-tgm-digest",
@@ -3501,6 +3585,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "ieee-document": [
+          "2026-09-01_ieee-mentor-ucm-tig-digest",
           "2026-08-31_ieee-802-11-revmf-d30-mdr-report",
           "2026-08-19_ieee-mentor-tgm-digest",
           "2026-07-22_ieee-80211bn-d2-approval-wifi9-sg",
@@ -4322,6 +4407,7 @@ window.KB_DATA = {
         "2026-05-30_arxiv-semantic-waveforms-ossdm-6g"
       ],
       "entries_secondary": [
+        "2026-09-01_arxiv-false-csi-noma-attack-taxonomy-6g",
         "2026-08-31_vendor-clash-gpu-asic-cpu-6g-ran",
         "2026-08-26_arxiv-upper-midband-spectrum-sharing-shades",
         "2026-08-26_arxiv-two-sided-ai-models-6g-nr-testbed",
@@ -4516,6 +4602,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-09-01_arxiv-xtruce-provably-safe-oran-arbiter",
         "2026-08-28_arxiv-pro-ran-cu-du-processor-characterization",
         "2026-08-27_arxiv-fh-effective-capacity-mcx-shared-oran",
         "2026-08-26_arxiv-oran-tethered-uav-gnb-hierarchical-control",
@@ -4546,6 +4633,7 @@ window.KB_DATA = {
         "2026-07-11_oran-security-update-2026"
       ],
       "entries_secondary": [
+        "2026-09-01_arxiv-quantum-security-oran-6g",
         "2026-08-31_vendor-clash-gpu-asic-cpu-6g-ran",
         "2026-08-24_arxiv-z2act-verifiable-agentic-intent-oran",
         "2026-08-23_arxiv-oai-symbol-domain-ofdm-radar-e2sm",
@@ -4591,6 +4679,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-09-01_arxiv-xtruce-provably-safe-oran-arbiter",
           "2026-08-28_arxiv-pro-ran-cu-du-processor-characterization",
           "2026-08-27_arxiv-fh-effective-capacity-mcx-shared-oran",
           "2026-08-26_arxiv-oran-tethered-uav-gnb-hierarchical-control",
@@ -4653,6 +4742,7 @@ window.KB_DATA = {
         "2026-05-21_chinamobile-5g-sa-network-slicing"
       ],
       "entries_secondary": [
+        "2026-09-01_arxiv-flyblind-cross-slice-timeliness-attack-uav",
         "2026-08-27_arxiv-fh-effective-capacity-mcx-shared-oran",
         "2026-08-26_arxiv-oran-tethered-uav-gnb-hierarchical-control",
         "2026-08-15_arxiv-wirelessopsagent-action-assurance-benchmark",
@@ -4797,6 +4887,7 @@ window.KB_DATA = {
         "2026-08-27_etri-ai-ran-neural-receiver-6g"
       ],
       "entries_secondary": [
+        "2026-09-01_arxiv-xtruce-provably-safe-oran-arbiter",
         "2026-08-28_arxiv-5g-intrusion-detection-cost-tradeoff",
         "2026-08-26_arxiv-oran-tethered-uav-gnb-hierarchical-control",
         "2026-08-25_arxiv-pci-assignment-congruence-neural-solvers",
@@ -4982,6 +5073,9 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-09-01_arxiv-quantum-security-oran-6g",
+        "2026-09-01_arxiv-false-csi-noma-attack-taxonomy-6g",
+        "2026-09-01_arxiv-flyblind-cross-slice-timeliness-attack-uav",
         "2026-08-28_arxiv-5g-intrusion-detection-cost-tradeoff",
         "2026-08-26_arxiv-certiot-6g-continuous-certification",
         "2026-08-26_arxiv-marl-ris-auction-security",
@@ -5002,6 +5096,7 @@ window.KB_DATA = {
         "2026-06-01_arxiv-jamming-resilient-prb-reservation-oran"
       ],
       "entries_secondary": [
+        "2026-09-01_arxiv-xtruce-provably-safe-oran-arbiter",
         "2026-08-31_oran-publication-train-july-2026",
         "2026-08-03_arxiv-creact-oran-forensic-triage-agent",
         "2026-07-04_arxiv-grv-guardrail-ai-agent-telecom",
@@ -5010,6 +5105,9 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-09-01_arxiv-quantum-security-oran-6g",
+          "2026-09-01_arxiv-false-csi-noma-attack-taxonomy-6g",
+          "2026-09-01_arxiv-flyblind-cross-slice-timeliness-attack-uav",
           "2026-08-28_arxiv-5g-intrusion-detection-cost-tradeoff",
           "2026-08-26_arxiv-certiot-6g-continuous-certification",
           "2026-08-26_arxiv-marl-ris-auction-security",
@@ -5087,6 +5185,7 @@ window.KB_DATA = {
         "2026-05-26_arxiv-safesabr-starlink-abr-streaming"
       ],
       "entries_secondary": [
+        "2026-09-01_spacex-fcc-petition-block-viasat-interference",
         "2026-08-31_arxiv-dsss-pseudonymetry-leo-signal-authentication",
         "2026-08-31_spacex-tristar-aws3-uplink-only-consolidation",
         "2026-08-18_arxiv-sniffles-leo-satellite-emission-radio-astronomy",
@@ -5137,6 +5236,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-09-01_arxiv-decentralized-multisat-mimo-knowledge-distillation",
         "2026-08-31_arxiv-leo-beam-scheduling-com-pnt-fused",
         "2026-08-28_arxiv-sfc-aware-sagin-datalink-orchestration",
         "2026-08-29_arxiv-open-source-satellite-software-landscape",
@@ -5167,6 +5267,7 @@ window.KB_DATA = {
         "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
       ],
       "entries_secondary": [
+        "2026-09-01_arxiv-transmissive-ris-vs-phased-array-vehicular-d2s",
         "2026-08-31_arxiv-safelink-agent-abr-maintenance-starlink",
         "2026-08-31_arxiv-enhanced-3gpp-urban-ntn-channel-models",
         "2026-08-27_arxiv-semi-blind-ntn-channel-estimation-spiked-rmt",
@@ -5224,6 +5325,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-09-01_arxiv-decentralized-multisat-mimo-knowledge-distillation",
           "2026-08-31_arxiv-leo-beam-scheduling-com-pnt-fused",
           "2026-08-28_arxiv-sfc-aware-sagin-datalink-orchestration",
           "2026-08-29_arxiv-open-source-satellite-software-landscape",
@@ -5309,6 +5411,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Satellite direct-to-device))\n    Operators\n      Starlink direct-to-cell\n      AST SpaceMobile BlueBird\n      Apple / Globalstar SOS\n    Spectrum\n      EchoStar 65 MHz mid-band (AWS-3/4, H-Block)\n      Earlier FCC D2C spectrum denial\n    Strategy shift 2026\n      Retail Starlink Mobile ambitions\n      Possible terrestrial buildout\n    Hardware\n      Block 2 BlueBird 2,400 sq ft arrays\n      989 Mbps peak D2D measured\n    Watch\n      EchoStar transfer ~Nov 2027\n      Gen2 100x capacity claim\n      AST 45-60 satellites by end-2026\n      3GPP NTN handset support",
       "diagram_mmd_zh": "mindmap\n  root((卫星直连手机))\n    运营方\n      Starlink 直连蜂窝\n      AST SpaceMobile BlueBird\n      Apple / Globalstar 紧急求救\n    频谱\n      EchoStar 65 MHz 中频段（AWS-3/4、H-Block）\n      此前 FCC 否决 D2C 频谱申请\n    2026 战略转向\n      Starlink Mobile 零售野心\n      可能自建地面网络\n    硬件\n      Block 2 BlueBird 2,400 平方英尺阵列\n      实测 989 Mbps 峰值 D2D\n    待关注\n      EchoStar 转让 ~2027 年 11 月\n      Gen2 百倍容量宣称\n      AST 年底 45-60 颗\n      3GPP NTN 终端支持",
       "entries_primary": [
+        "2026-09-01_arxiv-transmissive-ris-vs-phased-array-vehicular-d2s",
         "2026-08-31_arxiv-enhanced-3gpp-urban-ntn-channel-models",
         "2026-08-27_arxiv-semi-blind-ntn-channel-estimation-spiked-rmt",
         "2026-08-21_spacex-ast-grain-800mhz-spectrum-bidding",
@@ -5354,6 +5457,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-09-01_arxiv-transmissive-ris-vs-phased-array-vehicular-d2s",
           "2026-08-31_arxiv-enhanced-3gpp-urban-ntn-channel-models",
           "2026-08-27_arxiv-semi-blind-ntn-channel-estimation-spiked-rmt",
           "2026-08-19_arxiv-aggressive-noma-dft-s-ofdm-device-to-satellite-uplink",
@@ -5427,6 +5531,7 @@ window.KB_DATA = {
         "2026-08-18_arxiv-orbital-ai-computing-carbon-tradeoffs"
       ],
       "entries_secondary": [
+        "2026-09-01_arxiv-decentralized-multisat-mimo-knowledge-distillation",
         "2026-08-31_arxiv-safelink-agent-abr-maintenance-starlink",
         "2026-08-28_arxiv-sfc-aware-sagin-datalink-orchestration",
         "2026-08-29_arxiv-open-source-satellite-software-landscape",
@@ -5491,6 +5596,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-09-01_spacex-fcc-petition-block-viasat-interference",
         "2026-08-31_spacex-tristar-aws3-uplink-only-consolidation",
         "2026-08-28_arxiv-quiet-steve-gnss-scintillation-antarctic",
         "2026-08-18_arxiv-sniffles-leo-satellite-emission-radio-astronomy",
@@ -5527,6 +5633,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "satellite-news": [
+          "2026-09-01_spacex-fcc-petition-block-viasat-interference",
           "2026-08-31_spacex-tristar-aws3-uplink-only-consolidation",
           "2026-08-07_fcc-adopts-unlicensed-d2d-nprm",
           "2026-08-28_xona-pulsar-fcc-full-constellation-authorization",
@@ -5557,6 +5664,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-09-01_novelbits-ble-testing-without-phone",
         "2026-08-27_novelbits-uart-console-rtt-logging-power",
         "2026-08-09_bluetooth-sig-ip-link-ipv6-over-ble",
         "2026-08-15_novelbits-ble-advertising-energy-four-decisions",
@@ -5584,6 +5692,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "tutorial": [
+          "2026-09-01_novelbits-ble-testing-without-phone",
           "2026-08-27_novelbits-uart-console-rtt-logging-power",
           "2026-08-15_novelbits-ble-advertising-energy-four-decisions"
         ],
@@ -6190,7 +6299,9 @@ window.KB_DATA = {
         "2026-08-28_arxiv-apple-neural-engine-placement-measurement"
       ],
       "entries_secondary": [
+        "2026-09-01_arxiv-multi-spin-wireless-speculative-inference",
         "2026-08-29_arxiv-llmscope-optical-probing-edge-ai-chips",
+        "2026-09-01_nvidia-jetson-orin-nano-2-edge-robotics",
         "2026-08-31_arduino-ventuno-q-dragonwing-iq8-edge-agent-board",
         "2026-08-28_arxiv-airmoe-over-the-air-moe-wireless-edge",
         "2026-08-28_arxiv-lifecycle-optimal-tokenization-vocab-size",
@@ -6223,6 +6334,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-09-01_arxiv-goe-tactical-edge-cpu-compression",
         "2026-08-28_arxiv-lifecycle-optimal-tokenization-vocab-size",
         "2026-08-31_apple-afm3-flash-resident-sparse-on-device-model"
       ],
@@ -6236,6 +6348,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-09-01_arxiv-goe-tactical-edge-cpu-compression",
           "2026-08-28_arxiv-lifecycle-optimal-tokenization-vocab-size"
         ],
         "industry-news": [
@@ -6258,6 +6371,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "",
       "entries_primary": [
         "2026-08-29_arxiv-llmscope-optical-probing-edge-ai-chips",
+        "2026-09-01_nvidia-jetson-orin-nano-2-edge-robotics",
         "2026-08-31_arduino-ventuno-q-dragonwing-iq8-edge-agent-board"
       ],
       "entries_secondary": [
@@ -6265,13 +6379,16 @@ window.KB_DATA = {
         "2026-08-29_arxiv-hydra-edge-soc-llm-characterization",
         "2026-08-29_arxiv-energy-proportional-vision-iot-node",
         "2026-08-28_arxiv-apple-neural-engine-placement-measurement",
-        "2026-08-28_zte-ai-fttr-home-gateway-npu-agents"
+        "2026-09-01_arxiv-goe-tactical-edge-cpu-compression",
+        "2026-08-28_zte-ai-fttr-home-gateway-npu-agents",
+        "2026-09-01_asus-rog-rapture-gt-be19000ai-router-compute-node"
       ],
       "by_type_primary": {
         "academic-paper": [
           "2026-08-29_arxiv-llmscope-optical-probing-edge-ai-chips"
         ],
         "product": [
+          "2026-09-01_nvidia-jetson-orin-nano-2-edge-robotics",
           "2026-08-31_arduino-ventuno-q-dragonwing-iq8-edge-agent-board"
         ]
       }
@@ -6317,15 +6434,18 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-09-01_arxiv-multi-spin-wireless-speculative-inference",
         "2026-08-29_arxiv-goodput-slo-llm-edge-offloading"
       ],
       "entries_secondary": [
+        "2026-09-01_arxiv-amadiff-mobile-aigc-task-orchestration",
         "2026-08-28_arxiv-airmoe-over-the-air-moe-wireless-edge",
         "2026-08-28_arxiv-neuroprefetcher-storage-backed-edge-llm",
         "2026-08-31_apple-afm3-flash-resident-sparse-on-device-model"
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-09-01_arxiv-multi-spin-wireless-speculative-inference",
           "2026-08-29_arxiv-goodput-slo-llm-edge-offloading"
         ]
       }
@@ -6343,11 +6463,17 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-09-01_arxiv-amadiff-mobile-aigc-task-orchestration"
+      ],
       "entries_secondary": [
         "2026-08-29_arxiv-goodput-slo-llm-edge-offloading"
       ],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "academic-paper": [
+          "2026-09-01_arxiv-amadiff-mobile-aigc-task-orchestration"
+        ]
+      }
     },
     "edge-federated-learning": {
       "id": "edge-federated-learning",
@@ -6386,12 +6512,16 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
-        "2026-08-28_zte-ai-fttr-home-gateway-npu-agents"
+        "2026-08-28_zte-ai-fttr-home-gateway-npu-agents",
+        "2026-09-01_asus-rog-rapture-gt-be19000ai-router-compute-node"
       ],
       "entries_secondary": [],
       "by_type_primary": {
         "industry-news": [
           "2026-08-28_zte-ai-fttr-home-gateway-npu-agents"
+        ],
+        "product": [
+          "2026-09-01_asus-rog-rapture-gt-be19000ai-router-compute-node"
         ]
       }
     },
@@ -6432,6 +6562,7 @@ window.KB_DATA = {
         "2026-08-28_arxiv-airmoe-over-the-air-moe-wireless-edge"
       ],
       "entries_secondary": [
+        "2026-09-01_arxiv-multi-spin-wireless-speculative-inference",
         "2026-08-31_arxiv-qef-gt-adamw-decentralized-wireless-fl",
         "2026-08-29_arxiv-goodput-slo-llm-edge-offloading",
         "2026-08-29_arxiv-energy-proportional-vision-iot-node"
@@ -6444,6 +6575,223 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-09-01_spacex-fcc-petition-block-viasat-interference",
+      "date_found": "2026-09-01",
+      "technology": "satellite",
+      "date_published": "2026-08-31",
+      "type": "satellite-news",
+      "category": "industry",
+      "title_en": "SpaceX petitions the FCC to condition/block a Viasat GSO satellite authorization over Ku/Ka-band EPFD interference into Starlink — a role reversal from the usual Viasat-vs-SpaceX interference disputes",
+      "title_zh": "SpaceX 就 Ku/Ka 频段 EPFD 干扰问题向 FCC 请愿，要求对 Viasat 一颗 GSO 卫星的授权附加条件甚至驳回——这是以往 Viasat 对 SpaceX 提起干扰申诉的角色反转",
+      "url": "https://satnews.com/2026/08/31/spacex-petitions-fcc-to-block-viasat-satellite-authorization-over-starlink-interference-concerns/",
+      "topics": [
+        "SpaceX",
+        "Viasat",
+        "FCC",
+        "EPFD",
+        "Ku-band",
+        "Ka-band",
+        "GSO-NGSO-coordination",
+        "interference",
+        "spectrum-dispute",
+        "beam-steering"
+      ],
+      "topic_primary": "ngso-regulation",
+      "topics_secondary": [
+        "starlink"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-09-01_spacex-fcc-petition-block-viasat-interference.md",
+      "summary_short_en": "SatNews reported 31 August 2026 (corroborated by an independent web search summary) that SpaceX has filed a petition with the FCC asking regulators to condition — or block outright — a pending geostationary (GSO) satellite authorization sought by Viasat. SpaceX argues that Viasat's planned radio-frequency allocation and orbital configuration, operating in overlapping Ku-band (12/14 GHz) and Ka-band (20/30 GHz) allocations, would create uncoordinated transmissions that exceed statutory Equivalent Power Flux-Density (EPFD) thresholds and degrade downlink throughput at Starlink LEO ground terminals. The filing requests three specific mitigations if the FCC proceeds with authorization: (1) strict power caps on the shared frequencies, (2) mandatory beam-steering with physical slant-angle masking so Viasat's spot beams cannot illuminate active Starlink terminals during low-elevation passes, and (3) an automatic cease-operation provision written into Viasat's license, triggering immediate signal mitigation if harmful interference is demonstrated. Coverage available at scan time did not surface a specific docket or filing number, numerical EPFD threshold values, or direct quotations from the petition text; the article and corroborating search summary describe the substance but not the primary document.",
+      "summary_short_zh": "SatNews 于 2026 年 8 月 31 日报道（独立网络检索摘要交叉印证）：SpaceX 已向 FCC 提交请愿，要求监管机构对 Viasat 正在申请的一项地球静止轨道（GSO）卫星授权附加限制条件，甚至直接驳回。SpaceX 主张，Viasat 计划的射频分配与轨道配置在重叠的 Ku 频段（12/14 GHz）与 Ka 频段（20/30 GHz）运行，将产生未经协调的发射，超出法定等效功率通量密度（EPFD）阈值，并劣化星链 LEO 地面终端的下行吞吐量。该请愿书提出三项具体缓解措施，若 FCC 继续推进授权：(1) 对共享频段实施严格的功率上限；(2) 强制波束转向并施加物理斜角遮蔽，使 Viasat 的点波束在低仰角过境期间无法照射到正在工作的星链终端；(3) 在 Viasat 牌照中写入自动\"停止运营\"条款，一旦证实存在有害干扰即触发即时信号缓解。检索时可获得的报道未给出具体的文件编号或申请编号、具体的 EPFD 阈值数值，也未提供请愿书原文的直接引述；文章及交叉核实的检索摘要描述了实质内容，但未涉及一手文件。",
+      "body_html_en": "<h3>Summary</h3>\n<p>SatNews reported 31 August 2026 (corroborated by an independent web search summary) that SpaceX has filed a petition with the FCC asking regulators to condition — or block outright — a pending geostationary (GSO) satellite authorization sought by Viasat. SpaceX argues that Viasat's planned radio-frequency allocation and orbital configuration, operating in overlapping Ku-band (12/14 GHz) and Ka-band (20/30 GHz) allocations, would create uncoordinated transmissions that exceed statutory Equivalent Power Flux-Density (EPFD) thresholds and degrade downlink throughput at Starlink LEO ground terminals. The filing requests three specific mitigations if the FCC proceeds with authorization: (1) strict power caps on the shared frequencies, (2) mandatory beam-steering with physical slant-angle masking so Viasat's spot beams cannot illuminate active Starlink terminals during low-elevation passes, and (3) an automatic cease-operation provision written into Viasat's license, triggering immediate signal mitigation if harmful interference is demonstrated. Coverage available at scan time did not surface a specific docket or filing number, numerical EPFD threshold values, or direct quotations from the petition text; the article and corroborating search summary describe the substance but not the primary document.</p>\n<p>The notable structural point is the role reversal: Viasat has historically been the party filing petitions to deny or condition SpaceX/Starlink authorizations on interference grounds (including environmental-review requests covered elsewhere in trade press); here SpaceX is the petitioner against a Viasat GSO deployment, framing the LEO megaconstellation as the incumbent whose ground terminals need protecting from a new GSO entrant rather than the other way around.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Filer / target:</strong> SpaceX petitions FCC re: Viasat's pending GSO satellite authorization.</li><li><strong>Bands cited:</strong> Ku-band 12/14 GHz, Ka-band 20/30 GHz (overlapping allocations).</li><li><strong>Interference claim:</strong> uncoordinated Viasat transmissions would exceed statutory EPFD thresholds, degrading downlink throughput at Starlink LEO ground terminals; no specific dB threshold values found in available coverage.</li><li><strong>Requested mitigations:</strong> (1) power caps on shared frequencies; (2) mandatory beam-steering with physical slant-angle masking to avoid illuminating active Starlink terminals during low-elevation passes; (3) automatic cease-operation license condition triggered by demonstrated harmful interference.</li><li><strong>Sourcing caveat:</strong> no FCC docket/filing number located; numerical EPFD limits and verbatim petition language not available from the sources reached this run — treat as a reported summary pending the primary FCC filing.</li><li><strong>Context:</strong> reverses the KB's established pattern of Viasat filing interference/environmental-review petitions against SpaceX authorizations; this is the first entry where SpaceX is the petitioner against a competitor's GSO deployment.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's ngso-regulation bin has tracked several rounds of GSO-vs-NGSO friction from the Viasat side (interference petitions, environmental-review requests) as SpaceX's Gen2/Direct-to-Cell buildout scaled. This entry flips the direction: with Starlink's LEO ground-terminal base now large enough to be the incumbent worth protecting, SpaceX is using the same EPFD-interference argument that has historically been aimed at it, against a GSO competitor. The three requested remedies — power caps, physical beam-steering slant-angle masking, and an automatic cease-operation trigger — are a concrete template for how a megaconstellation operator argues for coexistence conditions on a newer GSO entrant, worth comparing against whatever conditions the FCC actually imposes when this docket resolves. Logged with source_quality: partial because the primary FCC filing was not located this run; a follow-up should locate the docket number and verify the EPFD figures directly.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>SatNews 于 2026 年 8 月 31 日报道（独立网络检索摘要交叉印证）：SpaceX 已向 FCC 提交请愿，要求监管机构对 Viasat 正在申请的一项地球静止轨道（GSO）卫星授权附加限制条件，甚至直接驳回。SpaceX 主张，Viasat 计划的射频分配与轨道配置在重叠的 Ku 频段（12/14 GHz）与 Ka 频段（20/30 GHz）运行，将产生未经协调的发射，超出法定等效功率通量密度（EPFD）阈值，并劣化星链 LEO 地面终端的下行吞吐量。该请愿书提出三项具体缓解措施，若 FCC 继续推进授权：(1) 对共享频段实施严格的功率上限；(2) 强制波束转向并施加物理斜角遮蔽，使 Viasat 的点波束在低仰角过境期间无法照射到正在工作的星链终端；(3) 在 Viasat 牌照中写入自动&quot;停止运营&quot;条款，一旦证实存在有害干扰即触发即时信号缓解。检索时可获得的报道未给出具体的文件编号或申请编号、具体的 EPFD 阈值数值，也未提供请愿书原文的直接引述；文章及交叉核实的检索摘要描述了实质内容，但未涉及一手文件。</p>\n<p>值得注意的结构性变化在于角色反转：以往通常是 Viasat 以干扰为由向 FCC 提交请愿，要求驳回或限制 SpaceX/星链的授权（包括其他行业媒体报道过的环境评估申请）；而本次是 SpaceX 作为请愿方针对 Viasat 的 GSO 部署提出申诉，将 LEO 巨型星座定位为需要保护、免受新入局 GSO 运营商干扰的&quot;既有方&quot;，而非反过来。</p>\n<h3>技术要点</h3>\n<ul><li><strong>请愿方/对象：</strong> SpaceX 就 Viasat 正在申请的 GSO 卫星授权向 FCC 提出请愿。</li><li><strong>涉及频段：</strong> Ku 频段 12/14 GHz，Ka 频段 20/30 GHz（重叠分配）。</li><li><strong>干扰主张：</strong> Viasat 未经协调的发射将超出法定 EPFD 阈值，劣化星链 LEO 地面终端下行吞吐量；现有报道未给出具体的 dB 阈值数值。</li><li><strong>请求的缓解措施：</strong> (1) 对共享频段实施功率上限；(2) 强制波束转向并施加物理斜角遮蔽，避免在低仰角过境期间照射正在工作的星链终端；(3) 在牌照中写入自动&quot;停止运营&quot;条款，一旦证实存在有害干扰即触发。</li><li><strong>信源说明：</strong> 未查得 FCC 文件/申请编号；本次检索到的信源未提供具体 EPFD 数值限制或请愿书原文——应视为报道性摘要，待一手 FCC 文件确认。</li><li><strong>背景：</strong> 与知识库此前&quot;Viasat 对 SpaceX 授权提起干扰/环境评估申诉&quot;的既有模式相反；本条目是首次出现 SpaceX 作为请愿方，针对竞争对手的 GSO 部署提出申诉。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库的 ngso-regulation 分箱此前追踪的多轮 GSO 与 NGSO 摩擦均来自 Viasat 一方（干扰申诉、环境评估请求），伴随 SpaceX Gen2/直连蜂窝建设规模扩大而持续出现。本条目呈现方向反转：随着星链 LEO 地面终端基数已足够庞大、成为值得保护的&quot;既有方&quot;，SpaceX 正使用历来针对自己的同一套 EPFD 干扰论证，反过来针对一家 GSO 竞争对手。请求的三项补救措施——功率上限、物理波束斜角遮蔽、自动停止运营触发条款——为巨型星座运营商如何论证对新入局 GSO 运营商施加共存条件提供了一个具体模板，值得在该文件最终裁决时与 FCC 实际施加的条件对照。因本次检索未查得一手 FCC 文件，标记为 source_quality: partial；后续应查证具体文件编号并直接核实 EPFD 数值。</p>",
+      "images": [],
+      "search_blob": "spacex petitions the fcc to condition/block a viasat gso satellite authorization over ku/ka-band epfd interference into starlink — a role reversal from the usual viasat-vs-spacex interference disputes spacex 就 ku/ka 频段 epfd 干扰问题向 fcc 请愿，要求对 viasat 一颗 gso 卫星的授权附加条件甚至驳回——这是以往 viasat 对 spacex 提起干扰申诉的角色反转 spacex viasat fcc epfd ku-band ka-band gso-ngso-coordination interference spectrum-dispute beam-steering satnews reported 31 august 2026 (corroborated by an independent web search summary) that spacex has filed a petition with the fcc asking regulators to condition — or block outright — a pending geostationary (gso) satellite authorization sought by viasat. spacex argues that viasat's planned radio-frequency allocation and orbital configuration, operating in overlapping ku-band (12/14 ghz) and ka-band (20/30 ghz) allocations, would create uncoordinated transmissions that exceed statutory equivalent power flux-density (epfd) thresholds and degrade downlink throughput at starlink leo ground terminals. the filing requests three specific mitigations if the fcc proceeds with authorization: (1) strict power caps on the shared frequencies, (2) mandatory beam-steering with physical slant-angle masking so viasat's spot beams cannot illuminate active starlink terminals during low-elevation passes, and (3) an automatic cease-operation provision written into viasat's license, triggering immediate signal mitigation if harmful interference is demonstrated. coverage available at scan time did not surface a specific docket or filing number, numerical epfd threshold values, or direct quotations from the petition text; the article and corroborating search summary describe the substance but not the primary document. satnews 于 2026 年 8 月 31 日报道（独立网络检索摘要交叉印证）：spacex 已向 fcc 提交请愿，要求监管机构对 viasat 正在申请的一项地球静止轨道（gso）卫星授权附加限制条件，甚至直接驳回。spacex 主张，viasat 计划的射频分配与轨道配置在重叠的 ku 频段（12/14 ghz）与 ka 频段（20/30 ghz）运行，将产生未经协调的发射，超出法定等效功率通量密度（epfd）阈值，并劣化星链 leo 地面终端的下行吞吐量。该请愿书提出三项具体缓解措施，若 fcc 继续推进授权：(1) 对共享频段实施严格的功率上限；(2) 强制波束转向并施加物理斜角遮蔽，使 viasat 的点波束在低仰角过境期间无法照射到正在工作的星链终端；(3) 在 viasat 牌照中写入自动\"停止运营\"条款，一旦证实存在有害干扰即触发即时信号缓解。检索时可获得的报道未给出具体的文件编号或申请编号、具体的 epfd 阈值数值，也未提供请愿书原文的直接引述；文章及交叉核实的检索摘要描述了实质内容，但未涉及一手文件。 satellite-news satellite"
+    },
+    {
+      "id": "2026-09-01_novelbits-ble-testing-without-phone",
+      "date_found": "2026-09-01",
+      "technology": "bluetooth",
+      "date_published": "2026-08-31",
+      "type": "tutorial",
+      "category": "academia",
+      "title_en": "Testing BLE firmware without a phone: an AT-command USB dongle exposes the raw advertising/GATT split and DLE numbers that OS-level caching hides",
+      "title_zh": "不靠手机测试 BLE 固件：AT 命令 USB 加密狗暴露出被操作系统缓存掩盖的广播/GATT 名称分离与 DLE 数值",
+      "url": "https://novelbits.io/testing-bluetooth-le-without-a-phone/",
+      "topics": [
+        "BLE",
+        "testing",
+        "AT-commands",
+        "BleuIO",
+        "GATT",
+        "advertising-data",
+        "data-length-extension",
+        "CI"
+      ],
+      "topic_primary": "bt-le",
+      "topics_secondary": [],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-09-01_novelbits-ble-testing-without-phone.md",
+      "summary_short_en": "Novel Bits (Mohammad Afaneh) published a tooling tutorial on August 31, 2026 arguing that smartphones are the wrong instrument for BLE firmware regression testing, even though they remain the right instrument for user-facing validation. A phone's BLE stack applies OS-level connection caching, background-scan throttling, and automatic reconnection management, which means a test failure can originate in the phone's stack rather than the device under test — and none of it is scriptable into a build pipeline or produces parseable pass/fail output.",
+      "summary_short_zh": "Novel Bits（Mohammad Afaneh）于 2026 年 8 月 31 日发布了一篇工具类教程，主张智能手机并不适合用作 BLE 固件回归测试的仪器——尽管手机仍然是面向用户端验证的正确工具。手机的 BLE 协议栈会施加操作系统级的连接缓存、后台扫描限流和自动重连管理，这意味着测试失败可能源自手机协议栈本身而非被测设备；而且这整套流程无法脚本化接入构建流水线，也不会产生可解析的成功/失败结果。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Novel Bits (Mohammad Afaneh) published a tooling tutorial on August 31, 2026 arguing that smartphones are the wrong instrument for BLE firmware regression testing, even though they remain the right instrument for user-facing validation. A phone's BLE stack applies OS-level connection caching, background-scan throttling, and automatic reconnection management, which means a test failure can originate in the phone's stack rather than the device under test — and none of it is scriptable into a build pipeline or produces parseable pass/fail output.</p>\n<p>The proposed alternative is a pair of BleuIO USB dongles (Renesas DA14683-based), one acting as the BLE central/scanner and one as the peripheral/advertiser, both driven over USB serial at 115200 baud using an AT-command interface — the same command/response style familiar from cellular modems. The article walks through a concrete session: <code>AT+GAPSCAN=5</code> to scan, <code>AT+ADVSTART</code> plus raw <code>AT+ADVDATA</code> payload construction to advertise, <code>AT+GAPCONNECT=[0]&lt;address&gt;</code> to connect, and <code>AT+GETCONN</code> to verify a live bidirectional link — each step producing a parseable text response instead of a phone-app screen.</p>\n<p>Working the dongles at the raw-packet level surfaces a distinction developers often get wrong even after shipping: the name a phone's scan UI shows is not necessarily the GATT Device Name characteristic. In the demo capture, the advertising packet's AD type <code>0x09</code> (Complete/Shortened Local Name) carried &quot;SENSOR&quot; while the scan-response payload and the GATT Device Name characteristic both carried &quot;BleuIO&quot; — two different, legitimately independent name fields that a phone's UI typically collapses into one displayed string. The session also reads out concrete negotiated link parameters that a phone UI never surfaces directly: a connection interval of 24 units (24 × 1.25 ms = 30 ms) and a post-Data-Length-Extension negotiation of tx/rx octets = 251 on both sides.</p>\n<p>The article explicitly frames dongle-based testing as a complement to, not a replacement for, phone-based validation — phones remain necessary for real-world user-experience testing, OS-interoperability checks, and anything touching the platform's actual BLE stack behavior. Disclosure carried in the source: Novel Bits is a listed US distributor of the BleuIO dongles it recommends, a commercial relationship the article states but does not quantify.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Instrument</strong>: two BleuIO USB dongles (Renesas DA14683-based), one central/scanner, one peripheral/advertiser, driven via AT commands at 115200 baud over USB serial.</li><li><strong>Why not a phone</strong>: OS-level connection caching, background-scan throttling, and automatic reconnection management can make a phone's own stack the source of a test failure; phone testing also does not integrate into a CI pipeline or emit parseable results.</li><li><strong>Demonstrated command flow</strong>: <code>AT+GAPSCAN=5</code> (scan), <code>AT+ADVSTART</code> / <code>AT+ADVDATA</code> (advertise with raw payload), <code>AT+GAPCONNECT=[0]&lt;address&gt;</code> (connect), <code>AT+GETCONN</code> (verify live bidirectional link).</li><li><strong>Advertising name vs GATT name</strong>: AD type <code>0x09</code> in the advertising packet showed &quot;SENSOR&quot;; the scan-response payload and GATT Device Name characteristic both showed &quot;BleuIO&quot; — two independently settable name fields a phone UI typically merges into one label.</li><li><strong>Observed link parameters</strong>: connection interval negotiated at 24 units = 30 ms (1.25 ms/unit); Data Length Extension negotiated tx/rx = 251 octets on both peripheral and central.</li><li><strong>Positioning</strong>: framed as complementary to phone-based testing, not a replacement — phones remain required for user-facing UX and platform-stack interoperability testing.</li><li><strong>Disclosed conflict of interest</strong>: Novel Bits states it is a US distributor of the BleuIO dongles recommended in the article.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The bt-le bin already holds two novelbits bench-measurement entries (<code>2026-08-15_novelbits-ble-advertising-energy-four-decisions</code>, <code>2026-08-27_novelbits-uart-console-rtt-logging-power</code>) that quantify what a device <em>costs</em>; this piece is a different, complementary genre — a testing-methodology explainer about how to <em>verify</em> a device is behaving correctly at all, independent of a phone's opaque BLE stack. The reusable insight is the advertising-name-vs-GATT-name distinction: it is a real, packet-level fact (AD type <code>0x09</code> vs the GATT Device Name characteristic, <code>0x2A00</code>) that a phone's scan UI collapses into a single displayed string, and a developer relying only on phone-based testing can ship a device with two silently divergent names without ever noticing. The same applies to reading connection interval and Data Length Extension outcomes directly off the wire rather than trusting whatever a phone app infers or fails to surface.</p>\n<p>The evidence class here is weaker than the bin's bench-measurement entries — this is a single demo walkthrough with no repeated trials, no comparison against alternative test rigs (e.g., a sniffer or a second reference dongle brand), and a disclosed commercial relationship between the publisher and the recommended product, which the entry records rather than omits. Treat the specific AT-command syntax and numeric readouts as illustrative of the dongle-based testing approach rather than as a benchmark of BleuIO specifically against competing test hardware.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Novel Bits（Mohammad Afaneh）于 2026 年 8 月 31 日发布了一篇工具类教程，主张智能手机并不适合用作 BLE 固件回归测试的仪器——尽管手机仍然是面向用户端验证的正确工具。手机的 BLE 协议栈会施加操作系统级的连接缓存、后台扫描限流和自动重连管理，这意味着测试失败可能源自手机协议栈本身而非被测设备；而且这整套流程无法脚本化接入构建流水线，也不会产生可解析的成功/失败结果。</p>\n<p>文章提出的替代方案是一对 BleuIO USB 加密狗（基于瑞萨 DA14683），一个充当 BLE 中心端/扫描端，另一个充当外围端/广播端，两者都通过 USB 串口（115200 波特率）以 AT 命令接口驱动——与蜂窝调制解调器常见的命令/响应风格相同。文章给出了一次具体的操作过程：用 <code>AT+GAPSCAN=5</code> 扫描，用 <code>AT+ADVSTART</code> 加原始载荷构造命令 <code>AT+ADVDATA</code> 发起广播，用 <code>AT+GAPCONNECT=[0]&lt;地址&gt;</code> 建立连接，再用 <code>AT+GETCONN</code> 验证双向链路是否存活——每一步都产生可解析的文本响应，而不是手机 App 里的一屏画面。</p>\n<p>在原始数据包层面操作这对加密狗，暴露出一个即便产品已经出货、开发者也常常搞错的区别：手机扫描界面显示的名称，未必就是 GATT Device Name 特征值。在演示抓包中，广播包的 AD 类型 <code>0x09</code>（完整/缩短本地名称）携带的是 &quot;SENSOR&quot;，而扫描响应载荷与 GATT Device Name 特征值携带的都是 &quot;BleuIO&quot;——这是两个合法独立、却常被手机界面折叠成同一个显示字符串的名称字段。这次会话还读出了手机界面通常不会直接展示的具体协商链路参数：连接间隔为 24 个单位（24 × 1.25 ms = 30 ms），以及数据长度扩展（DLE）协商后双方的 tx/rx 字节数均为 251。</p>\n<p>文章明确将基于加密狗的测试定位为对手机测试的补充而非替代——手机在真实用户体验测试、操作系统互操作性检查，以及任何涉及平台自身 BLE 协议栈行为的场合仍然不可或缺。来源自述的关联披露：Novel Bits 是其推荐的 BleuIO 加密狗的美国经销商之一，文章说明了这层商业关系，但未量化其影响。</p>\n<h3>技术要点</h3>\n<ul><li><strong>测试仪器</strong>：两个基于瑞萨 DA14683 的 BleuIO USB 加密狗，一个作中心/扫描端，一个作外围/广播端，通过 USB 串口（115200 波特率）用 AT 命令驱动。</li><li><strong>为何不用手机</strong>：操作系统级的连接缓存、后台扫描限流与自动重连管理，可能让手机自身协议栈成为测试失败的根源；手机测试也无法接入 CI 流水线，也不产生可解析结果。</li><li><strong>演示的命令流程</strong>：<code>AT+GAPSCAN=5</code>（扫描）、<code>AT+ADVSTART</code> / <code>AT+ADVDATA</code>（用原始载荷发起广播）、<code>AT+GAPCONNECT=[0]&lt;地址&gt;</code>（建立连接）、<code>AT+GETCONN</code>（验证双向链路存活）。</li><li><strong>广播名称与 GATT 名称的区别</strong>：广播包中的 AD 类型 <code>0x09</code> 显示为 &quot;SENSOR&quot;；扫描响应载荷与 GATT Device Name 特征值均显示为 &quot;BleuIO&quot;——这是两个可独立设置、却常被手机界面合并显示的名称字段。</li><li><strong>观测到的链路参数</strong>：协商连接间隔为 24 个单位 = 30 ms（每单位 1.25 ms）；数据长度扩展（DLE）协商后外围端与中心端的 tx/rx 均为 251 字节。</li><li><strong>定位</strong>：明确定位为对手机测试的补充而非替代——面向用户的体验测试与平台协议栈互操作性测试仍需依赖手机。</li><li><strong>披露的利益关联</strong>：Novel Bits 自述是文中推荐的 BleuIO 加密狗的美国经销商。</li></ul>\n<h3>意义与新意</h3>\n<p>bt-le 主题箱里已经有两篇 novelbits 的台架实测条目（<code>2026-08-15_novelbits-ble-advertising-energy-four-decisions</code>、<code>2026-08-27_novelbits-uart-console-rtt-logging-power</code>），量化的是设备&quot;耗费什么&quot;；这篇文章是不同但互补的类型——一篇测试方法论说明，讲的是如何在不依赖手机不透明 BLE 协议栈的前提下，验证设备本身的行为是否正确。其中可迁移的洞见在于广播名称与 GATT 名称的区分：这是一个真实的、包层面的事实（AD 类型 <code>0x09</code> 对 GATT Device Name 特征值 <code>0x2A00</code>），手机扫描界面会把二者折叠成同一个显示字符串，仅依赖手机测试的开发者可能在完全没有察觉的情况下，出货一台带有两个悄悄不一致名称的设备。直接从链路上读取连接间隔与数据长度扩展协商结果，而不是依赖手机 App 推断或干脆不展示的信息，道理相同。</p>\n<p>这篇文章的证据等级弱于本箱的台架实测条目——它是单次演示走查，没有重复试验，也没有与其他测试装置（例如嗅探器或第二款参考加密狗）做对比，并且发布方与其推荐产品之间存在已披露的商业关系，本条目如实记录而非略去这一点。文中具体的 AT 命令语法与读数应被视为对&quot;加密狗式测试思路&quot;的示例说明，而不是 BleuIO 相对其他测试硬件的基准测评。</p>",
+      "images": [],
+      "search_blob": "testing ble firmware without a phone: an at-command usb dongle exposes the raw advertising/gatt split and dle numbers that os-level caching hides 不靠手机测试 ble 固件：at 命令 usb 加密狗暴露出被操作系统缓存掩盖的广播/gatt 名称分离与 dle 数值 ble testing at-commands bleuio gatt advertising-data data-length-extension ci novel bits (mohammad afaneh) published a tooling tutorial on august 31, 2026 arguing that smartphones are the wrong instrument for ble firmware regression testing, even though they remain the right instrument for user-facing validation. a phone's ble stack applies os-level connection caching, background-scan throttling, and automatic reconnection management, which means a test failure can originate in the phone's stack rather than the device under test — and none of it is scriptable into a build pipeline or produces parseable pass/fail output. novel bits（mohammad afaneh）于 2026 年 8 月 31 日发布了一篇工具类教程，主张智能手机并不适合用作 ble 固件回归测试的仪器——尽管手机仍然是面向用户端验证的正确工具。手机的 ble 协议栈会施加操作系统级的连接缓存、后台扫描限流和自动重连管理，这意味着测试失败可能源自手机协议栈本身而非被测设备；而且这整套流程无法脚本化接入构建流水线，也不会产生可解析的成功/失败结果。 tutorial bluetooth"
+    },
+    {
+      "id": "2026-09-01_ieee-mentor-ucm-tig-digest",
+      "date_found": "2026-09-01",
+      "technology": "wifi",
+      "date_published": "2026-08-31",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 UCM TIG Mentor digest — first appearance",
+      "title_zh": "IEEE 802.11 UCM TIG Mentor 摘要 — 首次出现",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=UCM%20TIG",
+      "topics": [
+        "UCM-TIG",
+        "channel-modeling",
+        "ray-tracing"
+      ],
+      "topic_primary": "wifi8-uhr",
+      "topics_secondary": [
+        "mmwave-bq",
+        "sensing-csi"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-09-01_ieee-mentor-ucm-tig-digest.md",
+      "summary_short_en": "A group designation not previously seen in this KB's Mentor tracking — \"UCM TIG\" — uploaded its first document today: DCN 11-26-1578r0, \"Accuracy Assessment and Validation of Sionna-Based Ray Tracing for Indoor Environments\" (Murat Uysal, NYUAD Wireless Center). The document evaluates the accuracy of NVIDIA Sionna-based ray-tracing simulation against measured indoor propagation, positioning it as channel-modeling / simulation-validation work rather than a specific amendment's normative text. \"UCM\" most likely stands for a use-case-and-channel-modeling topic interest group; the exact charter is not yet confirmed from the public listing.",
+      "summary_short_zh": "本 KB 的 Mentor 跟踪中首次出现一个新的组别标识——\"UCM TIG\"，今日上传了其首份文档：DCN 11-26-1578r0，\"Accuracy Assessment and Validation of Sionna-Based Ray Tracing for Indoor Environments\"（Murat Uysal，NYUAD 无线中心）。该文档评估了基于 NVIDIA Sionna 的射线追踪仿真相对于实测室内传播的准确性，属于信道建模 / 仿真验证类工作，而非某个修正案的规范性文本。\"UCM\" 很可能代表某个\"用例与信道建模\"主题兴趣组，其具体章程尚无法从公开列表确认。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A group designation not previously seen in this KB's Mentor tracking — &quot;UCM TIG&quot; — uploaded its first document today: DCN 11-26-1578r0, &quot;Accuracy Assessment and Validation of Sionna-Based Ray Tracing for Indoor Environments&quot; (Murat Uysal, NYUAD Wireless Center). The document evaluates the accuracy of NVIDIA Sionna-based ray-tracing simulation against measured indoor propagation, positioning it as channel-modeling / simulation-validation work rather than a specific amendment's normative text. &quot;UCM&quot; most likely stands for a use-case-and-channel-modeling topic interest group; the exact charter is not yet confirmed from the public listing.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1578r0 · UCM TIG</strong> — &quot;Accuracy Assessment and Validation of Sionna-Based Ray Tracing for Indoor Environments&quot;. Murat Uysal (NYUAD Wireless Center).</li><li>Evaluates ray-tracing-based channel simulation accuracy against real indoor measurements — infrastructure-level modeling work that could feed future mmWave (TGbq) or sensing (TGbf-adjacent) proposal evaluation.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the first document this KB has captured under the &quot;UCM TIG&quot; group label. Unlike the WIN SG (Wi-Fi 9 study group) first-appearance recorded in the 2026-08-27 digest, UCM TIG's charter and relationship to the existing task-group structure are not yet clear from the public Mentor listing alone — flagged as a group-mapping gap for the scout's own taxonomy (see Step 11 proposals).</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本 KB 的 Mentor 跟踪中首次出现一个新的组别标识——&quot;UCM TIG&quot;，今日上传了其首份文档：DCN 11-26-1578r0，&quot;Accuracy Assessment and Validation of Sionna-Based Ray Tracing for Indoor Environments&quot;（Murat Uysal，NYUAD 无线中心）。该文档评估了基于 NVIDIA Sionna 的射线追踪仿真相对于实测室内传播的准确性，属于信道建模 / 仿真验证类工作，而非某个修正案的规范性文本。&quot;UCM&quot; 很可能代表某个&quot;用例与信道建模&quot;主题兴趣组，其具体章程尚无法从公开列表确认。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1578r0 · UCM TIG</strong> — &quot;室内环境下基于 Sionna 射线追踪的精度评估与验证&quot;。Murat Uysal（NYUAD 无线中心）。</li><li>评估基于射线追踪的信道仿真相对于真实室内测量的精度——这类基础建模工作可能为未来 mmWave（TGbq）或感知相关提案的评估提供支撑。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本 KB 在 &quot;UCM TIG&quot; 组别标签下捕获的首份文档。与 2026-08-27 摘要中记录的 WIN SG（Wi-Fi 9 研究组）首次出现不同，UCM TIG 的章程及其与现有任务组结构的关系目前尚无法仅凭公开 Mentor 列表判断——已在本次扫描的分类维护建议中标记为一个组别映射空白（见 Step 11 提案）。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 ucm tig mentor digest — first appearance ieee 802.11 ucm tig mentor 摘要 — 首次出现 ucm-tig channel-modeling ray-tracing a group designation not previously seen in this kb's mentor tracking — \"ucm tig\" — uploaded its first document today: dcn 11-26-1578r0, \"accuracy assessment and validation of sionna-based ray tracing for indoor environments\" (murat uysal, nyuad wireless center). the document evaluates the accuracy of nvidia sionna-based ray-tracing simulation against measured indoor propagation, positioning it as channel-modeling / simulation-validation work rather than a specific amendment's normative text. \"ucm\" most likely stands for a use-case-and-channel-modeling topic interest group; the exact charter is not yet confirmed from the public listing. 本 kb 的 mentor 跟踪中首次出现一个新的组别标识——\"ucm tig\"，今日上传了其首份文档：dcn 11-26-1578r0，\"accuracy assessment and validation of sionna-based ray tracing for indoor environments\"（murat uysal，nyuad 无线中心）。该文档评估了基于 nvidia sionna 的射线追踪仿真相对于实测室内传播的准确性，属于信道建模 / 仿真验证类工作，而非某个修正案的规范性文本。\"ucm\" 很可能代表某个\"用例与信道建模\"主题兴趣组，其具体章程尚无法从公开列表确认。 ieee-document wifi"
+    },
+    {
+      "id": "2026-09-01_ieee-mentor-tgbq-digest",
+      "date_found": "2026-09-01",
+      "technology": "wifi",
+      "date_published": "2026-08-31",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 TGbq Mentor digest — 2026-09-01",
+      "title_zh": "IEEE 802.11 TGbq Mentor 当日摘要 — 2026-09-01",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGBQ",
+      "topics": [
+        "TGbq",
+        "IMMW"
+      ],
+      "topic_primary": "mmwave-bq",
+      "topics_secondary": [],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-09-01_ieee-mentor-tgbq-digest.md",
+      "summary_short_en": "TGbq (Integrated mmWave) uploaded one revision today: DCN 11-26-1231r1, \"Channel Access Simulations Follow-up\" (Charlie Pettersson, Ericsson). This is a follow-up revision to an existing simulation-results document on channel access behaviour for the integrated mmWave (IMMW) link, continuing a simulation thread that has recurred in TGbq's document stream through the summer.",
+      "summary_short_zh": "TGbq（融合 mmWave）今日上传一份修订版：DCN 11-26-1231r1，\"Channel Access Simulations Follow-up\"（Charlie Pettersson，爱立信）。该文档是对现有仿真结果文档的后续修订，内容涉及融合 mmWave（IMMW）链路的信道接入行为，延续了 TGbq 整个夏季持续出现的仿真讨论线。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TGbq (Integrated mmWave) uploaded one revision today: DCN 11-26-1231r1, &quot;Channel Access Simulations Follow-up&quot; (Charlie Pettersson, Ericsson). This is a follow-up revision to an existing simulation-results document on channel access behaviour for the integrated mmWave (IMMW) link, continuing a simulation thread that has recurred in TGbq's document stream through the summer.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1231r1 · TGbq</strong> — &quot;Channel Access Simulations Follow-up&quot;. Charlie Pettersson (Ericsson).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>A routine revision to an ongoing IMMW channel-access simulation document; the docx body is account-gated so the delta between r0 and r1 cannot be characterised from the public listing alone. Logged for continuity of the TGbq document trail.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TGbq（融合 mmWave）今日上传一份修订版：DCN 11-26-1231r1，&quot;Channel Access Simulations Follow-up&quot;（Charlie Pettersson，爱立信）。该文档是对现有仿真结果文档的后续修订，内容涉及融合 mmWave（IMMW）链路的信道接入行为，延续了 TGbq 整个夏季持续出现的仿真讨论线。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1231r1 · TGbq</strong> — &quot;信道接入仿真后续研究&quot;。Charlie Pettersson（爱立信）。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 IMMW 信道接入仿真文档的一次常规修订；由于 docx 正文需登录访问，无法从公开列表判断 r0 与 r1 之间的具体差异。记录此条以保持 TGbq 文档脉络的连续性。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 tgbq mentor digest — 2026-09-01 ieee 802.11 tgbq mentor 当日摘要 — 2026-09-01 tgbq immw tgbq (integrated mmwave) uploaded one revision today: dcn 11-26-1231r1, \"channel access simulations follow-up\" (charlie pettersson, ericsson). this is a follow-up revision to an existing simulation-results document on channel access behaviour for the integrated mmwave (immw) link, continuing a simulation thread that has recurred in tgbq's document stream through the summer. tgbq（融合 mmwave）今日上传一份修订版：dcn 11-26-1231r1，\"channel access simulations follow-up\"（charlie pettersson，爱立信）。该文档是对现有仿真结果文档的后续修订，内容涉及融合 mmwave（immw）链路的信道接入行为，延续了 tgbq 整个夏季持续出现的仿真讨论线。 ieee-document wifi"
+    },
+    {
+      "id": "2026-09-01_ieee-mentor-tgbn-mlo-rtwt-digest",
+      "date_found": "2026-09-01",
+      "technology": "wifi",
+      "date_published": "2026-08-31",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 TGbn Mentor digest — 2026-09-01",
+      "title_zh": "IEEE 802.11 TGbn Mentor 当日摘要 — 2026-09-01",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGBN",
+      "topics": [
+        "TGbn",
+        "MLO",
+        "R-TWT",
+        "MAPC"
+      ],
+      "topic_primary": "mlo",
+      "topics_secondary": [
+        "rtwt-latency",
+        "mapc-cosr"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-09-01_ieee-mentor-tgbn-mlo-rtwt-digest.md",
+      "summary_short_en": "TGbn uploaded two new contributions this run, plus a late first-upload of a third that had been assigned a document number earlier but only surfaced today's scrape. DCN 11-26-1577r0 (Hang Yang, Ruijie) is titled \"Discussion on ST Preparation for Multiple Target AP MLDs\" — an early-stage discussion document on how a non-AP multi-link device should prepare state when a link switch or reassociation has more than one candidate target AP MLD to consider. DCN 11-26-1572r0 (Junpeng Lou, Ruijie) is \"Further Considerations on Co-RTWT\" — a continuation of the coordinated restricted target wake time (Co-RTWT) discussion thread across multiple APs; it was first uploaded 2026-08-31 even though its document number sits below documents already logged in a prior run, an artifact of the reservation-then-late-upload pattern this Mentor listing periodically shows.",
+      "summary_short_zh": "TGbn 本轮上传了两份新贡献，另有一份此前预留编号但今日才首次上传的文档。DCN 11-26-1577r0（Hang Yang，锐捷网络）题为 \"Discussion on ST Preparation for Multiple Target AP MLDs\"，讨论当存在多个候选目标 AP MLD 时，非 AP 多链路设备在链路切换或重关联前应如何准备状态，属早期讨论稿。DCN 11-26-1572r0（Junpeng Lou，锐捷网络）题为 \"Further Considerations on Co-RTWT\"，延续跨多个 AP 的协调受限目标唤醒时间（Co-RTWT）讨论；该文档编号低于此前已记录的文档，但直到 2026-08-31 才首次上传，属于\"预留编号、延迟上传\"模式的又一实例。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TGbn uploaded two new contributions this run, plus a late first-upload of a third that had been assigned a document number earlier but only surfaced today's scrape. DCN 11-26-1577r0 (Hang Yang, Ruijie) is titled &quot;Discussion on ST Preparation for Multiple Target AP MLDs&quot; — an early-stage discussion document on how a non-AP multi-link device should prepare state when a link switch or reassociation has more than one candidate target AP MLD to consider. DCN 11-26-1572r0 (Junpeng Lou, Ruijie) is &quot;Further Considerations on Co-RTWT&quot; — a continuation of the coordinated restricted target wake time (Co-RTWT) discussion thread across multiple APs; it was first uploaded 2026-08-31 even though its document number sits below documents already logged in a prior run, an artifact of the reservation-then-late-upload pattern this Mentor listing periodically shows.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1577r0 · TGbn</strong> — &quot;Discussion on ST Preparation for Multiple Target AP MLDs&quot;. Hang Yang (Ruijie).</li><li><strong>DCN 11-26-1572r0 · TGbn</strong> — &quot;Further Considerations on Co-RTWT&quot;. Junpeng Lou (Ruijie).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Both contributions extend threads already active in the KB: the multi-target-AP-MLD discussion sits in the MLO link-management space alongside earlier TGbn link-switch contributions, and the Co-RTWT thread continues the coordinated R-TWT work that has appeared in prior TGbn digests. Neither introduces a settled mechanism yet — both are discussion-stage documents ahead of any normative text.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TGbn 本轮上传了两份新贡献，另有一份此前预留编号但今日才首次上传的文档。DCN 11-26-1577r0（Hang Yang，锐捷网络）题为 &quot;Discussion on ST Preparation for Multiple Target AP MLDs&quot;，讨论当存在多个候选目标 AP MLD 时，非 AP 多链路设备在链路切换或重关联前应如何准备状态，属早期讨论稿。DCN 11-26-1572r0（Junpeng Lou，锐捷网络）题为 &quot;Further Considerations on Co-RTWT&quot;，延续跨多个 AP 的协调受限目标唤醒时间（Co-RTWT）讨论；该文档编号低于此前已记录的文档，但直到 2026-08-31 才首次上传，属于&quot;预留编号、延迟上传&quot;模式的又一实例。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1577r0 · TGbn</strong> — &quot;多目标 AP MLD 的 ST 准备讨论&quot;。Hang Yang（锐捷网络）。</li><li><strong>DCN 11-26-1572r0 · TGbn</strong> — &quot;关于 Co-RTWT 的进一步考虑&quot;。Junpeng Lou（锐捷网络）。</li></ul>\n<h3>意义与新意</h3>\n<p>两份贡献均延续了 KB 中已有的讨论线：多目标 AP MLD 讨论属于 MLO 链路管理范畴，与此前 TGbn 关于链路切换的贡献相呼应；Co-RTWT 讨论则延续了此前 TGbn 摘要中已出现的协调 R-TWT 工作。两者均处于讨论阶段，尚未形成规范性文本。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 tgbn mentor digest — 2026-09-01 ieee 802.11 tgbn mentor 当日摘要 — 2026-09-01 tgbn mlo r-twt mapc tgbn uploaded two new contributions this run, plus a late first-upload of a third that had been assigned a document number earlier but only surfaced today's scrape. dcn 11-26-1577r0 (hang yang, ruijie) is titled \"discussion on st preparation for multiple target ap mlds\" — an early-stage discussion document on how a non-ap multi-link device should prepare state when a link switch or reassociation has more than one candidate target ap mld to consider. dcn 11-26-1572r0 (junpeng lou, ruijie) is \"further considerations on co-rtwt\" — a continuation of the coordinated restricted target wake time (co-rtwt) discussion thread across multiple aps; it was first uploaded 2026-08-31 even though its document number sits below documents already logged in a prior run, an artifact of the reservation-then-late-upload pattern this mentor listing periodically shows. tgbn 本轮上传了两份新贡献，另有一份此前预留编号但今日才首次上传的文档。dcn 11-26-1577r0（hang yang，锐捷网络）题为 \"discussion on st preparation for multiple target ap mlds\"，讨论当存在多个候选目标 ap mld 时，非 ap 多链路设备在链路切换或重关联前应如何准备状态，属早期讨论稿。dcn 11-26-1572r0（junpeng lou，锐捷网络）题为 \"further considerations on co-rtwt\"，延续跨多个 ap 的协调受限目标唤醒时间（co-rtwt）讨论；该文档编号低于此前已记录的文档，但直到 2026-08-31 才首次上传，属于\"预留编号、延迟上传\"模式的又一实例。 ieee-document wifi"
+    },
+    {
+      "id": "2026-09-01_arxiv-multi-spin-wireless-speculative-inference",
+      "date_found": "2026-09-01",
+      "technology": "edge-ai",
+      "date_published": "2026-08-30",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Multi-Access Speculative Inference: should the correction travel uplink or downlink?",
+      "title_zh": "多址协同推测推理：纠错该走上行还是下行？",
+      "url": "https://arxiv.org/abs/2608.29618",
+      "topics": [
+        "speculative-decoding",
+        "multi-device-edge-inference",
+        "uplink-downlink-mode-selection",
+        "draft-length-control",
+        "power-allocation",
+        "token-goodput",
+        "OFDMA"
+      ],
+      "topic_primary": "compute-offloading",
+      "topics_secondary": [
+        "edge-ai-networking",
+        "on-device-inference"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-09-01_arxiv-multi-spin-wireless-speculative-inference.md",
+      "summary_short_en": "Speculative decoding usually gets described as a device-side trick: a small model drafts several tokens, a large model checks them in one pass, and the draft is kept whenever it agrees. Multi-Access Speculative Inference (Multi-SPIN) asks what happens to that trick once the small model lives on a phone and the large model lives on an edge server, so that every rejected token has to be *corrected over a radio link* — and it finds a genuine new design knob that prior multi-device speculative-decoding work had missed.",
+      "summary_short_zh": "推测解码通常被描述成设备侧的技巧：小模型起草若干 token，大模型一次性校验，草稿被接受的部分直接保留。多址协同推测推理（Multi-SPIN）追问的是：一旦小模型跑在手机上、大模型跑在边缘服务器上，每一个被拒绝的 token 都必须**通过无线链路完成纠错**，这个技巧会遭遇什么——并因此发现了此前多设备推测解码研究都忽略的一个真实新设计维度。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Speculative decoding usually gets described as a device-side trick: a small model drafts several tokens, a large model checks them in one pass, and the draft is kept whenever it agrees. Multi-Access Speculative Inference (Multi-SPIN) asks what happens to that trick once the small model lives on a phone and the large model lives on an edge server, so that every rejected token has to be <em>corrected over a radio link</em> — and it finds a genuine new design knob that prior multi-device speculative-decoding work had missed.</p>\n<p>The problem is concrete. When the server rejects a drafted token, the correct next token has to be re-sampled from a corrected distribution, and computing that distribution requires both the device's draft distribution and the server's target distribution over the full vocabulary. The obvious approach — upload the draft distribution so the server can do the correction — creates an uplink bottleneck, because uploading a vocabulary-wide probability vector from every device that got rejected is expensive on the weaker link. The paper's fix is to notice this doesn't have to be one-directional: a device can instead <em>download</em> the server's target distribution and do the correction locally, trading the uplink bottleneck for downlink resource contention among devices that all chose that mode.</p>\n<p>Multi-SPIN turns this into a per-device, per-round choice — communication-mode selection — and formulates a joint optimization over three variables at once: which devices go uplink vs. downlink, how many tokens each device drafts before pausing for verification (draft-length), and how transmit power is allocated. The authors prove the optimal mode assignment has a simple prefix structure (sort devices by minimum uplink delay; the ones with the fastest uplink go uplink, the rest go downlink), which turns an exponential search into a 1-D bisection, and derive closed-form optimal power allocation. A separate greedy algorithm handles draft-length control device by device. Evaluated on Qwen2.5 (0.5B device / 14B server) and DeepSeek-R1-Distill (1.5B device / 32B server) pairs across HumanEval, GSM8K, MT-Bench and IFEval, with 20 devices sharing 10 MHz of OFDMA bandwidth, the adaptive mode-selection scheme beats both all-uplink and all-downlink fixed baselines, and adaptive draft-length control adds another 8–15% token-goodput improvement over uniform draft lengths.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Setting</strong>: multi-device speculative decoding with on-device small models (drafters) and one edge-server large model (verifier), correction traffic carried over a shared OFDMA wireless link (B=10 MHz, K=20 devices unless varied).</li><li><strong>New design dimension</strong>: adaptive per-device uplink (upload draft distribution, server corrects) vs. downlink (download target distribution, device corrects) mode selection — not present in prior multi-device speculative-decoding designs, which fix the correction location.</li><li><strong>Objective</strong>: maximize expected sum token goodput G(γ,χ) = expected output tokens / (computation time + expected communication time), jointly over mode assignment, draft length γ, and transmit power χ.</li><li><strong>Lemma 2 (mode-selection structure)</strong>: optimal mode assignment is a prefix rule over devices sorted by minimum uplink delay — reduces a combinatorial 2^K search to 1-D bisection over the UL/DL split point.</li><li><strong>Proposition 1 (power allocation)</strong>: closed-form; uplink devices transmit at max power, downlink power is equalized across downlink users by an iterative procedure.</li><li><strong>Draft-length algorithm</strong>: two-phase greedy (synchronized all-ones ramp-up until goodput plateaus, then coordinate-wise refinement), evaluated via Sample Average Approximation with 1,000 sampled rejection outcomes rather than enumerating 2^K patterns.</li><li><strong>Channel model</strong>: Rayleigh fading, device-server distances uniform on [100, 500] m, path-loss exponent 3.5, reference gain -30 dB at 1 m; effective vocabulary 1,024 tokens, 16-bit probability quantization; device UL power 10-15 dBm, server DL power 30 dBm.</li><li><strong>Results</strong>: adaptive mode selection beats fixed all-UL/all-DL baselines as device count and DL/UL power ratio vary; adaptive draft length adds 8-15% goodput over uniform draft length, ~5-10% over computation-only draft optimization; optimal draft length rises from ~2-3 to ~5-7 tokens as DL power budget grows.</li><li><strong>No comments field / venue stated</strong> on the abstract page as of this writing; treat as a preprint pending venue confirmation.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Most edge/cloud split-inference work treats the communication direction as fixed by the architecture — upload activations, download results — and optimizes what gets sent. Multi-SPIN's contribution is narrower and sharper: for one specific, increasingly common workload (speculative decoding across a device-edge boundary), it shows the <em>direction itself</em> is a free variable, and that choosing it per device, jointly with draft length and power, is where the gains actually are. The prefix-structure proof (Lemma 2) is the kind of result that makes an otherwise-exponential joint optimization tractable in real time, which matters because this isn't a one-shot placement decision — it has to be re-solved every round as verification outcomes arrive.</p>\n<p>This is squarely a compute-offloading / edge-ai-networking paper rather than a wireless-PHY paper: the wireless model (OFDMA, Rayleigh fading, explicit power budgets) is detailed enough to be credible, but the contribution being evaluated is the mode-selection and draft-length policy, not a change to the radio access technology. That keeps it in this scout's lane per the SKILL's routing rule (evaluation over a link, contribution is the partitioning policy). It is also a natural companion to two edge-ai-networking/compute-offloading entries already in the KB — <code>2026-08-27_arxiv-wici-wireless-gpu-offload-llm</code> and <code>2026-08-29_arxiv-goodput-slo-llm-edge-offloading</code> — all three converge on the same instrumental variable: measuring against <em>goodput</em> under a real link budget rather than raw throughput or FLOPs changes which policy looks best.</p>\n<p>The main limitation to carry forward: all evaluation is simulated wireless (Rayleigh fading with assumed distances and power budgets), not a measured channel or real device energy, and the paper does not report absolute latency or goodput numbers on its plots' axes in the text — only relative improvements. It is a systems-and-optimization contribution with a credible wireless model, not a hardware validation.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>推测解码通常被描述成设备侧的技巧：小模型起草若干 token，大模型一次性校验，草稿被接受的部分直接保留。多址协同推测推理（Multi-SPIN）追问的是：一旦小模型跑在手机上、大模型跑在边缘服务器上，每一个被拒绝的 token 都必须<strong>通过无线链路完成纠错</strong>，这个技巧会遭遇什么——并因此发现了此前多设备推测解码研究都忽略的一个真实新设计维度。</p>\n<p>问题很具体。当服务器拒绝某个草稿 token 时，正确的下一个 token 需要从修正后的分布重新采样，而计算这个分布需要设备端的草稿分布<em>和</em>服务器端针对全词表的目标分布两者。显而易见的做法——把草稿分布上传给服务器做纠错——会造成上行瓶颈，因为让每个被拒绝的设备都上传一个覆盖全词表的概率向量，在较弱的链路上代价高昂。本文的修正之处在于指出这并非必须单向：设备也可以反过来<em>下载</em>服务器的目标分布，在本地完成纠错，用下行资源在选择该模式的设备间的争用，换掉上行瓶颈。</p>\n<p>Multi-SPIN 把这变成了逐设备、逐轮次的选择——通信模式选择——并对三个变量做联合优化：哪些设备走上行、哪些走下行；每个设备在暂停等待校验前起草多少个 token（草稿长度）；发射功率如何分配。作者证明最优模式分配具有简单的前缀结构（按最小上行时延排序，时延最短的走上行，其余走下行），从而把指数级搜索变成一维二分搜索，并推导出闭式最优功率分配。另有一个贪心算法逐设备处理草稿长度控制。在 Qwen2.5（设备端 0.5B / 服务器端 14B）与 DeepSeek-R1-Distill（设备端 1.5B / 服务器端 32B）模型对上，覆盖 HumanEval、GSM8K、MT-Bench 与 IFEval，20 台设备共享 10 MHz OFDMA 带宽的设定下评测：自适应模式选择方案优于全上行与全下行两种固定基线，自适应草稿长度控制相较均匀草稿长度又额外带来 8–15% 的 token-goodput 提升。</p>\n<h3>技术要点</h3>\n<ul><li><strong>场景</strong>：多设备推测解码，设备端为小模型（起草者），边缘服务器为单个大模型（校验者），纠错流量经共享 OFDMA 无线链路传输（B=10 MHz，默认 K=20 台设备）。</li><li><strong>新设计维度</strong>：逐设备自适应选择上行（上传草稿分布，服务器纠错）或下行（下载目标分布，设备端纠错）——此前多设备推测解码方案均固定纠错位置，未引入此维度。</li><li><strong>优化目标</strong>：最大化期望 token-goodput 总和 G(γ,χ) = 期望输出 token 数 /（计算时间 + 期望通信时间），对模式分配、草稿长度 γ 与发射功率 χ 联合优化。</li><li><strong>引理 2（模式选择结构）</strong>：最优模式分配是按最小上行时延排序后的前缀规则——把 2^K 的组合搜索降为对上行/下行分割点的一维二分搜索。</li><li><strong>命题 1（功率分配）</strong>：闭式解；上行设备以最大功率发射，下行设备间功率通过迭代过程均衡时延。</li><li><strong>草稿长度算法</strong>：两阶段贪心（同步全体递增直至 goodput 趋于平稳，再逐设备坐标细化），用 1000 次采样的拒绝结果做样本平均近似评估，避免枚举 2^K 种模式。</li><li><strong>信道模型</strong>：瑞利衰落，设备-服务器距离在 [100, 500] 米均匀分布，路径损耗指数 3.5，1 米参考增益 -30 dB；有效词表 1024 个 token，概率量化 16 bit；设备上行功率 10-15 dBm，服务器下行功率 30 dBm。</li><li><strong>结果</strong>：自适应模式选择在设备数量与下行/上行功率比变化时均优于全上行、全下行两种固定基线；自适应草稿长度相对均匀草稿长度额外带来 8-15% 的 goodput 提升，相对仅优化计算侧带来约 5-10% 提升；随下行功率预算增大，最优草稿长度从约 2-3 个 token 升至约 5-7 个。</li><li><strong>摘要页未标注会议/期刊信息</strong>：应视为预印本，投稿去向待确认。</li></ul>\n<h3>意义与新意</h3>\n<p>大多数边缘/云端拆分推理的工作把通信方向当作架构固定量——上传激活值、下载结果——只优化发送内容本身。Multi-SPIN 的贡献更窄也更锐利：针对一个具体且日益常见的负载（跨设备-边缘边界的推测解码），它证明<strong>方向本身就是一个自由变量</strong>，而逐设备地选择方向、并与草稿长度、功率联合优化，正是收益真正所在之处。前缀结构的证明（引理 2）把一个本会是指数级的联合优化变得可以实时求解，这一点很关键，因为这不是一次性的部署决策——每一轮随着校验结果到来都要重新求解。</p>\n<p>这篇论文明确属于计算卸载 / 边缘 AI 网络范畴，而非无线物理层论文：其无线模型（OFDMA、瑞利衰落、显式功率预算）细致到足以令人信服，但被评测的贡献是模式选择与草稿长度策略，而非对无线接入技术本身的改动——这符合本 scout 的路由规则（评测跑在真实链路之上，但贡献是划分策略）。它也自然呼应了本知识库已有的两条边缘 AI 网络 / 计算卸载条目——<code>2026-08-27_arxiv-wici-wireless-gpu-offload-llm</code> 与 <code>2026-08-29_arxiv-goodput-slo-llm-edge-offloading</code>——三者都收敛到同一个工具变量：以<strong>真实链路预算下的 goodput</strong> 而非原始吞吐量或 FLOPs 作为衡量标准，会改变哪种策略看起来最优。</p>\n<p>需要指出的主要局限：全部评测基于仿真无线信道（假设距离与功率预算下的瑞利衰落），并非实测信道或真实设备能耗，正文也未在图表之外给出绝对时延或 goodput 数值，只给出相对提升幅度。这是一篇具有可信无线模型的系统与优化贡献，而非硬件验证工作。</p>",
+      "images": [],
+      "search_blob": "multi-access speculative inference: should the correction travel uplink or downlink? 多址协同推测推理：纠错该走上行还是下行？ speculative-decoding multi-device-edge-inference uplink-downlink-mode-selection draft-length-control power-allocation token-goodput ofdma speculative decoding usually gets described as a device-side trick: a small model drafts several tokens, a large model checks them in one pass, and the draft is kept whenever it agrees. multi-access speculative inference (multi-spin) asks what happens to that trick once the small model lives on a phone and the large model lives on an edge server, so that every rejected token has to be *corrected over a radio link* — and it finds a genuine new design knob that prior multi-device speculative-decoding work had missed. 推测解码通常被描述成设备侧的技巧：小模型起草若干 token，大模型一次性校验，草稿被接受的部分直接保留。多址协同推测推理（multi-spin）追问的是：一旦小模型跑在手机上、大模型跑在边缘服务器上，每一个被拒绝的 token 都必须**通过无线链路完成纠错**，这个技巧会遭遇什么——并因此发现了此前多设备推测解码研究都忽略的一个真实新设计维度。 academic-paper edge-ai"
+    },
+    {
+      "id": "2026-09-01_arxiv-decentralized-multisat-mimo-knowledge-distillation",
+      "date_found": "2026-09-01",
+      "technology": "satellite",
+      "date_published": "2026-08-30",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Robust decentralized multi-satellite massive MIMO precoding via hybrid knowledge distillation (Southeast Univ. / Purple Mountain Labs / SnT Luxembourg / Peng Cheng Lab / China SatNet Group) — a global-clean teacher supervises onboard students on partial, angle-corrupted CSI, closing most of the gap while cutting inference to under 10 ms",
+      "title_zh": "面向多卫星大规模 MIMO 的稳健去中心化混合知识蒸馏预编码（东南大学 / 紫金山实验室 / 卢森堡大学 SnT / 鹏城实验室 / 中国卫星网络集团）——全局纯净教师网络监督在星上仅能获得局部、含角度误差 CSI 的学生网络，性能差距大幅收窄，推理耗时降至 10 毫秒以内",
+      "url": "https://arxiv.org/abs/2608.29620",
+      "topics": [
+        "multi-satellite-MIMO",
+        "cooperative-precoding",
+        "knowledge-distillation",
+        "decentralized-inference",
+        "statistical-CSI",
+        "angle-error-correction",
+        "WMMSE",
+        "transformer",
+        "Walker-Delta"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "sat-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-09-01_arxiv-decentralized-multisat-mimo-knowledge-distillation.md",
+      "summary_short_en": "Cao, Wang, Wang, Lin, Wang, Ding (Southeast University / Purple Mountain Laboratories, Nanjing), Chatzinotas and Ottersten (SnT, University of Luxembourg), with Peng Cheng Laboratory and China Satellite Network Group Company Ltd. as co-affiliations, target cooperative multi-satellite massive MIMO precoding under the constraint that actually matters onboard: each LEO satellite only has **statistical CSI (sCSI)** for its own users, angle information corrupted by ephemeris/GNSS error, and a limited inter-satellite-link (ISL) budget to share anything with its cooperating partners. A fully centralized WMMSE solver needs clean, global information no real deployment can supply; running each satellite's precoder independently (Sep-WMMSE) throws away the cooperative gain entirely.",
+      "summary_short_zh": "东南大学/紫金山实验室（Cao、Wang、Wang、Lin、Wang、Ding）与卢森堡大学 SnT（Chatzinotas、Ottersten）团队，联合鹏城实验室与中国卫星网络集团有限公司，针对多卫星协同大规模 MIMO 预编码提出方案，直面星上实际约束：每颗 LEO 卫星只能获得自身用户的**统计 CSI（sCSI）**，角度信息因星历/GNSS 误差而失真，且星间链路（ISL）用于共享信息的预算有限。完全集中式的 WMMSE 求解需要干净的全局信息，任何真实部署都无法满足；而各卫星独立运行预编码（Sep-WMMSE）则完全丢弃了协同增益。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Cao, Wang, Wang, Lin, Wang, Ding (Southeast University / Purple Mountain Laboratories, Nanjing), Chatzinotas and Ottersten (SnT, University of Luxembourg), with Peng Cheng Laboratory and China Satellite Network Group Company Ltd. as co-affiliations, target cooperative multi-satellite massive MIMO precoding under the constraint that actually matters onboard: each LEO satellite only has <strong>statistical CSI (sCSI)</strong> for its own users, angle information corrupted by ephemeris/GNSS error, and a limited inter-satellite-link (ISL) budget to share anything with its cooperating partners. A fully centralized WMMSE solver needs clean, global information no real deployment can supply; running each satellite's precoder independently (Sep-WMMSE) throws away the cooperative gain entirely.</p>\n<p>The paper's answer is a three-network <strong>hybrid knowledge-distillation (HKD)</strong> pipeline. A large <strong>teacher</strong> network — Transformer encoder + dual-axis attention (alternating attention over the user axis and the satellite axis) + a permutation-equivariant tensor network — is trained offline on clean, global sCSI to imitate the WMMSE-optimal precoder. A lightweight, weight-shared <strong>student</strong> network runs onboard each satellite on local sCSI plus whatever partial, noisy features its neighbors can exchange over ISL, with angle errors modeled as bounded uniform noise on the AoD/AoA parameters. Two purpose-built correction modules — Angle/Phase Residual Prediction (APRP) and Kronecker Steering-Vector Correction (KSVC) — sit between the student's tensor network and its precoder-recovery step, learning to undo the angle-error-induced steering-vector distortion before the closed-form precoder is reconstructed. Training is staged: WSR objective first, then precoder-level L2 distillation from the teacher, then steering-vector-level L2 distillation — the paper's ablation (Dec-Student vs. Dec-Student-PKD vs. Dec-Student-HKD) is built to isolate what each distillation term buys.</p>\n<p>Simulated on a QuaDRiGa NTN-Urban-LOS channel (600 km Walker-Delta, 28 planes x 60 sats/plane, 53-degree inclination, 2 GHz carrier, 64-element satellite arrays, 4-element UT arrays), the full HKD student closes most of the gap to the centralized teacher, delivers a stable <strong>+7.07% to +8.27% precoder cosine-similarity gain</strong> over the non-distilled student across the -10 to +10 dBW transmit-power range, generalizes to satellite counts and UT counts it was never trained on, and — the practical payoff — runs inference in <strong>under 10 ms</strong> on a laptop CPU versus 44 ms for the teacher and much longer for iterative WMMSE, because the student replaces the teacher's multi-layer Transformer with a single layer and averages over the satellite axis before the equivariant network.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem framing:</strong> onboard precoding must work with statistical CSI (not instantaneous), partial/noisy inter-satellite information over a limited ISL budget, and angle errors from ephemeris/GNSS rather than perfect global state.</li><li><strong>Teacher NN:</strong> Large Transformer Encoder (LTE, L layers) -&gt; Dual-Axis Attention (DAA, alternating user-axis and satellite-axis self-attention) -&gt; Tensor-Equivariant Network (TEN, permutation-equivariant to satellite/UT ordering) -&gt; Parameter Decoder -&gt; closed-form Precoder Recovery. Trained offline on clean, global sCSI to match the WMMSE objective.</li><li><strong>Student NN:</strong> single-layer Transformer encoder (vs. teacher's L layers) + same DAA + satellite-axis averaging + same TEN/decoder/recovery chain; weight-shared across all satellites so one trained model deploys onboard every satellite. Input is local features plus zero-padded, partial neighbor features.</li><li><strong>Correction modules:</strong> APRP predicts bounded angle/phase residuals (tanh-squashed) to correct AoD/AoA errors; KSVC reconstructs corrected steering vectors via Kronecker structure and re-normalizes them before precoder recovery.</li><li><strong>Hybrid distillation loss:</strong> WSR objective + precoder-level L2 distillation (student precoder vs. teacher precoder) + steering-vector-level L2 distillation (student vs. teacher steering vectors), staged in three training phases.</li><li><strong>Baselines compared:</strong> Sep-WMMSE (no cooperation), Cen-WMMSE (centralized, clean/noisy), Cen-Teacher (clean/noisy), Dec-Student (no KD), Dec-Student-PKD (precoder-only KD), Dec-Student-HKD (proposed).</li><li><strong>Sim setup:</strong> QuaDRiGa NTN_Urban_LOS scenario (3GPP-consistent), Walker-Delta 600 km / 28 planes / 60 sats-per-plane / 53-degree inclination, S in {2,3,4} cooperating satellites, K in {12,18,24,30,36} UTs, 2 GHz carrier, 30 kHz SCS, 20 MHz DL bandwidth, M=64 satellite Tx antennas, N=4 UT Rx antennas, 6 dBi/0 dBi antenna gains, 7 dB noise figure, 290 K noise temperature.</li><li><strong>Headline numbers:</strong> +7.07% to +8.27% precoder cosine-similarity gain of HKD over non-distilled student across -10..+10 dBW; Cen-Teacher inference 0.044 s vs. Dec-Student-HKD under 0.01 s (Intel Core Ultra 9 185H laptop CPU); HKD tracks Cen-Teacher/Cen-WMMSE closely as S and K scale beyond the S=3, K=24 training point, without retraining; under large angle perturbations HKD beats even Cen-Teacher run on noisy inputs, and stays robust across both uniform and Gaussian angle-error models.</li><li><strong>Not yet shown:</strong> no over-the-air or hardware validation; complexity analysis (Table III) confirms the student stays near O(K M^3), i.e. the same order as separate per-satellite WMMSE, while remaining non-iterative.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's satellite-MIMO thread so far has been mostly single-satellite (SSB positioning bounds, PRACH preambles, phase shifters) or coordination-without-a-learned-precoder (stochastic-geometry sharing models, beam-hopping schedulers). This is the first entry that puts a <strong>learned, decentralized precoder</strong> at the center of multi-satellite cooperation, and it is explicit about the two things that make cooperative MIMO hard onboard a real constellation: statistical (not instantaneous) CSI, and angle information that is wrong by a bounded but nonzero amount because it comes from ephemeris and GNSS rather than a perfect oracle. The teacher-student framing is not novel in itself, but distilling <em>both</em> the precoder output and the intermediate steering vectors — with dedicated correction modules that specifically target the angle-error mechanism rather than generic noise — is a mechanism worth remembering: it lets the student recover directional information the teacher never had to reconstruct because its inputs were clean. The sub-10-ms inference number is the practical hook; it puts a learned cooperative precoder within range of an onboard real-time loop, which the iterative WMMSE baselines the paper compares against are not.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>东南大学/紫金山实验室（Cao、Wang、Wang、Lin、Wang、Ding）与卢森堡大学 SnT（Chatzinotas、Ottersten）团队，联合鹏城实验室与中国卫星网络集团有限公司，针对多卫星协同大规模 MIMO 预编码提出方案，直面星上实际约束：每颗 LEO 卫星只能获得自身用户的<strong>统计 CSI（sCSI）</strong>，角度信息因星历/GNSS 误差而失真，且星间链路（ISL）用于共享信息的预算有限。完全集中式的 WMMSE 求解需要干净的全局信息，任何真实部署都无法满足；而各卫星独立运行预编码（Sep-WMMSE）则完全丢弃了协同增益。</p>\n<p>论文给出的方案是三网络<strong>混合知识蒸馏（HKD）</strong>流水线。一个大型<strong>教师</strong>网络——Transformer 编码器 + 双轴注意力（在用户轴与卫星轴之间交替）+ 置换等变张量网络——在干净的全局 sCSI 上离线训练，模仿 WMMSE 最优预编码。一个轻量级、跨卫星权重共享的<strong>学生</strong>网络在每颗卫星星上运行，输入为本地 sCSI 加上邻居经 ISL 可交换的部分含噪特征，角度误差建模为 AoD/AoA 参数上的有界均匀噪声。两个专门设计的校正模块——角度/相位残差预测（APRP）与 Kronecker 导向矢量校正（KSVC）——置于学生张量网络与预编码恢复步骤之间，学习在闭式预编码重建前撤销角度误差引入的导向矢量畸变。训练分阶段进行：先优化 WSR 目标，再引入教师端的预编码级 L2 蒸馏，最后加入导向矢量级 L2 蒸馏——论文的消融实验（Dec-Student、Dec-Student-PKD、Dec-Student-HKD 三者对比）正是为了分离每一级蒸馏各自带来的收益。</p>\n<p>在 QuaDRiGa NTN-Urban-LOS 信道（600 km Walker-Delta 星座，28 轨道面 x 每面 60 星，倾角 53 度，载频 2 GHz，卫星端 64 阵元、终端 4 阵元）上仿真，完整 HKD 学生网络弥合了与集中式教师的大部分差距，在 -10 至 +10 dBW 发射功率范围内相对未蒸馏学生稳定获得 <strong>+7.07% 至 +8.27% 的预编码余弦相似度增益</strong>，能泛化到训练时未见过的卫星数与终端数组合，而实际收益在于推理耗时：学生网络在笔记本 CPU 上推理<strong>低于 10 毫秒</strong>，相比教师网络的 44 毫秒、以及迭代式 WMMSE 更长的耗时——因为学生网络用单层结构替换了教师的多层 Transformer，并在等变网络之前对卫星轴做平均。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题设定：</strong> 星上预编码必须在统计 CSI（而非瞬时 CSI）、经有限 ISL 预算传递的部分含噪星间信息、以及来自星历/GNSS 而非完美全局状态的角度误差下工作。</li><li><strong>教师网络：</strong> 大型 Transformer 编码器（LTE，L 层）-&gt; 双轴注意力（DAA，在用户轴与卫星轴间交替自注意力）-&gt; 张量等变网络（TEN，对卫星/终端排列置换等变）-&gt; 参数解码器 -&gt; 闭式预编码恢复。在干净的全局 sCSI 上离线训练以匹配 WMMSE 目标。</li><li><strong>学生网络：</strong> 单层 Transformer 编码器（相对教师的 L 层）+ 相同的 DAA + 卫星轴平均 + 相同的 TEN/解码器/恢复链路；跨卫星权重共享，单一训练模型即可部署到每颗卫星。输入为本地特征加上零填充的部分邻居特征。</li><li><strong>校正模块：</strong> APRP 预测经 tanh 压缩的有界角度/相位残差以校正 AoD/AoA 误差；KSVC 通过 Kronecker 结构重建校正后的导向矢量并在预编码恢复前重新归一化。</li><li><strong>混合蒸馏损失：</strong> WSR 目标 + 预编码级 L2 蒸馏（学生预编码对齐教师预编码）+ 导向矢量级 L2 蒸馏（学生对齐教师导向矢量），分三阶段训练。</li><li><strong>对比基线：</strong> Sep-WMMSE（无协同）、Cen-WMMSE（集中式，干净/含噪）、Cen-Teacher（干净/含噪）、Dec-Student（无蒸馏）、Dec-Student-PKD（仅预编码级蒸馏）、Dec-Student-HKD（本文方案）。</li><li><strong>仿真设置：</strong> QuaDRiGa NTN_Urban_LOS 场景（与 3GPP 一致），Walker-Delta 600 km / 28 轨道面 / 每面 60 星 / 倾角 53 度，协同卫星数 S∈{2,3,4}，终端数 K∈{12,18,24,30,36}，载频 2 GHz，子载波间隔 30 kHz，下行带宽 20 MHz，卫星发射天线 M=64、终端接收天线 N=4，天线增益 6 dBi/0 dBi，噪声系数 7 dB，噪声温度 290 K。</li><li><strong>关键数值：</strong> HKD 相对未蒸馏学生在 -10 至 +10 dBW 范围内预编码余弦相似度增益 +7.07% 至 +8.27%；集中式教师推理耗时 0.044 秒，Dec-Student-HKD 低于 0.01 秒（Intel Core Ultra 9 185H 笔记本 CPU）；HKD 在训练点 S=3、K=24 之外扩展卫星数与终端数时无需重训即能保持接近 Cen-Teacher/Cen-WMMSE 的性能；在较大角度扰动下 HKD 甚至优于在含噪输入上运行的 Cen-Teacher，且在均匀与高斯两种角度误差模型下均保持稳健。</li><li><strong>尚未验证：</strong> 无空口或硬件实测；复杂度分析（表 III）确认学生网络复杂度仍接近 O(K M^3)，与各卫星独立 WMMSE 同阶，但为非迭代式。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库此前的卫星 MIMO 脉络多集中于单星层面（SSB 定位精度界、PRACH 前导、移相器）或不含学习式预编码的协同（随机几何共享模型、跳波束调度器）。本条目是第一篇将<strong>学习式去中心化预编码</strong>置于多卫星协同核心的条目，并明确点出了让协同 MIMO 在真实星座星上运行困难的两个因素：统计（而非瞬时）CSI，以及来自星历与 GNSS、而非完美先知的、有界但非零的角度误差。教师-学生框架本身并不新颖，但同时蒸馏预编码输出<em>与</em>中间的导向矢量——并配以专门针对角度误差机制（而非泛化噪声）的校正模块——是值得记住的机制：它让学生网络能够恢复教师从未需要重建的方向性信息（因为教师的输入本就是干净的）。低于 10 毫秒的推理耗时是最具实用价值的一点：它使学习式协同预编码进入星上实时闭环可用的范围，而论文对比的迭代式 WMMSE 基线做不到这一点。</p>",
+      "images": [],
+      "search_blob": "robust decentralized multi-satellite massive mimo precoding via hybrid knowledge distillation (southeast univ. / purple mountain labs / snt luxembourg / peng cheng lab / china satnet group) — a global-clean teacher supervises onboard students on partial, angle-corrupted csi, closing most of the gap while cutting inference to under 10 ms 面向多卫星大规模 mimo 的稳健去中心化混合知识蒸馏预编码（东南大学 / 紫金山实验室 / 卢森堡大学 snt / 鹏城实验室 / 中国卫星网络集团）——全局纯净教师网络监督在星上仅能获得局部、含角度误差 csi 的学生网络，性能差距大幅收窄，推理耗时降至 10 毫秒以内 multi-satellite-mimo cooperative-precoding knowledge-distillation decentralized-inference statistical-csi angle-error-correction wmmse transformer walker-delta cao, wang, wang, lin, wang, ding (southeast university / purple mountain laboratories, nanjing), chatzinotas and ottersten (snt, university of luxembourg), with peng cheng laboratory and china satellite network group company ltd. as co-affiliations, target cooperative multi-satellite massive mimo precoding under the constraint that actually matters onboard: each leo satellite only has **statistical csi (scsi)** for its own users, angle information corrupted by ephemeris/gnss error, and a limited inter-satellite-link (isl) budget to share anything with its cooperating partners. a fully centralized wmmse solver needs clean, global information no real deployment can supply; running each satellite's precoder independently (sep-wmmse) throws away the cooperative gain entirely. 东南大学/紫金山实验室（cao、wang、wang、lin、wang、ding）与卢森堡大学 snt（chatzinotas、ottersten）团队，联合鹏城实验室与中国卫星网络集团有限公司，针对多卫星协同大规模 mimo 预编码提出方案，直面星上实际约束：每颗 leo 卫星只能获得自身用户的**统计 csi（scsi）**，角度信息因星历/gnss 误差而失真，且星间链路（isl）用于共享信息的预算有限。完全集中式的 wmmse 求解需要干净的全局信息，任何真实部署都无法满足；而各卫星独立运行预编码（sep-wmmse）则完全丢弃了协同增益。 academic-paper satellite"
+    },
     {
       "id": "2026-08-31_ieee-802-11-revmf-d30-mdr-report",
       "date_found": "2026-08-31",
@@ -6477,6 +6825,176 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在 2026 年 8 月 29–30 日的周末，IEEE 802.11 技术编辑 Edward Au（华为）连续提交了 DCN 11-26-1336 的四个修订版（r9、r10、r11、r12，其中后三版集中在周日下午美东时间十五分钟内），即 <strong>IEEE P802.11REVmf/D3.0 的强制草案审查（MDR）报告</strong>。MDR 是工作组在进入 Standards Association 投票前，依据 IEEE SA 标准体例手册与 802.11 编辑体例指南（09/1034）、按 11/0615 流程执行的正式编辑审计。来自华为、Intel、高通、思科、联发科、三星、Ofinno、Cox、Ruckus/CommScope、InterDigital、HaiLa、Bims Laboratories 与英飞凌的 18 位署名审查者各自负责一条或多条体例条款；其发现汇编进这一份文档，并逐条附上 TGmf 编辑的处置结论（接受 / 修订 / 拒绝）。此前 KB 仅记录了&quot;MDR 正在筹划&quot;（<code>2026-08-19_ieee-mentor-tgm-digest</code>）；本条目是报告本身，且现已可完整阅读。</p>\n<p>约 250 条发现中的大多数正是 MDR 该抓的东西：大小写、用&quot;0s&quot;而非&quot;zeros&quot;、悬挂段落（同时含正文与子条款的条款——21.3.18、27.3.1、27.3.12.5、27.3.19、27.3.20.2、28.9.3.5、29.10.4、29.11、30.3.4 等均新增&quot;General&quot;子条款）、Clause 3 定义中缩写展开顺序（EBCS、EDMG secure ranging、non-NGV、OCB 等一长串条目统一改为缩写跟在完整展开词之后），以及系统性删除 Clause 9 中约二十个元素子条款开头的&quot;The X element is included in Y frames&quot;句式（Measurement Report、TPU Buffer Status、Event Request/Report、Diagnostic Request/Report、Location Parameters、Nontransmitted BSSID Capability、SSID List、DMS Request/Response、FMS Descriptor、BSS Max Idle Period、Mesh Channel Switch Parameters、SCS Descriptor、DMG Link Margin、BeamLink Maintenance、MMS、Wide Bandwidth Channel Switch、FTM Parameters、EDMG Specific Parameters、CMMG Link Margin、EDMG Wide Bandwidth Channel Switch），理由是&quot;何时携带&quot;属于使用条款而非格式条款。</p>\n<p>真正超出编辑范畴的部分在 <strong>ANA（编号分配机构）章节</strong>，由 Carol Ansley（Cox）负责。其中三项是跨修正案的实质冲突而非排版问题。第一，<code>dot11StationConfigEntry</code> 的 <strong>249 号在 ANA 数据库中已分配给 TGbn，同时又被 REVmf 草案用于</strong> <code>dot11MaxChannelSwitchTimeEnhancedActivated</code>——该属性经 11-26-0269r7 的 CID 24/25 引入时未标注 <code>&lt;ANA&gt;</code> 占位符——ANA 的处置是将 REVmf 属性改到 <strong>261</strong>。第二，图 9-177（9.4.1.4 节）中 ANA 数据库仍将 bit 6、7 标为保留，而草案中已承接 802.11be-2024 的 Critical Update Flag 与 Nontransmitted BSSIDs Critical Update Flag；ANA 将更新记录以对齐。第三，同一图中 bit 9 对非 DMG STA 为&quot;QoS&quot;、对 DMG STA 为&quot;Triggered Unscheduled PS&quot;；编辑拒绝了审查者的修改意见，改由 ANA 在记录中区分 DMG 与非 DMG。此外，<strong>Element ID Extension</strong> 的保留范围由 162–255 更正为 <strong>169–255</strong>，新增&quot;Element ID Extension 2 present = 254&quot;一行，并修补了表 9-226（117–119）、表 9-82（75–79）、表 9-83（91、93–94、96–101）的保留范围，以及表 9-544 中 Public Action 值 60 的排序错误。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1336 r9–r12 · 802.11 WG</strong> —《IEEE P802.11REVmf/D3.0 强制草案审查（MDR）报告》，Edward Au（华为），文档日期 2026-08-30。r12 于 8 月 30 日 16:30 ET 上传，r9/r10/r11 同一下午。正文已完整获取并阅读（约 6.4 万字符）。</li><li><strong>ANA 编号冲突：REVmf × TGbn</strong> — <code>dot11StationConfigEntry</code> 的 <strong>249</strong> 号在 ANA 数据库中已分配给 TGbn，同时又被 REVmf 用于 <code>dot11MaxChannelSwitchTimeEnhancedActivated</code>（TruthValue 控制变量，用于启用带 Max Channel Switch Time 元素的增强信道切换能力）。成因：11-26-0269r7 的 CID 24/25 未标注 <code>&lt;ANA&gt;</code> 占位符。处置：<strong>ANA 为 REVmf 属性分配 261</strong>。</li><li><strong>Element ID Extension 编号空间</strong> — 1084.56 处保留范围由 162–255 更正为 <strong>169–255</strong>；1076.23 处新增&quot;Element ID Extension 2 present = 254&quot;一行，并补一行&quot;254 / 值 0 / 保留&quot;。<strong>第二扩展命名空间并非此处新增</strong>——ANA 早在 <strong>2025-04-15</strong> 就已于 802.11 编辑组邮件列表宣布创建 Element ID Extension 2 区块、并以 Element ID 254 作为其选择标志，首个取值分配给 TGbk 的 Puncture Pattern 元素；其两种结构的原始提案更可追溯至 <strong>11-14/1353</strong>（Adrian Stephens，2014：结构 A 用 254 配 8 位扩展，结构 B 用 255 配 16 位扩展）。MDR 在此所做的，是把此前完全缺失该行的 D3.0 表格补齐到与 ANA 数据库一致。</li><li><strong>图 9-177 / 9.4.1.4 位图</strong> — bit 6、7（Critical Update Flag、Nontransmitted BSSIDs Critical Update Flag）源自 802.11be-2024，但在 ANA 数据库中仍标为保留，ANA 将对齐。bit 9 在非 DMG 下为 QoS、在 DMG 下为 Triggered Unscheduled PS；编辑拒绝修改草案，转而要求 ANA 在记录中区分 DMG 与非 DMG。</li><li><strong>其他保留范围修补</strong> — 表 9-226（新增保留 117、118、119，末尾范围改为 121–n）、表 9-82（新增保留 75–79）、表 9-83（新增保留 91、93–94、96–101）、表 9-544（Public Action 值 60 恢复顺序）。</li><li><strong>参考书目审计（附录 A，Jerome Henry，思科）</strong> — 78 条全部对照 D3.0 全文核查：66 条已有方括号引用，7 项资源在正文出现却缺引用，另删除若干未被引用的条目，包括重复的 ETSI EN 302 567（[B12]/[B78]）与 ECC Decision (20)01（[B17]/[B77]）配对，以及未被引用的 IETF RFC 3629、RFC 6775 与 ISO 14962:1997。</li><li><strong>结构性修复</strong> — 因 Mesh BSS 文本移动而丢失的 4.3.28 DMG STA 标题恢复为 4.3.25a；十余个条款新增&quot;General&quot;子条款以消除悬挂段落；体例条款 2.18 将新定义的 EHT PHY &quot;subfield&quot;（SU Beamformee、U-SIG TXOP、跨表 36-1/36-34/36-35/36-36 的 RU Allocation）改称为&quot;field&quot;，因为 subfield 写法仅保留给历史文本。</li><li><strong>进度背景</strong> — Timelines 页面（仍为 2026-08-06 版本）列 REVmf 为 D3.00、D2.0 投票通过率 94%，预计 2026 年 10 月进入首次 SA 投票；11-26-1549 已宣布 10 月为 D3.0 意见处理召开临时会议（见 <code>2026-08-19_ieee-mentor-tgm-digest</code>）。本次运行中越过上一水位的另一份文档是 11-26-1475-08（TGbq 7–9 月电话会议议程，Edward Au，8 月 29 日），属事务性文件。</li><li><strong>回填更正：WIN SG 11-26-1565</strong> — 在 <code>2026-08-27_ieee-mentor-tgbn-win-sg-digest</code> 中仅按标题记录的 WLAN 智能组网研究组 9 月议程，其正文已获取并阅读：9 月中期会议共三个时段（周二 AM1 08:00–10:00、周二 PM1 13:30–15:30、周四 PM2 16:00–18:00），每个时段均包含&quot;投稿宣讲&quot;与 <strong>PAR 讨论</strong>，周四时段以&quot;2026 年 11 月目标&quot;与电话会议/临时会计划收尾。投稿列表页仍为空，标题页沿用了旧的&quot;UHR Study Group&quot;模板。</li></ul>\n<h3>意义与新意</h3>\n<p>有两点让这份文档不止是编辑产物。第一是 <strong>REVmf 与 TGbn 之间的 ANA 编号冲突</strong>。一个维护修订版与一个在研修正案同时占用了 MIB 槽位 249，原因是某份意见处理文档引入属性时未标注本应触发集中分配的 <code>&lt;ANA&gt;</code> 占位符。这正是日后引发互操作意外的典型故障模式，而这里的记录显示它是被编辑审查而不是被实现者抓到的。它同时具体说明了为何 REVmf 的基线节奏对 802.11bn 观察者重要：TGbn 的 D2.0 文本以这条滚动基线为编辑基准，两者共享同一编号空间，因而可能在其中冲突。</p>\n<p>第二是 <strong>Element ID Extension 保留范围的更正与&quot;Element ID Extension 2 present = 254&quot;行</strong>。KB 已在 <code>wifi8-uhr</code> 与 <code>mapc-cosr</code> 的条目中持续跟踪 802.11 标识符空间的消耗；这份 MDR 把当前边界写明了——扩展 ID 自 169 起保留，254 自此正式成为向第二个扩展字节逃逸的入口。任何针对 D3.0 读写元素解析器的人都需要这两个数字。</p>\n<p>同样值得记录的是这份文档&quot;不是&quot;什么：它不含新机制、不含性能主张、不改变规范行为。它对 KB 的价值在于，它是 9 月中期会议前三周维护基线状态的权威记录，也是首次得以观察处置结论的分布——绝大多数为&quot;接受&quot;，少数为&quot;修订&quot;（编辑给出不同措辞），仅两条为&quot;拒绝&quot;（bit 9 的 QoS 命名，以及一条重复上报的悬挂段落）。相对于只能报告&quot;MDR 正在筹划&quot;的 <code>2026-08-19_ieee-mentor-tgm-digest</code>，本条目以报告本身闭环。</p>",
       "images": [],
       "search_blob": "ieee p802.11revmf/d3.0 mandatory draft review report (11-26-1336 r9–r12): ana number collisions with 802.11bn, element id extension range fixes, and an 18-reviewer editorial sweep ieee p802.11revmf/d3.0 强制草案审查报告（11-26-1336 r9–r12）：与 802.11bn 的 ana 编号冲突、element id extension 范围修正，以及 18 人编辑审查 tgm revmf 802.11bn ana element-id mdr maintenance style-guide over the weekend of 29–30 august 2026, ieee 802.11 technical editor edward au (huawei) pushed four consecutive revisions (r9, r10, r11 and r12, the last three within fifteen minutes on sunday afternoon et) of dcn 11-26-1336, the **mandatory draft review (mdr) report for ieee p802.11revmf/d3.0**. the mdr is the formal pre-standards-association-ballot editorial audit that the working group runs against the ieee sa standards style manual and the 802.11 editorial style guide (09/1034), following the process in 11/0615. eighteen named reviewers from huawei, intel, qualcomm, cisco, mediatek, samsung, ofinno, cox, ruckus/commscope, interdigital, haila, bims laboratories and infineon each own one or more style-guide clauses; their findings are compiled into this single document together with the tgmf editor's disposition (accepted / revised / rejected) on each one. the kb previously recorded only that an mdr was being planned (`2026-08-19_ieee-mentor-tgm-digest`); this is the report itself, and it is now readable in full. 在 2026 年 8 月 29–30 日的周末，ieee 802.11 技术编辑 edward au（华为）连续提交了 dcn 11-26-1336 的四个修订版（r9、r10、r11、r12，其中后三版集中在周日下午美东时间十五分钟内），即 **ieee p802.11revmf/d3.0 的强制草案审查（mdr）报告**。mdr 是工作组在进入 standards association 投票前，依据 ieee sa 标准体例手册与 802.11 编辑体例指南（09/1034）、按 11/0615 流程执行的正式编辑审计。来自华为、intel、高通、思科、联发科、三星、ofinno、cox、ruckus/commscope、interdigital、haila、bims laboratories 与英飞凌的 18 位署名审查者各自负责一条或多条体例条款；其发现汇编进这一份文档，并逐条附上 tgmf 编辑的处置结论（接受 / 修订 / 拒绝）。此前 kb 仅记录了\"mdr 正在筹划\"（`2026-08-19_ieee-mentor-tgm-digest`）；本条目是报告本身，且现已可完整阅读。 ieee-document wifi"
+    },
+    {
+      "id": "2026-09-01_arxiv-transmissive-ris-vs-phased-array-vehicular-d2s",
+      "date_found": "2026-09-01",
+      "technology": "satellite",
+      "date_published": "2026-08-29",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Transmissive-RIS vs. phased arrays for vehicular direct-to-satellite terminals (SnT Luxembourg / Oulu CWC-RE): design maps show passive RIS wins on power efficiency and aperture scalability, phased arrays keep the edge on gain, tracking speed and multi-beam handover",
+      "title_zh": "透射式 RIS 与相控阵在车载直连卫星终端上的对比（卢森堡 SnT / 奥卢大学 CWC-RE）：设计图谱显示无源 RIS 在功耗效率与孔径可扩展性上占优，相控阵在增益、跟踪速度与多波束切换上仍保持优势",
+      "url": "https://arxiv.org/abs/2608.29424",
+      "topics": [
+        "reconfigurable-intelligent-surface",
+        "transmissive-RIS",
+        "phased-array",
+        "vehicular-terminal",
+        "direct-to-satellite",
+        "D2S",
+        "antenna-architecture",
+        "beam-tracking",
+        "link-budget"
+      ],
+      "topic_primary": "sat-direct-device",
+      "topics_secondary": [
+        "leo-constellations"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-09-01_arxiv-transmissive-ris-vs-phased-array-vehicular-d2s.md",
+      "summary_short_en": "Khan, Abdullah, Vazquez-Peralvo and Lagunas (SnT, University of Luxembourg) with Ullah (CWC-RE, University of Oulu), funded by Luxembourg's FNR VARRAY-5G project, publish a comparative-design article rather than a new experimental result: it sets transmissive reconfigurable intelligent surfaces (RIS) — passive and active variants — against electronically steered phased arrays (analog, hybrid and fully digital) as candidate antenna architectures for **vehicular direct-to-satellite (D2S) terminals**, i.e. a rooftop-mounted aperture that must maintain a link to a moving LEO/MEO/GEO satellite from a moving vehicle.",
+      "summary_short_zh": "Khan、Abdullah、Vazquez-Peralvo 与 Lagunas（卢森堡大学 SnT）联合 Ullah（奥卢大学 CWC-RE），在卢森堡国家研究基金 VARRAY-5G 项目资助下，发表一篇比较性设计文章而非新的实验结果：文章将透射式可重构智能表面（RIS，含无源与有源两种变体）与电子扫描相控阵（模拟、混合、全数字三种）作为**车载直连卫星（D2S）终端**——即安装于车顶、须在车辆移动中保持与移动 LEO/MEO/GEO 卫星链路的孔径——的候选天线架构进行对比。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Khan, Abdullah, Vazquez-Peralvo and Lagunas (SnT, University of Luxembourg) with Ullah (CWC-RE, University of Oulu), funded by Luxembourg's FNR VARRAY-5G project, publish a comparative-design article rather than a new experimental result: it sets transmissive reconfigurable intelligent surfaces (RIS) — passive and active variants — against electronically steered phased arrays (analog, hybrid and fully digital) as candidate antenna architectures for <strong>vehicular direct-to-satellite (D2S) terminals</strong>, i.e. a rooftop-mounted aperture that must maintain a link to a moving LEO/MEO/GEO satellite from a moving vehicle.</p>\n<p>Rather than declaring a winner, the paper builds quantitative &quot;design maps&quot; from published prototypes: phased arrays reach 26-30.5 dBi gain from 64-256 elements with +/-45 to +/-53 degree scanning at watt-to-tens-of-watts power draw; passive RIS reaches 19-22 dBi from 196-256 unit cells on single-digit watts of PIN-diode bias power with wider +/-60-degree steering but no signal amplification; active RIS sits between them — 8.5 dB/element to 12.2 dBi with modest amplification, at higher power and thermal cost than passive RIS but still well below a phased array, and currently limited to small 4x4-4x8 apertures. The conclusion the authors draw is architectural fit rather than superiority: passive RIS is attractive where the terminal power budget is the binding constraint and only a single beam is needed; active RIS partially closes the link-budget gap without a full per-element RF chain; phased arrays remain the choice where high gain, fast electronic steering under vehicle mobility, and multi-beam operation (e.g. simultaneous dual-satellite connectivity for seamless handover) are required.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Scope:</strong> comparative design/tutorial article, not new prototype data — synthesizes published measurements into quantitative design maps rather than proposing a new architecture.</li><li><strong>Architectures compared:</strong> passive transmissive RIS, active transmissive RIS, and phased arrays (analog / hybrid / fully digital variants).</li><li><strong>Phased array prototypes surveyed:</strong> 26-30.5 dBi gain, 64-256 elements, +/-45 to +/-53 degree scan range, 50-303 K noise temperature, power draw from 1.8V/5.7A up to 15V rails (not all cases reported).</li><li><strong>Passive RIS prototypes surveyed:</strong> 19-22 dBi gain, 196-256 unit cells, 4.3-8.7 W (PIN diode bias), +/-60 degree scan range, 16.7-22 dB sidelobe levels.</li><li><strong>Active RIS prototypes surveyed:</strong> 8.5 dB/element to 12.2 dBi, 0.66 W to an estimated tens of watts, +/-10 to +/-30 degree effective scan, small 4x4-4x8 apertures.</li><li><strong>Vehicular constraint context:</strong> commercial rooftop terminal footprints of ~40-60 cm x 30-40 cm, 4-8 cm profile height, bounding what any of the three architectures can physically fit.</li><li><strong>Design-map figures:</strong> ordinal (not absolute) plots of (a) relative received-power improvement vs. power consumption, (b) beam-steering range vs. power consumption, (c) aperture scalability vs. hardware complexity, positioning all three architectures in one comparative space.</li><li><strong>Conclusion framing:</strong> passive RIS for low-power, single-beam, large-aperture coverage shaping; active RIS as an intermediate link-budget bridge; phased arrays for high gain, fast tracking and multi-beam dual-connectivity/handover.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's RIS-and-satellite entries so far have been about RIS <em>inside the network</em> — RIS-assisted LEO ISAC radio orchestration (08-27) — not RIS as the antenna at the user terminal. This is the first entry to frame RIS as a direct competitor to phased arrays at the vehicular D2S terminal itself, and its honest framing (a design map, not a winner) is more useful to the KB's D2D/D2S thread than a single-technology proposal would be: it gives a concrete power/gain/steering-range budget against which any future D2S terminal claim — whether RIS-based or phased-array-based — can be checked. The paper is explicitly not a source of new performance numbers; its value is the tabulated survey of prototype-level tradeoffs and the framing of &quot;operating regime&quot; rather than &quot;which technology wins&quot; as the right question for terminal designers.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Khan、Abdullah、Vazquez-Peralvo 与 Lagunas（卢森堡大学 SnT）联合 Ullah（奥卢大学 CWC-RE），在卢森堡国家研究基金 VARRAY-5G 项目资助下，发表一篇比较性设计文章而非新的实验结果：文章将透射式可重构智能表面（RIS，含无源与有源两种变体）与电子扫描相控阵（模拟、混合、全数字三种）作为<strong>车载直连卫星（D2S）终端</strong>——即安装于车顶、须在车辆移动中保持与移动 LEO/MEO/GEO 卫星链路的孔径——的候选天线架构进行对比。</p>\n<p>论文并未直接给出胜负结论，而是基于已发表原型构建定量&quot;设计图谱&quot;：相控阵以 64-256 阵元实现 26-30.5 dBi 增益，扫描范围 ±45 至 ±53 度，功耗在瓦级到数十瓦级；无源 RIS 以 196-256 个单元实现 19-22 dBi 增益，PIN 二极管偏置功耗仅个位数瓦，扫描范围更宽（±60 度）但无信号放大能力；有源 RIS 介于两者之间——每阵元 8.5 dB 至 12.2 dBi，具备适度放大能力，功耗与散热成本高于无源 RIS 但仍远低于相控阵，且目前受限于 4x4 至 4x8 的小孔径。作者给出的结论是架构适配而非绝对优劣：当终端功耗预算是主要约束且仅需单波束时，无源 RIS 具有吸引力；有源 RIS 可在不引入完整逐阵元射频链路的前提下部分弥补链路预算差距；而在需要高增益、车辆移动下的快速电子扫描以及多波束操作（例如同时连接两颗卫星以实现无缝切换）的场景中，相控阵仍是首选。</p>\n<h3>技术要点</h3>\n<ul><li><strong>范围：</strong> 比较性设计/教程类文章，非新原型实测数据——将已发表测量结果整合为定量设计图谱，而非提出新架构。</li><li><strong>对比架构：</strong> 无源透射式 RIS、有源透射式 RIS，以及相控阵（模拟/混合/全数字三种变体）。</li><li><strong>调研的相控阵原型：</strong> 增益 26-30.5 dBi，64-256 阵元，扫描范围 ±45 至 ±53 度，噪声温度 50-303 K，功耗自 1.8V/5.7A 至 15V 电源轨（部分案例未报告）。</li><li><strong>调研的无源 RIS 原型：</strong> 增益 19-22 dBi，196-256 个单元，PIN 二极管偏置功耗 4.3-8.7 W，扫描范围 ±60 度，旁瓣电平 16.7-22 dB。</li><li><strong>调研的有源 RIS 原型：</strong> 每阵元 8.5 dB 至 12.2 dBi，功耗 0.66 W 至预估数十瓦，有效扫描范围 ±10 至 ±30 度，孔径较小（4x4 至 4x8）。</li><li><strong>车载约束背景：</strong> 商用车顶终端外形约 40-60 cm x 30-40 cm，厚度 4-8 cm，限定了三种架构在物理上的可行空间。</li><li><strong>设计图谱：</strong> 以序数（非绝对数值）方式绘制 (a) 相对接收功率提升与功耗的关系、(b) 波束扫描范围与功耗的关系、(c) 孔径可扩展性与硬件复杂度的关系，将三种架构定位在同一比较空间中。</li><li><strong>结论框架：</strong> 无源 RIS 适合低功耗、单波束、大孔径覆盖整形场景；有源 RIS 作为链路预算的中间过渡方案；相控阵适合需要高增益、车辆移动下快速跟踪、多波束双连接/切换的场景。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库此前的 RIS 与卫星相关条目关注的是<em>网络内部</em>的 RIS——例如 RIS 辅助的 LEO ISAC 无线电编排（08-27）——而非用户终端本身的 RIS 天线。本条目是第一篇将 RIS 直接定位为车载 D2S 终端天线架构、与相控阵正面竞争的条目，其诚实的表述方式（给出设计图谱而非宣布赢家）对知识库的 D2D/D2S 脉络而言比单一技术方案的论文更有价值：它给出了一套具体的功耗/增益/扫描范围预算，未来任何 D2S 终端方案的宣称——无论基于 RIS 还是相控阵——都可据此核对。该论文明确不提供新的实测性能数据；其价值在于对原型级权衡的系统性整理，以及将&quot;适用场景&quot;而非&quot;哪种技术更优&quot;确立为终端设计者应该提出的问题。</p>",
+      "images": [],
+      "search_blob": "transmissive-ris vs. phased arrays for vehicular direct-to-satellite terminals (snt luxembourg / oulu cwc-re): design maps show passive ris wins on power efficiency and aperture scalability, phased arrays keep the edge on gain, tracking speed and multi-beam handover 透射式 ris 与相控阵在车载直连卫星终端上的对比（卢森堡 snt / 奥卢大学 cwc-re）：设计图谱显示无源 ris 在功耗效率与孔径可扩展性上占优，相控阵在增益、跟踪速度与多波束切换上仍保持优势 reconfigurable-intelligent-surface transmissive-ris phased-array vehicular-terminal direct-to-satellite d2s antenna-architecture beam-tracking link-budget khan, abdullah, vazquez-peralvo and lagunas (snt, university of luxembourg) with ullah (cwc-re, university of oulu), funded by luxembourg's fnr varray-5g project, publish a comparative-design article rather than a new experimental result: it sets transmissive reconfigurable intelligent surfaces (ris) — passive and active variants — against electronically steered phased arrays (analog, hybrid and fully digital) as candidate antenna architectures for **vehicular direct-to-satellite (d2s) terminals**, i.e. a rooftop-mounted aperture that must maintain a link to a moving leo/meo/geo satellite from a moving vehicle. khan、abdullah、vazquez-peralvo 与 lagunas（卢森堡大学 snt）联合 ullah（奥卢大学 cwc-re），在卢森堡国家研究基金 varray-5g 项目资助下，发表一篇比较性设计文章而非新的实验结果：文章将透射式可重构智能表面（ris，含无源与有源两种变体）与电子扫描相控阵（模拟、混合、全数字三种）作为**车载直连卫星（d2s）终端**——即安装于车顶、须在车辆移动中保持与移动 leo/meo/geo 卫星链路的孔径——的候选天线架构进行对比。 academic-paper satellite"
+    },
+    {
+      "id": "2026-09-01_arxiv-amadiff-mobile-aigc-task-orchestration",
+      "date_found": "2026-09-01",
+      "technology": "edge-ai",
+      "date_published": "2026-08-29",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "A-MADiff: when edge AIGC nodes run out of GPU memory, not just time",
+      "title_zh": "A-MADiff：当边缘 AIGC 节点耗尽的是 GPU 显存而非时间",
+      "url": "https://arxiv.org/abs/2608.29255",
+      "topics": [
+        "task-orchestration",
+        "multi-agent-reinforcement-learning",
+        "diffusion-policy",
+        "Dec-POMDP",
+        "GPU-memory-constraint",
+        "mobile-AIGC",
+        "peer-offloading"
+      ],
+      "topic_primary": "edge-orchestration",
+      "topics_secondary": [
+        "compute-offloading"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-09-01_arxiv-amadiff-mobile-aigc-task-orchestration.md",
+      "summary_short_en": "Most work on scheduling AI-generated-content (AIGC) tasks across edge nodes treats the failure mode as *latency*: a task takes too long, so route it somewhere faster. This paper's starting observation is that generative-AI inference tasks occupy GPU memory for their *entire* duration, not just compute cycles, and when an edge AIGC Service Provider (ASP) runs out of memory the result is an outright out-of-memory failure — the task doesn't run late, it doesn't run at all. Existing AIGC task-orchestration work has largely ignored this memory-feasibility constraint, optimizing only for latency and load.",
+      "summary_short_zh": "大多数针对边缘节点上 AIGC（AI 生成内容）任务调度的研究，把失效模式当作**时延**问题：任务跑得太慢，就调度到更快的地方。本文的出发点是：生成式 AI 推理任务在**整个执行期间**都占用 GPU 显存，而不仅仅是计算周期；当边缘 AIGC 服务提供节点（ASP）显存耗尽时，结果是彻底的内存不足失败——任务不是跑得晚，而是根本跑不起来。既有的 AIGC 任务编排研究大多忽视了这一显存可行性约束，只针对时延与负载做优化。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Most work on scheduling AI-generated-content (AIGC) tasks across edge nodes treats the failure mode as <em>latency</em>: a task takes too long, so route it somewhere faster. This paper's starting observation is that generative-AI inference tasks occupy GPU memory for their <em>entire</em> duration, not just compute cycles, and when an edge AIGC Service Provider (ASP) runs out of memory the result is an outright out-of-memory failure — the task doesn't run late, it doesn't run at all. Existing AIGC task-orchestration work has largely ignored this memory-feasibility constraint, optimizing only for latency and load.</p>\n<p>The proposed system, A-MADiff, gives each edge node a scheduling agent that decides whether to serve a task locally or hand it to a neighboring node, but the decisions are coupled: one node's peer-offloading choice changes another node's available memory and its own long-term utility, and each agent only observes its local state. The authors formalize this as a cooperative Decentralized Partially Observable Markov Decision Process (Dec-POMDP) and solve it with a multi-agent deep reinforcement learning method that pairs diffusion-based decentralized actors (which generate multi-modal — i.e., multiple qualitatively different — action preferences rather than a single point estimate) with an attention-guided centralized critic that estimates per-agent value under GPU-memory heterogeneity across the swarm, trained centrally but executed with only local observations at inference time. The paper reports that A-MADiff improves cumulative reward over the state-of-the-art baseline in its numerical evaluation, though the abstract does not disclose a specific evaluation setup or numeric margin.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem framing</strong>: mobile AIGC networks host GenAI models on edge-located AIGC Service Providers (ASPs); the binding constraint identified is GPU memory occupied for the full task duration, not just latency — memory exhaustion causes hard OOM failures, which prior orchestration work largely does not model.</li><li><strong>Decision structure</strong>: each edge node has a scheduling agent choosing local execution vs. offload to a neighboring edge node (&quot;peer offloading&quot;); agents act on local observations only, but their resource states and long-term utilities are coupled — formalized as a cooperative Dec-POMDP.</li><li><strong>Algorithm</strong>: A-MADiff = Attention-guided Multi-Agent deep RL with Diffusion policies. Decentralized actors use diffusion models to produce multi-modal preferences over feasible orchestration actions (rather than a single deterministic policy output); a centralized critic uses attention across agents to estimate per-agent value under GPU-memory heterogeneity. Training paradigm: centralized training, decentralized execution (CTDE).</li><li><strong>Claimed result</strong>: &quot;significantly improves the cumulative reward over the state-of-the-art baseline&quot; — no specific baseline name, dataset/testbed, or numeric margin given in the abstract; treat as an unverified headline claim pending the full text.</li><li><strong>Subject categories</strong>: cs.NI (Networking and Internet Architecture) and cs.LG (Machine Learning) cross-list — consistent with this being a networked-systems paper using an ML method, not a pure ML paper.</li><li><strong>Bin-seeding note</strong>: this is the first entry in this knowledge base's edge-orchestration topic bin, which had been empty across three prior scout runs (2026-08-28 through 2026-08-31).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The substantive idea here — memory as the binding resource, not just time — is a genuinely useful reframe for this KB's edge-orchestration bin, and it rhymes with a pattern already visible elsewhere in the domain: <code>2026-08-29_arxiv-goodput-slo-llm-edge-offloading</code> made the same move for offloading (optimize for goodput under an SLO, not raw throughput), and <code>2026-08-31_arxiv-qef-gt-adamw-decentralized-wireless-fl</code> made it for federated learning (optimize for surviving the link budget, not accuracy alone). A-MADiff's version is: optimize for not running out of memory across a swarm of cooperating nodes, which is a real and under-modeled failure mode as generative models get deployed at the edge in numbers.</p>\n<p>That said, this entry is filed on the abstract alone, and the abstract is unusually thin on verifiable content for a paper making a &quot;significantly improves&quot; claim — no baseline names, no dataset, no numeric margin, no mention of how many nodes or what GPU memory sizes were simulated. The mechanism (diffusion-policy actors + attention critic under Dec-POMDP) is a real and reasonably novel combination for this specific coupled-resource problem, which is why it clears novelty 3 rather than being dropped as an incremental MARL variant, but the claim itself should be treated as unverified until the full text or a revision provides numbers. Filed now primarily to seed the edge-orchestration bin with a genuinely on-topic finding rather than to certify the result.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>大多数针对边缘节点上 AIGC（AI 生成内容）任务调度的研究，把失效模式当作<strong>时延</strong>问题：任务跑得太慢，就调度到更快的地方。本文的出发点是：生成式 AI 推理任务在<strong>整个执行期间</strong>都占用 GPU 显存，而不仅仅是计算周期；当边缘 AIGC 服务提供节点（ASP）显存耗尽时，结果是彻底的内存不足失败——任务不是跑得晚，而是根本跑不起来。既有的 AIGC 任务编排研究大多忽视了这一显存可行性约束，只针对时延与负载做优化。</p>\n<p>所提系统 A-MADiff 为每个边缘节点配备一个调度智能体，决定任务在本地服务还是转交给邻近节点，但这些决策彼此耦合：一个节点的对等卸载选择会改变另一个节点的可用显存及其自身的长期效用，而每个智能体只能观测局部状态。作者将其形式化为一个协作式去中心化部分可观测马尔可夫决策过程（Dec-POMDP），并用一种多智能体深度强化学习方法求解：该方法把基于扩散模型的去中心化执行体（生成多模态——即多个性质不同的——动作偏好，而非单一点估计）与一个注意力引导的集中式评论家配对，后者在整个集群 GPU 显存异构的条件下估计各智能体价值，采用集中训练、去中心化执行的范式。论文报告 A-MADiff 在数值评测中相较当前最优基线提升了累计奖励，但摘要未披露具体评测设置或数值幅度。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题界定</strong>：移动 AIGC 网络在边缘部署的 AIGC 服务节点（ASP）上托管生成式 AI 模型；本文识别出的约束是 GPU 显存在整个任务期间被占用，而不仅是时延问题——显存耗尽会导致硬性 OOM 失败，而既有编排研究大多未对此建模。</li><li><strong>决策结构</strong>：每个边缘节点配备一个调度智能体，选择本地执行还是卸载给邻近边缘节点（&quot;对等卸载&quot;）；各智能体仅依据局部观测行动，但其资源状态与长期效用彼此耦合——形式化为协作式 Dec-POMDP。</li><li><strong>算法</strong>：A-MADiff = 注意力引导的多智能体深度强化学习 + 扩散策略。去中心化执行体用扩散模型生成对可行编排动作的多模态偏好（而非单一确定性策略输出）；集中式评论家利用跨智能体注意力，在整个集群 GPU 显存异构条件下估计各智能体价值。训练范式为集中训练、去中心化执行（CTDE）。</li><li><strong>声称结果</strong>：&quot;相较当前最优基线显著提升累计奖励&quot;——摘要中未给出具体基线名称、数据集/测试床或数值幅度；在读到全文前应视为未经核实的头条式声明。</li><li><strong>学科分类</strong>：cs.NI（网络与互联网架构）与 cs.LG（机器学习）交叉列出——与本文是&quot;用机器学习方法解决网络系统问题&quot;而非纯机器学习论文的定位一致。</li><li><strong>填补空白</strong>：这是本知识库 edge-orchestration（边缘编排）主题分类下的第一条条目，此前三次 scout 运行（2026-08-28 至 2026-08-31）该分类一直为空。</li></ul>\n<h3>意义与新意</h3>\n<p>这里的实质性想法——显存而非仅仅时间才是约束性资源——对本知识库的 edge-orchestration 分类而言是一次颇具价值的重新框定，也与该领域已可见的一种模式相呼应：<code>2026-08-29_arxiv-goodput-slo-llm-edge-offloading</code> 在卸载问题上做了同样的转向（在 SLO 约束下优化 goodput，而非原始吞吐量），<code>2026-08-31_arxiv-qef-gt-adamw-decentralized-wireless-fl</code> 在联邦学习上也做了同样的转向（优化&quot;能在链路预算下存活&quot;，而非单纯精度）。A-MADiff 的版本是：在一群协作节点上优化&quot;不耗尽显存&quot;，随着生成式模型在边缘规模化部署，这是一个真实存在却建模不足的失效模式。</p>\n<p>不过需要说明的是，本条目仅依据摘要收录，而对于一篇声称&quot;显著提升&quot;的论文而言，摘要在可验证内容上异常单薄——没有基线名称、没有数据集、没有数值幅度，也未说明仿真了多少节点或多大的 GPU 显存规模。其机制（扩散策略执行体 + 注意力评论家，置于 Dec-POMDP 框架下）对这一具体的耦合资源问题而言是真实且相当新颖的组合，这也是它达到新颖度 3 而非被当作增量式 MARL 变体丢弃的原因，但声称本身在读到全文或修订版给出数字之前应视为未经核实。本次收录主要是为了给 edge-orchestration 分类补上一条真正切题的发现，而非为其结论背书。</p>",
+      "images": [],
+      "search_blob": "a-madiff: when edge aigc nodes run out of gpu memory, not just time a-madiff：当边缘 aigc 节点耗尽的是 gpu 显存而非时间 task-orchestration multi-agent-reinforcement-learning diffusion-policy dec-pomdp gpu-memory-constraint mobile-aigc peer-offloading most work on scheduling ai-generated-content (aigc) tasks across edge nodes treats the failure mode as *latency*: a task takes too long, so route it somewhere faster. this paper's starting observation is that generative-ai inference tasks occupy gpu memory for their *entire* duration, not just compute cycles, and when an edge aigc service provider (asp) runs out of memory the result is an outright out-of-memory failure — the task doesn't run late, it doesn't run at all. existing aigc task-orchestration work has largely ignored this memory-feasibility constraint, optimizing only for latency and load. 大多数针对边缘节点上 aigc（ai 生成内容）任务调度的研究，把失效模式当作**时延**问题：任务跑得太慢，就调度到更快的地方。本文的出发点是：生成式 ai 推理任务在**整个执行期间**都占用 gpu 显存，而不仅仅是计算周期；当边缘 aigc 服务提供节点（asp）显存耗尽时，结果是彻底的内存不足失败——任务不是跑得晚，而是根本跑不起来。既有的 aigc 任务编排研究大多忽视了这一显存可行性约束，只针对时延与负载做优化。 academic-paper edge-ai"
+    },
+    {
+      "id": "2026-09-01_arxiv-xtruce-provably-safe-oran-arbiter",
+      "date_found": "2026-09-01",
+      "technology": "cellular",
+      "date_published": "2026-08-28",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "xTRUCE: A Provably Safe Arbiter for Multi-xApp Conflict Mitigation in Agentic O-RAN",
+      "title_zh": "xTRUCE：面向智能体化 O-RAN 多 xApp 冲突缓解的可证明安全仲裁器",
+      "url": "https://arxiv.org/abs/2608.28532",
+      "topics": [
+        "O-RAN",
+        "xApp",
+        "rApp",
+        "Near-RT-RIC",
+        "LLM-agent",
+        "conflict-mitigation",
+        "E2-interface",
+        "OpenAirInterface",
+        "FlexRIC",
+        "safety-certificate"
+      ],
+      "topic_primary": "open-ran",
+      "topics_secondary": [
+        "cellular-ai",
+        "cellular-security"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-09-01_arxiv-xtruce-provably-safe-oran-arbiter.md",
+      "summary_short_en": "Le Xia, Rose Qingyang Hu, Paul S. Kudyba, Zhenlin An and Haijian Sun (arXiv v1, 28 Aug 2026) tackle a problem the KB's AI-RAN safety thread has been circling for months: as O-RAN moves toward agentic operation, LLM-driven xApps/rApps generate control proposals under operator intent, but those proposals can be conflicting, infeasible, or outright hallucinated, and no prior system jointly guaranteed proposal-independent safety, priority-aware reconciliation and traceable feedback. xTRUCE is a provably safe arbiter that sits inside the Near-RT RIC. It defines a structured xApp proposal interface plus a three-layer constraint hierarchy — physical limits and operator-defined rules sit above relaxable performance targets — over a dual-timescale control action space. A two-stage arbitration mechanism then minimizes target shortfalls in strict operator-priority order to finalize safe E2 actions within the Near-RT latency budget, while issuing conflict certificates back to the xApps (and the operator) so proposals can be renegotiated rather than silently dropped or blindly executed.",
+      "summary_short_zh": "Le Xia、Rose Qingyang Hu、Paul S. Kudyba、Zhenlin An 与 Haijian Sun（arXiv v1，2026 年 8 月 28 日）处理的是知识库 AI-RAN 安全主线近几个月一直在逼近的问题：随着 O-RAN 走向智能体化运行，LLM 驱动的 xApp/rApp 会在运营商意图下生成控制提案，但这些提案可能相互冲突、不可行，甚至纯属\"幻觉\"，此前没有系统能同时保证与提案无关的安全性、按优先级的仲裁调和，以及可追溯的反馈。xTRUCE 是部署在近实时 RIC 内部的可证明安全仲裁器。它定义了结构化的 xApp 提案接口，以及一个三层约束层级——物理极限与运营商规则位于可放宽性能目标之上——覆盖在一个双时间尺度的控制动作空间之上。随后由两阶段仲裁机制按严格的运营商优先级顺序最小化目标缺口，在近实时时延预算内敲定安全的 E2 动作，同时向 xApp（及运营商）返回冲突证书，使提案可被重新协商，而非被静默丢弃或盲目执行。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Le Xia, Rose Qingyang Hu, Paul S. Kudyba, Zhenlin An and Haijian Sun (arXiv v1, 28 Aug 2026) tackle a problem the KB's AI-RAN safety thread has been circling for months: as O-RAN moves toward agentic operation, LLM-driven xApps/rApps generate control proposals under operator intent, but those proposals can be conflicting, infeasible, or outright hallucinated, and no prior system jointly guaranteed proposal-independent safety, priority-aware reconciliation and traceable feedback. xTRUCE is a provably safe arbiter that sits inside the Near-RT RIC. It defines a structured xApp proposal interface plus a three-layer constraint hierarchy — physical limits and operator-defined rules sit above relaxable performance targets — over a dual-timescale control action space. A two-stage arbitration mechanism then minimizes target shortfalls in strict operator-priority order to finalize safe E2 actions within the Near-RT latency budget, while issuing conflict certificates back to the xApps (and the operator) so proposals can be renegotiated rather than silently dropped or blindly executed.</p>\n<p>The authors implement xTRUCE in a multi-cell O-RAN use case and evaluate a multi-process prototype two ways: simulations driven by live API-backed LLM xApps, and over-the-air experiments on an OpenAirInterface/FlexRIC-based O-RAN stack. Reported results: 100% protected services despite severe proposal hallucinations, priority-consistent performance satisfaction under overload, efficient LLM-intent renegotiation guided by the conflict certificates, and a control loop that stays inside the Near-RT delay budget throughout.</p>\n<h3>Key technical points</h3>\n<ul><li>Problem: agentic O-RAN's LLM-driven xApps/rApps can emit conflicting, infeasible or hallucinated control proposals; no prior system jointly gave proposal-independent safety + priority-aware reconciliation + traceable feedback.</li><li>Architecture: structured xApp proposal interface; three-layer constraint hierarchy (physical limits and operator rules &gt; relaxable performance targets); dual-timescale control action space.</li><li>Mechanism: two-stage arbitration minimizes target shortfalls in strict operator-priority order, finalizes safe E2 actions inside the Near-RT latency budget, and returns conflict certificates for renegotiation.</li><li>Evaluation: multi-cell O-RAN use case; multi-process prototype tested via (1) simulation with live API-backed LLM xApps and (2) over-the-air experiments on OpenAirInterface/FlexRIC.</li><li>Headline results: 100% protected services under severe proposal hallucinations; priority-consistent performance satisfaction under overload; delay-safe E2 control loop throughout.</li><li>Positioning: extends the KB's AI-RAN safety lineage — conflict taxonomy -&gt; forensic triage (C-RE-ACT) -&gt; programmable MAC (MAC-Gyver) -&gt; pre-actuation certification (VeraRAN) -&gt; verifiable agentic intent (Z2-ACT) -&gt; now a formally-grounded, tested arbitration layer.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB has tracked the AI-RAN safety stack building layer by layer since early August: xApp-conflict taxonomy, forensic root-cause triage (C-RE-ACT), programmable MAC scheduling (MAC-Gyver), pre-actuation plan certification (VeraRAN, 28.8% of locally-valid plans found asynchronously unsafe), and cryptographically-audited agentic intent control (Z2-ACT). xTRUCE is the natural next layer: instead of certifying one plan in isolation or auditing after the fact, it arbitrates <em>between</em> simultaneously-competing xApp proposals with a provable safety hierarchy, and it is the first entry in this thread to combine a formal three-layer constraint guarantee with both closed-loop simulation against live LLM agents <em>and</em> over-the-air validation on real O-RAN software stacks. The &quot;100% protected services despite severe hallucinations&quot; number gives operators a concrete stability claim to test against as agentic RIC deployments move from research testbeds toward field trials.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Le Xia、Rose Qingyang Hu、Paul S. Kudyba、Zhenlin An 与 Haijian Sun（arXiv v1，2026 年 8 月 28 日）处理的是知识库 AI-RAN 安全主线近几个月一直在逼近的问题：随着 O-RAN 走向智能体化运行，LLM 驱动的 xApp/rApp 会在运营商意图下生成控制提案，但这些提案可能相互冲突、不可行，甚至纯属&quot;幻觉&quot;，此前没有系统能同时保证与提案无关的安全性、按优先级的仲裁调和，以及可追溯的反馈。xTRUCE 是部署在近实时 RIC 内部的可证明安全仲裁器。它定义了结构化的 xApp 提案接口，以及一个三层约束层级——物理极限与运营商规则位于可放宽性能目标之上——覆盖在一个双时间尺度的控制动作空间之上。随后由两阶段仲裁机制按严格的运营商优先级顺序最小化目标缺口，在近实时时延预算内敲定安全的 E2 动作，同时向 xApp（及运营商）返回冲突证书，使提案可被重新协商，而非被静默丢弃或盲目执行。</p>\n<p>作者在一个多小区 O-RAN 用例中实现了 xTRUCE，并以两种方式评估其多进程原型：由实时 API 驱动的 LLM xApp 组成的仿真，以及基于 OpenAirInterface/FlexRIC 的 O-RAN 协议栈上的空口实验。报告结果：即便出现严重的提案幻觉，仍能实现 100% 的服务保护；过载下保持与优先级一致的性能满足度；借助冲突证书高效引导 LLM 意图的重新协商；控制回路全程保持在近实时时延预算内。</p>\n<h3>技术要点</h3>\n<ul><li>问题：智能体化 O-RAN 中 LLM 驱动的 xApp/rApp 可能产生相互冲突、不可行甚至&quot;幻觉&quot;的控制提案；此前没有系统同时保证与提案无关的安全性、按优先级仲裁调和与可追溯反馈。</li><li>架构：结构化 xApp 提案接口；三层约束层级（物理极限与运营商规则 &gt; 可放宽的性能目标）；双时间尺度控制动作空间。</li><li>机制：两阶段仲裁按严格运营商优先级顺序最小化目标缺口，在近实时时延预算内敲定安全 E2 动作，并返回冲突证书供重新协商。</li><li>评估：多小区 O-RAN 用例；多进程原型通过（1）实时 API 驱动 LLM xApp 的仿真和（2）基于 OpenAirInterface/FlexRIC 的空口实验两种方式测试。</li><li>核心结果：即便出现严重提案幻觉仍实现 100% 服务保护；过载下保持与优先级一致的性能满足度；控制回路全程保持在时延预算内。</li><li>定位：延续知识库 AI-RAN 安全谱系——冲突分类 -&gt; 事后取证（C-RE-ACT）-&gt; 可编程 MAC（MAC-Gyver）-&gt; 执行前认证（VeraRAN）-&gt; 可验证智能体意图（Z2-ACT）-&gt; 如今是一个有形式化保证并经实测的仲裁层。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库自八月初起持续跟踪 AI-RAN 安全技术栈的逐层构建：xApp 冲突分类、事后根因取证（C-RE-ACT）、可编程 MAC 调度（MAC-Gyver）、执行前方案认证（VeraRAN，发现本地有效方案中 28.8% 异步不安全）、以及经密码学审计的智能体意图控制（Z2-ACT）。xTRUCE 是这条主线自然的下一层：它不是孤立地认证单个方案或事后审计，而是在同时竞争的多个 xApp 提案之间进行仲裁，且具备可证明的安全层级；它也是该主线中首个同时具备形式化三层约束保证、面向实时 LLM 智能体的闭环仿真、以及在真实 O-RAN 软件栈上的空口验证的条目。&quot;即便出现严重幻觉仍 100% 服务保护&quot;这一数字，为运营商在智能体化 RIC 部署从研究测试床走向现场试验的过程中，提供了一个可供检验的具体稳定性主张。</p>",
+      "images": [],
+      "search_blob": "xtruce: a provably safe arbiter for multi-xapp conflict mitigation in agentic o-ran xtruce：面向智能体化 o-ran 多 xapp 冲突缓解的可证明安全仲裁器 o-ran xapp rapp near-rt-ric llm-agent conflict-mitigation e2-interface openairinterface flexric safety-certificate le xia, rose qingyang hu, paul s. kudyba, zhenlin an and haijian sun (arxiv v1, 28 aug 2026) tackle a problem the kb's ai-ran safety thread has been circling for months: as o-ran moves toward agentic operation, llm-driven xapps/rapps generate control proposals under operator intent, but those proposals can be conflicting, infeasible, or outright hallucinated, and no prior system jointly guaranteed proposal-independent safety, priority-aware reconciliation and traceable feedback. xtruce is a provably safe arbiter that sits inside the near-rt ric. it defines a structured xapp proposal interface plus a three-layer constraint hierarchy — physical limits and operator-defined rules sit above relaxable performance targets — over a dual-timescale control action space. a two-stage arbitration mechanism then minimizes target shortfalls in strict operator-priority order to finalize safe e2 actions within the near-rt latency budget, while issuing conflict certificates back to the xapps (and the operator) so proposals can be renegotiated rather than silently dropped or blindly executed. le xia、rose qingyang hu、paul s. kudyba、zhenlin an 与 haijian sun（arxiv v1，2026 年 8 月 28 日）处理的是知识库 ai-ran 安全主线近几个月一直在逼近的问题：随着 o-ran 走向智能体化运行，llm 驱动的 xapp/rapp 会在运营商意图下生成控制提案，但这些提案可能相互冲突、不可行，甚至纯属\"幻觉\"，此前没有系统能同时保证与提案无关的安全性、按优先级的仲裁调和，以及可追溯的反馈。xtruce 是部署在近实时 ric 内部的可证明安全仲裁器。它定义了结构化的 xapp 提案接口，以及一个三层约束层级——物理极限与运营商规则位于可放宽性能目标之上——覆盖在一个双时间尺度的控制动作空间之上。随后由两阶段仲裁机制按严格的运营商优先级顺序最小化目标缺口，在近实时时延预算内敲定安全的 e2 动作，同时向 xapp（及运营商）返回冲突证书，使提案可被重新协商，而非被静默丢弃或盲目执行。 academic-paper cellular"
+    },
+    {
+      "id": "2026-09-01_arxiv-quantum-security-oran-6g",
+      "date_found": "2026-09-01",
+      "technology": "cellular",
+      "date_published": "2026-08-28",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Quantum-Based Solutions for Security Enhancement in Open Radio Access Networks",
+      "title_zh": "开放无线接入网中基于量子技术的安全增强方案",
+      "url": "https://arxiv.org/abs/2608.28480",
+      "topics": [
+        "O-RAN",
+        "quantum-security",
+        "post-quantum-cryptography",
+        "quantum-authentication",
+        "zero-trust",
+        "Near-RT-RIC",
+        "O-Cloud",
+        "6G"
+      ],
+      "topic_primary": "cellular-security",
+      "topics_secondary": [
+        "open-ran"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-09-01_arxiv-quantum-security-oran-6g.md",
+      "summary_short_en": "Dzung Quoc Ngo, Tharmikka Raveendranathan, Tuan Anh Le, Vinod Sharma, Purav Shah and Huan X. Nguyen (arXiv v1, 28 Aug 2026) publish a perspective article on quantum security for O-RAN. Their starting premise is that O-RAN's disaggregated, software-defined architecture — the same openness that gives it flexibility and interoperability — also expands the attack surface, and that classical cryptography, while adequate against today's threats, cannot be assumed sufficient once quantum-capable adversaries are in scope. The article surveys post-quantum cryptography (PQC), quantum cryptography, quantum authentication and quantum-enhanced threat detection, framed inside a zero-trust architecture built on continuous verification, least privilege and micro-segmentation. It analyzes how each of these mechanisms would integrate with the Near-Real-Time RIC, O-Cloud and O-RAN's open interfaces, discusses practical deployment considerations and technology-maturity timelines, and closes with open research directions toward \"secure, resilient, and future-proof O-RAN architectures for 6G networks.\"",
+      "summary_short_zh": "Dzung Quoc Ngo、Tharmikka Raveendranathan、Tuan Anh Le、Vinod Sharma、Purav Shah 与 Huan X. Nguyen（arXiv v1，2026 年 8 月 28 日）发表了一篇关于 O-RAN 量子安全的综述性观点文章。其出发点是：O-RAN 解耦、软件定义的架构——正是这种开放性带来了灵活性与互操作性——同时也扩大了攻击面；经典密码学虽足以应对当前威胁，但一旦考虑具备量子能力的对手，就不能再假设其充分。文章综述了后量子密码学（PQC）、量子密码学、量子认证与量子增强威胁检测，并将其置于建立在持续验证、最小权限与微分段之上的零信任架构框架内。文章分析了上述各机制如何与近实时 RIC、O-Cloud 及 O-RAN 开放接口集成，讨论了实际部署考量与技术成熟度时间表，最后指出了迈向\"面向 6G 网络的安全、韧性、面向未来的 O-RAN 架构\"的开放研究方向。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Dzung Quoc Ngo, Tharmikka Raveendranathan, Tuan Anh Le, Vinod Sharma, Purav Shah and Huan X. Nguyen (arXiv v1, 28 Aug 2026) publish a perspective article on quantum security for O-RAN. Their starting premise is that O-RAN's disaggregated, software-defined architecture — the same openness that gives it flexibility and interoperability — also expands the attack surface, and that classical cryptography, while adequate against today's threats, cannot be assumed sufficient once quantum-capable adversaries are in scope. The article surveys post-quantum cryptography (PQC), quantum cryptography, quantum authentication and quantum-enhanced threat detection, framed inside a zero-trust architecture built on continuous verification, least privilege and micro-segmentation. It analyzes how each of these mechanisms would integrate with the Near-Real-Time RIC, O-Cloud and O-RAN's open interfaces, discusses practical deployment considerations and technology-maturity timelines, and closes with open research directions toward &quot;secure, resilient, and future-proof O-RAN architectures for 6G networks.&quot;</p>\n<p>The piece is a position/perspective article: no testbed, simulation, or quantitative evaluation is described in the abstract.</p>\n<h3>Key technical points</h3>\n<ul><li>Premise: O-RAN's disaggregation/openness expands the attack surface; classical crypto is not assumed sufficient once quantum-capable adversaries are considered.</li><li>Surveyed mechanisms: post-quantum cryptography, quantum cryptography, quantum authentication, quantum-enhanced threat detection.</li><li>Framing: all mechanisms placed inside a zero-trust architecture (continuous verification, least privilege, micro-segmentation).</li><li>Integration points analyzed: Near-RT RIC, O-Cloud, O-RAN open interfaces.</li><li>Scope: deployment considerations, technology-maturity timelines, and open research directions for 6G-era O-RAN; no eval/testbed in the abstract — perspective/survey article.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's cellular-security bin already has substantial O-RAN coverage — conflict taxonomies, forensic triage, pre-actuation certification, cryptographically-audited agentic intent control (Z2-ACT, using classical Pedersen/Groth16 zero-knowledge proofs) — but nothing that names quantum-capable adversaries or post-quantum cryptography explicitly as the threat model. This is the first entry to open that cell: it does not evaluate a mechanism, but it is a useful forward-looking map of where PQC/quantum-authentication would need to slot into the O-RAN control-plane architecture (Near-RT RIC, O-Cloud, open interfaces) if and when &quot;harvest now, decrypt later&quot; quantum threats become a planning concern for 6G-era RAN security roadmaps. Treat it as a survey-grade orientation piece rather than a validated result.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Dzung Quoc Ngo、Tharmikka Raveendranathan、Tuan Anh Le、Vinod Sharma、Purav Shah 与 Huan X. Nguyen（arXiv v1，2026 年 8 月 28 日）发表了一篇关于 O-RAN 量子安全的综述性观点文章。其出发点是：O-RAN 解耦、软件定义的架构——正是这种开放性带来了灵活性与互操作性——同时也扩大了攻击面；经典密码学虽足以应对当前威胁，但一旦考虑具备量子能力的对手，就不能再假设其充分。文章综述了后量子密码学（PQC）、量子密码学、量子认证与量子增强威胁检测，并将其置于建立在持续验证、最小权限与微分段之上的零信任架构框架内。文章分析了上述各机制如何与近实时 RIC、O-Cloud 及 O-RAN 开放接口集成，讨论了实际部署考量与技术成熟度时间表，最后指出了迈向&quot;面向 6G 网络的安全、韧性、面向未来的 O-RAN 架构&quot;的开放研究方向。</p>\n<p>该文为立场/观点类文章：摘要中未描述测试床、仿真或定量评估。</p>\n<h3>技术要点</h3>\n<ul><li>前提：O-RAN 的解耦与开放性扩大了攻击面；一旦纳入具备量子能力的对手，经典密码学不再被视为充分。</li><li>综述机制：后量子密码学、量子密码学、量子认证、量子增强威胁检测。</li><li>框架：所有机制置于零信任架构内（持续验证、最小权限、微分段）。</li><li>分析的集成点：近实时 RIC、O-Cloud、O-RAN 开放接口。</li><li>范围：部署考量、技术成熟度时间表，以及面向 6G 时代 O-RAN 的开放研究方向；摘要中未给出评估/测试床——属立场/综述类文章。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库 cellular-security 栏目已对 O-RAN 有较充分的覆盖——冲突分类、事后取证、执行前认证、经密码学审计的智能体意图控制（Z2-ACT，使用经典的 Pedersen/Groth16 零知识证明）——但此前没有条目将具备量子能力的对手或后量子密码学明确列为威胁模型。本条目是首个打开这一空白格的条目：它并未评估某个具体机制，但为后量子密码学/量子认证未来应嵌入 O-RAN 控制面架构（近实时 RIC、O-Cloud、开放接口）的何处，提供了一幅有用的前瞻性地图——这与&quot;现在截获、日后解密&quot;类量子威胁一旦成为 6G 时代 RAN 安全路线图的规划议题相关。应将其视为综述级的定向文章，而非已验证的成果。</p>",
+      "images": [],
+      "search_blob": "quantum-based solutions for security enhancement in open radio access networks 开放无线接入网中基于量子技术的安全增强方案 o-ran quantum-security post-quantum-cryptography quantum-authentication zero-trust near-rt-ric o-cloud 6g dzung quoc ngo, tharmikka raveendranathan, tuan anh le, vinod sharma, purav shah and huan x. nguyen (arxiv v1, 28 aug 2026) publish a perspective article on quantum security for o-ran. their starting premise is that o-ran's disaggregated, software-defined architecture — the same openness that gives it flexibility and interoperability — also expands the attack surface, and that classical cryptography, while adequate against today's threats, cannot be assumed sufficient once quantum-capable adversaries are in scope. the article surveys post-quantum cryptography (pqc), quantum cryptography, quantum authentication and quantum-enhanced threat detection, framed inside a zero-trust architecture built on continuous verification, least privilege and micro-segmentation. it analyzes how each of these mechanisms would integrate with the near-real-time ric, o-cloud and o-ran's open interfaces, discusses practical deployment considerations and technology-maturity timelines, and closes with open research directions toward \"secure, resilient, and future-proof o-ran architectures for 6g networks.\" dzung quoc ngo、tharmikka raveendranathan、tuan anh le、vinod sharma、purav shah 与 huan x. nguyen（arxiv v1，2026 年 8 月 28 日）发表了一篇关于 o-ran 量子安全的综述性观点文章。其出发点是：o-ran 解耦、软件定义的架构——正是这种开放性带来了灵活性与互操作性——同时也扩大了攻击面；经典密码学虽足以应对当前威胁，但一旦考虑具备量子能力的对手，就不能再假设其充分。文章综述了后量子密码学（pqc）、量子密码学、量子认证与量子增强威胁检测，并将其置于建立在持续验证、最小权限与微分段之上的零信任架构框架内。文章分析了上述各机制如何与近实时 ric、o-cloud 及 o-ran 开放接口集成，讨论了实际部署考量与技术成熟度时间表，最后指出了迈向\"面向 6g 网络的安全、韧性、面向未来的 o-ran 架构\"的开放研究方向。 academic-paper cellular"
+    },
+    {
+      "id": "2026-09-01_arxiv-false-csi-noma-attack-taxonomy-6g",
+      "date_found": "2026-09-01",
+      "technology": "cellular",
+      "date_published": "2026-08-28",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "False-CSI Attacks in Power-Domain NOMA for 6G: A Threat Taxonomy and System-Level Impacts",
+      "title_zh": "面向 6G 功率域 NOMA 的虚假信道状态信息攻击：威胁分类与系统级影响",
+      "url": "https://arxiv.org/abs/2608.28351",
+      "topics": [
+        "NOMA",
+        "power-domain",
+        "CSI",
+        "channel-state-information",
+        "SIC",
+        "RIS",
+        "pilot-spoofing",
+        "threat-taxonomy",
+        "6G",
+        "security"
+      ],
+      "topic_primary": "cellular-security",
+      "topics_secondary": [
+        "6g-vision"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-09-01_arxiv-false-csi-noma-attack-taxonomy-6g.md",
+      "summary_short_en": "Samira Jafarli, Aysha Ebrahim and Suleyman Uludag (arXiv v1, 28 Aug 2026) treat false channel-state information (CSI) as a first-class attack surface against power-domain Non-Orthogonal Multiple Access (NOMA), a technique widely studied for spectral efficiency and dense connectivity in beyond-5G/6G. NOMA's power allocation, user ordering, pairing, clustering and beamforming all depend on CSI integrity — and all can be distorted when the CSI the base station consumes is deliberately biased rather than merely noisy. The paper's contribution is a taxonomy of that distortion space along two primary axes: magnitude (underreporting vs. overreporting) and ordering effect (order-preserving, boundary, and order-reversing attacks). It then extends the basic taxonomy with concrete attack families — coordinated false-CSI behavior across colluding users, group-changing attacks, direction forgery, pilot spoofing, training-phase injection, and RIS-induced channel manipulation — and maps each family to its system-level consequences: power allocation, SIC (successive interference cancellation) reliability, scheduler behavior, fairness, throughput and secrecy. The central argument is that false CSI in 6G NOMA should be treated not just as a channel-estimation error problem but as a control-input integrity problem.",
+      "summary_short_zh": "Samira Jafarli、Aysha Ebrahim 与 Suleyman Uludag（arXiv v1，2026 年 8 月 28 日）将虚假信道状态信息（CSI）视为针对功率域非正交多址接入（NOMA）——一种在超 5G/6G 中被广泛研究以提升频谱效率与支持密集连接的技术——的一等攻击面。NOMA 的功率分配、用户排序、配对、聚类与波束成形均依赖 CSI 的完整性，而当基站所使用的 CSI 被蓄意偏置而非仅仅带噪时，上述各环节均可能被扭曲。本文的贡献是沿两个主轴对该扭曲空间进行分类：幅度轴（低报 vs 高报）与排序效应轴（保序、边界、逆序三类攻击）。随后将基础分类拓展为具体攻击族——串谋用户间协同的虚假 CSI 行为、分组变更攻击、方向伪造、导频欺骗、训练阶段注入，以及 RIS 诱发的信道操纵——并将每一攻击族映射到其系统级后果：功率分配、SIC（串行干扰消除）可靠性、调度器行为、公平性、吞吐量与保密性。核心论点是：6G NOMA 中的虚假 CSI 不应仅被视为信道估计误差问题，而应被视为一个控制输入完整性问题。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Samira Jafarli, Aysha Ebrahim and Suleyman Uludag (arXiv v1, 28 Aug 2026) treat false channel-state information (CSI) as a first-class attack surface against power-domain Non-Orthogonal Multiple Access (NOMA), a technique widely studied for spectral efficiency and dense connectivity in beyond-5G/6G. NOMA's power allocation, user ordering, pairing, clustering and beamforming all depend on CSI integrity — and all can be distorted when the CSI the base station consumes is deliberately biased rather than merely noisy. The paper's contribution is a taxonomy of that distortion space along two primary axes: magnitude (underreporting vs. overreporting) and ordering effect (order-preserving, boundary, and order-reversing attacks). It then extends the basic taxonomy with concrete attack families — coordinated false-CSI behavior across colluding users, group-changing attacks, direction forgery, pilot spoofing, training-phase injection, and RIS-induced channel manipulation — and maps each family to its system-level consequences: power allocation, SIC (successive interference cancellation) reliability, scheduler behavior, fairness, throughput and secrecy. The central argument is that false CSI in 6G NOMA should be treated not just as a channel-estimation error problem but as a control-input integrity problem.</p>\n<p>The paper is a taxonomy/threat-modeling article; no simulation, testbed or quantitative attack-impact numbers are given in the abstract.</p>\n<h3>Key technical points</h3>\n<ul><li>Premise: power-domain NOMA's power allocation/ordering/pairing/clustering/beamforming all depend on CSI integrity; deliberately biased (not just noisy) CSI distorts all of them.</li><li>Taxonomy axis 1 (magnitude): CSI underreporting vs. overreporting.</li><li>Taxonomy axis 2 (ordering effect): order-preserving, boundary, and order-reversing attacks.</li><li>Extended attack families: coordinated multi-user false-CSI, group-changing attacks, direction forgery, pilot spoofing, training-phase injection, RIS-induced channel manipulation.</li><li>Impact mapping: each attack family tied to consequences in power allocation, SIC reliability, scheduling, fairness, throughput, and secrecy.</li><li>Framing: false CSI as a control-input integrity problem, not merely a channel-estimation error, for 6G NOMA specifically.</li><li>No eval: taxonomy/threat-modeling article, no simulation or testbed numbers in the abstract.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's NOMA coverage to date has been capability-focused (e.g. the 2026-08-19 aggressive-NOMA DFT-s-OFDM device-to-satellite uplink entry), and its cellular-security bin has covered RIS as an attack surface economically (the 2026-08-26 RIS-auction adversary) but not as a CSI-manipulation vector inside NOMA specifically. This is the first entry to build a structured threat taxonomy purpose-built for power-domain NOMA's CSI dependency, and it is a useful companion to FlyBlind (2026-09-01, this run): both papers argue that a control mechanism relying on trusted-but-unverified inputs (CSI for NOMA; slice soft-isolation for UAV C2) is exploitable by an actor who never has to break the radio link itself, only bias what the network believes about it. As NOMA moves from a 5G-Advanced feature toward a candidate 6G building block, this taxonomy gives implementers a checklist of attack families to test against before deployment, even without accompanying quantitative results.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Samira Jafarli、Aysha Ebrahim 与 Suleyman Uludag（arXiv v1，2026 年 8 月 28 日）将虚假信道状态信息（CSI）视为针对功率域非正交多址接入（NOMA）——一种在超 5G/6G 中被广泛研究以提升频谱效率与支持密集连接的技术——的一等攻击面。NOMA 的功率分配、用户排序、配对、聚类与波束成形均依赖 CSI 的完整性，而当基站所使用的 CSI 被蓄意偏置而非仅仅带噪时，上述各环节均可能被扭曲。本文的贡献是沿两个主轴对该扭曲空间进行分类：幅度轴（低报 vs 高报）与排序效应轴（保序、边界、逆序三类攻击）。随后将基础分类拓展为具体攻击族——串谋用户间协同的虚假 CSI 行为、分组变更攻击、方向伪造、导频欺骗、训练阶段注入，以及 RIS 诱发的信道操纵——并将每一攻击族映射到其系统级后果：功率分配、SIC（串行干扰消除）可靠性、调度器行为、公平性、吞吐量与保密性。核心论点是：6G NOMA 中的虚假 CSI 不应仅被视为信道估计误差问题，而应被视为一个控制输入完整性问题。</p>\n<p>本文为分类/威胁建模类文章；摘要中未给出仿真、测试床或定量攻击影响数字。</p>\n<h3>技术要点</h3>\n<ul><li>前提：功率域 NOMA 的功率分配/排序/配对/聚类/波束成形均依赖 CSI 完整性；蓄意偏置（而非仅带噪）的 CSI 会扭曲上述各环节。</li><li>分类轴一（幅度）：CSI 低报 vs 高报。</li><li>分类轴二（排序效应）：保序、边界、逆序三类攻击。</li><li>拓展攻击族：多用户协同虚假 CSI、分组变更攻击、方向伪造、导频欺骗、训练阶段注入、RIS 诱发的信道操纵。</li><li>影响映射：每一攻击族对应功率分配、SIC 可靠性、调度行为、公平性、吞吐量与保密性方面的后果。</li><li>定位：将虚假 CSI 视为 6G NOMA 场景下的控制输入完整性问题，而非单纯的信道估计误差。</li><li>无实验：分类/威胁建模类文章，摘要中未给出仿真或测试床数字。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库此前对 NOMA 的覆盖偏重能力层面（如 2026-08-19 面向卫星上行的激进 NOMA DFT-s-OFDM 条目），其 cellular-security 栏目也已从经济学角度覆盖 RIS 作为攻击面的问题（2026-08-26 的 RIS 拍卖对手），但此前未有条目专门针对 NOMA 内部的 CSI 操纵向量。本条目是首个为功率域 NOMA 的 CSI 依赖性量身构建结构化威胁分类的条目，并与本轮同日的 FlyBlind（2026-09-01）形成有益呼应：两篇论文都指出，依赖&quot;可信但未经验证&quot;输入的控制机制（NOMA 中的 CSI；无人机 C2 中的切片软隔离）可被一个从不需要真正攻破无线链路本身、只需扭曲网络对其认知的攻击者利用。随着 NOMA 从 5G-Advanced 特性逐步走向 6G 候选构建模块，这一分类为实现者在部署前提供了一份可对照测试的攻击族清单，即便尚未附带定量结果。</p>",
+      "images": [],
+      "search_blob": "false-csi attacks in power-domain noma for 6g: a threat taxonomy and system-level impacts 面向 6g 功率域 noma 的虚假信道状态信息攻击：威胁分类与系统级影响 noma power-domain csi channel-state-information sic ris pilot-spoofing threat-taxonomy 6g security samira jafarli, aysha ebrahim and suleyman uludag (arxiv v1, 28 aug 2026) treat false channel-state information (csi) as a first-class attack surface against power-domain non-orthogonal multiple access (noma), a technique widely studied for spectral efficiency and dense connectivity in beyond-5g/6g. noma's power allocation, user ordering, pairing, clustering and beamforming all depend on csi integrity — and all can be distorted when the csi the base station consumes is deliberately biased rather than merely noisy. the paper's contribution is a taxonomy of that distortion space along two primary axes: magnitude (underreporting vs. overreporting) and ordering effect (order-preserving, boundary, and order-reversing attacks). it then extends the basic taxonomy with concrete attack families — coordinated false-csi behavior across colluding users, group-changing attacks, direction forgery, pilot spoofing, training-phase injection, and ris-induced channel manipulation — and maps each family to its system-level consequences: power allocation, sic (successive interference cancellation) reliability, scheduler behavior, fairness, throughput and secrecy. the central argument is that false csi in 6g noma should be treated not just as a channel-estimation error problem but as a control-input integrity problem. samira jafarli、aysha ebrahim 与 suleyman uludag（arxiv v1，2026 年 8 月 28 日）将虚假信道状态信息（csi）视为针对功率域非正交多址接入（noma）——一种在超 5g/6g 中被广泛研究以提升频谱效率与支持密集连接的技术——的一等攻击面。noma 的功率分配、用户排序、配对、聚类与波束成形均依赖 csi 的完整性，而当基站所使用的 csi 被蓄意偏置而非仅仅带噪时，上述各环节均可能被扭曲。本文的贡献是沿两个主轴对该扭曲空间进行分类：幅度轴（低报 vs 高报）与排序效应轴（保序、边界、逆序三类攻击）。随后将基础分类拓展为具体攻击族——串谋用户间协同的虚假 csi 行为、分组变更攻击、方向伪造、导频欺骗、训练阶段注入，以及 ris 诱发的信道操纵——并将每一攻击族映射到其系统级后果：功率分配、sic（串行干扰消除）可靠性、调度器行为、公平性、吞吐量与保密性。核心论点是：6g noma 中的虚假 csi 不应仅被视为信道估计误差问题，而应被视为一个控制输入完整性问题。 academic-paper cellular"
     },
     {
       "id": "2026-08-31_arxiv-safelink-agent-abr-maintenance-starlink",
@@ -6721,6 +7239,41 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>TGbn 于 2026 年 8 月 27–28 日向 IEEE 802.11 Mentor 上传了五份新文稿，编号超过上一份摘要（<code>2026-08-27_ieee-mentor-tgbn-win-sg-digest</code>）所记录的 11-26-1565。五份全部来自两家中国厂商：锐捷网络四份、杭州海康威视一份。对于会期之间的上传窗口而言，主题异常集中——每一份都针对 <strong>D2.0 中已达成一致的协调机制的边界条件或未规定角落</strong>，而非提出新特性。这正是任务组进入收敛期时的文稿形态：机制已定，剩下的工作是精确说明其边缘行为。</p>\n<p>三份涉及 <strong>NPCA（非主信道接入）</strong>——即当主信道被 OBSS 传输占用时，设备退避到辅助 20 MHz 信道的机制。DCN 11-26-1571《Discussion on Transmissions Not Allowed for NPCA》（洪龙龙，锐捷）讨论哪些帧交换<strong>不得</strong>在非主信道上发送，即排除清单；这一点很关键，因为工作在非主信道的设备对只跟踪主信道的station是不可见的。DCN 11-26-1570《Discussion on NPCA RX FORMAT Filtering》（同一作者）讨论 NPCA 操作期间设备应接收或丢弃哪些 PPDU 格式——一条接收侧过滤规则，直接影响误触发与 NAV 行为。</p>\n<p>另两份针对<strong>多 AP 协调的时序</strong>。DCN 11-26-1569《TXOP Termination in Co-TDMA》（杨舒，锐捷）追问协调式 TDMA 传输机会如何结束：Co-TDMA 将共享 TXOP 切分为时间片分配给多个协调 AP，而终止语义决定了共享 AP 提前完成或未使用其时间片时会发生什么。DCN 11-26-1568《Co-SR Multiple TXOP Transmission》（罗景阳，海康威视）把协调空间复用扩展到<strong>跨多个 TXOP</strong>，而非通常描述 Co-SR 时所用的单 TXOP 框架——这是范围扩展，而非边角情形。</p>\n<p>第五份 DCN 11-26-1567《Clarification on DSO Subband Selection with AOM》（林梦莹，锐捷）位于动态子信道操作与自适应工作模式/带宽信令的交叉点：当设备已经通过 AOM 收窄工作带宽时，哪些子带仍可被 DSO 分配，单靠任一机制都无法明确确定。</p>\n<p>另有两份在本窗口出现的相关文稿仅作记录、不计入新增 TGbn 技术内容：DCN 11-26-1563（MAPC 流量指示的 MLME SAP 支持）与 1562（IM 扩展的进一步考虑），均来自锐捷，已在 8 月 27 日的摘要中收录。<strong>抓取说明（更正本摘要系列的一个长期错误）</strong>：此前的摘要记载 Mentor 文稿正文「对匿名下载者返回 418/403」，并据此当作需要账号才能访问。这是误读。那些响应来自 F5 BIG-IP 的<strong>限流</strong>（一个带 support ID 的简短 <code>Request Rejected</code> 页面），并非身份认证质询——只要用浏览器 UA、带上指向 Mentor 文档列表页的 <code>Referer</code>，并把请求间隔拉到约 6~8 秒，即可返回 HTTP 200 与真实文件。此外 Mentor 仅按 DCN 前缀解析，文件名后半段可以任意。本条目所涉五份文稿均已完整下载并阅读。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1571-00 · TGbn</strong> —《Discussion on Transmissions Not Allowed for NPCA》。洪龙龙（锐捷网络）。2026-08-28 上传。定义非主信道上的帧交换排除集合。</li><li><strong>DCN 11-26-1570-00 · TGbn</strong> —《Discussion on NPCA RX FORMAT Filtering》。洪龙龙（锐捷网络）。2026-08-28 上传。NPCA 操作期间接收侧的 PPDU 格式接受规则。</li><li><strong>DCN 11-26-1569-00 · TGbn</strong> —《TXOP Termination in Co-TDMA》。杨舒（锐捷网络）。2026-08-28 上传。时间片化协调 TXOP 的终止语义。</li><li><strong>DCN 11-26-1568-00 · TGbn</strong> —《Co-SR Multiple TXOP Transmission》。罗景阳（杭州海康威视数字技术）。2026-08-28 上传。将协调空间复用扩展到单个 TXOP 之外。</li><li><strong>DCN 11-26-1567-00 · TGbn</strong> —《Clarification on DSO Subband Selection with AOM》。林梦莹（锐捷网络）。2026-08-27 上传。在 AOM 收窄带宽的前提下，动态子信道操作的可用子带界定。</li></ul>\n<p><strong>来自文稿正文（完成全文抓取后补充）：</strong></p>\n<ul><li><strong>11-26-1569 承认 D2.0 草案存在一个缺口。</strong> 草案已规定 Co-TDMA 中共享 TXOP 的轮询、分配与<strong>归还</strong>，但锐捷指出：草案没有定义如何<strong>终止</strong>多 AP 之间的 TXOP 共享，并认为这会浪费空口资源。「归还未用完的时间片」与「结束共享会话」是两回事，而目前只有前者。其提出的方案是复用 <strong>CF-End</strong>（一个面向传统设备的广播 NAV 复位帧）作为终止信号。</li><li><strong>11-26-1568 改变的是 Co-SR 的协商单位，而非某个边角情形。</strong> 海康威视提出让一次 Co-SR 协商跨越多个 TXOP：在第 2 至第 N 个 TXOP 中<strong>不再重传</strong> Invite 与 Response 帧，参与的 AP 继续沿用第 1 个 TXOP 协商出的参数。文稿包含<strong>五项 straw poll（SP1–SP5）</strong>，对 Co-SR 的 Invite / Response / Trigger 帧提出了具体的字段增补；第 9 页还把同一思路延伸到协调波束成形（Co-BF）。</li><li><strong>TXOP 之间可能发生角色互换。</strong> 在多 TXOP 模式下，协调 AP 与被协调 AP <strong>同时竞争</strong>后续每一个 TXOP，谁抢到谁发 Trigger 帧。而从第 1 个 TXOP 沿用下来的空间复用参数是<strong>按角色索引</strong>的——角色会换，参数绑定却不会；文稿没有说明角色互换后如何对参数集重新索引。此外，该协商是按 <strong>TXOP 计数</strong>而非<strong>时长</strong>限定有效范围（但信道相干性是一个时间量），且被协调 AP 在序列中途没有退出路径。</li><li><strong>11-26-1567 只是一条否定式规则。</strong> 当某个 80 MHz DSO 子带内<strong>全部</strong> 20 MHz 子信道都在最近一次收到的 AOM Disabled Subchannel Bitmap 中被标记为禁用时，AP 不得选择该子带。部分禁用（4 个中禁用 1~3 个）的情形仍被允许且未作规定；位图更新与 DSO Offer/Confirmation 之间也没有任何时序（epoch）绑定。</li><li><strong>11-26-1571 确认了一处 NPCA 未决边界</strong>：NPCA 操作期间接收侧的响应行为在草案中仍未定义。</li><li><strong>状态提示</strong>：11-26-1568 中的 SP1–SP5 <strong>尚待 2026 年 9 月中间会议表决</strong>。多 TXOP Co-SR 目前是提案，不是已达成的草案文本。</li><li><strong>厂商集中度</strong>：五份中四份来自锐捷、一份来自海康威视——本窗口内没有来自七月全会期间主导 TGbn 文稿的华为/高通/英特尔/博通阵营的贡献。</li><li><strong>文档编号水位</strong>从 11-26-1565 推进到 11-26-1573（1573 属 TGbp，单独收录）；1564、1566、1572 未公开列出。</li><li><strong>本摘要不计为新增</strong>：11-26-1563（MAPC 流量指示的 MLME SAP）与 11-26-1562（IM 扩展）已于 8 月 27 日收录。</li></ul>\n<h3>意义与新意</h3>\n<p>TGbn 的公开时间表（<code>802.11_Timelines</code>，页面日期 2026-08-06）显示当前草案为 D2.00，而 D1.0 工作组信函投票以 61% 通过率结束。这一落差——已获批的 D2.0 草案背后是一次低通过率的投票历史——恰恰是这五份边角情形文稿真正决定规范文本内容的阶段。五份全部是提出文本或讨论的全新文档编号，而非既有投票的意见处理修订版，这也是本摘要评分高于 Mentor 条目通常「导航辅助」基线的原因。</p>\n<p>五份中有两份属于扩展而非澄清。<strong>跨多个 TXOP 的 Co-SR</strong>（11-26-1568）改变了协调空间复用的协商单元；截至目前本知识库中所有对 Co-SR 的描述——包括 <code>2026-07-24_arxiv-wifi8-uhr-mechanisms-verification</code> 的机制综述与 <code>2026-08-06_arxiv-fm4wifi-flow-matching-mapc</code> 的生成式配置工作——都把共享决策的作用域限定在单个传输机会内。<strong>Co-TDMA 的 TXOP 终止</strong>（11-26-1569）则是时分侧的互补问题，而终止规则未定之处正是时隙浪费与协调开销的来源。</p>\n<p>NPCA 这一对在流程上更具意义。NPCA 的意见处理自 LB291 周期以来一直在进行（参见 <code>2026-08-03_ieee-mentor-tgbp-digest</code> 中海康威视的 NPCA NAV 意见处理，以及 <code>2026-07-24</code> 的早期 NPCA CR 文稿）；此处提出的两个问题——非主信道上不得发送什么、可以接收什么——正是同一个「可见性」问题的两面：工作在非主信道的设备在构造上就对只跟踪主信道的邻居部分不可见。另值得注意厂商格局：本窗口的 TGbn 文稿完全来自锐捷与海康威视，相较七月全会的构成发生了变化，这与九月中间会议前大型代表团在准备会议材料而非上传材料的时期特征相符。</p>",
       "images": [],
       "search_blob": "ieee 802.11 tgbn mentor digest — 2026-08-29: a five-document npca / co-sr / co-tdma wave from ruijie and hikvision ieee 802.11 tgbn mentor 摘要 — 2026-08-29：锐捷与海康威视提交的五份 npca / co-sr / co-tdma 文稿 tgbn 802.11bn mapc npca co-sr co-tdma dso aom txop uhr tgbn uploaded five new contributions to ieee 802.11 mentor on 27–28 august 2026, past the document number 11-26-1565 tracked by the previous digest (`2026-08-27_ieee-mentor-tgbn-win-sg-digest`). two chinese vendors account for all five: ruijie networks filed four and hangzhou hikvision digital technology one. the theme is unusually coherent for a between-sessions upload window — every document addresses a **boundary condition or an unspecified corner of an already-agreed d2.0 coordination mechanism**, rather than proposing a new feature. this is the shape of traffic a task group produces when it is converging: the mechanisms are settled and the remaining work is saying precisely what happens at their edges. tgbn 于 2026 年 8 月 27–28 日向 ieee 802.11 mentor 上传了五份新文稿，编号超过上一份摘要（`2026-08-27_ieee-mentor-tgbn-win-sg-digest`）所记录的 11-26-1565。五份全部来自两家中国厂商：锐捷网络四份、杭州海康威视一份。对于会期之间的上传窗口而言，主题异常集中——每一份都针对 **d2.0 中已达成一致的协调机制的边界条件或未规定角落**，而非提出新特性。这正是任务组进入收敛期时的文稿形态：机制已定，剩下的工作是精确说明其边缘行为。 ieee-document wifi"
+    },
+    {
+      "id": "2026-09-01_arxiv-flyblind-cross-slice-timeliness-attack-uav",
+      "date_found": "2026-09-01",
+      "technology": "cellular",
+      "date_published": "2026-08-27",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "FlyBlind: Cross-Slice Timeliness Attacks on UAV Situational Awareness over 5G",
+      "title_zh": "FlyBlind：针对基于 5G 的无人机态势感知的跨切片及时性攻击",
+      "url": "https://arxiv.org/abs/2608.27604",
+      "topics": [
+        "5G-SA",
+        "network-slicing",
+        "soft-isolation",
+        "UAV",
+        "BVLOS",
+        "ground-control-station",
+        "C2-link",
+        "timeliness-attack",
+        "state-staleness",
+        "security"
+      ],
+      "topic_primary": "cellular-security",
+      "topics_secondary": [
+        "network-slicing"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-09-01_arxiv-flyblind-cross-slice-timeliness-attack-uav.md",
+      "summary_short_en": "Wagner Comin Sonaglio, Ágney Lopes Roth Ferraz, André Elias Melo, Guevara Noubir and Lourenço Alves Pereira Júnior (arXiv v1, 27 Aug 2026) describe a new attack class against Beyond Visual Line of Sight (BVLOS) drone operations carried over 5G Standalone networks. Such operations share a single User Plane for both command-and-control (C2) traffic and video feedback, and operators typically judge link quality by latency and availability alone, trusting the \"soft isolation\" between network slices to keep other tenants from interfering. FlyBlind shows that trust is misplaced: an authorized co-tenant on a *neighboring* slice can simply maintain ordinary, legitimate uplink demand — no rogue gNB, no direct interference with the C2 flow itself — and, because idle radio resources are shared across slices under soft isolation, that authorized competition for grants quietly ages the state held at the Ground Control Station (GCS) without the connection ever looking unhealthy. The authors formalize this as \"Silent State Staleness\": a falsifiable false-healthy predicate where conventional link monitors (which watch latency and availability) fail to detect that the *information* reaching the operator has gone stale.",
+      "summary_short_zh": "Wagner Comin Sonaglio、Ágney Lopes Roth Ferraz、André Elias Melo、Guevara Noubir 与 Lourenço Alves Pereira Júnior（arXiv v1，2026 年 8 月 27 日）描述了一类针对基于 5G 独立组网（SA）的超视距（BVLOS）无人机作业的新型攻击。此类作业将指挥控制（C2）流量与视频回传共用同一用户面，运营方通常仅凭时延与可用性判断链路质量，并信任网络切片间的\"软隔离\"能阻止其他租户的干扰。FlyBlind 表明这种信任是错位的：位于相邻切片上的一个已授权共租户，只需维持普通、合法的上行需求——无需伪基站，也无需直接干扰 C2 流本身——由于软隔离下空闲无线资源在切片间共享，这种已授权的授权竞争会悄然使地面控制站（GCS）所持有的状态陈旧化，而连接本身看起来始终\"健康\"。作者将其形式化为\"静默状态陈旧\"（Silent State Staleness）：一个可证伪的\"假健康\"谓词，常规仅监测时延与可用性的链路监测器无法察觉到达运营方的*信息*本身已经过时。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Wagner Comin Sonaglio, Ágney Lopes Roth Ferraz, André Elias Melo, Guevara Noubir and Lourenço Alves Pereira Júnior (arXiv v1, 27 Aug 2026) describe a new attack class against Beyond Visual Line of Sight (BVLOS) drone operations carried over 5G Standalone networks. Such operations share a single User Plane for both command-and-control (C2) traffic and video feedback, and operators typically judge link quality by latency and availability alone, trusting the &quot;soft isolation&quot; between network slices to keep other tenants from interfering. FlyBlind shows that trust is misplaced: an authorized co-tenant on a <em>neighboring</em> slice can simply maintain ordinary, legitimate uplink demand — no rogue gNB, no direct interference with the C2 flow itself — and, because idle radio resources are shared across slices under soft isolation, that authorized competition for grants quietly ages the state held at the Ground Control Station (GCS) without the connection ever looking unhealthy. The authors formalize this as &quot;Silent State Staleness&quot;: a falsifiable false-healthy predicate where conventional link monitors (which watch latency and availability) fail to detect that the <em>information</em> reaching the operator has gone stale.</p>\n<p>On a dedicated testbed, the attack drives GCS telemetry age up to roughly 12 seconds, producing position-estimate discrepancies of tens of meters against ground truth, while one-way delay stays in the tens of milliseconds at the 99th percentile and availability holds above 99.9% — the vehicle keeps flying in GUIDED mode without ever triggering a failsafe. The paper's conclusion is that in any deployment with asymmetric uplink enforcement across slices, verifying <em>freshness of state at the destination</em> has to be a first-class check, not an inference drawn from link health.</p>\n<h3>Key technical points</h3>\n<ul><li>Setting: BVLOS UAS over 5G SA, shared User Plane for C2 + video, soft isolation between network slices, link quality judged by latency/availability only.</li><li>Attack: an authorized co-tenant on a neighboring slice maintains ordinary legitimate uplink demand; shared idle-resource grants under soft isolation turn authorized competition into GCS state aging — no rogue gNB, no direct C2 interference.</li><li>Formalization: &quot;Silent State Staleness&quot; — a falsifiable false-healthy predicate; conventional latency/availability link monitors do not detect it.</li><li>Testbed results: telemetry age saturates ~12 s; position-estimate discrepancy tens of meters vs. ground truth; OWD p99 in the tens of ms; availability &gt;99.9%; vehicle stays in GUIDED mode, no failsafe triggered.</li><li>Takeaway: destination-side state-freshness verification must be checked independently of link-health signals wherever uplink enforcement is asymmetric across slices.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's network-slicing bin has covered orchestration, admission control, RL-based slice control and stateful cross-slice <em>migration</em> (Orchra, 2026-08-24), but nothing on slicing as an <em>attack surface</em>. FlyBlind is the first entry to show that soft isolation between slices — the mechanism virtually every 5G slicing deployment relies on for multi-tenancy — can be exploited by a fully authorized, non-malicious-looking co-tenant to silently degrade a safety-critical application (UAV command-and-control) without ever violating a monitored SLA metric. It also complements the KB's existing MCPTT field-measurement work (Kyle Field, 2026-08-21) and public-safety network-slicing findings by identifying a failure mode those field studies were not designed to catch: a link that looks perfectly healthy by every metric operators watch, while the information flowing over it is stale enough to matter for flight safety.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Wagner Comin Sonaglio、Ágney Lopes Roth Ferraz、André Elias Melo、Guevara Noubir 与 Lourenço Alves Pereira Júnior（arXiv v1，2026 年 8 月 27 日）描述了一类针对基于 5G 独立组网（SA）的超视距（BVLOS）无人机作业的新型攻击。此类作业将指挥控制（C2）流量与视频回传共用同一用户面，运营方通常仅凭时延与可用性判断链路质量，并信任网络切片间的&quot;软隔离&quot;能阻止其他租户的干扰。FlyBlind 表明这种信任是错位的：位于相邻切片上的一个已授权共租户，只需维持普通、合法的上行需求——无需伪基站，也无需直接干扰 C2 流本身——由于软隔离下空闲无线资源在切片间共享，这种已授权的授权竞争会悄然使地面控制站（GCS）所持有的状态陈旧化，而连接本身看起来始终&quot;健康&quot;。作者将其形式化为&quot;静默状态陈旧&quot;（Silent State Staleness）：一个可证伪的&quot;假健康&quot;谓词，常规仅监测时延与可用性的链路监测器无法察觉到达运营方的<em>信息</em>本身已经过时。</p>\n<p>在专用测试床上，该攻击可使 GCS 遥测年龄饱和至约 12 秒，导致 GCS 位置估计与地面真值相差数十米，而单向时延第 99 百分位仍保持在数十毫秒，可用性高于 99.9%——飞行器全程保持在 GUIDED 模式下飞行，从未触发故障保护机制。论文的结论是：在切片间存在非对称上行授权强制的部署中，验证&quot;目的端状态的新鲜度&quot;必须作为一项独立的一等检查，而不能仅从链路健康状况推断得出。</p>\n<h3>技术要点</h3>\n<ul><li>场景：基于 5G SA 的 BVLOS 无人机系统，C2 与视频共用同一用户面，网络切片间为软隔离，链路质量仅凭时延/可用性判断。</li><li>攻击：相邻切片上已授权的共租户维持普通合法上行需求；软隔离下共享的空闲资源授权，将合法竞争转化为 GCS 状态陈旧化——无需伪基站，也不直接干扰 C2 流。</li><li>形式化：提出&quot;静默状态陈旧&quot;——一个可证伪的&quot;假健康&quot;谓词；常规仅看时延/可用性的链路监测器无法检测到该现象。</li><li>测试床结果：遥测年龄饱和于约 12 秒；位置估计与地面真值相差数十米；单向时延 p99 为数十毫秒；可用性 &gt;99.9%；飞行器全程保持 GUIDED 模式，未触发故障保护。</li><li>结论：在切片间上行授权不对称的部署中，必须将&quot;目的端状态新鲜度&quot;作为独立检查项，而非仅从链路健康信号推断。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库网络切片栏目已覆盖编排、准入控制、基于 RL 的切片控制以及有状态跨切片<em>迁移</em>（Orchra，2026-08-24），但此前从未涉及切片作为<em>攻击面</em>的问题。FlyBlind 是首个证明如下事实的条目：几乎所有 5G 切片多租户部署都依赖的软隔离机制，可被一个完全已授权、看似毫无恶意的共租户利用，在从不触发任何被监测 SLA 指标告警的情况下，悄然降级一个安全关键应用（无人机指挥控制）。它也补充了知识库既有的 MCPTT 现场实测（Kyle Field，2026-08-21）与公共安全网络切片成果，指出了那些现场研究本未设计用于捕捉的失效模式：一条按运营方所监测的一切指标看都完全健康的链路，其上承载的信息却已陈旧到足以危及飞行安全。</p>",
+      "images": [],
+      "search_blob": "flyblind: cross-slice timeliness attacks on uav situational awareness over 5g flyblind：针对基于 5g 的无人机态势感知的跨切片及时性攻击 5g-sa network-slicing soft-isolation uav bvlos ground-control-station c2-link timeliness-attack state-staleness security wagner comin sonaglio, ágney lopes roth ferraz, andré elias melo, guevara noubir and lourenço alves pereira júnior (arxiv v1, 27 aug 2026) describe a new attack class against beyond visual line of sight (bvlos) drone operations carried over 5g standalone networks. such operations share a single user plane for both command-and-control (c2) traffic and video feedback, and operators typically judge link quality by latency and availability alone, trusting the \"soft isolation\" between network slices to keep other tenants from interfering. flyblind shows that trust is misplaced: an authorized co-tenant on a *neighboring* slice can simply maintain ordinary, legitimate uplink demand — no rogue gnb, no direct interference with the c2 flow itself — and, because idle radio resources are shared across slices under soft isolation, that authorized competition for grants quietly ages the state held at the ground control station (gcs) without the connection ever looking unhealthy. the authors formalize this as \"silent state staleness\": a falsifiable false-healthy predicate where conventional link monitors (which watch latency and availability) fail to detect that the *information* reaching the operator has gone stale. wagner comin sonaglio、ágney lopes roth ferraz、andré elias melo、guevara noubir 与 lourenço alves pereira júnior（arxiv v1，2026 年 8 月 27 日）描述了一类针对基于 5g 独立组网（sa）的超视距（bvlos）无人机作业的新型攻击。此类作业将指挥控制（c2）流量与视频回传共用同一用户面，运营方通常仅凭时延与可用性判断链路质量，并信任网络切片间的\"软隔离\"能阻止其他租户的干扰。flyblind 表明这种信任是错位的：位于相邻切片上的一个已授权共租户，只需维持普通、合法的上行需求——无需伪基站，也无需直接干扰 c2 流本身——由于软隔离下空闲无线资源在切片间共享，这种已授权的授权竞争会悄然使地面控制站（gcs）所持有的状态陈旧化，而连接本身看起来始终\"健康\"。作者将其形式化为\"静默状态陈旧\"（silent state staleness）：一个可证伪的\"假健康\"谓词，常规仅监测时延与可用性的链路监测器无法察觉到达运营方的*信息*本身已经过时。 academic-paper cellular"
     },
     {
       "id": "2026-08-31_arxiv-dsss-pseudonymetry-leo-signal-authentication",
@@ -7751,6 +8304,36 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Osmel M. Rosabal、Amirhossein Azarbahram、Mateen Ashraf、Mohammad Shehab、Abdul Basit Khattak、Onel L. A. López 与 Mohamed-Slim Alouini（奥卢大学与 KAUST；arxiv eess.SP，2026 年 8 月 26 日，7 页，投稿 <em>IEEE Internet of Things Magazine</em>）提出并量化了一个本条目库此前未收录的思路：让 LEO 星座不是向偏远物联网设备<strong>送数据</strong>，而是向它们<strong>送能量</strong>。动机来自熟悉的离网部署缺口——沙漠、海洋、森林与灾区中的传感器，换一次电池就是全部运营成本——以及一个观察：卫星直连设备的工作已经解决了连接性这一半问题，供电那一半却仍空着。</p>\n<p>论文首先为微波 WPT 划定诚实的边界。在 0.3–300 GHz 范围内，物理规律毫不留情：Goldstone 实验在公里尺度上达到约 50% 的端到端效率，但近期一次 10 km 演示只做到约 <strong>1%</strong>，日本的演示覆盖 50 m 至 5 km。整流天线（接收端）转换效率<strong>最高约 70%</strong>，文献中的发射功率跨度从瓦级到吉瓦级。从轨道上看，单星预算撑不住其中任何一个数字——这恰恰构成了&quot;协同&quot;的论据。</p>\n<p>核心贡献是<strong>多星协同</strong>的评估。2 km 半径内的五个单天线地面设备，由 <strong>500 km 高度、12 GHz、发射功率 1,000 W</strong> 的卫星服务，比较两种协同机制。<strong>相干</strong>协同——相位对齐使信号在目标处按幅度相加——使接收功率随卫星数呈<strong>平方</strong>增长；<strong>非相干</strong>协同只呈<strong>线性</strong>增长。实际差距很大：少量卫星的非相干工作只能提供<strong>亚毫瓦</strong>功率，而相干协同可达<strong>数十毫瓦</strong>。作者将这些数字对标应用需求，从户外库存追踪的 <strong>1.20 mW</strong> 到边缘 AI 感知的 <strong>4.18 mW</strong>：落在 1.20–2.50 mW 区间的配置可支撑库存与远程监测，只有超过 4.18 mW 的配置才能覆盖全部三类应用。对非目标位置的功率<strong>溢出</strong>用按卫星数与平均设备功率归一化的互补累积分布函数做统计刻画——这是论文对&quot;星地能量波束同时也是干扰与安全对象、而非仅仅一条链路&quot;的正视。</p>\n<p>论文还考察了另外两条轴。<strong>星间激光 WPT</strong>——卫星互相充电而非对地充电——以高得多的自由空间损耗换取远得多的作用距离，支持 <strong>10³ km</strong> 量级距离（微波为 <strong>10² km</strong> 量级），接收效率 <strong>10–25%</strong>；指向损耗研究表明每个距离都存在一个<strong>最优发射孔径</strong>，因为增大孔径虽收窄波束，却同时放大了指向敏感度。<strong>超表面</strong>——星上孔径的动态超表面天线与地面的 RIS——被提出为实现相干方案所需波束赋形与波束管理的低复杂度路径。挑战清单也很坦率：12 GHz 下跨航天器的<strong>亚纳秒级同步</strong>、卫星穿越地影期间的能量自给、激光安全，以及 LEO 几何快速变化下的信道获取开销。</p>\n<h3>技术要点</h3>\n<ul><li><strong>前提：</strong> 用卫星为离网物联网设备无线供电，定位为卫星直连设备&quot;连接性&quot;的能量对偶。</li><li><strong>微波 WPT 现实校准：</strong> 0.3–300 GHz；Goldstone 在公里尺度达约 50% 端到端效率，但近期演示在 <strong>10 km 上仅约 1%</strong>；日本演示覆盖 50 m–5 km；整流天线效率最高 <strong>70%</strong>；发射功率从瓦级到吉瓦级。</li><li><strong>评估设置：</strong> <strong>2 km 半径</strong>内 5 个单天线地面设备，卫星高度 <strong>500 km</strong>，发射功率 <strong>1,000 W</strong>，频率 <strong>12 GHz</strong>。</li><li><strong>协同标度律：</strong> 相干协同下接收功率随卫星数呈<strong>平方</strong>增长，非相干下仅呈<strong>线性</strong>增长——这是核心架构结论。</li><li><strong>可送达功率：</strong> 少量卫星非相干协同为亚毫瓦级 → 相干协同可达<strong>数十毫瓦</strong>。</li><li><strong>应用门限：</strong> 户外库存 <strong>1.20 mW</strong>，远程监测约 2.50 mW 档，边缘 AI <strong>4.18 mW</strong>；只有超过 4.18 mW 的配置能同时服务三类应用。</li><li><strong>功率溢出：</strong> 用按卫星数与平均设备功率归一化的 CCDF 统计刻画落到非目标位置的功率——把波束当作干扰／安全对象来处理。</li><li><strong>星间激光 WPT：</strong> 作用距离约 <strong>10³ km</strong>（微波约 10² km），接收效率 <strong>10–25%</strong>；每个距离存在<strong>最优发射孔径</strong>以最小化指向损耗（增大孔径收窄波束但加剧指向敏感度）。</li><li><strong>超表面：</strong> 星上孔径的动态超表面天线 + 地面 RIS，作为降低波束赋形、能量转换效率与波束管理复杂度的路径。</li><li><strong>待解挑战：</strong> 12 GHz 下亚纳秒级星间同步、地影期间的能量自给、激光安全、LEO 几何快变下的信道获取开销。</li></ul>\n<h3>意义与新意</h3>\n<p>这是卫星条目库的<strong>第一条无线能量传输条目</strong>，补齐了此前只有一侧的配对。08-08 的 AoI-NTN 能量收集条目建模的是：物联网节点花费储能去探测 LEO 可达性，探测成功才发射——能量是节点必须精打细算的稀缺预算。本文提出互补的问题：如果由星座来<strong>供给</strong>这份预算呢？两者合读，从两端夹住了卫星物联网的功率问题，而且数量级接近到值得注意——相干星座的数十毫瓦，正是 08-08 模型所描述的占空比式&quot;探测—发射&quot;节点所需的量级。</p>\n<p><strong>平方对线性</strong>的标度律是最值得记住的一点，因为它把相干多星协同从&quot;优化手段&quot;变成了&quot;可行性前提&quot;：在亚毫瓦水平上，非相干的空间 WPT 连论文自己表格中最低的应用门限都达不到，因此整个概念都押在跨航天器保持相位相干上。这也使论文列出的亚纳秒级同步挑战成为真正的卡点，并把该工作与本条目库从通信侧见到的分布式相干问题（08-15 多运营商共享、星间链路调度）连了起来。溢出 CCDF 分析同样是一个低调但重要的加分项——12 GHz 上 1,000 W 的星地能量波束位于已被占用的 Ku 频段，任何真实部署都会遭遇 SNIFFLES 辐射实测（08-18）在本条目库中开启的同一类共存审视。</p>\n<p>新颖度评 2 而非 3。这是一篇<strong>杂志愿景文章</strong>：综述既有 WPT 极限、提出架构、并在一个刻意示意性的小配置（五设备、2 km 半径）上做仿真评估——没有硬件、没有实测链路、也没有星座尺度研究。比较对象是两种协同机制，而非已发表的竞争系统。让它高于纯立场文章的，是评估对失效模式（非相干达不到门限）与外部性（溢出）都不回避。值得关注是否会有星座尺度覆盖／占空比分析的后续——某个地面设备处于&quot;可相干服务几何&quot;内的时间占比，才是决定这究竟是一种架构还是一次思想实验的数字。</p>",
       "images": [],
       "search_blob": "power from space: coordinated multi-satellite wireless power transfer for off-grid iot (oulu + kaust) — coherent leo coordination scales received power quadratically with satellite count, reaching tens of mw at 12 ghz where non-coherent stalls at sub-mw \\\"来自太空的电力\\\"：面向离网物联网的多星协同无线能量传输（奥卢大学 + kaust）——相干协同使接收功率随卫星数呈平方增长，在 12 ghz 下可达数十毫瓦，而非相干方案停留在亚毫瓦量级 wireless-power-transfer satellite-wpt energy-harvesting iot coherent-distributed-beamforming power-spillover inter-satellite-laser metasurface dma off-grid osmel m. rosabal, amirhossein azarbahram, mateen ashraf, mohammad shehab, abdul basit khattak, onel l. a. lópez and mohamed-slim alouini (university of oulu and kaust; arxiv eess.sp, 26 aug 2026, 7 pp, submitted to *ieee internet of things magazine*) sketch and then quantify an idea the satellite bin has not carried before: using a leo constellation not to carry data to remote iot devices but to **carry energy to them**. the motivation is the familiar off-grid deployment gap — sensors in deserts, oceans, forests and disaster zones where a battery swap is the whole operating cost — and the observation that satellite direct-to-device work has solved the connectivity half of that problem while leaving the power half untouched. osmel m. rosabal、amirhossein azarbahram、mateen ashraf、mohammad shehab、abdul basit khattak、onel l. a. lópez 与 mohamed-slim alouini（奥卢大学与 kaust；arxiv eess.sp，2026 年 8 月 26 日，7 页，投稿 *ieee internet of things magazine*）提出并量化了一个本条目库此前未收录的思路：让 leo 星座不是向偏远物联网设备**送数据**，而是向它们**送能量**。动机来自熟悉的离网部署缺口——沙漠、海洋、森林与灾区中的传感器，换一次电池就是全部运营成本——以及一个观察：卫星直连设备的工作已经解决了连接性这一半问题，供电那一半却仍空着。 academic-paper satellite"
+    },
+    {
+      "id": "2026-09-01_nvidia-jetson-orin-nano-2-edge-robotics",
+      "date_found": "2026-09-01",
+      "technology": "edge-ai",
+      "date_published": "2026-08-25",
+      "type": "product",
+      "category": "industry",
+      "title_en": "Jetson Orin Nano 2: NVIDIA's entry-level edge module doubles inference at 40% less power",
+      "title_zh": "Jetson Orin Nano 2：英伟达入门级边缘模组推理性能翻倍、功耗降低 40%",
+      "url": "https://nvidianews.nvidia.com/news/nvidia-announces-jetson-orin-nano-2-robotics-computer-to-redefine-entry-level-edge-ai",
+      "topics": [
+        "Jetson",
+        "embedded-module",
+        "robotics-compute",
+        "NPU-generation-refresh",
+        "entry-level-edge-AI"
+      ],
+      "topic_primary": "edge-ai-silicon",
+      "topics_secondary": [
+        "on-device-inference"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-09-01_nvidia-jetson-orin-nano-2-edge-robotics.md",
+      "summary_short_en": "NVIDIA announced Jetson Orin Nano 2, a refresh of its entry-level embedded robotics/edge-AI compute module, on 2026-08-25. The pitch is straightforward generational improvement rather than a new architecture: same form factor as its predecessor (Jetson Orin Nano Super), 78 TOPS of AI compute, 8 GB memory, an 8-core Arm CPU, roughly 2x the inference performance of the predecessor via improved Tensor Cores and higher memory bandwidth, and 40% lower power draw in 15-watt mode at matched performance. Availability is stated as first half of 2027, so this is a forward-looking product announcement rather than a shipping-today part.",
+      "summary_short_zh": "英伟达于 2026 年 8 月 25 日发布了 Jetson Orin Nano 2，是其入门级嵌入式机器人/边缘 AI 计算模组的一次代际更新。其定位是直白的代际提升，而非全新架构：与前代（Jetson Orin Nano Super）保持相同外形尺寸，AI 算力 78 TOPS，8GB 内存，8 核 Arm CPU，凭借改进的 Tensor Core 与更高的内存带宽，推理性能约为前代的 2 倍，同等性能下 15 瓦模式的功耗降低 40%。上市时间标注为 2027 年上半年，因此这是一次面向未来的产品发布，而非即刻可购买的在售型号。",
+      "body_html_en": "<h3>Summary</h3>\n<p>NVIDIA announced Jetson Orin Nano 2, a refresh of its entry-level embedded robotics/edge-AI compute module, on 2026-08-25. The pitch is straightforward generational improvement rather than a new architecture: same form factor as its predecessor (Jetson Orin Nano Super), 78 TOPS of AI compute, 8 GB memory, an 8-core Arm CPU, roughly 2x the inference performance of the predecessor via improved Tensor Cores and higher memory bandwidth, and 40% lower power draw in 15-watt mode at matched performance. Availability is stated as first half of 2027, so this is a forward-looking product announcement rather than a shipping-today part.</p>\n<p>This is the knowledge base's first NVIDIA Jetson product entry despite Jetson hardware already serving as the measurement substrate for two prior academic entries in this domain (a three-generation Jetson workload-characterization paper and a Jetson vision-node energy study), which made this an explicit gap to close.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Announcement date</strong>: 2026-08-25, NVIDIA Newsroom press release.</li><li><strong>Specs</strong>: 78 TOPS AI compute; 8 GB memory; 8-core Arm CPU; same physical form factor as Jetson Orin Nano Super.</li><li><strong>Performance claim</strong>: ~2x inference performance vs. Jetson Orin Nano Super, attributed to improved Tensor Cores and higher memory bandwidth — a first-party comparative claim, not independently benchmarked.</li><li><strong>Power claim</strong>: 40% lower power consumption in 15-watt operating mode at matched performance vs. predecessor.</li><li><strong>Availability</strong>: stated as &quot;expected in the first half of 2027&quot; — a forward announcement, not a current shipping date.</li><li><strong>Not disclosed in the press release</strong>: pricing, wireless connectivity, and any third-party or MLPerf-style benchmark validation of the TOPS or &quot;2x&quot; figures. Per this domain's novelty rubric, first-party performance multipliers should be treated as marketing claims until independently checked (e.g., a future MLPerf Client/Inference Edge round).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The finding here is modest by design — this is a generational refresh, not a new paradigm, and is scored novelty 3 accordingly (a significant platform/product launch with concrete specs, not an order-of-magnitude or first-of-kind result). Its value to this knowledge base is structural rather than technical: the Jetson product line has been an implicit presence in this domain for weeks — two academic entries already benchmark on Jetson hardware — without the line itself ever being covered, which is exactly the kind of gap the arm-nvidia-edge source was added to close and had gone uncontacted across three prior runs. Filing this entry also gives future Jetson-hardware academic papers a product anchor to link back to, and sets a specific, checkable baseline (78 TOPS, 8 GB, 40% power reduction) against which the eventual independent benchmarks — MLPerf or otherwise — can be measured.</p>\n<p>The forward-dated availability (H1 2027) is worth flagging plainly: this is an announcement, and per this domain's landing-confirmation discipline it should not be treated as a shipping product until a retail or partner-board listing confirms it.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>英伟达于 2026 年 8 月 25 日发布了 Jetson Orin Nano 2，是其入门级嵌入式机器人/边缘 AI 计算模组的一次代际更新。其定位是直白的代际提升，而非全新架构：与前代（Jetson Orin Nano Super）保持相同外形尺寸，AI 算力 78 TOPS，8GB 内存，8 核 Arm CPU，凭借改进的 Tensor Core 与更高的内存带宽，推理性能约为前代的 2 倍，同等性能下 15 瓦模式的功耗降低 40%。上市时间标注为 2027 年上半年，因此这是一次面向未来的产品发布，而非即刻可购买的在售型号。</p>\n<p>这是本知识库收录的首条英伟达 Jetson 产品条目——尽管 Jetson 硬件此前已作为本领域两篇学术条目的测量基底（一篇跨三代 Jetson 的负载画像论文，以及一篇 Jetson 视觉节点能耗研究），这使其成为一个明确需要补上的空白。</p>\n<h3>技术要点</h3>\n<ul><li><strong>发布日期</strong>：2026 年 8 月 25 日，英伟达新闻室新闻稿。</li><li><strong>规格</strong>：78 TOPS AI 算力；8GB 内存；8 核 Arm CPU；与 Jetson Orin Nano Super 相同的物理外形尺寸。</li><li><strong>性能声称</strong>：相较 Jetson Orin Nano Super 推理性能约提升 2 倍，归因于改进的 Tensor Core 与更高的内存带宽——这是厂商第一方的对比声称，未经独立测试验证。</li><li><strong>功耗声称</strong>：在同等性能下，15 瓦运行模式的功耗相较前代降低 40%。</li><li><strong>上市时间</strong>：标注为&quot;预计 2027 年上半年&quot;——属于前瞻性发布，而非当前即可发货的日期。</li><li><strong>新闻稿未披露内容</strong>：价格、无线连接方式，以及对 TOPS 或&quot;2 倍&quot;数字的任何第三方或 MLPerf 式基准验证。按本领域的新颖度评分标准，厂商第一方的性能倍数声称在获得独立核实（例如未来的 MLPerf Client/Inference Edge 结果轮次）之前，应视为营销性说法。</li></ul>\n<h3>意义与新意</h3>\n<p>这里的发现按设计是克制的——这是一次代际更新，而非新范式，因此被评为新颖度 3（具体规格明确的重要平台/产品发布，而非数量级跃升或首创性结果）。它对本知识库的价值更多是结构性的，而非技术性的：Jetson 产品线在本领域已隐性存在数周——已有两篇学术条目以 Jetson 硬件为基准测试平台——却始终未被产品线本身覆盖，这正是设立 arm-nvidia-edge 信源要弥补的空白，而该信源此前三次运行均未被联系过。收录本条目也为未来以 Jetson 硬件为基础的学术论文提供了一个可回链的产品锚点，并设定了一个具体、可核实的基线（78 TOPS、8GB、功耗降低 40%），供日后（MLPerf 或其他方式的）独立基准测试对照衡量。</p>\n<p>前瞻性的上市时间（2027 年上半年）值得明确指出：这是一次发布，按本领域的&quot;落地确认&quot;纪律，在有零售或合作板卡上市信息确认之前，不应将其当作已在售产品对待。</p>",
+      "images": [],
+      "search_blob": "jetson orin nano 2: nvidia's entry-level edge module doubles inference at 40% less power jetson orin nano 2：英伟达入门级边缘模组推理性能翻倍、功耗降低 40% jetson embedded-module robotics-compute npu-generation-refresh entry-level-edge-ai nvidia announced jetson orin nano 2, a refresh of its entry-level embedded robotics/edge-ai compute module, on 2026-08-25. the pitch is straightforward generational improvement rather than a new architecture: same form factor as its predecessor (jetson orin nano super), 78 tops of ai compute, 8 gb memory, an 8-core arm cpu, roughly 2x the inference performance of the predecessor via improved tensor cores and higher memory bandwidth, and 40% lower power draw in 15-watt mode at matched performance. availability is stated as first half of 2027, so this is a forward-looking product announcement rather than a shipping-today part. 英伟达于 2026 年 8 月 25 日发布了 jetson orin nano 2，是其入门级嵌入式机器人/边缘 ai 计算模组的一次代际更新。其定位是直白的代际提升，而非全新架构：与前代（jetson orin nano super）保持相同外形尺寸，ai 算力 78 tops，8gb 内存，8 核 arm cpu，凭借改进的 tensor core 与更高的内存带宽，推理性能约为前代的 2 倍，同等性能下 15 瓦模式的功耗降低 40%。上市时间标注为 2027 年上半年，因此这是一次面向未来的产品发布，而非即刻可购买的在售型号。 product edge-ai"
     },
     {
       "id": "2026-08-31_vendor-clash-gpu-asic-cpu-6g-ran",
@@ -9392,6 +9975,40 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "a comparison between ceiling-mounted fmcw, ir-uwb and wi-fi radar for in-bedroom human activity monitoring and sleep interruption detection 吸顶式 fmcw、ir-uwb 与 wi-fi 雷达在卧室人体活动监测与睡眠中断检测中的对比研究 uwb ir-uwb fmcw wifi-sensing activity-recognition sleep-monitoring contactless-healthcare benchmark anton lambrecht, reda el hail, xianjun jiao, pieter crombez, dominique schreurs, peter karsmakers, adnan shahid and eli de poorter (imec/ghent university group; arxiv 2608.20322, submitted 20 aug 2026, cs.lg; under review at ieee access) run the first controlled, apples-to-apples comparison of three rf sensing radio technologies — fmcw radar, impulse-radio uwb (ir-uwb), and wi-fi radar — for ceiling-mounted, contactless bedroom monitoring. the motivation is squarely privacy: camera-based monitoring for the elderly and in care facilities rates 3.1/5 on acceptability surveys versus 4.0/5 for rf sensing, but prior cross-technology comparisons have always confounded the sensing modality with differences in hardware, dataset, deployment geometry, or evaluation protocol. this paper removes those confounds: the same 20 participants (14 male, 6 female; ages 21–67), the same six room layouts (bed/chair repositioned, radar fixed to the ceiling) in a real residential test environment (homelab, zwijnaarde), and — critically — the *identical* five-block cnn classifier architecture are used across all three technologies, which are represented by genuinely comparable hardware: a texas instruments iwr6843aop (60–64 ghz fmcw, 12 virtual channels via 3 tx/4 rx), a qorvo qm33120wdk1 dw3000 (6.49 ghz ir-uwb, 500 mhz bandwidth, single tx/rx, pseudo-monostatic with a 30 cm tx-rx offset), and a zedboard running the openwifi open-source sdr stack (2.4 ghz, 20 mhz / 53-subcarrier csi, single tx/rx). anton lambrecht、reda el hail、xianjun jiao、pieter crombez、dominique schreurs、peter karsmakers、adnan shahid、eli de poorter（imec/根特大学团队；arxiv 2608.20322，2026 年 8 月 20 日提交，cs.lg；投稿 ieee access 审稿中）首次在完全受控条件下，对三种射频感知技术——fmcw 雷达、脉冲无线电 uwb（ir-uwb）与 wi-fi 雷达——做了严格意义上的\"同条件\"对比，场景是吸顶式、非接触卧室监测。动机直指隐私：针对老年人及护理机构的监测方案中，摄像头式方案的可接受度评分为 3.1/5，而射频感知为 4.0/5；但既往跨技术对比几乎总是把\"感知体制本身\"与硬件差异、数据集差异、部署几何差异或评测协议差异混在一起，无法得出干净结论。本文消除了这些混淆变量：同一批 20 名受试者（男 14、女 6，21-67 岁）、同样六种房间布局（床/椅重新摆放，雷达固定于天花板）、在真实居住测试环境（imec homelab，zwijnaarde）中，且——关键之处——三种技术全部使用*完全相同*的五模块 cnn 分类器架构；三者的硬件也具有真正的可比性：德州仪器 iwr6843aop（60-64 ghz fmcw，3 发 4 收共 12 个虚拟通道）、qorvo qm33120wdk1 dw3000（6.49 ghz ir-uwb，500 mhz 带宽，单发单收，30 cm 收发间距的准单站配置）、运行开源 openwifi sdr 协议栈的 zedboard（2.4 ghz，20 mhz 带宽 / 53 子载波 csi，单发单收）。 academic-paper uwb"
+    },
+    {
+      "id": "2026-09-01_arxiv-goe-tactical-edge-cpu-compression",
+      "date_found": "2026-09-01",
+      "technology": "edge-ai",
+      "date_published": "2026-08-19",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "GOE: the compression method, not the bit-width number, decides whether a model survives deployment on a GPU-less edge CPU",
+      "title_zh": "GOE：决定模型能否在无 GPU 边缘 CPU 上存活部署的是压缩方法，而非比特位宽数字",
+      "url": "https://arxiv.org/abs/2608.28652",
+      "topics": [
+        "model-compression",
+        "pruning",
+        "quantization",
+        "neural-architecture-search",
+        "GPU-less-CPU-inference",
+        "llama.cpp",
+        "GGUF",
+        "hardware-agnostic-optimization",
+        "tactical-edge"
+      ],
+      "topic_primary": "edge-model-efficiency",
+      "topics_secondary": [
+        "edge-ai-silicon"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-09-01_arxiv-goe-tactical-edge-cpu-compression.md",
+      "summary_short_en": "Model-compression papers usually report a single headline number — \"4-bit quantization, 3x smaller\" — as if the bit-width alone determined the outcome. This paper, from the US Army's DEVCOM Army Research Laboratory with the University of West Florida, is a systems paper built around a more useful claim: on constrained hardware, *which* compression technique you use matters as much as how aggressively you compress, because different methods fail differently once you actually deploy the result.",
+      "summary_short_zh": "模型压缩类论文通常只报一个头条数字——\"4-bit 量化，体积缩小 3 倍\"——仿佛比特位宽本身就决定了结果。这篇来自美国陆军 DEVCOM 陆军研究实验室（与西佛罗里达大学合作）的论文是一篇系统性论文，其核心是一个更有实用价值的论断：在受限硬件上，**用哪种压缩技术**与压缩得多激进同样重要，因为不同方法在真正部署后会以不同方式失效。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Model-compression papers usually report a single headline number — &quot;4-bit quantization, 3x smaller&quot; — as if the bit-width alone determined the outcome. This paper, from the US Army's DEVCOM Army Research Laboratory with the University of West Florida, is a systems paper built around a more useful claim: on constrained hardware, <em>which</em> compression technique you use matters as much as how aggressively you compress, because different methods fail differently once you actually deploy the result.</p>\n<p>The vehicle for that claim is GOE (Generalized Optimization Engine), a hardware- and model-agnostic pipeline that chains four kinds of technique — a model analyzer that profiles the input model and generates a compression plan; pruning and quantization (Optimal Brain Compression, Torch-Pruning, TorchAO); supernet-based neural architecture search with an evolutionary search step; and a choice of backend compilers (Torch Compile, TensorRT, ONNX, Apache TVM) — so that the same optimization workflow can target very different deployment hardware. The paper's framing is explicitly military (&quot;tactical environment,&quot; resource-constrained heterogeneous hardware), but the concrete demonstration is a normal edge-deployment scenario any reader can check: Llama-3.2-1B, compressed and run via llama.cpp/GGUF on an Intel Core Ultra 7 265U CPU with no GPU involved at all.</p>\n<p>The comparison that gives the paper its content: 8-bit quantization (Q8_0) gets the model 1.9x smaller and 1.7x faster with accuracy preserved; 4-bit quantization (Q4_K_M) gets roughly 3x smaller and 2.5x faster with only minimal accuracy loss; but structured pruning at comparable compression ratios shows significant accuracy degradation. Same nominal compression budget, different survival outcome, purely as a function of which technique produced it.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Authors/institution</strong>: DEVCOM Army Research Laboratory (Aberdeen Proving Ground, MD) and University of West Florida. 14-page preprint; the abstract page's comments note a compressed version is under review at IEEE MILCOM 2026.</li><li><strong>GOE pipeline components</strong>: (1) Model Analyzer — profiles model type/structure and generates an analysis/optimization report; (2) Pruning &amp; Quantization — Optimal Brain Compression, Torch-Pruning, TorchAO; (3) supernet-based Neural Architecture Search with evolutionary search; (4) backend compilers — Torch Compile, TensorRT, ONNX, Apache TVM.</li><li><strong>Design goal</strong>: hardware-agnostic and model-agnostic — one optimization architecture intended to target resource-constrained heterogeneous hardware, framed around &quot;tactical environment&quot; deployment but applicable to any GPU-less/constrained-CPU edge target.</li><li><strong>Concrete demonstration hardware</strong>: Intel Core Ultra 7 265U, 14 threads, no discrete GPU; inference runtime llama.cpp/GGUF.</li><li><strong>Numeric results (Llama-3.2-1B)</strong>: Q8_0 quantization — 1.9x smaller, 1.7x faster, accuracy preserved. Q4_K_M quantization — ~3x smaller, ~2.5x faster, minimal accuracy loss. Structured pruning at comparable compression levels — significant accuracy degradation (specific numeric accuracy deltas not captured from the abstract/HTML excerpt reviewed).</li><li><strong>Core claim</strong>: compression <em>method</em> choice, not nominal bit-width alone, determines whether task accuracy survives real deployment — quantization (both precisions tested) preserved accuracy where pruning at similar compression did not.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Two things make this worth a novelty-3 entry rather than a drop. First, the empirical point — quantization and structured pruning fail differently at matched compression ratios, and only one of them (quantization, here) preserved accuracy on this model/hardware pair — is exactly the kind of device-side, checkable number this domain's own novelty rubric asks for over an unbacked TOPS or &quot;N×&quot; marketing claim. Second, the framing is a legitimate instance of <code>edge-model-efficiency</code>: the paper is explicit that its target is deployment feasibility on genuinely constrained, GPU-less hardware, not accuracy tables in isolation, which is the SKILL's stated bar for ingesting quantization/compression work.</p>\n<p>Two caveats belong in the record. The &quot;tactical environment&quot; framing (DEVCOM ARL, MILCOM submission) signals defense-research provenance rather than a consumer or commercial edge deployment — worth noting for context, not a reason to exclude it, since the underlying hardware (an Intel Core Ultra 7 client CPU) and runtime (llama.cpp/GGUF) are exactly what a consumer AI-PC deployment would also use. And the paper is presented as a systems/engineering framework paper rather than a new compression algorithm — the individual techniques it orchestrates (Optimal Brain Compression, Torch-Pruning, TorchAO, TensorRT, etc.) are all pre-existing; the contribution is the unified pipeline and the comparative measurement, not a novel compression method. That keeps this at novelty 3 (solid platform/measurement contribution) rather than 4-5.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>模型压缩类论文通常只报一个头条数字——&quot;4-bit 量化，体积缩小 3 倍&quot;——仿佛比特位宽本身就决定了结果。这篇来自美国陆军 DEVCOM 陆军研究实验室（与西佛罗里达大学合作）的论文是一篇系统性论文，其核心是一个更有实用价值的论断：在受限硬件上，<strong>用哪种压缩技术</strong>与压缩得多激进同样重要，因为不同方法在真正部署后会以不同方式失效。</p>\n<p>支撑该论断的载体是 GOE（通用优化引擎），一个硬件与模型无关的流水线，串联了四类技术——对输入模型做画像并生成压缩方案的模型分析器；剪枝与量化（Optimal Brain Compression、Torch-Pruning、TorchAO）；基于超网的神经架构搜索加进化搜索步骤；以及可选的后端编译器（Torch Compile、TensorRT、ONNX、Apache TVM）——使同一套优化流程能够面向截然不同的部署硬件。论文的表述明确带有军事色彩（&quot;战术环境&quot;、资源受限的异构硬件），但其具体演示是任何读者都能核实的普通边缘部署场景：Llama-3.2-1B 经压缩后，通过 llama.cpp/GGUF 运行在完全不涉及 GPU 的 Intel Core Ultra 7 265U CPU 上。</p>\n<p>真正支撑论文内容的对比是：8-bit 量化（Q8_0）使模型体积缩小 1.9 倍、速度提升 1.7 倍且精度保持不变；4-bit 量化（Q4_K_M）体积缩小约 3 倍、速度提升 2.5 倍，精度损失极小；而在相近压缩比下，结构化剪枝出现明显的精度退化。同样的名义压缩预算，因所采用的技术不同而导致截然不同的存活结果。</p>\n<h3>技术要点</h3>\n<ul><li><strong>作者/机构</strong>：DEVCOM 陆军研究实验室（马里兰州阿伯丁试验场）与西佛罗里达大学。14 页预印本；摘要页备注栏说明一个精简版本正在 IEEE MILCOM 2026 评审中。</li><li><strong>GOE 流水线组成</strong>：（1）模型分析器——对输入模型类型/结构做画像并生成分析/优化报告；（2）剪枝与量化——Optimal Brain Compression、Torch-Pruning、TorchAO；（3）基于超网的神经架构搜索，配合进化搜索步骤；（4）后端编译器可选——Torch Compile、TensorRT、ONNX、Apache TVM。</li><li><strong>设计目标</strong>：硬件无关且模型无关——一套优化架构旨在面向资源受限的异构硬件，表述围绕&quot;战术环境&quot;部署展开，但同样适用于任何无 GPU / 受限 CPU 的边缘目标。</li><li><strong>具体演示硬件</strong>：Intel Core Ultra 7 265U，14 线程，不涉及独立 GPU；推理运行时为 llama.cpp/GGUF。</li><li><strong>数值结果（Llama-3.2-1B）</strong>：Q8_0 量化——体积缩小 1.9 倍，速度提升 1.7 倍，精度保持不变。Q4_K_M 量化——体积缩小约 3 倍，速度提升约 2.5 倍，精度损失极小。相近压缩水平下的结构化剪枝——精度出现明显退化（具体精度数值差未能从审阅的摘要/HTML 摘录中获取）。</li><li><strong>核心论断</strong>：决定任务精度能否在真实部署中存活的是压缩<strong>方法</strong>的选择，而非单纯的名义比特位宽——两种测试的量化精度均保住了精度，而相近压缩比下的剪枝没有。</li></ul>\n<h3>意义与新意</h3>\n<p>有两点使这条目值得记为新颖度 3 而非丢弃。其一，其实证要点——量化与结构化剪枝在相近压缩比下以不同方式失效，而在这一模型/硬件组合上只有量化保住了精度——正是本领域自身新颖度评分标准所要求的、可核实的设备侧数字，而非无背书支撑的 TOPS 或&quot;N 倍&quot;营销说法。其二，其框定是 <code>edge-model-efficiency</code>（边缘模型效率）的一次合规实例：论文明确其目标是在真正受限、无 GPU 的硬件上的部署可行性，而非孤立的精度表格，这正是本 SKILL 对量化/压缩类工作设定的收录门槛。</p>\n<p>记录中也应注明两点保留意见。&quot;战术环境&quot;的表述（DEVCOM 陆军研究实验室、投稿 MILCOM）表明其出身是国防研究而非消费级或商业边缘部署——这值得作为背景说明，而非排除理由，因为其底层硬件（Intel Core Ultra 7 客户端 CPU）与运行时（llama.cpp/GGUF）恰恰也是消费级 AI PC 部署会使用的同一套东西。另外，本文呈现为一篇系统/工程框架论文而非一种新压缩算法——其编排的各项具体技术（Optimal Brain Compression、Torch-Pruning、TorchAO、TensorRT 等）均为既有方法；其贡献在于统一流水线与对比测量，而非一种新颖的压缩方法本身。这使其定位在新颖度 3（扎实的平台/测量贡献），而非 4-5。</p>",
+      "images": [],
+      "search_blob": "goe: the compression method, not the bit-width number, decides whether a model survives deployment on a gpu-less edge cpu goe：决定模型能否在无 gpu 边缘 cpu 上存活部署的是压缩方法，而非比特位宽数字 model-compression pruning quantization neural-architecture-search gpu-less-cpu-inference llama.cpp gguf hardware-agnostic-optimization tactical-edge model-compression papers usually report a single headline number — \"4-bit quantization, 3x smaller\" — as if the bit-width alone determined the outcome. this paper, from the us army's devcom army research laboratory with the university of west florida, is a systems paper built around a more useful claim: on constrained hardware, *which* compression technique you use matters as much as how aggressively you compress, because different methods fail differently once you actually deploy the result. 模型压缩类论文通常只报一个头条数字——\"4-bit 量化，体积缩小 3 倍\"——仿佛比特位宽本身就决定了结果。这篇来自美国陆军 devcom 陆军研究实验室（与西佛罗里达大学合作）的论文是一篇系统性论文，其核心是一个更有实用价值的论断：在受限硬件上，**用哪种压缩技术**与压缩得多激进同样重要，因为不同方法在真正部署后会以不同方式失效。 academic-paper edge-ai"
     },
     {
       "id": "2026-08-28_dlink-dap-e3620-be3600-wifi7-enterprise-ap",
@@ -27472,6 +28089,39 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>欧盟委员会的 <strong>无线电频谱政策组（RSPG）</strong> 在 2025 年 11 月 12 日全会上发布了关于<strong>上 6 GHz 频段（6 425–7 125 MHz，共 700 MHz）</strong>的最终意见，结束了数年来 Wi-Fi 业界与移动蜂窝运营商间的拉锯。决定为：<strong>540 MHz 划给授权移动蜂窝、160 MHz 冻结至 WRC-27、给非授权 Wi-Fi 的为零</strong>。结合既已分配的下 6 GHz（5 925–6 425 MHz，500 MHz 非授权），欧洲 6 GHz 全景为：下 500 MHz 用于 Wi-Fi、上 540 MHz 用于蜂窝、上 160 MHz 进入 WRC-27（2027 年 11 月）前的技术评估窗。</p>\n<p>Wi-Fi 阵营的反应（Wi-Fi Alliance、Wi-Fi NOW、欧洲无线 ISP 联盟）尖锐批评，Wi-Fi Alliance 称该建议&quot;短视&quot;。移动阵营（GSMA、德国联邦监管）则认为 540 MHz 是欧洲建设&quot;先进、有韧性、主权&quot;移动网络（即 6G）的下限。160 MHz 冻结意味着至少要等到 WRC-27，且届时还需 CEPT 协调决定与成员国实施 —— 现实上 2028+。</p>\n<p>对 Wi-Fi 的实际影响：在欧洲，<strong>Wi-Fi 7 与 Wi-Fi 8 将仅有 500 MHz 6 GHz 频谱可用</strong> —— 仅为美国 FCC 释放的 1 200 MHz 的一半，远少于业界产品路线图原本设计针对的容量。802.11be 的 320 MHz 信道与多 RU MLO 设计将运行在比原计划更窄的频谱走廊里。</p>\n<h3>技术要点</h3>\n<ul><li>上 6 GHz 共 700 MHz（6 425–7 125 MHz）。</li><li>决定（2025 年 11 月 12 日）：540 MHz 给移动 / 160 MHz 冻结 / 0 MHz 给 Wi-Fi。</li><li>加上下 6 GHz：欧盟 Wi-Fi 总计 500 MHz，对比美国 1 200 MHz。</li><li>160 MHz 冻结至最早 WRC-27（2027 年 11 月）。</li><li>落地路径：RSPG 意见 → CEPT 技术条件 → 委员会协调 → 成员国实施。</li><li>802.11be / 802.11bn 的 320 MHz 信道与 MLO 设计将运行在更窄的欧盟走廊。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 Wi-Fi 业界 2024-2025 年间公开苦苦争取却节节失利的议题的最后一棒（参见 Computer Weekly / Wi-Fi NOW 在该 URL 的覆盖）。它不直接影响 802.11 工作组的标准工作（TGbe 与 TGbn 规范是全球性的），但把欧洲的<strong>可部署</strong>容量较北美减少了大约一半。三条值得跟踪的连锁影响：(1) 厂商 SKU 策略分化 —— 欧盟版 Wi-Fi 7 / 8 AP 将需要不同的默认信道捆绑与 MLO 运行模式；(2) 冻结的 160 MHz 将成为通往 WRC-27（2027）的一场漫长政治战；(3) 欧洲 6G 移动运营商将在 6 GHz 部署 540 MHz 蜂窝，使带边的 Wi-Fi / 5G NR-U 共存在工程上更紧迫（参 <code>arxiv-llm-6ghz-wifi-nru-coexistence</code>）。</p>",
       "images": [],
       "search_blob": "eu rspg decision on the upper 6 ghz band — 540 mhz to mobile / 160 mhz frozen for wrc-27, no upper 6 ghz for wi-fi 欧盟 rspg 关于上 6 ghz 频段的决定 —— 540 mhz 给移动 / 160 mhz 冻结至 wrc-27，wi-fi 不获上 6 ghz products security the european commission's **radio spectrum policy group (rspg)** issued its final opinion on the **upper 6 ghz band (6 425-7 125 mhz, 700 mhz total)** at its 12 november 2025 plenary, ending a multi-year split between the wi-fi industry and the mobile-cellular operators. the decision: **540 mhz reserved for licensed mobile-cellular use, 160 mhz frozen until wrc-27, zero mhz for unlicensed wi-fi**. combined with the already-allocated lower 6 ghz (5 925-6 425 mhz, 500 mhz unlicensed), the full european 6 ghz picture is now: lower 500 mhz for wi-fi, upper 540 mhz for cellular, upper 160 mhz under technical evaluation through wrc-27 (nov 2027). 欧盟委员会的 **无线电频谱政策组（rspg）** 在 2025 年 11 月 12 日全会上发布了关于**上 6 ghz 频段（6 425–7 125 mhz，共 700 mhz）**的最终意见，结束了数年来 wi-fi 业界与移动蜂窝运营商间的拉锯。决定为：**540 mhz 划给授权移动蜂窝、160 mhz 冻结至 wrc-27、给非授权 wi-fi 的为零**。结合既已分配的下 6 ghz（5 925–6 425 mhz，500 mhz 非授权），欧洲 6 ghz 全景为：下 500 mhz 用于 wi-fi、上 540 mhz 用于蜂窝、上 160 mhz 进入 wrc-27（2027 年 11 月）前的技术评估窗。 industry-news wifi"
+    },
+    {
+      "id": "2026-09-01_asus-rog-rapture-gt-be19000ai-router-compute-node",
+      "date_found": "2026-09-01",
+      "technology": "edge-ai",
+      "date_published": "2025-10-30",
+      "type": "product",
+      "category": "industry",
+      "title_en": "ROG Rapture GT-BE19000AI: a Wi-Fi 7 router with a built-in NPU and a Docker engine to run other people's AI containers",
+      "title_zh": "ROG Rapture GT-BE19000AI：内置 NPU、并可用 Docker 引擎运行第三方 AI 容器的 Wi-Fi 7 路由器",
+      "url": "https://press.asus.com/news/press-releases/rog-rapture-gt-be19000ai-ai-gaming-router/",
+      "topics": [
+        "Wi-Fi-router",
+        "NPU",
+        "Docker",
+        "Home-Assistant",
+        "Frigate",
+        "tri-core-architecture",
+        "AI-Game-Boost",
+        "WiFi-Insight"
+      ],
+      "topic_primary": "home-edge-ai",
+      "topics_secondary": [
+        "edge-ai-silicon"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-09-01_asus-rog-rapture-gt-be19000ai-router-compute-node.md",
+      "summary_short_en": "**Dating note (deliberate backfill):** this entry covers ASUS's own 2025-10-30 press release for the ROG Rapture GT-BE19000AI — about ten months old, inside this scout's 12-month freshness window but not a fresh announcement. It is filed now, not because the product is new, but to close a specific open lead this scout has carried across three prior runs (2026-08-28, -29, -31): the router already appears in this knowledge base's `2026-08-13_asuswrt-merlin-august-2026-ecosystem-wave` entry, but only as a firmware-version string in a list of parallel Wi-Fi 7 firmware releases — the router-as-compute-node angle itself (its NPU, its Docker-hosted AI workloads) had never been covered. This entry fills that specific gap using the vendor's own primary-source press release rather than the SEO/affiliate coverage that dominated open search for this topic on prior runs.",
+      "summary_short_zh": "**日期说明（有意补录）：** 本条目覆盖的是华硕自家于 2025 年 10 月 30 日发布的 ROG Rapture GT-BE19000AI 新闻稿——距今约十个月，仍在本 scout 十二个月的时效窗口内，但并非最新发布。之所以现在收录，并非因为产品是新的，而是为了了结本 scout 在此前三次运行（2026-08-28、-29、-31）中一直悬而未决的一条线索：该路由器此前已出现在本知识库 `2026-08-13_asuswrt-merlin-august-2026-ecosystem-wave` 条目中，但仅作为一系列并行 Wi-Fi 7 固件版本号列表中的一个固件版本字符串——路由器本身作为计算节点的角度（其 NPU、其 Docker 托管的 AI 负载）从未被覆盖过。本条目使用厂商自己的一手新闻稿（而非此前几次运行中主导开放搜索结果的 SEO/联盟营销内容）填补了这一具体空白。",
+      "body_html_en": "<h3>Summary</h3>\n<p><strong>Dating note (deliberate backfill):</strong> this entry covers ASUS's own 2025-10-30 press release for the ROG Rapture GT-BE19000AI — about ten months old, inside this scout's 12-month freshness window but not a fresh announcement. It is filed now, not because the product is new, but to close a specific open lead this scout has carried across three prior runs (2026-08-28, -29, -31): the router already appears in this knowledge base's <code>2026-08-13_asuswrt-merlin-august-2026-ecosystem-wave</code> entry, but only as a firmware-version string in a list of parallel Wi-Fi 7 firmware releases — the router-as-compute-node angle itself (its NPU, its Docker-hosted AI workloads) had never been covered. This entry fills that specific gap using the vendor's own primary-source press release rather than the SEO/affiliate coverage that dominated open search for this topic on prior runs.</p>\n<p>The GT-BE19000AI is a tri-band Wi-Fi 7 gaming router built around a &quot;tri-core architecture&quot; — a CPU, an NPU, and an MCU working together, rather than the NPU being a bolt-on accelerator. The onboard AI core is used for router-native functions: AI Game Boost (device detection, adaptive QoE traffic prioritization, AI-enhanced routing) and WiFi Insight (spectrum analysis, automated channel switching) both run locally on the router hardware, not in the cloud. Separately from the NPU-driven router features, the box ships with 4 GB DDR4 RAM, 32 GB eMMC storage, and a built-in Docker Engine, explicitly marketed as letting users &quot;deploy automation, AI services, or IoT management directly on the router&quot; — the press release names Home Assistant and the Frigate AI video-recognition/NVR system as example containerized workloads that run on the router itself rather than on a separate PC or server.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Category</strong>: tri-band Wi-Fi 7 gaming router (BCM4916, BCM6726, BCM67263 chipsets), marketed as &quot;the world's first AI gaming router&quot; by ASUS.</li><li><strong>NPU</strong>: 7.9 TOPS, integrated into a &quot;tri-core&quot; CPU + NPU + MCU architecture; no third-party benchmark located for this figure — treat as a vendor claim.</li><li><strong>On-router (not cloud) AI functions</strong>: AI Game Boost (device detection, adaptive QoE/traffic prioritization, AI-enhanced GTNet routing, claimed up to 34% latency reduction, &quot;supporting up to 3,000 games&quot;); WiFi Insight (full-spectrum analysis, automated channel switching).</li><li><strong>Compute platform for general workloads</strong>: 4 GB DDR4 RAM, 32 GB eMMC storage, built-in Docker Engine — explicitly for hosting third-party containerized services (Home Assistant, Frigate named as examples) directly on the router rather than a separate always-on PC or NAS.</li><li><strong>Networking specs</strong> (context, not this scout's focus): tri-band Wi-Fi 7, 320 MHz channels, 4096-QAM, up to 19 Gbps wireless PHY rate; dual 10G + quad 2.5G Ethernet, up to 31 Gbps aggregate wired capacity.</li><li><strong>AiMesh</strong>: mesh extendibility supported; ASUS's own coverage suggests the more elaborate &quot;Smart AiMesh&quot; AI-driven backhaul/prioritization features are more prominent on the non-AI sibling model (GT-BE19000) than on this AI-branded unit — worth a skeptical read of which AI claims attach to which SKU.</li><li><strong>No independently verified benchmark</strong> located for the 7.9 TOPS figure, the &quot;34% latency reduction,&quot; or Docker-hosted AI service performance (e.g., Frigate inference throughput) on this hardware.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is a deliberate, disclosed backfill in the same spirit as the ZTE AI-FTTR entry that seeded this bin on 2026-08-28 — filed to close a specific, three-run-old open lead rather than because anything changed this week. Its value is bin-completeness and specificity: <code>home-edge-ai</code> had exactly one prior entry (ZTE), and this is the second, giving the bin its first consumer/prosumer Wi-Fi router example alongside an FTTR gateway example. It is also the cleanest illustration in this knowledge base's home-edge-ai bin of the scope split the SKILL calls out explicitly — the router's Wi-Fi 7 PHY/MAC capabilities (320 MHz channels, 4096-QAM, AiMesh backhaul) belong to <code>wifi_research_scout</code>'s territory and are recorded here only as context, while the NPU-driven local functions and the general-purpose Docker compute platform are this scout's actual subject.</p>\n<p>The honest caveat, stated plainly: every performance number in this entry — 7.9 TOPS, 34% latency reduction, the implicit claim that on-router AI inference is fast/capable enough to be useful — comes from ASUS's own marketing copy, with no third-party benchmark located. That is consistent with this domain's broader pattern this run (Qualcomm's VENTUNO Q, Microsoft's Aion, Apple's AFM 3 all shipped without independent numbers); this entry is filed as a product/capability record, not as a validated performance claim, and the entry is capped at novelty 2 for exactly that reason — a notable, well-documented product worth recording, not a measured result.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p><strong>日期说明（有意补录）：</strong> 本条目覆盖的是华硕自家于 2025 年 10 月 30 日发布的 ROG Rapture GT-BE19000AI 新闻稿——距今约十个月，仍在本 scout 十二个月的时效窗口内，但并非最新发布。之所以现在收录，并非因为产品是新的，而是为了了结本 scout 在此前三次运行（2026-08-28、-29、-31）中一直悬而未决的一条线索：该路由器此前已出现在本知识库 <code>2026-08-13_asuswrt-merlin-august-2026-ecosystem-wave</code> 条目中，但仅作为一系列并行 Wi-Fi 7 固件版本号列表中的一个固件版本字符串——路由器本身作为计算节点的角度（其 NPU、其 Docker 托管的 AI 负载）从未被覆盖过。本条目使用厂商自己的一手新闻稿（而非此前几次运行中主导开放搜索结果的 SEO/联盟营销内容）填补了这一具体空白。</p>\n<p>GT-BE19000AI 是一款三频 Wi-Fi 7 游戏路由器，围绕&quot;三核心架构&quot;构建——CPU、NPU 与 MCU 协同工作，而非把 NPU 当作外挂加速器。板载 AI 核心用于路由器原生功能：AI Game Boost（设备识别、自适应 QoE 流量优先级、AI 增强路由）与 WiFi Insight（频谱分析、自动信道切换）均在路由器硬件本地运行，而非在云端。除 NPU 驱动的路由器功能之外，该设备配备 4GB DDR4 内存、32GB eMMC 存储，并内置 Docker 引擎，宣传语明确表示可让用户&quot;无需另配 PC 或服务器，直接在路由器上部署自动化、AI 服务或 IoT 管理&quot;——新闻稿点名 Home Assistant 与 Frigate AI 视频识别/NVR 系统作为可在路由器本机（而非独立 PC 或服务器上）运行的容器化负载示例。</p>\n<h3>技术要点</h3>\n<ul><li><strong>产品类别</strong>：三频 Wi-Fi 7 游戏路由器（BCM4916、BCM6726、BCM67263 芯片组），华硕将其宣传为&quot;全球首款 AI 游戏路由器&quot;。</li><li><strong>NPU</strong>：7.9 TOPS，集成于&quot;三核心&quot; CPU + NPU + MCU 架构中；未找到该数字的第三方基准测试——应视为厂商自称。</li><li><strong>路由器本机（而非云端）AI 功能</strong>：AI Game Boost（设备识别、自适应 QoE/流量优先级、AI 增强的 GTNet 路由，宣称最高降低 34% 时延，&quot;支持多达 3000 款游戏&quot;）；WiFi Insight（全频谱分析、自动信道切换）。</li><li><strong>通用负载计算平台</strong>：4GB DDR4 内存、32GB eMMC 存储、内置 Docker 引擎——明确用于在路由器本机（而非另配常开 PC 或 NAS）托管第三方容器化服务（新闻稿点名 Home Assistant、Frigate 为示例）。</li><li><strong>网络规格</strong>（背景信息，非本 scout 关注重点）：三频 Wi-Fi 7，320 MHz 信道，4096-QAM，无线 PHY 速率最高 19 Gbps；双 10G + 四 2.5G 以太网口，有线聚合容量最高 31 Gbps。</li><li><strong>AiMesh</strong>：支持 Mesh 扩展；华硕自身的资料显示，更完整的&quot;Smart AiMesh&quot; AI 驱动回程/优先级功能在非 AI 姊妹型号（GT-BE19000）上反而更为突出，而非这款带 AI 标识的型号——对于哪些 AI 声称对应哪款 SKU，值得抱以审慎态度。</li><li><strong>未找到独立验证的基准测试</strong>：无论是 7.9 TOPS 数字、&quot;降低 34% 时延&quot;的说法，还是 Docker 托管 AI 服务（例如 Frigate 推理吞吐量）在该硬件上的表现，均无第三方验证数据。</li></ul>\n<h3>意义与新意</h3>\n<p>这是一次有意为之、且已明确披露的补录，与 2026-08-28 为该分类奠基的中兴 AI-FTTR 条目属于同一性质——收录是为了了结一条已悬置三次运行的具体线索，而非因为本周有任何新变化。它的价值在于分类的完整性与具体性：<code>home-edge-ai</code>（家庭边缘 AI）此前仅有一条条目（中兴），本条目是第二条，使该分类首次拥有一个消费级/发烧级 Wi-Fi 路由器案例，与一个 FTTR 网关案例并列。它也是本知识库 home-edge-ai 分类中，对 SKILL 明确指出的范围划分最干净的一个示例——路由器的 Wi-Fi 7 物理层/MAC 层能力（320 MHz 信道、4096-QAM、AiMesh 回程）属于 <code>wifi_research_scout</code> 的领地，本条目仅将其作为背景信息记录，而 NPU 驱动的本地功能与通用 Docker 计算平台才是本 scout 真正关注的主体。</p>\n<p>需要坦诚说明的保留意见是：本条目中的每一个性能数字——7.9 TOPS、降低 34% 时延，以及&quot;路由器本机 AI 推理足够快、足够可用&quot;这一隐含声称——均来自华硕自身的营销文案，未找到任何第三方基准测试。这与本领域本轮运行中更广泛的模式一致（高通 VENTUNO Q、微软 Aion、苹果 AFM 3 均在未提供独立数字的情况下发布）；本条目按产品/能力记录收录，而非经过验证的性能声称，也正因如此，其新颖度被限定为 2——是一款值得记录、文档翔实的产品，而非一项经过测量的结果。</p>",
+      "images": [],
+      "search_blob": "rog rapture gt-be19000ai: a wi-fi 7 router with a built-in npu and a docker engine to run other people's ai containers rog rapture gt-be19000ai：内置 npu、并可用 docker 引擎运行第三方 ai 容器的 wi-fi 7 路由器 wi-fi-router npu docker home-assistant frigate tri-core-architecture ai-game-boost wifi-insight **dating note (deliberate backfill):** this entry covers asus's own 2025-10-30 press release for the rog rapture gt-be19000ai — about ten months old, inside this scout's 12-month freshness window but not a fresh announcement. it is filed now, not because the product is new, but to close a specific open lead this scout has carried across three prior runs (2026-08-28, -29, -31): the router already appears in this knowledge base's `2026-08-13_asuswrt-merlin-august-2026-ecosystem-wave` entry, but only as a firmware-version string in a list of parallel wi-fi 7 firmware releases — the router-as-compute-node angle itself (its npu, its docker-hosted ai workloads) had never been covered. this entry fills that specific gap using the vendor's own primary-source press release rather than the seo/affiliate coverage that dominated open search for this topic on prior runs. **日期说明（有意补录）：** 本条目覆盖的是华硕自家于 2025 年 10 月 30 日发布的 rog rapture gt-be19000ai 新闻稿——距今约十个月，仍在本 scout 十二个月的时效窗口内，但并非最新发布。之所以现在收录，并非因为产品是新的，而是为了了结本 scout 在此前三次运行（2026-08-28、-29、-31）中一直悬而未决的一条线索：该路由器此前已出现在本知识库 `2026-08-13_asuswrt-merlin-august-2026-ecosystem-wave` 条目中，但仅作为一系列并行 wi-fi 7 固件版本号列表中的一个固件版本字符串——路由器本身作为计算节点的角度（其 npu、其 docker 托管的 ai 负载）从未被覆盖过。本条目使用厂商自己的一手新闻稿（而非此前几次运行中主导开放搜索结果的 seo/联盟营销内容）填补了这一具体空白。 product edge-ai"
     },
     {
       "id": "2026-05-04_arxiv-proxyselect-ofdma-mu-mimo-scheduling",
