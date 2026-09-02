@@ -930,7 +930,7 @@ window.SOURCES_DATA = {
         "sat-direct-device",
         "leo-constellations"
       ],
-      "notes": "Added 2026-05-30 during the Jan-2026 backfill. Major satellite-industry publication; broader and more technical NTN/standards coverage than the existing spacenews source (surfaced the Keysight+Samsung Rel-19 NR-NTN S-band validation that spacenews/web-search did not lead with). html/WebFetch tier works; complements spacenews (playwright).",
+      "notes": "Added 2026-05-30 during the Jan-2026 backfill. PROMOTED TO EVERY-RUN COURTESY CHECK 2026-09-01 (user-approved): treat like arxiv-cs-ni-satellite and give the homepage one cheap fetch every run regardless of cadence timers — off-cadence checks produced real entries twice (08-14 Equatys, 09-01 SpaceX-Viasat FCC petition). Major satellite-industry publication; broader and more technical NTN/standards coverage than spacenews. html/WebFetch tier works.",
       "technology": "satellite"
     },
     {
@@ -982,16 +982,16 @@ window.SOURCES_DATA = {
     },
     {
       "id": "bluetooth-sig-news",
-      "name": "Bluetooth SIG News",
-      "url": "https://www.bluetooth.com/news/",
-      "kind": "browser",
+      "name": "Bluetooth SIG News (via /blog/)",
+      "url": "https://www.bluetooth.com/blog/",
+      "kind": "html",
       "category": "standards",
       "topics_hint": [
         "bt-le",
         "bt-channel-sounding",
         "bt-le-audio"
       ],
-      "notes": "Official Bluetooth SIG press and specification announcements. Switched html->playwright 2026-05-26: WebFetch returns only a client-rendered JS shell ('It seems we can't find what you're looking for'); the news listing is JS-rendered. Use web-search query_hint as fallback when the browser plugin is unavailable.",
+      "notes": "Official Bluetooth SIG announcements. Switched to /blog/ + html 2026-09-01 (user-approved after 3 runs on the workaround): /news/ is a JS-rendered shell that WebFetch can't read, while /blog/ renders server-side and is where every recent entry actually came from. Use web-search query_hint as fallback if /blog/ ever regresses.",
       "technology": "bluetooth"
     },
     {
@@ -1322,14 +1322,14 @@ window.SOURCES_DATA = {
     {
       "id": "sparklink-alliance-home",
       "name": "星闪联盟官网 (SparkLink Alliance)",
-      "url": "https://www.sparklink.org.cn/",
-      "kind": "browser",
+      "url": "https://admin.sparklink.org.cn/api/new/dynamics?navId=33",
+      "kind": "direct-api",
       "category": "standards",
       "topics_hint": [
         "nearlink-slb",
         "nearlink-sle"
       ],
-      "notes": "Official SparkLink Alliance website. Chinese-language; primary standards source.",
+      "notes": "Official SparkLink Alliance site via its JSON API (user-approved 2026-09-01 after 8 runs of proposing; the API produced 5 of the bin's last 10 entries). Fetch navId=33 (dynamics/news) AND navId=34 with a plain GET — no browser needed. Old browser-tier landing page: https://www.sparklink.org.cn/.",
       "technology": "nearlink"
     },
     {
