@@ -6,7 +6,7 @@ type: ieee-document
 technology: wifi
 title_en: "IEEE 802.11 UCM TIG Mentor digest — first appearance"
 title_zh: "IEEE 802.11 UCM TIG Mentor 摘要 — 首次出现"
-url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=UCM%20TIG
+url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=0ucm
 source_quality: snippet_only
 topics: [UCM-TIG, channel-modeling, ray-tracing]
 topic_primary: wifi8-uhr
@@ -21,11 +21,11 @@ A group designation not previously seen in this KB's Mentor tracking — "UCM TI
 本 KB 的 Mentor 跟踪中首次出现一个新的组别标识——"UCM TIG"，今日上传了其首份文档：DCN 11-26-1578r0，"Accuracy Assessment and Validation of Sionna-Based Ray Tracing for Indoor Environments"（Murat Uysal，NYUAD 无线中心）。该文档评估了基于 NVIDIA Sionna 的射线追踪仿真相对于实测室内传播的准确性，属于信道建模 / 仿真验证类工作，而非某个修正案的规范性文本。"UCM" 很可能代表某个"用例与信道建模"主题兴趣组，其具体章程尚无法从公开列表确认。
 
 ## Key technical points (EN)
-- **DCN 11-26-1578r0 · UCM TIG** — "Accuracy Assessment and Validation of Sionna-Based Ray Tracing for Indoor Environments". Murat Uysal (NYUAD Wireless Center).
+- **DCN 11-26-1578r0 · UCM TIG** — "Accuracy Assessment and Validation of Sionna-Based Ray Tracing for Indoor Environments". Murat Uysal (NYUAD Wireless Center). [document](https://mentor.ieee.org/802.11/documents?is_dcn=1578&is_year=2026)
 - Evaluates ray-tracing-based channel simulation accuracy against real indoor measurements — infrastructure-level modeling work that could feed future mmWave (TGbq) or sensing (TGbf-adjacent) proposal evaluation.
 
 ## Key technical points (ZH)
-- **DCN 11-26-1578r0 · UCM TIG** — "室内环境下基于 Sionna 射线追踪的精度评估与验证"。Murat Uysal（NYUAD 无线中心）。
+- **DCN 11-26-1578r0 · UCM TIG** — "室内环境下基于 Sionna 射线追踪的精度评估与验证"。Murat Uysal（NYUAD 无线中心）。 [文档链接](https://mentor.ieee.org/802.11/documents?is_dcn=1578&is_year=2026)
 - 评估基于射线追踪的信道仿真相对于真实室内测量的精度——这类基础建模工作可能为未来 mmWave（TGbq）或感知相关提案的评估提供支撑。
 
 ## Why it matters / what's new (EN)

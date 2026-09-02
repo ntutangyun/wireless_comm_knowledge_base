@@ -21,12 +21,12 @@ TGbn uploaded two new contributions this run, plus a late first-upload of a thir
 TGbn 本轮上传了两份新贡献，另有一份此前预留编号但今日才首次上传的文档。DCN 11-26-1577r0（Hang Yang，锐捷网络）题为 "Discussion on ST Preparation for Multiple Target AP MLDs"，讨论当存在多个候选目标 AP MLD 时，非 AP 多链路设备在链路切换或重关联前应如何准备状态，属早期讨论稿。DCN 11-26-1572r0（Junpeng Lou，锐捷网络）题为 "Further Considerations on Co-RTWT"，延续跨多个 AP 的协调受限目标唤醒时间（Co-RTWT）讨论；该文档编号低于此前已记录的文档，但直到 2026-08-31 才首次上传，属于"预留编号、延迟上传"模式的又一实例。
 
 ## Key technical points (EN)
-- **DCN 11-26-1577r0 · TGbn** — "Discussion on ST Preparation for Multiple Target AP MLDs". Hang Yang (Ruijie).
-- **DCN 11-26-1572r0 · TGbn** — "Further Considerations on Co-RTWT". Junpeng Lou (Ruijie).
+- **DCN 11-26-1577r0 · TGbn** — "Discussion on ST Preparation for Multiple Target AP MLDs". Hang Yang (Ruijie). [document](https://mentor.ieee.org/802.11/documents?is_dcn=1577&is_year=2026)
+- **DCN 11-26-1572r0 · TGbn** — "Further Considerations on Co-RTWT". Junpeng Lou (Ruijie). [document](https://mentor.ieee.org/802.11/documents?is_dcn=1572&is_year=2026)
 
 ## Key technical points (ZH)
-- **DCN 11-26-1577r0 · TGbn** — "多目标 AP MLD 的 ST 准备讨论"。Hang Yang（锐捷网络）。
-- **DCN 11-26-1572r0 · TGbn** — "关于 Co-RTWT 的进一步考虑"。Junpeng Lou（锐捷网络）。
+- **DCN 11-26-1577r0 · TGbn** — "多目标 AP MLD 的 ST 准备讨论"。Hang Yang（锐捷网络）。 [文档链接](https://mentor.ieee.org/802.11/documents?is_dcn=1577&is_year=2026)
+- **DCN 11-26-1572r0 · TGbn** — "关于 Co-RTWT 的进一步考虑"。Junpeng Lou（锐捷网络）。 [文档链接](https://mentor.ieee.org/802.11/documents?is_dcn=1572&is_year=2026)
 
 ## Why it matters / what's new (EN)
 Both contributions extend threads already active in the KB: the multi-target-AP-MLD discussion sits in the MLO link-management space alongside earlier TGbn link-switch contributions, and the Co-RTWT thread continues the coordinated R-TWT work that has appeared in prior TGbn digests. Neither introduces a settled mechanism yet — both are discussion-stage documents ahead of any normative text.
