@@ -6,7 +6,7 @@ type: ieee-document
 technology: wifi
 title_en: "IEEE 802.11 TGbp Mentor digest — 2026-09-02"
 title_zh: "IEEE 802.11 TGbp Mentor 当日摘要 — 2026-09-02"
-url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGBP
+url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bp
 source_quality: snippet_only
 topics: [TGbp, AMP, S1G, backscatter]
 topic_primary: amp-iot
