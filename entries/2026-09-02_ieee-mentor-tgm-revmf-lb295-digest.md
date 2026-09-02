@@ -21,10 +21,10 @@ TGm (REVmf, the 802.11 accumulated-maintenance revision) uploaded one new contri
 TGm（REVmf，802.11 累积维护性修订）本轮上传了一份新贡献：DCN 11-26-1585r0《IEEE 802.11revmf LB295 comments》（Po-Kai Huang，英特尔）。这是针对第 295 号信件投票（LB295）的评论解决提案——REVmf 目前正通过该工作组投票周期推进其 D3.00 草案。文档正文受 Mentor 权限限制，具体评论内容和涉及条款目前不公开。
 
 ## Key technical points (EN)
-- **DCN 11-26-1585r0 · TGm** — "IEEE 802.11revmf LB295 comments". Po-Kai Huang (Intel).
+- **DCN 11-26-1585r0 · TGm** — "IEEE 802.11revmf LB295 comments". Po-Kai Huang (Intel). [document](https://mentor.ieee.org/802.11/documents?is_dcn=1585&is_year=2026)
 
 ## Key technical points (ZH)
-- **DCN 11-26-1585r0 · TGm** — "802.11revmf LB295 评论"。Po-Kai Huang（英特尔）。
+- **DCN 11-26-1585r0 · TGm** — "802.11revmf LB295 评论"。Po-Kai Huang（英特尔）。 [文档链接](https://mentor.ieee.org/802.11/documents?is_dcn=1585&is_year=2026)
 
 ## Why it matters / what's new (EN)
 Routine maintenance-ballot comment resolution — administrative, not a new mechanism. Recorded as a navigation aid for tracking REVmf's D3.00 progress; the Timelines page (still stamped 2026-08-06 as of this run) lists REVmf's D2.0 letter ballot at 94% approval with final WG approval predicted October 2026, so LB295 comment resolution is consistent with that schedule.

@@ -21,10 +21,10 @@ TGbq (Integrated mmWave) uploaded one revision today: DCN 11-26-1231r1, "Channel
 TGbq（融合 mmWave）今日上传一份修订版：DCN 11-26-1231r1，"Channel Access Simulations Follow-up"（Charlie Pettersson，爱立信）。该文档是对现有仿真结果文档的后续修订，内容涉及融合 mmWave（IMMW）链路的信道接入行为，延续了 TGbq 整个夏季持续出现的仿真讨论线。
 
 ## Key technical points (EN)
-- **DCN 11-26-1231r1 · TGbq** — "Channel Access Simulations Follow-up". Charlie Pettersson (Ericsson).
+- **DCN 11-26-1231r1 · TGbq** — "Channel Access Simulations Follow-up". Charlie Pettersson (Ericsson). [document](https://mentor.ieee.org/802.11/documents?is_dcn=1231&is_year=2026)
 
 ## Key technical points (ZH)
-- **DCN 11-26-1231r1 · TGbq** — "信道接入仿真后续研究"。Charlie Pettersson（爱立信）。
+- **DCN 11-26-1231r1 · TGbq** — "信道接入仿真后续研究"。Charlie Pettersson（爱立信）。 [文档链接](https://mentor.ieee.org/802.11/documents?is_dcn=1231&is_year=2026)
 
 ## Why it matters / what's new (EN)
 A routine revision to an ongoing IMMW channel-access simulation document; the docx body is account-gated so the delta between r0 and r1 cannot be characterised from the public listing alone. Logged for continuity of the TGbq document trail.

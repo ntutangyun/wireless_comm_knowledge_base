@@ -21,14 +21,14 @@ TGbp (Ambient Power Communication) uploaded three new Huawei contributions late 
 TGbp（环境功率通信）于 2026-08-31 晚间至 2026-09-01 期间上传了三份新的华为贡献，开启了本 KB 此前未曾出现的技术方向：**单站式反向散射**（monostatic backscatter）作为 AMP 在 S1G 频段下的一种工作模式。DCN 11-26-1580r0《PDT AMP S1G Monostatic Backscatter Communication》（Rojan Chitrakar）提出了单站式反向散射链路的通信模式文本——即由同一部 AP 侧射频同时照射环境功率标签并接收其调制反射信号，区别于 AMP 工作此前普遍假设的双站式（照射器与接收器分离）拓扑。DCN 11-26-1581r1《PDT AMP S1G Monostatic Backscatter Receiver and CCA Sensitivity》（Lumin Liu）阐述了对应的接收机设计以及在 AP 自身强发射载波背景下检测微弱反向散射反射信号所需的空闲信道评估（CCA）灵敏度要求——这是单站式反向散射的经典自干扰问题。DCN 11-26-1582r2《TGbp Coexistence Assessment Document》（同为 Liu 撰写，一天内迭代两次）是一份更广泛的共存性研究，评估 AMP 工作与同信道上传统 Wi-Fi 及其他 S1G 流量的相互影响。
 
 ## Key technical points (EN)
-- **DCN 11-26-1580r0 · TGbp** — "PDT AMP S1G Monostatic Backscatter Communication". Rojan Chitrakar (Huawei).
-- **DCN 11-26-1581r1 · TGbp** — "PDT AMP S1G Monostatic Backscatter Receiver and CCA Sensitivity". Lumin Liu (Huawei).
-- **DCN 11-26-1582r2 · TGbp** — "TGbp Coexistence Assessment Document". Lumin Liu (Huawei).
+- **DCN 11-26-1580r0 · TGbp** — "PDT AMP S1G Monostatic Backscatter Communication". Rojan Chitrakar (Huawei). [document](https://mentor.ieee.org/802.11/documents?is_dcn=1580&is_year=2026)
+- **DCN 11-26-1581r1 · TGbp** — "PDT AMP S1G Monostatic Backscatter Receiver and CCA Sensitivity". Lumin Liu (Huawei). [document](https://mentor.ieee.org/802.11/documents?is_dcn=1581&is_year=2026)
+- **DCN 11-26-1582r2 · TGbp** — "TGbp Coexistence Assessment Document". Lumin Liu (Huawei). [document](https://mentor.ieee.org/802.11/documents?is_dcn=1582&is_year=2026)
 
 ## Key technical points (ZH)
-- **DCN 11-26-1580r0 · TGbp** — "PDT AMP S1G 单站式反向散射通信"。Rojan Chitrakar（华为）。
-- **DCN 11-26-1581r1 · TGbp** — "PDT AMP S1G 单站式反向散射接收机与 CCA 灵敏度"。Lumin Liu（华为）。
-- **DCN 11-26-1582r2 · TGbp** — "TGbp 共存性评估文档"。Lumin Liu（华为）。
+- **DCN 11-26-1580r0 · TGbp** — "PDT AMP S1G 单站式反向散射通信"。Rojan Chitrakar（华为）。 [文档链接](https://mentor.ieee.org/802.11/documents?is_dcn=1580&is_year=2026)
+- **DCN 11-26-1581r1 · TGbp** — "PDT AMP S1G 单站式反向散射接收机与 CCA 灵敏度"。Lumin Liu（华为）。 [文档链接](https://mentor.ieee.org/802.11/documents?is_dcn=1581&is_year=2026)
+- **DCN 11-26-1582r2 · TGbp** — "TGbp 共存性评估文档"。Lumin Liu（华为）。 [文档链接](https://mentor.ieee.org/802.11/documents?is_dcn=1582&is_year=2026)
 
 ## Why it matters / what's new (EN)
 Every prior TGbp digest in this KB has covered PDTs for data transfer, security, or wake/energizer control-plane procedures within a bistatic AMP topology. This is the first appearance of monostatic backscatter as a candidate operating mode, and it arrives with the receiver/CCA-sensitivity companion document that any monostatic scheme needs to be credible (self-interference at the AP is the mode's core engineering challenge), plus a coexistence assessment submitted in parallel — Huawei is proposing the mode and immediately backing it with the two studies TGbp would need to evaluate it. This thread is worth watching heading into the September WG letter ballot window.
