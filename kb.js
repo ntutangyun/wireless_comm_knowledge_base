@@ -6721,7 +6721,7 @@ window.KB_DATA = {
       "category": "standards",
       "title_en": "IEEE 802.11 TGm (REVmf) Mentor digest — 2026-09-02",
       "title_zh": "IEEE 802.11 TGm（REVmf）Mentor 当日摘要 — 2026-09-02",
-      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGM",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=000m",
       "topics": [
         "TGm",
         "REVmf",
@@ -6747,7 +6747,7 @@ window.KB_DATA = {
       "category": "standards",
       "title_en": "IEEE 802.11 TGbp Mentor digest — 2026-09-02",
       "title_zh": "IEEE 802.11 TGbp Mentor 当日摘要 — 2026-09-02",
-      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGBP",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bp",
       "topics": [
         "TGbp",
         "AMP",
@@ -6776,7 +6776,7 @@ window.KB_DATA = {
       "category": "standards",
       "title_en": "IEEE 802.11 TGbn Mentor digest — 2026-09-02",
       "title_zh": "IEEE 802.11 TGbn Mentor 当日摘要 — 2026-09-02",
-      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGBN",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bn",
       "topics": [
         "TGbn",
         "UHR",
@@ -7285,7 +7285,7 @@ window.KB_DATA = {
       "category": "standards",
       "title_en": "IEEE 802.11 TGbq Mentor digest — 2026-09-01",
       "title_zh": "IEEE 802.11 TGbq Mentor 当日摘要 — 2026-09-01",
-      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGBQ",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bq",
       "topics": [
         "TGbq",
         "IMMW"
@@ -7310,7 +7310,7 @@ window.KB_DATA = {
       "category": "standards",
       "title_en": "IEEE 802.11 TGbn Mentor digest — 2026-09-01",
       "title_zh": "IEEE 802.11 TGbn Mentor 当日摘要 — 2026-09-01",
-      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGBN",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bn",
       "topics": [
         "TGbn",
         "MLO",

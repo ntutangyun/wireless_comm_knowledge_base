@@ -6,7 +6,7 @@ type: ieee-document
 technology: wifi
 title_en: "IEEE 802.11 TGbq Mentor digest — 2026-09-01"
 title_zh: "IEEE 802.11 TGbq Mentor 当日摘要 — 2026-09-01"
-url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGBQ
+url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bq
 source_quality: snippet_only
 topics: [TGbq, IMMW]
 topic_primary: mmwave-bq

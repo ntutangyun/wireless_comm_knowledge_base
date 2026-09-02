@@ -6,7 +6,7 @@ type: ieee-document
 technology: wifi
 title_en: "IEEE 802.11 TGbn Mentor digest — 2026-09-01"
 title_zh: "IEEE 802.11 TGbn Mentor 当日摘要 — 2026-09-01"
-url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGBN
+url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=00bn
 source_quality: snippet_only
 topics: [TGbn, MLO, R-TWT, MAPC]
 topic_primary: mlo

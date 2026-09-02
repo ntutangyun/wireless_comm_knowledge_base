@@ -6,7 +6,7 @@ type: ieee-document
 technology: wifi
 title_en: "IEEE 802.11 TGm (REVmf) Mentor digest — 2026-09-02"
 title_zh: "IEEE 802.11 TGm（REVmf）Mentor 当日摘要 — 2026-09-02"
-url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=TGM
+url: https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=000m
 source_quality: snippet_only
 topics: [TGm, REVmf, maintenance]
 topic_primary: wifi8-uhr
