@@ -49,3 +49,7 @@ This knowledge base's NGSO-regulation coverage has tracked LEO–RAS coexistence
 
 ## Why it matters / what's new (ZH)
 知识库 ngso-regulation 板块此前对 LEO–RAS 共存的追踪主要来自*测量*一侧——SNIFFLES I（2026-08-18）刻画了星链、OneWeb 与国网实际向受保护射电天文频段辐射了什么。SkyShare 是*缓解系统*一侧的首个条目：它不是测量问题，而是针对 SNIFFLES 自身监管论述中提及的反应式 TBA 机制，提出并评估了一套具体的调度替代方案，使用了同样真实的星链星座几何数据，以及同一套已在生产环境中使用的 ODS 数据共享通道。这也是本知识库卫星板块首个将最小成本流 / NP 难形式化方法引入频谱共存调度问题的条目；作为 MobiCom'26 录用论文，它以系统网络视角（而非纯电磁/射频视角）回应了 SNIFFLES 条目开启的 RAS 共存议题。
+
+## Images
+
+None.

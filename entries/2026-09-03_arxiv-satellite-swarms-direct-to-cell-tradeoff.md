@@ -45,3 +45,7 @@ This knowledge base's satellite direct-to-device coverage has tracked D2D/D2C ma
 
 ## Why it matters / what's new (ZH)
 知识库的 sat-direct-device 板块此前主要以单卫星服务/频谱/商业新闻（星链、AST SpaceMobile、Amazon Leo、Equatys、Elveo 相关条目）以及单终端物理层研究（2026-08-15 SSB 定位、2026-08-17 PRACH 前导设计、2026-08-19 D2S 上行接收机设计）的形式追踪 D2D/D2C。本条目是首个将*发射端建模为分布式集群*而非单颗卫星来做 D2C 研究的条目，把卫星数量本身——而不仅是单星天线/功率设计——作为一个系统设计变量，给出量化的和速率收益（最高 +413%）与量化的限制因素（跟踪/定位误差而非地面小区几何）。这为该板块补上了一个数据点：在该板块此前假设的"星座规模但每波束单星"架构之外，多星编队飞行还能为 D2C 带来什么。
+
+## Images
+
+None.
