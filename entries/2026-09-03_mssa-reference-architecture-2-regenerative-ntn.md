@@ -39,3 +39,7 @@ This knowledge base's LEO-constellation and satellite direct-to-device coverage 
 
 ## Why it matters / what's new (ZH)
 本知识库的 LEO 星座与卫星直连终端板块此前对"再生式 vs 弯管式"载荷架构的覆盖，主要来自厂商产品发布（如 2026-08-05 Telesat-Lightspeed 条目中提及的 MDA Space AURORA 产品线）与单一运营商的星座申报（Equatys、Elveo）。本条目是首个信源来自**行业协会标准/参考架构文件**、而非单一厂商或运营商的条目，也是首个明确将"宽带（5G NR）与低功耗（NB-IoT）服务在同一载荷上共享 RU"点名为一项设计问题的条目——该板块此前的 D2D 相关条目大多将这两类服务视为彼此独立的业务轨道，而非一个共享硬件的工程问题。鉴于信源较薄弱（未查得一手文件），本条目应视为提示：待 MSSA 公开或授权该文件文本后，再做一手解读。
+
+## Images
+
+None.

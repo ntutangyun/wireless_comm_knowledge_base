@@ -47,3 +47,7 @@ This knowledge base's roaming-and-mobility coverage has so far been standards-tr
 
 ## Why it matters / what's new (ZH)
 本知识库的漫游与移动性主题此前主要覆盖标准侧工作（快速 BSS 切换、MLO 漫游、面向漫游上下文的 MLME 扩展）。HeliumOS 则是同一问题在部署侧的对应数据点：这是一个整体价值主张就是"在运营商规模上、基于实时质量信号（而非静态策略）做好蜂窝网络与 Wi-Fi 之间调度决策"的商业平台。它延续了本知识库中已有的运营商分流线索（2026-06-27 的 Helium/Charter/环境能量摘要条目），首次为这一具体运营商提供了点名的运营商合作方与接入点数量数据，并把这条部署侧叙事与标准侧的漫游与移动性主题（而不仅是 Wi-Fi 7 部署生态）联系起来。
+
+## Images
+
+None.
