@@ -11,7 +11,7 @@ source_quality: full
 topics: [CSI, sensing, optical-flow, dataset]
 topic_primary: sensing-csi
 topics_secondary: [ai-for-wifi]
-novelty_score: 3
+novelty_score: 2
 ---
 
 ## Summary (EN)
