@@ -10,7 +10,7 @@ url: https://mentor.ieee.org/802.11/documents?is_year=2026
 source_quality: snippet_only
 topics: [WIN-SG, TGbn, TGm, REVmf, 802.11-WG, WLAN-sensing, OMP, PQC]
 topic_primary: wifi8-uhr
-topics_secondary: [security-privacy, roaming-mobility, rtwt-latency, sensing]
+topics_secondary: [security-privacy, roaming-mobility, rtwt-latency, sensing-csi]
 novelty_score: 1
 ---
 
