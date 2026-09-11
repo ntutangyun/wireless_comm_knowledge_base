@@ -9,7 +9,7 @@ title_zh: "星闪电子纸病床终端落地香港医院：13.3 英寸无线显�
 url: "https://admin.sparklink.org.cn/api/new/dynamics/detail?id=939"
 source_quality: secondary
 topics: [NearLink, SparkLink, SLE, e-paper, smart-healthcare, IoT, bedside-terminal]
-topic_primary: nearlink
+topic_primary: nearlink-sle
 topics_secondary: []
 novelty_score: 2
 ---
