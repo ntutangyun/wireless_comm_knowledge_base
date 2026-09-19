@@ -1,38 +1,38 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-09-18",
-  "last_scanned": "2026-09-18",
+  "last_updated": "2026-09-19",
+  "last_scanned": "2026-09-19",
   "topic_counts": {
-    "6G": 83,
+    "6G": 85,
     "O-RAN": 66,
     "802.11bn": 59,
     "security": 53,
-    "LEO": 49,
-    "agentic-AI": 47,
+    "LEO": 50,
+    "agentic-AI": 48,
     "products": 44,
     "WiFi-sensing": 43,
     "MAC-layer": 40,
     "UWB": 40,
     "scheduling": 36,
+    "NearLink": 34,
     "CSI": 34,
-    "NearLink": 33,
     "BLE": 32,
     "802.11be": 32,
+    "ISAC": 28,
     "Starlink": 28,
-    "ISAC": 27,
     "5G-NR": 27,
     "NTN": 27,
     "direct-to-device": 26,
+    "SparkLink": 25,
+    "network-slicing": 25,
     "IoT": 25,
-    "network-slicing": 24,
-    "SparkLink": 24,
     "FCC": 23,
     "MAPC": 23,
     "AI-RAN": 23,
     "802.11bf": 23,
     "mmWave": 22,
+    "SLE": 21,
     "digital-twin": 20,
-    "SLE": 20,
     "5G": 20,
     "spectrum": 19,
     "TGbp": 18,
@@ -43,26 +43,26 @@ window.KB_DATA = {
     "beamforming": 18,
     "energy-efficiency": 18,
     "MLO": 18,
+    "automotive": 17,
     "802.11bp": 17,
-    "automotive": 16,
     "802.11": 16,
     "OpenAirInterface": 15,
     "AMP": 15,
     "802.11ax": 15,
     "PHY-layer": 15,
     "3GPP": 14,
-    "LLM-agent": 13,
+    "LLM-agent": 14,
+    "quantization": 13,
     "RIC": 13,
     "federated-learning": 13,
+    "PQC": 12,
     "QoS": 12,
-    "quantization": 12,
     "URLLC": 12,
     "edge-AI": 12,
+    "massive-MIMO": 12,
     "TGm": 11,
     "5G-Advanced": 11,
     "ambient-power": 11,
-    "PQC": 11,
-    "massive-MIMO": 11,
     "generative-AI": 11,
     "machine-learning": 11,
     "Wi-Fi-8": 11,
@@ -76,6 +76,8 @@ window.KB_DATA = {
     "ranging": 10,
     "UAV": 10,
     "GNSS": 10,
+    "TGbt": 9,
+    "SLB": 9,
     "on-device-LLM": 9,
     "rApp": 9,
     "channel-sounding": 9,
@@ -92,7 +94,6 @@ window.KB_DATA = {
     "AMP-IoT": 8,
     "sidelink": 8,
     "TGbq": 8,
-    "TGbt": 8,
     "jamming": 8,
     "AFC": 8,
     "KV-cache": 8,
@@ -103,8 +104,9 @@ window.KB_DATA = {
     "NPU": 8,
     "reinforcement-learning": 8,
     "OFDMA": 8,
-    "SLB": 8,
     "Wi-Fi 7": 8,
+    "iSLA": 7,
+    "beam-hopping": 7,
     "physical-layer-security": 7,
     "SDR": 7,
     "interoperability": 7,
@@ -116,11 +118,14 @@ window.KB_DATA = {
     "dataset": 7,
     "direct-to-cell": 7,
     "open-source": 7,
+    "benchmark": 7,
     "AST-SpaceMobile": 7,
     "MARL": 7,
     "MEC": 7,
     "digital-car-key": 7,
     "FiRa": 7,
+    "WIN-SG": 6,
+    "security-privacy": 6,
     "IRIS2": 6,
     "spoofing": 6,
     "edge-inference": 6,
@@ -134,15 +139,13 @@ window.KB_DATA = {
     "DRU": 6,
     "computation-offloading": 6,
     "spectrum-policy": 6,
-    "iSLA": 6,
-    "beam-hopping": 6,
+    "speculative-decoding": 6,
     "standards": 6,
     "device-authentication": 6,
     "ELR": 6,
     "Sionna": 6,
     "PDT": 6,
     "Bluetooth": 6,
-    "benchmark": 6,
     "enterprise": 6,
     "NGSO": 6,
     "AoA": 6,
@@ -150,8 +153,6 @@ window.KB_DATA = {
     "IAB": 6,
     "regulation": 6,
     "measurement": 6,
-    "WIN-SG": 5,
-    "security-privacy": 5,
     "post-quantum-cryptography": 5,
     "WPA3": 5,
     "MCS": 5,
@@ -160,7 +161,9 @@ window.KB_DATA = {
     "beam-management": 5,
     "Verizon": 5,
     "measurement-study": 5,
+    "foundation-model": 5,
     "zero-trust": 5,
+    "channel-estimation": 5,
     "positioning": 5,
     "Kubernetes": 5,
     "S-band": 5,
@@ -168,7 +171,6 @@ window.KB_DATA = {
     "SLA": 5,
     "digital-key": 5,
     "RIS": 5,
-    "speculative-decoding": 5,
     "QoE": 5,
     "HARQ": 5,
     "dApp": 5,
@@ -184,6 +186,7 @@ window.KB_DATA = {
     "MU-MIMO": 5,
     "phased-array": 5,
     "802.11ac": 5,
+    "llama.cpp": 5,
     "UPF": 5,
     "ns-3": 5,
     "GNN": 5,
@@ -201,8 +204,6 @@ window.KB_DATA = {
     "RSSI": 4,
     "Eutelsat": 4,
     "Samsung": 4,
-    "foundation-model": 4,
-    "channel-estimation": 4,
     "knowledge-distillation": 4,
     "P-EDCA": 4,
     "spiking-neural-network": 4,
@@ -227,12 +228,12 @@ window.KB_DATA = {
     "LoRA": 4,
     "Channel-Sounding": 4,
     "Open5GS": 4,
+    "RAN": 4,
     "Walker-Delta": 4,
     "Near-RT-RIC": 4,
     "FlexRIC": 4,
     "5G-SA": 4,
     "private-5G": 4,
-    "llama.cpp": 4,
     "USRP": 4,
     "testbed": 4,
     "multi-agent-RL": 4,
@@ -323,13 +324,13 @@ window.KB_DATA = {
     "diffusion-model": 3,
     "RFI": 3,
     "interference": 3,
+    "small-language-models": 3,
     "UWB-radar": 3,
     "NAS": 3,
     "HAR": 3,
     "CoMP": 3,
     "offline-RL": 3,
     "multipath": 3,
-    "RAN": 3,
     "R-TWT": 3,
     "28GHz": 3,
     "transformer": 3,
@@ -396,6 +397,7 @@ window.KB_DATA = {
     "HarmonyOS": 3,
     "waveform": 3,
     "deterministic-latency": 3,
+    "MobiSys": 3,
     "L4S": 3,
     "AQM": 3,
     "radar": 3,
@@ -404,6 +406,9 @@ window.KB_DATA = {
     "omlox": 3,
     "roaming": 3,
     "Apple": 3,
+    "TGbr": 2,
+    "SparkLink-Japan": 2,
+    "ADAS": 2,
     "Telesat-Lightspeed": 2,
     "teleport": 2,
     "fine-tuning": 2,
@@ -539,7 +544,6 @@ window.KB_DATA = {
     "TinyML": 2,
     "road-safety": 2,
     "fault-tolerance": 2,
-    "small-language-models": 2,
     "telecom-LLM": 2,
     "IMU": 2,
     "TP-Link": 2,
@@ -618,6 +622,7 @@ window.KB_DATA = {
     "MCPTT": 2,
     "IR-UWB": 2,
     "access-point": 2,
+    "AI-PC": 2,
     "CCC Digital Key": 2,
     "car access": 2,
     "Samsung Wallet": 2,
@@ -713,7 +718,6 @@ window.KB_DATA = {
     "EU": 2,
     "Aliro": 2,
     "Find-My": 2,
-    "MobiSys": 2,
     "broadband": 2,
     "direction-finding": 2,
     "CTE": 2,
@@ -729,6 +733,7 @@ window.KB_DATA = {
     "quantization-aware-training": 2,
     "LE-UWB": 2,
     "cell-edge": 2,
+    "ReAct": 2,
     "RAN-automation": 2,
     "full-duplex": 2,
     "ISLA": 2,
@@ -747,6 +752,11 @@ window.KB_DATA = {
     "WPA2": 2,
     "chipset": 2,
     "Rel-19": 2,
+    "FICOSA": 1,
+    "MOU": 1,
+    "exhibition": 1,
+    "DoS": 1,
+    "scheduler-security": 1,
     "Space-Data-Network-Backbone": 1,
     "MILNET": 1,
     "Space-Development-Agency": 1,
@@ -1088,9 +1098,7 @@ window.KB_DATA = {
     "SmartThings": 1,
     "spatial AI": 1,
     "ambient intelligence": 1,
-    "SparkLink-Japan": 1,
     "internationalisation": 1,
-    "ADAS": 1,
     "in-vehicle-infotainment": 1,
     "forum": 1,
     "256TR": 1,
@@ -1602,6 +1610,8 @@ window.KB_DATA = {
     "convergence-bounds": 1,
     "Starlink-scale-simulation": 1,
     "Jetson-emulation": 1,
+    "mobile-benchmark": 1,
+    "independent-measurement": 1,
     "phase-shifter": 1,
     "vector-modulator": 1,
     "SATCOM": 1,
@@ -1776,6 +1786,8 @@ window.KB_DATA = {
     "precise-orbit-determination": 1,
     "decentralized-estimation": 1,
     "ION-GNSS": 1,
+    "MLPerf-Client": 1,
+    "image-generation": 1,
     "Volkswagen ID": 1,
     "hands-free entry": 1,
     "UK": 1,
@@ -1976,7 +1988,6 @@ window.KB_DATA = {
     "Ryzen-AI": 1,
     "XDNA2": 1,
     "NPU-runtime": 1,
-    "AI-PC": 1,
     "tokenizer": 1,
     "vocabulary-size": 1,
     "batch-size": 1,
@@ -2175,7 +2186,6 @@ window.KB_DATA = {
     "802.11bu": 1,
     "learning-to-optimize": 1,
     "New-Glenn": 1,
-    "TGbr": 1,
     "Coex": 1,
     "liaison": 1,
     "laser-ISL": 1,
@@ -2278,6 +2288,7 @@ window.KB_DATA = {
     "optical-burst-switching": 1,
     "all-optical": 1,
     "WDM": 1,
+    "pretraining": 1,
     "Mamba": 1,
     "human-orientation": 1,
     "DW1000": 1,
@@ -2448,7 +2459,6 @@ window.KB_DATA = {
     "slotted-ALOHA": 1,
     "distributed-MAC": 1,
     "mobile-core": 1,
-    "ReAct": 1,
     "fuzzing": 1,
     "SD-RAN": 1,
     "RIC-xApp": 1,
@@ -2521,6 +2531,9 @@ window.KB_DATA = {
     "OPPO": 1,
     "neural-network": 1,
     "scheduler": 1,
+    "on-device-agents": 1,
+    "prefix-caching": 1,
+    "TinyAgent": 1,
     "distance-reduction-attack": 1,
     "ToA": 1,
     "uplink-optimization": 1,
@@ -2617,6 +2630,7 @@ window.KB_DATA = {
     "Agentic-RAN": 1,
     "uplink-adaptation": 1,
     "factory-calibration": 1,
+    "core-network": 1,
     "CSA": 1,
     "smart-lock": 1,
     "hands-free": 1,
@@ -2728,20 +2742,20 @@ window.KB_DATA = {
   },
   "primary_topic_counts": {
     "leo-constellations": 60,
-    "cellular-ai": 49,
+    "cellular-ai": 51,
     "wifi8-uhr": 41,
     "6g-vision": 41,
     "sensing-csi": 40,
     "5g-nr": 39,
-    "security-privacy": 37,
+    "security-privacy": 38,
     "open-ran": 36,
-    "sat-ai": 32,
+    "sat-ai": 33,
     "wifi7-deployment": 32,
     "cellular-security": 29,
     "uwb-ranging": 29,
     "sat-direct-device": 28,
     "amp-iot": 26,
-    "on-device-inference": 23,
+    "on-device-inference": 25,
     "spectrum-policy": 23,
     "mapc-cosr": 18,
     "network-slicing": 16,
@@ -2758,10 +2772,10 @@ window.KB_DATA = {
     "agentic-wifi": 11,
     "cellular-massive-mimo": 10,
     "nearlink-slb": 10,
+    "nearlink-automotive": 9,
     "bt-channel-sounding": 9,
     "rtwt-latency": 9,
     "mmwave-bq": 8,
-    "nearlink-automotive": 8,
     "uwb-fi-ra": 8,
     "sat-iot": 7,
     "bt-security": 7,
@@ -2774,33 +2788,33 @@ window.KB_DATA = {
     "mlo": 4,
     "home-ai-assistant": 3,
     "roaming-mobility": 3,
+    "ai-pc": 3,
     "edge-ai-networking": 2,
     "edge-federated-learning": 2,
     "bt-mesh": 2,
     "energy-power-save": 2,
     "bt-le-audio": 2,
-    "ai-pc": 2,
     "home-edge-ai": 2,
     "redcap-iot": 1,
     "uwb-security": 1
   },
   "type_counts": {
-    "academic-paper": 540,
-    "industry-news": 152,
-    "ieee-document": 67,
+    "academic-paper": 544,
+    "industry-news": 153,
+    "ieee-document": 68,
     "satellite-news": 49,
-    "product": 41,
+    "product": 42,
     "community-signal": 14,
+    "nearlink-spec": 6,
     "tutorial": 5,
-    "nearlink-spec": 5,
     "proposal": 4,
     "bluetooth-spec": 3,
     "uwb-spec": 1
   },
   "category_counts": {
-    "academia": 545,
-    "industry": 256,
-    "standards": 80
+    "academia": 549,
+    "industry": 258,
+    "standards": 82
   },
   "technologies_vocab": {
     "technologies": [
@@ -4369,6 +4383,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-25-years-tutorial"
       ],
       "entries_secondary": [
+        "2026-09-19_ieee-mentor-sept-interim-closing-digest",
         "2026-09-18_ieee-mentor-tgbp-d10-ballot-digest",
         "2026-09-14_ieee-mentor-tgbn-lb296-cr-wave-digest",
         "2026-09-11_ieee-mentor-tgbt-pqc-pake-digest",
@@ -4888,6 +4903,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Security & privacy))\n    Attacks\n      AirSnitch client-isolation (NDSS'26)\n      CSI-RFF microsignals\n      StateFi FSM fingerprinting\n      VWattacker VoWiFi\n      Rural deployment surface\n    Defenses\n      PHY-preamble signatures (CE)\n      Runtime MAC re-randomization\n      Secure FTM (cross to ftm-ranging)\n    Standards activity\n      TGbi EPPKE\n      TGbt post-quantum / crypto agility\n    Watch\n      WPA3 successor at IETF/IEEE\n      Sensing-privacy regulation\n      RFF rotation + MAC re-randomization",
       "diagram_mmd_zh": "mindmap\n  root((安全与隐私))\n    攻击\n      AirSnitch 客户端隔离（NDSS'26）\n      CSI-RFF 微信号\n      StateFi FSM 指纹\n      VWattacker VoWiFi\n      乡村部署攻击面\n    防御\n      PHY 前导码签名（CE）\n      运行时 MAC 再随机化\n      安全 FTM（关联 ftm-ranging）\n    标准活动\n      TGbi EPPKE\n      TGbt 后量子 / 加密敏捷\n    关注\n      WPA3 后继在 IETF/IEEE\n      感知隐私监管\n      RFF 轮换 + MAC 再随机化",
       "entries_primary": [
+        "2026-09-19_ieee-mentor-sept-interim-closing-digest",
         "2026-09-18_arxiv-calibrated-rf-fingerprinting-heterogeneous-protocols",
         "2026-09-17_openwrt-wpa3-sae-ft-pixel-interop-thread",
         "2026-09-11_ieee-mentor-tgbt-pqc-pake-digest",
@@ -4960,6 +4976,18 @@ window.KB_DATA = {
         "2026-05-01_arxiv-ftm-survey-2025"
       ],
       "by_type_primary": {
+        "ieee-document": [
+          "2026-09-19_ieee-mentor-sept-interim-closing-digest",
+          "2026-09-11_ieee-mentor-tgbt-pqc-pake-digest",
+          "2026-09-10_ieee-tgbt-d10-lb297-89pct",
+          "2026-08-07_ieee-tgbi-d6-sa-recirc-94pct",
+          "2026-07-17_ieee-80211bi-conditional-approval-milestone",
+          "2026-07-11_ieee-mentor-tgbt-digest",
+          "2026-07-10_ieee-mentor-tgbt-plenary-eve-digest",
+          "2026-07-09_ieee-mentor-tgbt-preplenary-digest",
+          "2026-07-09_ieee-mentor-tgbi-tgm-preplenary-digest",
+          "2026-05-12_ieee-mentor-tgbt-antwerp-digest"
+        ],
         "academic-paper": [
           "2026-09-18_arxiv-calibrated-rf-fingerprinting-heterogeneous-protocols",
           "2026-09-10_arxiv-crosslink-cross-protocol-identifier-linking",
@@ -4989,17 +5017,6 @@ window.KB_DATA = {
         "community-signal": [
           "2026-09-17_openwrt-wpa3-sae-ft-pixel-interop-thread",
           "2026-08-19_hn-bfid-beamforming-feedback-person-identification"
-        ],
-        "ieee-document": [
-          "2026-09-11_ieee-mentor-tgbt-pqc-pake-digest",
-          "2026-09-10_ieee-tgbt-d10-lb297-89pct",
-          "2026-08-07_ieee-tgbi-d6-sa-recirc-94pct",
-          "2026-07-17_ieee-80211bi-conditional-approval-milestone",
-          "2026-07-11_ieee-mentor-tgbt-digest",
-          "2026-07-10_ieee-mentor-tgbt-plenary-eve-digest",
-          "2026-07-09_ieee-mentor-tgbt-preplenary-digest",
-          "2026-07-09_ieee-mentor-tgbi-tgm-preplenary-digest",
-          "2026-05-12_ieee-mentor-tgbt-antwerp-digest"
         ],
         "industry-news": [
           "2026-08-29_ubiquiti-unifi-bulletin-067-22-cves",
@@ -5065,6 +5082,7 @@ window.KB_DATA = {
         "2026-08-13_ieee-mentor-tgbn-digest"
       ],
       "entries_secondary": [
+        "2026-09-19_ieee-mentor-sept-interim-closing-digest",
         "2026-09-02_ieee-mentor-tgbp-monostatic-backscatter-digest",
         "2026-08-29_ieee-mentor-tgbp-preamble-pdt-digest",
         "2026-08-25_ieee-mentor-tgbp-wpt-digest",
@@ -5379,6 +5397,7 @@ window.KB_DATA = {
         "2026-07-07_arxiv-modular-oran-testbed-srs-massive-beams",
         "2026-08-20_arxiv-geo-digital-twin-bs-deployment",
         "2026-06-30_arxiv-subedge-subscriber-centric-mec-6g",
+        "2026-09-19_arxiv-6g-native-ai-channel-foundation-models",
         "2026-07-03_arxiv-memntn-memory-native-ntn",
         "2026-06-17_arxiv-hybrid-fiber-iab-fso-backhaul",
         "2026-06-13_arxiv-fr3-terrestrial-ntn-spectrum-sharing",
@@ -5395,6 +5414,7 @@ window.KB_DATA = {
         "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator",
         "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis",
         "2026-05-30_arxiv-native-isac-oran-6g",
+        "2026-09-19_arxiv-ai-agent-ran-cn-converged-framework",
         "2026-08-27_etri-ai-ran-neural-receiver-6g"
       ],
       "by_type_primary": {
@@ -5477,6 +5497,7 @@ window.KB_DATA = {
         "2026-08-31_oran-publication-train-july-2026",
         "2026-07-19_nokia-commercial-ai-ran-platform-e3-dapps",
         "2026-07-11_arxiv-bessel-beam-thz-ue-uncertainty",
+        "2026-09-19_arxiv-6g-native-ai-channel-foundation-models",
         "2026-08-17_mediatek-samsung-3tx-5layer-uplink-670mbps",
         "2026-06-04_arxiv-flexlink-delay-phased-array-6g",
         "2026-06-03_arxiv-gnn-online-beamforming-haps-ntn",
@@ -5656,6 +5677,7 @@ window.KB_DATA = {
         "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
         "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator",
         "2026-09-11_qualcomm-agentic-ran-management-service",
+        "2026-09-19_arxiv-ai-agent-ran-cn-converged-framework",
         "2026-08-29_arxiv-oai-vs-srsran-platform-comparison"
       ],
       "by_type_primary": {
@@ -5753,7 +5775,8 @@ window.KB_DATA = {
         "2026-06-01_arxiv-temporal-double-dqn-prb-oran-industrial",
         "2026-06-01_arxiv-jamming-resilient-prb-reservation-oran",
         "2026-05-27_arxiv-tn-ntn-backhaul-potential-game",
-        "2026-05-24_arxiv-morph-multi-env-rl-prb-oran"
+        "2026-05-24_arxiv-morph-multi-env-rl-prb-oran",
+        "2026-09-19_arxiv-ai-agent-ran-cn-converged-framework"
       ],
       "by_type_primary": {
         "academic-paper": [
@@ -5875,6 +5898,7 @@ window.KB_DATA = {
         "2026-07-04_arxiv-grv-guardrail-ai-agent-telecom",
         "2026-08-20_arxiv-geo-digital-twin-bs-deployment",
         "2026-07-03_arxiv-intent-driven-6g-orchestration",
+        "2026-09-19_arxiv-6g-native-ai-channel-foundation-models",
         "2026-06-26_arxiv-cellular-load-forecast-population-dynamics",
         "2026-06-23_arxiv-lolla-ai-native-link-adaptation",
         "2026-06-23_arxiv-llm-gnb-parameter-configuration",
@@ -5893,6 +5917,7 @@ window.KB_DATA = {
         "2026-05-21_kddi-ericsson-ai-uplink-ropt",
         "2026-09-14_ericsson-fzj-neuromorphic-ai-6g-ran",
         "2026-09-11_qualcomm-agentic-ran-management-service",
+        "2026-09-19_arxiv-ai-agent-ran-cn-converged-framework",
         "2026-08-27_etri-ai-ran-neural-receiver-6g"
       ],
       "entries_secondary": [
@@ -6018,6 +6043,7 @@ window.KB_DATA = {
           "2026-07-04_arxiv-grv-guardrail-ai-agent-telecom",
           "2026-08-20_arxiv-geo-digital-twin-bs-deployment",
           "2026-07-03_arxiv-intent-driven-6g-orchestration",
+          "2026-09-19_arxiv-6g-native-ai-channel-foundation-models",
           "2026-06-26_arxiv-cellular-load-forecast-population-dynamics",
           "2026-06-23_arxiv-lolla-ai-native-link-adaptation",
           "2026-06-23_arxiv-llm-gnb-parameter-configuration",
@@ -6030,7 +6056,8 @@ window.KB_DATA = {
           "2026-05-29_arxiv-ariadne-airan-link-adaptation-digital-twin",
           "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
           "2026-05-25_arxiv-fedcritic-serverless-federated-ofdma",
-          "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator"
+          "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator",
+          "2026-09-19_arxiv-ai-agent-ran-cn-converged-framework"
         ],
         "industry-news": [
           "2026-08-31_vendor-clash-gpu-asic-cpu-6g-ran",
@@ -6365,6 +6392,7 @@ window.KB_DATA = {
         "2026-07-03_eutelsat-airbus-340-oneweb-satellites"
       ],
       "entries_secondary": [
+        "2026-09-19_arxiv-janus-dos-beam-hopping-leo",
         "2026-09-18_arxiv-str-agent-llm-leo-routing",
         "2026-09-16_space42-viasat-equatys-formal-jv-1b-equity",
         "2026-09-17_arxiv-acoustic-leo-gateway-contact-throughput",
@@ -6663,6 +6691,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-09-19_arxiv-janus-dos-beam-hopping-leo",
         "2026-09-18_arxiv-str-agent-llm-leo-routing",
         "2026-09-14_loft-orbital-marlan-mistral-ai-satellite-constellation",
         "2026-09-14_arxiv-temporal-multimodal-dl-leo-cyberattack-detection",
@@ -6722,6 +6751,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-09-19_arxiv-janus-dos-beam-hopping-leo",
           "2026-09-18_arxiv-str-agent-llm-leo-routing",
           "2026-09-14_arxiv-temporal-multimodal-dl-leo-cyberattack-detection",
           "2026-09-09_arxiv-zk-trace-federated-gnss-collusion-tracing",
@@ -7352,6 +7382,7 @@ window.KB_DATA = {
         "2026-05-30_huawei-starlink-e2-audio-lossless"
       ],
       "entries_secondary": [
+        "2026-09-19_nearlink-japan-forum-outcome-ficosa-agreements",
         "2026-09-07_nearlink-japan-forum-sept11-2026-agenda",
         "2026-09-07_nearlink-hongtu-plan-2026-testing-incentive",
         "2026-08-31_nearlink-vdi-europe-automotive-data-communication",
@@ -7416,6 +7447,7 @@ window.KB_DATA = {
         "2026-06-05_nearlink-sle-gbt-46803-national-standard"
       ],
       "entries_secondary": [
+        "2026-09-19_nearlink-japan-forum-outcome-ficosa-agreements",
         "2026-08-23_nearlink-slb-gb-standard-family-in-approval",
         "2026-08-18_nearlink-isac-v2g-vehicle-grid-pilot",
         "2026-08-05_sparklink-car-key-forum-china-auto-2026",
@@ -7496,6 +7528,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-09-19_nearlink-japan-forum-outcome-ficosa-agreements",
         "2026-09-07_nearlink-japan-forum-sept11-2026-agenda",
         "2026-08-18_nearlink-isac-v2g-vehicle-grid-pilot",
         "2026-08-31_nearlink-vdi-europe-automotive-data-communication",
@@ -7512,6 +7545,9 @@ window.KB_DATA = {
         "2026-08-17_nearlink-isla-certification-scheme"
       ],
       "by_type_primary": {
+        "nearlink-spec": [
+          "2026-09-19_nearlink-japan-forum-outcome-ficosa-agreements"
+        ],
         "industry-news": [
           "2026-09-07_nearlink-japan-forum-sept11-2026-agenda",
           "2026-08-18_nearlink-isac-v2g-vehicle-grid-pilot",
@@ -7553,6 +7589,7 @@ window.KB_DATA = {
         "2026-09-03_arxiv-forge-microcontroller-vision-test-time-adaptation",
         "2026-08-31_litert-cross-vendor-npu-backend-matrix",
         "2026-08-29_arxiv-hydra-edge-soc-llm-characterization",
+        "2026-09-19_artificialanalysis-pocket-scale-mobile-llm-benchmark",
         "2026-08-29_arxiv-energy-proportional-vision-iot-node",
         "2026-08-28_arxiv-neuroprefetcher-storage-backed-edge-llm",
         "2026-08-28_arxiv-apple-neural-engine-placement-measurement",
@@ -7562,6 +7599,7 @@ window.KB_DATA = {
         "2026-09-14_arxiv-battery-price-of-edge-ai-llm-mobile",
         "2026-09-15_arxiv-dvfslm-mobile-edge-slm-dvfs",
         "2026-09-11_mobisys-turboinfer-mobile-gpu-frequency-scaling-llm",
+        "2026-09-19_mobisys-agent-x-on-device-agent-pipeline-acceleration",
         "2026-09-07_arxiv-kvswap-disk-aware-kv-cache-on-device"
       ],
       "entries_secondary": [
@@ -7586,6 +7624,7 @@ window.KB_DATA = {
         "2026-08-31_arduino-ventuno-q-dragonwing-iq8-edge-agent-board",
         "2026-08-28_arxiv-airmoe-over-the-air-moe-wireless-edge",
         "2026-09-10_arxiv-spice-moe-speculative-prefetch-offload",
+        "2026-09-19_mlcommons-mlperf-client-v2-agentic-image-gen",
         "2026-09-08_amd-fastflowlm-npu-runtime-acquisition-rocm",
         "2026-08-28_arxiv-lifecycle-optimal-tokenization-vocab-size",
         "2026-09-15_arxiv-npu-hardware-evaluation-v1-edge-accelerators",
@@ -7622,10 +7661,14 @@ window.KB_DATA = {
           "2026-09-14_arxiv-battery-price-of-edge-ai-llm-mobile",
           "2026-09-15_arxiv-dvfslm-mobile-edge-slm-dvfs",
           "2026-09-11_mobisys-turboinfer-mobile-gpu-frequency-scaling-llm",
+          "2026-09-19_mobisys-agent-x-on-device-agent-pipeline-acceleration",
           "2026-09-07_arxiv-kvswap-disk-aware-kv-cache-on-device"
         ],
         "product": [
           "2026-08-31_litert-cross-vendor-npu-backend-matrix"
+        ],
+        "industry-news": [
+          "2026-09-19_artificialanalysis-pocket-scale-mobile-llm-benchmark"
         ]
       }
     },
@@ -7676,6 +7719,7 @@ window.KB_DATA = {
         "2026-08-31_arxiv-qef-gt-adamw-decentralized-wireless-fl",
         "2026-08-29_arxiv-llmscope-optical-probing-edge-ai-chips",
         "2026-08-29_arxiv-hydra-edge-soc-llm-characterization",
+        "2026-09-19_artificialanalysis-pocket-scale-mobile-llm-benchmark",
         "2026-08-28_arxiv-neuroprefetcher-storage-backed-edge-llm",
         "2026-08-28_arxiv-apple-neural-engine-placement-measurement",
         "2026-09-10_arxiv-local-contiguous-on-device-learning-runtime",
@@ -7684,6 +7728,7 @@ window.KB_DATA = {
         "2026-09-15_arxiv-mobibench-on-device-llm-benchmark",
         "2026-09-14_arxiv-battery-price-of-edge-ai-llm-mobile",
         "2026-09-11_mobisys-turboinfer-mobile-gpu-frequency-scaling-llm",
+        "2026-09-19_mobisys-agent-x-on-device-agent-pipeline-acceleration",
         "2026-09-07_arxiv-kvswap-disk-aware-kv-cache-on-device"
       ],
       "by_type_primary": {
@@ -7791,6 +7836,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-09-19_mlcommons-mlperf-client-v2-agentic-image-gen",
         "2026-09-08_amd-fastflowlm-npu-runtime-acquisition-rocm",
         "2026-08-29_microsoft-aion-windows-on-device-slm-family"
       ],
@@ -7801,6 +7847,9 @@ window.KB_DATA = {
         "2026-08-28_arxiv-lifecycle-optimal-tokenization-vocab-size"
       ],
       "by_type_primary": {
+        "product": [
+          "2026-09-19_mlcommons-mlperf-client-v2-agentic-image-gen"
+        ],
         "industry-news": [
           "2026-09-08_amd-fastflowlm-npu-runtime-acquisition-rocm",
           "2026-08-29_microsoft-aion-windows-on-device-slm-family"
@@ -8026,6 +8075,114 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-09-19_ieee-mentor-sept-interim-closing-digest",
+      "date_found": "2026-09-19",
+      "technology": "wifi",
+      "date_published": "2026-09-18",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 September 2026 interim closes -- TGbt approves D1.0 'available for sale', TGbr reviews D0.1 comments toward D0.2, WIN SG targets Jan-2027 PAR, and WBA requests a new PQC liaison to TGbt",
+      "title_zh": "IEEE 802.11 2026 年 9 月临时会议闭幕 —— TGbt 批准 D1.0\"可供出售\"、TGbr 审议 D0.1 意见并迈向 D0.2、WIN SG 将 PAR 目标定于 2027 年 1 月，WBA 请求与 TGbt 建立新的 PQC 联络关系",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026",
+      "topics": [
+        "TGbt",
+        "TGbr",
+        "WIN-SG",
+        "PQC",
+        "security-privacy"
+      ],
+      "topic_primary": "security-privacy",
+      "topics_secondary": [
+        "wifi8-uhr",
+        "energy-power-save"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-09-19_ieee-mentor-sept-interim-closing-digest.md",
+      "summary_short_en": "The 2026-09-13/18 IEEE 802 wireless interim session in Waikoloa, Hawaii closed on 2026-09-18, and the closing reports and cross-group liaison filed on 09-17/09-18 fill in the week's outcomes across three groups this KB tracks separately.",
+      "summary_short_zh": "2026-09-13 至 18 日在夏威夷 Waikoloa 举行的 IEEE 802 无线临时会议于 2026-09-18 闭幕，09-17／09-18 提交的各任务组闭幕报告及跨组联络函，补全了本知识库分别跟踪的三个小组本周的进展。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The 2026-09-13/18 IEEE 802 wireless interim session in Waikoloa, Hawaii closed on 2026-09-18, and the closing reports and cross-group liaison filed on 09-17/09-18 fill in the week's outcomes across three groups this KB tracks separately.</p>\n<p>TGbt's closing report (DCN 11-26-1900r0, Stephen Orr/Cisco) states the group met four times during the week, resolved 232 of the 650 comments filed against LB297 (the LB297 ballot this KB recorded closing at 89% approval on 2026-09-10), and passed a motion approving IEEE P802.11bt D1.0 to be made available for sale, plus approval of an IRTF liaison. The editor is now to begin work on D1.1 through September-November, with continued comment resolution on a telecon set for 2026-09-29 and four session slots requested for the November plenary. The report's own timeline slide places the initial SA ballot (D4.0) in September 2027 and final WG approval in May 2028, aligned with TGbn.</p>\n<p>TGbr's closing report (DCN 11-26-1903r0, Nikola Serafimovski/FTH) states the Enhanced Light Communications group spent the week reviewing comments against D0.1; the group's timeline slide schedules PHY completion (D0.1) for July 2026 (following the D0.1 baseline this KB recorded in May 2026). D0.2 is expected in the 802.11 Members Area by 10 October 2026. The group is looking to address MIMO, MLO and capability exchange as key technical issues at the November and January 2027 sessions.</p>\n<p>WIN SG (the Wi-Fi 9 / WLAN Intelligent Networking study group) held 27 technical presentations during the week across use-cases/requirements and miscellaneous-technical tracks (closing report DCN 11-26-1896r1, Laurent Cariou/Intel); Ross Jian Yu was confirmed as the SG's secretary. No teleconference is currently scheduled (any would be announced with 10 days' notice), and the group's own slide states it is continuing to converge on its PAR (Project Authorization Request) and CSD (Criteria for Standards Development), plus the naming of the eventual task group, with a target of January 2027 for PAR/CSD approval.</p>\n<p>Separately, a liaison statement (DCN 11-26-1904r0) formally requests, on behalf of the Wireless Broadband Alliance's &quot;Post Quantum Cybersecurity (PQC)&quot; project group -- co-chaired by representatives from NC-Expert, AT&amp;T, Boingo Wireless and HPE Aruba -- a bilateral liaison relationship with IEEE 802.11bt. The letter states WBA PQC's purpose as assessing quantum-computing threats to existing Wi-Fi security, illustrating practical use cases, examining countermeasures, producing an initial whitepaper aimed at a wider (including non-technical) audience, launching an industry-wide call to action that positions WBA as the body that sets direction, establishing a foundation for potential new technical specifications in WBA, and engaging and coordinating with peer organizations; it asks to share information &quot;quickly and periodically&quot; with TGbt as that work proceeds. This is this KB's first record of a WBA-side PQC liaison specifically to TGbt. This KB separately recorded an 802.11 WG liaison to the WFA on PQC in May 2026.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1900r0 -- TGbt closing report</strong> -- Stephen Orr (Cisco), uploaded 17-Sep-2026. Four meetings held; 232/650 LB297 comments resolved this week; motion passed approving D1.0 &quot;available for sale&quot; plus an IRTF liaison; editor to begin D1.1 Sept-Nov; telecon 2026-09-29; four November slots requested. <a href=\"https://mentor.ieee.org/802.11/documents?is_dcn=1900&amp;is_year=2026\" target=\"_blank\" rel=\"noopener\">document</a></li><li><strong>DCN 11-26-1903r0 -- TGbr closing report</strong> -- Nikola Serafimovski (FTH), uploaded 18-Sep-2026. D0.1 comments reviewed; the group's timeline slide schedules PHY completion (D0.1) for July 2026; D0.2 expected in the Members Area by 10 October 2026; MIMO, MLO and capability exchange flagged as the next key technical issues (Nov 2026 / Jan 2027 sessions). <a href=\"https://mentor.ieee.org/802.11/documents?is_dcn=1903&amp;is_year=2026\" target=\"_blank\" rel=\"noopener\">document</a></li><li><strong>DCN 11-26-1896r1 -- WIN SG closing report</strong> -- Laurent Cariou (Intel), uploaded 18-Sep-2026. 27 technical presentations this session (use-cases/requirements + misc-technical); Ross Jian Yu confirmed as secretary; no teleconference currently scheduled; continuing convergence on PAR/CSD and task-group naming, targeting Jan-2027 PAR/CSD approval. <a href=\"https://mentor.ieee.org/802.11/documents?is_dcn=1896&amp;is_year=2026\" target=\"_blank\" rel=\"noopener\">document</a></li><li><strong>DCN 11-26-1904r0 -- Liaison from WBA to IEEE 802.11/802.11bt</strong> -- WBA PQC project group (chaired by Phil Morgan/NC-Expert, Sumanth Hallegiri/AT&amp;T, Derek Peterson/Boingo Wireless, Peter Thornycroft/HPE Aruba), dated 17-Sep-2026. Introduces the WBA Post Quantum Cybersecurity project (threat assessment, use-case illustration, countermeasure review, an initial whitepaper aimed at a wider audience, an industry-wide call to action positioning WBA as the body that sets direction, a foundation for potential new technical specifications in WBA, and engagement/coordination with peer organizations) and formally requests a bilateral liaison relationship with TGbt for periodic information-sharing. <a href=\"https://mentor.ieee.org/802.11/documents?is_dcn=1904&amp;is_year=2026\" target=\"_blank\" rel=\"noopener\">document</a></li><li>Also uploaded 17/18-Sep-2026, not detailed individually: DCN 1899r0/r1 (802.15 Liaison Report, Benjamin A. Rolfe/BCA), DCN 1902r0 (ARC SC closing report -- Annex G tutorial-replacement editorial work, Std 802 alignment homework, and an MLME &quot;state machine&quot; terminology discussion picked up for November), and DCN 1905r0 (TGbq September-to-October teleconference agenda, Edward Au/Huawei) -- all administrative/procedural, no new technical mechanism.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>TGbt's D1.0-available-for-sale approval is a concrete procedural milestone beyond the LB297 ballot this KB recorded closing at 89% approval on 2026-09-10 -- the motion approved making D1.0 available for sale while comment resolution continues into D1.1. In TGbr's closing report the D0.1 PHY schedule itself is unchanged from the July closing report (DCN 11-26-1462r0, recorded in this KB's 2026-07-17 digest); the new item is the concrete D0.2 publication date (10-Oct-2026), while the MIMO, MLO and capability-exchange items carry over from the July session, now pushed to the November 2026 and January 2027 sessions. The WBA PQC liaison is this KB's first record of an industry-alliance PQC effort explicitly targeting TGbt with its own project scope and leadership roster. This KB separately recorded an 802.11 WG liaison to the WFA on PQC in May 2026.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026-09-13 至 18 日在夏威夷 Waikoloa 举行的 IEEE 802 无线临时会议于 2026-09-18 闭幕，09-17／09-18 提交的各任务组闭幕报告及跨组联络函，补全了本知识库分别跟踪的三个小组本周的进展。</p>\n<p>TGbt 闭幕报告（DCN 11-26-1900r0，Stephen Orr / 思科）指出，该组本周共召开四次会议，解决了针对 LB297（本知识库于 2026-09-10 记录的、以 89% 赞成率结束的 LB297 投票）提交的 650 条意见中的 232 条，并通过一项动议，批准 IEEE P802.11bt D1.0&quot;可供出售&quot;，同时批准了与 IRTF 的联络。技术编辑将于 9 月至 11 月开始 D1.1 的编写工作，9 月 29 日安排电话会议继续处理意见，并为 11 月全会申请了四个会议时段。报告自带的时间表显示，首轮 SA 投票（基于 D4.0）定于 2027 年 9 月，最终工作组批准定于 2028 年 5 月，与 TGbn 的时间表保持一致。</p>\n<p>TGbr 闭幕报告（DCN 11-26-1903r0，Nikola Serafimovski / FTH）指出，增强型光通信任务组本周审议了针对 D0.1 的意见；该组时间表将 D0.1 的 PHY 部分完成节点排在 2026 年 7 月（此前本知识库已于 2026 年 5 月记录了 D0.1 基线的确立）。D0.2 预计于 2026 年 10 月 10 日前发布至 802.11 会员专区。该组计划在 11 月及 2027 年 1 月的会议上重点处理 MIMO、MLO 及能力交换等关键技术问题。</p>\n<p>WIN SG（即 Wi-Fi 9 / WLAN 智能组网研究组）本周共举行 27 场技术报告，涵盖应用场景/需求及其他技术议题两条线（闭幕报告 DCN 11-26-1896r1，Laurent Cariou / 英特尔）；Ross Jian Yu 被确认为该研究组秘书。目前尚未安排电话会议（如有安排将提前 10 天通知），该组自带的幻灯片显示其仍在推进 PAR（项目授权请求）与 CSD（标准制定标准）的收敛工作，并同步讨论未来任务组的命名，目标是在 2027 年 1 月完成 PAR/CSD 批准。</p>\n<p>此外，一份联络函（DCN 11-26-1904r0）代表无线宽带联盟（WBA）&quot;后量子网络安全（PQC）&quot;项目组——由 NC-Expert、AT&amp;T、Boingo Wireless 及 HPE Aruba 的代表共同牵头——正式请求与 IEEE 802.11bt 建立双边联络关系。函件说明 WBA PQC 项目组的宗旨是评估量子计算对现有 Wi-Fi 安全体系的威胁、展示实际应用场景、审视应对措施、产出一份面向更广泛（含非技术）受众的白皮书、发起面向全行业的行动倡议以将 WBA 定位为设定方向的主体、为 WBA 未来可能制定的新技术规范奠定基础，并与同行组织开展交流与协调；函件请求在工作推进过程中与 TGbt&quot;快速且定期&quot;地共享信息。这是本知识库首次记录 WBA 一侧专门针对 TGbt 发出的 PQC 联络函。本知识库另于 2026 年 5 月记录了 802.11 工作组向 WFA 发出的 PQC 联络函。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1900r0 · TGbt 闭幕报告</strong> —— Stephen Orr（思科），2026-09-17 上传。本周共召开四次会议；解决 LB297 意见 650 条中的 232 条；通过动议批准 D1.0&quot;可供出售&quot;及与 IRTF 的联络；技术编辑将于 9-11 月启动 D1.1 编写；9 月 29 日安排电话会议；为 11 月申请四个会议时段。<a href=\"https://mentor.ieee.org/802.11/documents?is_dcn=1900&amp;is_year=2026\" target=\"_blank\" rel=\"noopener\">文档链接</a></li><li><strong>DCN 11-26-1903r0 · TGbr 闭幕报告</strong> —— Nikola Serafimovski（FTH），2026-09-18 上传。本周审议 D0.1 意见；该组时间表将 D0.1 的 PHY 部分完成节点排在 2026 年 7 月；D0.2 预计于 2026 年 10 月 10 日前发布至会员专区；MIMO、MLO 及能力交换被列为下阶段（2026 年 11 月／2027 年 1 月会议）的关键技术问题。<a href=\"https://mentor.ieee.org/802.11/documents?is_dcn=1903&amp;is_year=2026\" target=\"_blank\" rel=\"noopener\">文档链接</a></li><li><strong>DCN 11-26-1896r1 · WIN SG 闭幕报告</strong> —— Laurent Cariou（英特尔），2026-09-18 上传。本次会议共 27 场技术报告（应用场景/需求 + 其他技术议题）；Ross Jian Yu 被确认为秘书；目前未安排电话会议；继续推进 PAR/CSD 收敛及任务组命名讨论，目标为 2027 年 1 月完成 PAR/CSD 批准。<a href=\"https://mentor.ieee.org/802.11/documents?is_dcn=1896&amp;is_year=2026\" target=\"_blank\" rel=\"noopener\">文档链接</a></li><li><strong>DCN 11-26-1904r0 · WBA 致 IEEE 802.11/802.11bt 的联络函</strong> —— WBA PQC 项目组（牵头人 Phil Morgan/NC-Expert、Sumanth Hallegiri/AT&amp;T、Derek Peterson/Boingo Wireless、Peter Thornycroft/HPE Aruba），落款日期 2026-09-17。介绍 WBA&quot;后量子网络安全&quot;项目（威胁评估、应用场景展示、应对措施审视、面向更广泛受众的初版白皮书、发起面向全行业的行动倡议以将 WBA 定位为设定方向的主体、为 WBA 未来可能制定的新技术规范奠定基础、与同行组织开展交流与协调），并正式请求与 TGbt 建立双边联络关系以定期共享信息。<a href=\"https://mentor.ieee.org/802.11/documents?is_dcn=1904&amp;is_year=2026\" target=\"_blank\" rel=\"noopener\">文档链接</a></li><li>09-17／09-18 同期上传但未逐条详述：DCN 1899r0/r1（802.15 联络报告，Benjamin A. Rolfe / BCA）、DCN 1902r0（ARC SC 闭幕报告——Annex G 教程替换的编辑性工作、Std 802 对齐&quot;家庭作业&quot;，以及留待 11 月继续讨论的 MLME&quot;状态机&quot;术语议题）、DCN 1905r0（TGbq 9-10 月电话会议议程，Edward Au / 华为）——均为行政/流程性内容，未涉及新技术机制。</li></ul>\n<h3>意义与新意</h3>\n<p>TGbt 的 D1.0&quot;可供出售&quot;批准，是继本知识库于 2026-09-10 记录的、以 89% 赞成率结束的 LB297 投票之后又一具体的流程性里程碑——该动议批准将 D1.0 对外供出售，同时继续推进至 D1.1 的意见解决工作。TGbr 闭幕报告中 D0.1 的 PHY 时间表与 7 月闭幕报告（DCN 11-26-1462r0，见本知识库 2026-07-17 的记录）相同；新增内容是具体的 D0.2 发布日期（2026 年 10 月 10 日），而 MIMO、MLO 及能力交换等议题则延续自 7 月会议，现已推迟至 2026 年 11 月及 2027 年 1 月的会议。WBA 的 PQC 联络函，是本知识库首次记录的、由行业联盟一方专门针对 TGbt、拥有自身项目范围与牵头团队的后量子安全工作。本知识库另于 2026 年 5 月记录了 802.11 工作组向 WFA 发出的 PQC 联络函。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 september 2026 interim closes -- tgbt approves d1.0 'available for sale', tgbr reviews d0.1 comments toward d0.2, win sg targets jan-2027 par, and wba requests a new pqc liaison to tgbt ieee 802.11 2026 年 9 月临时会议闭幕 —— tgbt 批准 d1.0\"可供出售\"、tgbr 审议 d0.1 意见并迈向 d0.2、win sg 将 par 目标定于 2027 年 1 月，wba 请求与 tgbt 建立新的 pqc 联络关系 tgbt tgbr win-sg pqc security-privacy the 2026-09-13/18 ieee 802 wireless interim session in waikoloa, hawaii closed on 2026-09-18, and the closing reports and cross-group liaison filed on 09-17/09-18 fill in the week's outcomes across three groups this kb tracks separately. 2026-09-13 至 18 日在夏威夷 waikoloa 举行的 ieee 802 无线临时会议于 2026-09-18 闭幕，09-17／09-18 提交的各任务组闭幕报告及跨组联络函，补全了本知识库分别跟踪的三个小组本周的进展。 ieee-document wifi"
+    },
+    {
+      "id": "2026-09-19_nearlink-japan-forum-outcome-ficosa-agreements",
+      "date_found": "2026-09-19",
+      "technology": "nearlink",
+      "date_published": "2026-09-17",
+      "type": "nearlink-spec",
+      "category": "standards",
+      "title_en": "2026 SparkLink Japan Industry Forum (Chiba): iSLA-SparkLink Japan cooperation agreement signed, MOUs with DCJ and Runhe Software, FICOSA presents automotive-vision/ADAS session; concurrent 5-zone ecosystem exhibition at Makuhari Messe",
+      "title_zh": "2026星闪日本产业论坛（千叶）：国际星闪联盟与星闪日本签署合作协议，分别与DCJ、润和软件签署MOU，法可赛分享车载视觉/ADAS应用；同期幕张展览馆五大展区生态展",
+      "url": "https://admin.sparklink.org.cn/api/new/dynamics/detail?id=941",
+      "topics": [
+        "NearLink",
+        "SparkLink",
+        "iSLA",
+        "SparkLink-Japan",
+        "FICOSA",
+        "MOU",
+        "automotive",
+        "ADAS",
+        "exhibition",
+        "SLE",
+        "SLB"
+      ],
+      "topic_primary": "nearlink-automotive",
+      "topics_secondary": [
+        "nearlink-slb",
+        "nearlink-sle"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-09-19_nearlink-japan-forum-outcome-ficosa-agreements.md",
+      "summary_short_en": "The International SparkLink Alliance (iSLA) and the SparkLink Japan Consortium (SLJC) jointly held the \"2026 SparkLink Japan Industry Forum\" in Chiba on 2026-09-11, themed \"short-distance communication infrastructure for resilient manufacturing sites.\" This is the post-event outcome of the forum whose agenda the KB already recorded pre-event (`2026-09-07_nearlink-japan-forum-sept11-2026-agenda`). AZAPA CEO and SparkLink Japan representative director Yasuhiro Kondo (近藤康弘) opened by framing SLJC's 2026–2028 roadmap: moving SparkLink technology from standard validation and product certification toward overseas SoC mass production and local ecosystem-building in Japan. iSLA secretary-general Zeng Guosong (曾国松) and SparkLink Japan director Shozo Saito (齋藤昇三) then presented the alliance's global and local strategic roadmaps.",
+      "summary_short_zh": "国际星闪无线短距通信联盟（iSLA）与星闪日本联盟（SparkLink Japan Consortium，SLJC）于2026年9月11日在千叶联合举办\"2026星闪日本产业论坛\"，主题为\"高韧性制造现场的短距离通信基础设施\"。本条目是知识库已收录的论坛前置议程（`2026-09-07_nearlink-japan-forum-sept11-2026-agenda`）的会后结果报道。星闪日本代表理事、AZAPA株式会社CEO近藤康弘在致辞中介绍了SLJC面向2026至2028年的三步走路线图：推动星闪技术从标准验证、产品认证走向海外SoC芯片量产与本地生态构建。国际星闪联盟秘书长曾国松、星闪日本理事齋藤昇三随后分别发表专题演讲，介绍联盟全球与本地战略蓝图。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The International SparkLink Alliance (iSLA) and the SparkLink Japan Consortium (SLJC) jointly held the &quot;2026 SparkLink Japan Industry Forum&quot; in Chiba on 2026-09-11, themed &quot;short-distance communication infrastructure for resilient manufacturing sites.&quot; This is the post-event outcome of the forum whose agenda the KB already recorded pre-event (<code>2026-09-07_nearlink-japan-forum-sept11-2026-agenda</code>). AZAPA CEO and SparkLink Japan representative director Yasuhiro Kondo (近藤康弘) opened by framing SLJC's 2026–2028 roadmap: moving SparkLink technology from standard validation and product certification toward overseas SoC mass production and local ecosystem-building in Japan. iSLA secretary-general Zeng Guosong (曾国松) and SparkLink Japan director Shozo Saito (齋藤昇三) then presented the alliance's global and local strategic roadmaps.</p>\n<p>At the forum, iSLA and SparkLink Japan signed a cooperation agreement, and SparkLink Japan separately signed memoranda of understanding (MOUs) with DCJ Corporation and Jiangsu Runhe Software (润和软件). A &quot;SparkLink Japan Partner Release&quot; ceremony was also held. Nine speakers from China and Japan presented, including AZAPA (resilience economics reshaping Japanese manufacturing competitiveness), Shinshu University faculty (SparkLink as a platform connecting residents, businesses, and government for regional revitalization; resilient IoT + AI research), DCJ (cybersecurity assessment/compliance for connected systems), PwC (software-defined-vehicle governance), Runhe Software (industrial deployment and lightweight-AI use cases), Guodong Qinda (国东勤达, &quot;SparkLink + e-paper&quot; in healthcare — the vendor behind the KB's 2026-09-11 Hong Kong hospital e-paper entry), and Shenzhen Starlink Innovation (深圳星链创新, industrial wireless performance in the field). The automotive-focused session was delivered jointly by FICOSA's Asia-Pacific CEO Ignasi Claret and FICOSA Japan general manager Carlos Ramos, covering SparkLink's application to vehicle vision systems, in-vehicle infotainment, and Advanced Driver-Assistance Systems (ADAS) — this is the FICOSA technical-content outcome that the KB's pre-event agenda entry had flagged as pending.</p>\n<p>A concurrent &quot;SparkLink full-ecosystem exhibition&quot; ran 2026-09-09 through 09-11 at Makuhari Messe's autumn automotive technology expo — the alliance's first official participation (rather than a self-organized booth) in a major Japan-local trade show. Spanning five zones (chips &amp; modules; smart terminals; smart home; automotive/industrial; cross-sector innovation) across a 30+ m² exhibition area, it displayed close to 80 products from dozens of vendors including Huawei, HiSilicon, China Mobile, Chuangyao Technology, Leerda, and Runhe Software. Notable items on display: HiSilicon/Chuangyao/ZKJS SparkLink main chips; Huawei Mate X7 and Mate80 RS handsets and the FreeBuds Pro 5 earbuds (96kHz/24bit lossless SparkLink audio — the underlying transport is the same one covered in the KB's existing <code>2026-05-30_huawei-starlink-e2-audio-lossless</code> and <code>2026-08-27_huawei-freebuds-7-nearlink-e2-semi-open</code> entries); SparkLink mice and gamepads (gamepad joystick polling rate up to 2000Hz, latency down to 0.5ms, cited for esports use); a WATCH 5 SparkLink smartwatch; China Mobile's AI-equipped spatial-awareness router (human-presence and motion-trajectory detection); which the alliance describes as the world's first dual-channel SparkLink speaker (6ms latency, 96k/24bit audio); Yinji Technology's (银基科技) SparkLink digital car key with a live-vehicle demo; and AZAPA's SparkLink-based software-defined-vehicle (SDV) development platform, which the article says removes wiring for steering/braking sensor points and supports multi-point synchronized measurement plus wireless sensor retrofit and OTA updates for brake-heat monitoring, road-coordination control, and driver monitoring.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Event</strong>: &quot;2026 SparkLink Japan Industry Forum,&quot; Chiba, 2026-09-11, co-hosted by iSLA and SparkLink Japan Consortium (SLJC); theme &quot;short-distance communication infrastructure for resilient manufacturing sites.&quot;</li><li><strong>Agreements signed</strong>: iSLA-SparkLink Japan cooperation agreement; SparkLink Japan MOUs with DCJ Corporation and Jiangsu Runhe Software; a &quot;SparkLink Japan Partner Release&quot; ceremony.</li><li><strong>FICOSA automotive session</strong> (the outcome the pre-event agenda flagged as pending): FICOSA Asia-Pacific CEO Ignasi Claret and FICOSA Japan GM Carlos Ramos jointly presented SparkLink's use in vehicle vision, infotainment, and ADAS.</li><li><strong>Nine speakers total</strong>, spanning manufacturing economics (AZAPA), regional-revitalization IoT platforms (Shinshu University), resilient IoT + AI (Shinshu University), cybersecurity compliance (DCJ), SDV governance (PwC), industrial/lightweight-AI deployment (Runhe Software), SparkLink + e-paper healthcare (Guodong Qinda), and industrial wireless field performance (Shenzhen Starlink Innovation).</li><li><strong>Concurrent exhibition</strong>: &quot;SparkLink full-ecosystem exhibition,&quot; Makuhari Messe autumn auto-tech expo, 2026-09-09/11 — iSLA's first official participation (vs. prior independent booths) in a Japan-local trade show; 5 zones, ~80 products, dozens of vendors (Huawei, HiSilicon, China Mobile, Chuangyao Technology, Leerda, Runhe Software, etc.).</li><li><strong>Notable exhibited products</strong>: FreeBuds Pro 5 (96kHz/24bit lossless SparkLink audio); SparkLink mice/gamepads (gamepad joystick polling rate up to 2000Hz, latency down to 0.5ms); WATCH 5 SparkLink smartwatch; China Mobile AI spatial-awareness router (human-presence/motion-trajectory detection); a speaker which the alliance describes as the world's first dual-channel SparkLink speaker (6ms latency); Yinji Technology SparkLink digital car key with live-vehicle demo; AZAPA SparkLink-based SDV development platform (wireless sensor retrofit + OTA for brake-heat/road-coordination/driver monitoring).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This follows up on two open questions from the 2026-09-07 pre-event agenda entry: whether the iSLA-SparkLink Japan cooperation agreement would actually be signed, and what FICOSA's automotive-vision/ADAS session would actually cover. What is newly confirmed is the signing of the cooperation agreement and the two MOUs; FICOSA's session topic areas (vehicle vision, infotainment, ADAS) match those already listed in the pre-event agenda entry, and the source discloses no new technical content beyond those labels. The exhibition write-up also supplies this KB's first record of a SparkLink gamepad-joystick polling-rate spec (2000Hz / 0.5ms) and a speaker which the alliance describes as the world's first dual-channel SparkLink speaker (6ms latency) in this KB; most other named exhibits (FreeBuds Pro 5 lossless audio, digital car keys, tri-mode home gateways) are enrichment of product lines the KB already tracks rather than new mechanisms. Both source articles — this forum recap (https://admin.sparklink.org.cn/api/new/dynamics/detail?id=941) and the exhibition recap (https://admin.sparklink.org.cn/api/new/dynamics/detail?id=940, released 2026-09-17) — are the alliance's own first-party recap, published a week after the event, with no independent corroboration and no draft text, timeline, or further technical parameters for the signed agreements beyond their existence.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>国际星闪无线短距通信联盟（iSLA）与星闪日本联盟（SparkLink Japan Consortium，SLJC）于2026年9月11日在千叶联合举办&quot;2026星闪日本产业论坛&quot;，主题为&quot;高韧性制造现场的短距离通信基础设施&quot;。本条目是知识库已收录的论坛前置议程（<code>2026-09-07_nearlink-japan-forum-sept11-2026-agenda</code>）的会后结果报道。星闪日本代表理事、AZAPA株式会社CEO近藤康弘在致辞中介绍了SLJC面向2026至2028年的三步走路线图：推动星闪技术从标准验证、产品认证走向海外SoC芯片量产与本地生态构建。国际星闪联盟秘书长曾国松、星闪日本理事齋藤昇三随后分别发表专题演讲，介绍联盟全球与本地战略蓝图。</p>\n<p>论坛上，国际星闪联盟与星闪日本签署合作协议，星闪日本另与DCJ株式会社、江苏润和软件分别签署合作备忘录（MOU），并举行&quot;星闪日本伙伴发布仪式&quot;。共9位中日专家学者与企业代表发表主题演讲，涵盖：AZAPA（高效韧性经济方案重塑日本制造业竞争优势）、信州大学学者（星闪作为连接居民、企业与政府的平台，助力区域振兴；韧性物联网与AI融合研究）、DCJ（网络安全评估与合规）、普华永道（软件定义汽车治理战略）、润和软件（工业场景落地与轻智能创新）、国东勤达（&quot;星闪+电子纸&quot;医疗应用——即知识库2026-09-11香港医院电子纸条目所涉厂商）、深圳星链创新（工业现场无线通信实战表现）。车载专场由法可赛（FICOSA）亚太区CEO Ignasi Claret与法可赛日本总经理Carlos Ramos联合分享，聚焦星闪技术在车载视觉、信息娱乐与高级驾驶辅助系统（ADAS）领域的落地成果——这正是知识库此前会前议程条目标记为&quot;待观察&quot;的FICOSA技术内容结果。</p>\n<p>同期，2026年9月9日至11日，&quot;星闪全生态展&quot;在日本千叶幕张展览馆秋季汽车科技展举行——这是联盟首次正式参与日本当地大型展会（此前均为自行独立布展）。展区分为芯片模组、智能终端、智能家居、智能车载与行业创新五大板块，30 多平方米的展区、近80件展品，汇聚华为、海思、中国移动、创耀科技、利尔达、润和软件等数十家企业的量产产品。展出亮点包括：海思、创耀科技、中科晶上的星闪主芯片；华为Mate X7、Mate80 RS手机与FreeBuds Pro 5耳机（96kHz/24bit无损星闪音频传输——与知识库既有条目<code>2026-05-30_huawei-starlink-e2-audio-lossless</code>、<code>2026-08-27_huawei-freebuds-7-nearlink-e2-semi-open</code>所涉及的底层传输技术一致）；星闪鼠标与游戏手柄（摇杆回报率2000Hz、时延0.5ms，面向电竞场景）；WATCH 5星闪手表；中国移动搭载AI引擎的星闪空间感知路由器（支持人体存在检测与运动轨迹跟踪）；联盟称其为全球首款双声道星闪音箱（6ms时延，96k/24bit音质）；银基科技的星闪数字车钥匙及实车演示；以及AZAPA基于星闪的软件定义汽车（SDV）开发平台——文中称该方案免除转向、制动等传感点位的复杂布线，支持多点高精度同步测量，并支持加装传感器无线接入与OTA升级，应用于刹车热监控、路面协同控制与驾驶员监测等场景。</p>\n<h3>技术要点</h3>\n<ul><li><strong>活动</strong>：「2026星闪日本产业论坛」，千叶，2026年9月11日，国际星闪联盟（iSLA）与星闪日本联盟（SLJC）联合主办；主题为&quot;高韧性制造现场的短距离通信基础设施&quot;。</li><li><strong>签署协议</strong>：国际星闪联盟与星闪日本合作协议；星闪日本分别与DCJ株式会社、江苏润和软件签署MOU；举行&quot;星闪日本伙伴发布仪式&quot;。</li><li><strong>FICOSA车载专场</strong>（会前议程条目标记为&quot;待观察&quot;的结果）：法可赛亚太区CEO Ignasi Claret与法可赛日本总经理Carlos Ramos联合分享星闪在车载视觉、信息娱乐与ADAS领域的应用。</li><li><strong>共9位演讲嘉宾</strong>，涵盖制造业经济韧性（AZAPA）、区域振兴物联网平台（信州大学）、韧性物联网与AI融合（信州大学）、网络安全合规（DCJ）、SDV治理（普华永道）、工业与轻智能部署（润和软件）、星闪+电子纸医疗（国东勤达）、工业现场无线实战（深圳星链创新）。</li><li><strong>同期展会</strong>：「星闪全生态展」，幕张展览馆秋季汽车科技展，2026年9月9-11日——联盟首次正式参与日本当地大型展会（此前均为独立布展）；五大展区，近80件展品，数十家企业参展（华为、海思、中国移动、创耀科技、利尔达、润和软件等）。</li><li><strong>重点展品</strong>：FreeBuds Pro 5（96kHz/24bit无损星闪音频）；星闪鼠标/游戏手柄（游戏手柄摇杆回报率2000Hz、时延0.5ms）；WATCH 5星闪手表；中国移动AI星闪空间感知路由器（人体存在检测/运动轨迹跟踪）；联盟称其为全球首款双声道星闪音箱（6ms时延）；银基科技星闪数字车钥匙及实车演示；AZAPA基于星闪的SDV开发平台（无线传感器加装+OTA，用于刹车热监控/路面协同控制/驾驶员监测）。</li></ul>\n<h3>意义与新意</h3>\n<p>本条目回应了2026-09-07会前议程条目中的两个待确认问题：国际星闪联盟与星闪日本的合作协议是否真正签署，以及FICOSA车载视觉/ADAS专场的具体内容。新确认的是合作协议及两份MOU的签署；FICOSA专场涉及的车载视觉、信息娱乐与ADAS应用方向与会前议程条目已列内容一致，原文未披露超出这些标签的新技术内容。展会报道中，星闪游戏手柄摇杆的回报率规格（2000Hz、0.5ms时延）以及联盟称其为全球首款双声道星闪音箱（6ms时延）为知识库首次记录；其余多数展品（FreeBuds Pro 5无损音频、数字车钥匙、三模全屋网关）属于对知识库已有产品线的补充信息，而非新机制。两篇源文——本次论坛报道（https://admin.sparklink.org.cn/api/new/dynamics/detail?id=941）与展会报道（https://admin.sparklink.org.cn/api/new/dynamics/detail?id=940，发布于2026-09-17）——均为联盟官方会后一周内发布的第一方报道，无独立信源佐证，除协议已签署这一事实外未披露协议正文、时间表或更多技术参数。</p>",
+      "images": [
+        {
+          "url": "https://admin.sparklink.org.cn/upload/image/20260918/20260918105646_62672.jpg",
+          "caption_en": "SparkLink Japan Industry Forum stage photo, Chiba, 2026-09-11",
+          "caption_zh": "2026星闪日本产业论坛现场照片，千叶，2026年9月11日"
+        },
+        {
+          "url": "https://admin.sparklink.org.cn/upload/image/20260918/20260918105114_44077.jpg",
+          "caption_en": "SparkLink full-ecosystem exhibition booth at Makuhari Messe",
+          "caption_zh": "星闪全生态展幕张展览馆展位照片"
+        }
+      ],
+      "search_blob": "2026 sparklink japan industry forum (chiba): isla-sparklink japan cooperation agreement signed, mous with dcj and runhe software, ficosa presents automotive-vision/adas session; concurrent 5-zone ecosystem exhibition at makuhari messe 2026星闪日本产业论坛（千叶）：国际星闪联盟与星闪日本签署合作协议，分别与dcj、润和软件签署mou，法可赛分享车载视觉/adas应用；同期幕张展览馆五大展区生态展 nearlink sparklink isla sparklink-japan ficosa mou automotive adas exhibition sle slb the international sparklink alliance (isla) and the sparklink japan consortium (sljc) jointly held the \"2026 sparklink japan industry forum\" in chiba on 2026-09-11, themed \"short-distance communication infrastructure for resilient manufacturing sites.\" this is the post-event outcome of the forum whose agenda the kb already recorded pre-event (`2026-09-07_nearlink-japan-forum-sept11-2026-agenda`). azapa ceo and sparklink japan representative director yasuhiro kondo (近藤康弘) opened by framing sljc's 2026–2028 roadmap: moving sparklink technology from standard validation and product certification toward overseas soc mass production and local ecosystem-building in japan. isla secretary-general zeng guosong (曾国松) and sparklink japan director shozo saito (齋藤昇三) then presented the alliance's global and local strategic roadmaps. 国际星闪无线短距通信联盟（isla）与星闪日本联盟（sparklink japan consortium，sljc）于2026年9月11日在千叶联合举办\"2026星闪日本产业论坛\"，主题为\"高韧性制造现场的短距离通信基础设施\"。本条目是知识库已收录的论坛前置议程（`2026-09-07_nearlink-japan-forum-sept11-2026-agenda`）的会后结果报道。星闪日本代表理事、azapa株式会社ceo近藤康弘在致辞中介绍了sljc面向2026至2028年的三步走路线图：推动星闪技术从标准验证、产品认证走向海外soc芯片量产与本地生态构建。国际星闪联盟秘书长曾国松、星闪日本理事齋藤昇三随后分别发表专题演讲，介绍联盟全球与本地战略蓝图。 nearlink-spec nearlink"
+    },
+    {
+      "id": "2026-09-19_arxiv-janus-dos-beam-hopping-leo",
+      "date_found": "2026-09-19",
+      "technology": "satellite",
+      "date_published": "2026-09-17",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "JANUS: Denial-of-Service Attack Against Beam Hopping in LEO Satellite Networks",
+      "title_zh": "JANUS：针对 LEO 卫星网络跳波束调度的拒绝服务攻击",
+      "url": "https://arxiv.org/abs/2609.19977",
+      "topics": [
+        "beam-hopping",
+        "LEO",
+        "DoS",
+        "scheduler-security"
+      ],
+      "topic_primary": "sat-ai",
+      "topics_secondary": [
+        "leo-constellations"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-09-19_arxiv-janus-dos-beam-hopping-leo.md",
+      "summary_short_en": "Researchers from Ben-Gurion University of the Negev (Yuval Aviv, Roee Idan, Roy Peled, Asaf Shabtai, Yuval Elovici) describe JANUS, a denial-of-service attack against beam-hopping (BH) schedulers in LEO satellite networks. Beam hopping lets a satellite illuminate only a subset of its candidate ground cells per decision window, dynamically choosing which cells to serve based on observed traffic demand rather than lighting every cell continuously. JANUS exploits this demand-driven allocation directly: a small botnet of compromised user terminals injects legitimate-looking traffic into carefully selected non-victim cells, inflating those cells' apparent demand so the scheduler reallocates beams away from a targeted victim cell.",
+      "summary_short_zh": "以色列本古里安大学的研究团队（Yuval Aviv、Roee Idan、Roy Peled、Asaf Shabtai、Yuval Elovici）提出了 JANUS，一种针对 LEO 卫星网络跳波束（beam hopping）调度器的拒绝服务攻击。跳波束技术让卫星在每个决策窗口只照亮部分候选地面小区，根据观测到的流量需求动态选择服务哪些小区，而非持续照亮所有小区。JANUS 直接利用了这种\"按需分配\"机制：一个由少量被攻陷终端组成的僵尸网络向精心选择的\"非受害\"小区注入貌似合法的用户流量，人为抬高这些小区的表观需求，从而促使调度器将波束从目标受害小区调走。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Researchers from Ben-Gurion University of the Negev (Yuval Aviv, Roee Idan, Roy Peled, Asaf Shabtai, Yuval Elovici) describe JANUS, a denial-of-service attack against beam-hopping (BH) schedulers in LEO satellite networks. Beam hopping lets a satellite illuminate only a subset of its candidate ground cells per decision window, dynamically choosing which cells to serve based on observed traffic demand rather than lighting every cell continuously. JANUS exploits this demand-driven allocation directly: a small botnet of compromised user terminals injects legitimate-looking traffic into carefully selected non-victim cells, inflating those cells' apparent demand so the scheduler reallocates beams away from a targeted victim cell.</p>\n<p>The paper models a Starlink G1-like constellation footprint with N=19 candidate cells per satellite, K=5 illuminated per 20 ms decision window, and evaluates the attack against two scheduler families: KMAX (a rank-based demand scheduler) and a deep reinforcement learning (DRL) policy. The attacker either replans each window independently (iterative planning) or coordinates injected traffic across a multi-window horizon (horizon planning).</p>\n<p>Single-window results: JANUS excludes the victim in 98.73% of eligible cases against KMAX, with a median injection budget of just 0.44 Gbps; against DRL, attack success rises from 67.43% at a 0.2 Gbps budget to 92.09% at 5 Gbps. Over a 15-window horizon, KMAX-targeted attacks reach 98.64% mean success, with 94.8% of victims excluded in every decision of the attack horizon, cutting victim throughput by 99.7%; DRL-targeted attacks range 72.62-91.88% success with 77.61-81.07% throughput degradation. The authors evaluate five mitigation mechanisms — tiered starvation-aware reservation, randomized reservation, exponential-moving-average demand smoothing, consecutive-service limits, and hard reservation — finding tiered starvation-aware reservation the strongest (cutting KMAX attack success by 76.2 percentage points, DRL by 42.3 points) but none of the evaluated defenses fully neutralizes the attack.</p>\n<h3>Key technical points</h3>\n<ul><li>Threat model: a distributed botnet of compromised legitimate user terminals, no need for RF spoofing or protocol violations — the attack traffic looks like ordinary demand.</li><li>Two scheduler families evaluated: KMAX (rank-based) and a deep-RL allocation policy, across single-window and 15-window multi-window attack horizons.</li><li>Against KMAX: 98.73% single-window exclusion rate at a median 0.44 Gbps injected budget; 99.7% victim throughput reduction under the 15-window horizon attack.</li><li>Against DRL: 67.43%-92.09% attack success rate depending on injection budget (0.2-5 Gbps); 77.61%-81.07% throughput degradation under the multi-window attack.</li><li>Sustained multi-window attacks against KMAX require injected rates growing from roughly 1 Gbps to roughly 7.5 Gbps across the 15-window horizon.</li><li>Best evaluated defense (tiered starvation-aware reservation, which reserves beams for cells that have gone unserved for a while) cuts KMAX attack success by 76.2 points and DRL by 42.3 points — a significant reduction, but not full neutralization.</li><li>Unevaluated mitigation directions proposed: per-grid ingress traffic limits, detection via persistent coordinated demand-change signatures, multi-satellite coordination to reduce single-scheduler dependence, dynamic beamforming to make cell structure less predictable, and adversarially-robust scheduler training.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is a new attack surface distinct from the LEO link-flooding botnet work already in this KB (2026-09-16_arxiv-hydra-leo-link-flooding-botnet-thresholds, also from the Ben-Gurion University group, Idan/Puzis/Shabtai/Elovici): HYDRA floods inter-satellite/ground links to exhaust capacity, while JANUS manipulates the <em>scheduler's own demand signal</em> to redirect beam allocation away from a target, without needing to saturate any link. It extends the same research lineage's LEO-network-security thread into the beam-hopping resource-allocation mechanism itself, and extends the adversarial angle beyond BRIDGE's (2026-07-07) input-perturbation audit to real-traffic demand manipulation by a botnet of compromised terminals.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>以色列本古里安大学的研究团队（Yuval Aviv、Roee Idan、Roy Peled、Asaf Shabtai、Yuval Elovici）提出了 JANUS，一种针对 LEO 卫星网络跳波束（beam hopping）调度器的拒绝服务攻击。跳波束技术让卫星在每个决策窗口只照亮部分候选地面小区，根据观测到的流量需求动态选择服务哪些小区，而非持续照亮所有小区。JANUS 直接利用了这种&quot;按需分配&quot;机制：一个由少量被攻陷终端组成的僵尸网络向精心选择的&quot;非受害&quot;小区注入貌似合法的用户流量，人为抬高这些小区的表观需求，从而促使调度器将波束从目标受害小区调走。</p>\n<p>论文以类似 Starlink 第一代星座的覆盖模型为背景，每颗卫星有 N=19 个候选小区，每个 20 毫秒决策窗口内照亮 K=5 个，并针对两类调度器进行评估：KMAX（基于排序规则的需求调度器）和深度强化学习（DRL）策略。攻击者可以逐窗口独立重新规划（迭代规划），也可以在多个窗口的时间跨度上协调注入流量（时域规划）。</p>\n<p>单窗口结果显示：针对 KMAX，JANUS 在 98.73% 的可攻击情形下成功排除受害小区，所需的中位注入带宽仅为 0.44 Gbps；针对 DRL，攻击成功率在 0.2 Gbps 预算下为 67.43%，在 5 Gbps 预算下升至 92.09%。在 15 个窗口的多窗口攻击中，针对 KMAX 的攻击平均成功率达 98.64%，94.8% 的受害小区在整个攻击时段的每一次决策中都被排除，受害小区吞吐量下降 99.7%；针对 DRL 的攻击成功率在 72.62%-91.88% 之间，吞吐量下降 77.61%-81.07%。作者评估了五种缓解机制——分级饥饿感知预留、随机预留、指数滑动平均需求平滑、连续服务次数限制和硬预留——其中分级饥饿感知预留效果最好（KMAX 攻击成功率降低 76.2 个百分点，DRL 降低 42.3 个百分点），但没有一种评估过的防御手段能完全消除该攻击。</p>\n<h3>技术要点</h3>\n<ul><li>威胁模型：由被攻陷的合法用户终端组成的分布式僵尸网络，无需射频欺骗或协议违规——攻击流量看起来就是普通的用户需求。</li><li>评估了两类调度器：基于排序的 KMAX 和深度强化学习分配策略，涵盖单窗口和 15 窗口的多窗口攻击时域。</li><li>针对 KMAX：单窗口排除成功率 98.73%，中位注入预算仅 0.44 Gbps；在 15 窗口攻击下受害小区吞吐量下降 99.7%。</li><li>针对 DRL：攻击成功率在 67.43%-92.09% 之间（取决于 0.2-5 Gbps 的注入预算）；多窗口攻击下吞吐量下降 77.61%-81.07%。</li><li>针对 KMAX 的持续多窗口攻击所需注入速率在 15 个窗口内从约 1 Gbps 增长到约 7.5 Gbps。</li><li>表现最好的防御方案（分级饥饿感知预留，为长期未获服务的小区预留波束）将 KMAX 攻击成功率降低 76.2 个百分点、DRL 降低 42.3 个百分点——显著缓解，但未能完全消除攻击。</li><li>论文提出但未详细评估的其他缓解方向：按网格入口限流、基于持续性协同需求变化特征的检测机制、多卫星协同以降低对单一调度器的依赖、动态波束赋形以降低小区结构的可预测性，以及对抗鲁棒的调度器训练。</li></ul>\n<h3>意义与新意</h3>\n<p>这是一个与本知识库已收录的 LEO 链路泛洪僵尸网络工作（2026-09-16_arxiv-hydra-leo-link-flooding-botnet-thresholds，同样来自本古里安大学 Idan/Puzis/Shabtai/Elovici 团队）不同的新攻击面：HYDRA 通过泛洪星间/星地链路来耗尽容量，而 JANUS 则直接操纵<em>调度器自身的需求信号</em>，在不需要使链路饱和的情况下将波束分配从目标小区引开。这将同一研究团队的 LEO 网络安全研究线延伸到了跳波束资源分配机制本身，并将对抗角度从 BRIDGE（2026-07-07）对 DRL 调度器状态输入的扰动审计，进一步延伸到了由被攻陷终端组成的僵尸网络对真实流量需求的操纵。</p>",
+      "images": [],
+      "search_blob": "janus: denial-of-service attack against beam hopping in leo satellite networks janus：针对 leo 卫星网络跳波束调度的拒绝服务攻击 beam-hopping leo dos scheduler-security researchers from ben-gurion university of the negev (yuval aviv, roee idan, roy peled, asaf shabtai, yuval elovici) describe janus, a denial-of-service attack against beam-hopping (bh) schedulers in leo satellite networks. beam hopping lets a satellite illuminate only a subset of its candidate ground cells per decision window, dynamically choosing which cells to serve based on observed traffic demand rather than lighting every cell continuously. janus exploits this demand-driven allocation directly: a small botnet of compromised user terminals injects legitimate-looking traffic into carefully selected non-victim cells, inflating those cells' apparent demand so the scheduler reallocates beams away from a targeted victim cell. 以色列本古里安大学的研究团队（yuval aviv、roee idan、roy peled、asaf shabtai、yuval elovici）提出了 janus，一种针对 leo 卫星网络跳波束（beam hopping）调度器的拒绝服务攻击。跳波束技术让卫星在每个决策窗口只照亮部分候选地面小区，根据观测到的流量需求动态选择服务哪些小区，而非持续照亮所有小区。janus 直接利用了这种\"按需分配\"机制：一个由少量被攻陷终端组成的僵尸网络向精心选择的\"非受害\"小区注入貌似合法的用户流量，人为抬高这些小区的表观需求，从而促使调度器将波束从目标受害小区调走。 academic-paper satellite"
+    },
     {
       "id": "2026-09-18_spacex-space-force-sdn-b-optical-mesh-contract",
       "date_found": "2026-09-18",
@@ -17181,6 +17338,36 @@ window.KB_DATA = {
       "search_blob": "satdl (nus) — jointly optimizing data redistribution and training for satellite-based distributed learning: a distributor-critic loop that trades isl transfer delay against non-iid convergence time, cutting end-to-end learning time up to 18.6% and onboard energy 12–88% satdl（新加坡国立大学）——卫星分布式学习中数据再分发与训练的联合优化：distributor-critic 迭代在星间链路传输时延与非独立同分布收敛时间之间权衡，端到端学习时间最多缩短 18.6%，在轨能耗降低 12–88% distributed-learning federated-learning non-iid-data data-redistribution inter-satellite-links orbital-computing onboard-energy convergence-bounds starlink-scale-simulation jetson-emulation wu, chew, han, li and wang (national university of singapore; arxiv cs.dc/cs.lg, 25 aug 2026, 12 pp) attack a structural inefficiency in in-orbit distributed learning: each satellite trains on data collected over its own geographic footprint, so label distributions are severely **non-iid** (urban satellites see buildings, rural ones forests), and non-iid training needs many extra rounds to converge — stretching wall-clock time and draining solar-charged batteries. existing practice sits at two extremes: **full data redistribution** over inter-satellite links (isls) makes local datasets iid and training fast but pays a large transfer delay, while **no-redistribution federated algorithms** (e.g. fedprox) avoid transfers but crawl under heavy label imbalance. satdl's thesis is that the right question is not \"redistribute or not\" but *how much and which* data to move so as to minimize the **sum** of collection time + redistribution time + training time. wu、chew、han、li 与 wang（新加坡国立大学；arxiv cs.dc/cs.lg，2026 年 8 月 25 日，12 页）针对在轨分布式学习的一个结构性低效：每颗卫星只用自身地理覆盖区收集的数据训练，标签分布因此严重**非独立同分布（non-iid）**（城市上空的卫星看到的是建筑，乡村上空看到的是森林），而 non-iid 训练需要多得多的轮次才能收敛——既拉长了墙钟时间，也消耗着太阳能供电的星载电池。现有做法处于两个极端：经星间链路（isl）**完全再分发数据**可使本地数据集趋于 iid、训练更快，但要付出高昂的传输时延；**不做再分发的联邦算法**（如 fedprox）省去传输，却在严重标签失衡下收敛缓慢。satdl 的核心命题是：正确的问题不是\"要不要再分发\"，而是*移动多少、移动哪些*数据，使**采集时间 + 再分发时间 + 训练时间之和**最小。 academic-paper satellite"
     },
     {
+      "id": "2026-09-19_artificialanalysis-pocket-scale-mobile-llm-benchmark",
+      "date_found": "2026-09-19",
+      "technology": "edge-ai",
+      "date_published": "2026-08-24",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Artificial Analysis benchmarks 41 small models physically on phones, in partnership with Liquid AI",
+      "title_zh": "Artificial Analysis 联合 Liquid AI，对 41 个小模型在真机手机上进行实测",
+      "url": "https://artificialanalysis.ai/articles/mobile-phone-intelligence-inference",
+      "topics": [
+        "mobile-benchmark",
+        "small-language-models",
+        "llama.cpp",
+        "quantization",
+        "independent-measurement"
+      ],
+      "topic_primary": "on-device-inference",
+      "topics_secondary": [
+        "edge-model-efficiency"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-09-19_artificialanalysis-pocket-scale-mobile-llm-benchmark.md",
+      "summary_short_en": "Artificial Analysis, an AI benchmarking firm, published \"Intelligence at pocket scale: Benchmarking small models and mobile phones\" on 24 August 2026, in partnership with Liquid AI; it measures a broad cross-section of small language models on consumer phones. Liquid AI, whose LFM models are among the top-scoring results, developed the Pipette measurement tooling and operates the climate-controlled test facility where the benchmarking was run; Artificial Analysis says it independently validated Liquid AI's benchmarking methodology, with the intelligence scores being Artificial Analysis's own measurements while the device-performance numbers come from Liquid AI's harness. The methodology: the same quantized build (4-bit or smaller) of each candidate model is run on-device via the llama.cpp runtime, with inference actually executed on physical hardware in what the article describes as \"a climate-controlled physical testing facility for repeatable results.\" The article's inference results are measured on the iPhone 17 Pro (12GB RAM); Artificial Analysis's separate live device page additionally lists the Galaxy S26 Ultra (12GB RAM). Of 41 quantized builds submitted, 33 completed successfully on the iPhone 17 Pro — the gap between submitted and completed builds is itself a data point about which model architectures survive mobile quantization and memory constraints without a crash or an unusable build.",
+      "summary_short_zh": "AI 评测机构 Artificial Analysis 于 2026 年 8 月 24 日发布《口袋尺度的智能：小模型与手机的基准测试》（Intelligence at pocket scale: Benchmarking small models and mobile phones），与 Liquid AI 合作完成，在消费级手机真机上对一大批小语言模型进行实测。Liquid AI（其 LFM 系列模型也是本次测试得分最高的模型之一）开发了 Pipette 测量工具链，并运营着本次测试所使用的温控测试场地；Artificial Analysis 表示其已独立验证了 Liquid AI 的评测方法论，其中\"智能\"得分为 Artificial Analysis 自行测得，而设备性能数字则来自 Liquid AI 的测试工具链。其方法：对每个候选模型采用同一量化版本（4-bit 或更低），通过 llama.cpp 运行时在端侧实际执行推理，测试在文章所称的\"面向可重复结果的温控物理测试场地\"中完成。文章的推理测试结果基于 iPhone 17 Pro（12GB 内存）；Artificial Analysis 另一独立的实时设备页面还列出了 Galaxy S26 Ultra（12GB 内存）。在提交的 41 个量化版本中，33 个在 iPhone 17 Pro 上成功完成测试——提交数与实际完成数之间的差距本身也是一个数据点，反映了哪些模型架构能在移动端量化与内存限制下不崩溃、不产出不可用版本。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Artificial Analysis, an AI benchmarking firm, published &quot;Intelligence at pocket scale: Benchmarking small models and mobile phones&quot; on 24 August 2026, in partnership with Liquid AI; it measures a broad cross-section of small language models on consumer phones. Liquid AI, whose LFM models are among the top-scoring results, developed the Pipette measurement tooling and operates the climate-controlled test facility where the benchmarking was run; Artificial Analysis says it independently validated Liquid AI's benchmarking methodology, with the intelligence scores being Artificial Analysis's own measurements while the device-performance numbers come from Liquid AI's harness. The methodology: the same quantized build (4-bit or smaller) of each candidate model is run on-device via the llama.cpp runtime, with inference actually executed on physical hardware in what the article describes as &quot;a climate-controlled physical testing facility for repeatable results.&quot; The article's inference results are measured on the iPhone 17 Pro (12GB RAM); Artificial Analysis's separate live device page additionally lists the Galaxy S26 Ultra (12GB RAM). Of 41 quantized builds submitted, 33 completed successfully on the iPhone 17 Pro — the gap between submitted and completed builds is itself a data point about which model architectures survive mobile quantization and memory constraints without a crash or an unusable build.</p>\n<p>Models spanned a wide size and lineage range, including LFM2.5-2.6B and LFM2.5-230M (Liquid AI's own family, unsurprising given the partnership but reported alongside competitors rather than isolated), Nanbeige4.2-3B, MiniCPM5-1B, Qwen3.5 9B, Ornith-1.0-9B, Ling 3.0 Tiny, Falcon-H1R-7B, and Google's Gemma 4 E4B — the last of which lets this finding be cross-checked directly against Google's own first-party LiteRT-LM device benchmarks for the same model (see this KB's 2026-09-08 Gemma 4 QAT entry, which explicitly noted no tokens/s figure was available in the material read at the time; Google's Hugging Face model cards for Gemma-4 (LiteRT-LM) publish per-device numbers, e.g. Gemma 4 E4B on iPhone 17 Pro CPU: 159 tok/s prefill / 9.7 tok/s decode). Each model is scored on two independent axes: an &quot;intelligence&quot; score averaged across five held-out evaluations (BFCL for tool-calling, IFBench for instruction-following, AA-Omniscience, GPQA Diamond, MATH-500), ranging 27-63 across the tested field on a 16K-context setting; and raw inference performance — end-to-end generation time for a fixed 1,024-token-prompt / 256-token-response workload (0.9-26.7 seconds across the field) and peak memory at 4K context (0.4-6.9GB). The two top intelligence scorers in the published excerpt, LFM2.5-2.6B and Nanbeige4.2-3B, both reached 63, with LFM2.5-2.6B completing the generation workload in 8.0 seconds against some 9B-class models exceeding 25 seconds for the same task — a direct, physically-measured illustration that parameter count alone does not predict intelligence score.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Methodology</strong>: same quantized build (4-bit or smaller) per model, run via llama.cpp actually on-device, inside a climate-controlled physical testing facility for repeatable results, using Liquid AI's Pipette measurement tooling, which Liquid AI developed and operates; Artificial Analysis says it independently validated Liquid AI's benchmarking methodology.</li><li><strong>Devices</strong>: the article's inference results are measured on the iPhone 17 Pro (12GB RAM); Artificial Analysis's separate live device page additionally lists the Galaxy S26 Ultra (12GB RAM).</li><li><strong>Completion rate as a data point</strong>: 33 of 41 submitted builds completed on iPhone 17 Pro — some architectures do not survive mobile quantization/memory constraints.</li><li><strong>Two independent scoring axes</strong>: &quot;intelligence&quot; (average of BFCL, IFBench, AA-Omniscience, GPQA Diamond, MATH-500 at 16K context, range 27-63 across the field) kept separate from raw performance (end-to-end generation time for 1,024-token-prompt/256-token-response, 0.9-26.7s; peak memory at 4K context, 0.4-6.9GB).</li><li><strong>Top scorers</strong>: LFM2.5-2.6B and Nanbeige4.2-3B both scored 63 on intelligence; LFM2.5-2.6B generated the fixed workload in 8.0s vs. &gt;25s for some 9B-class models in the field — parameter count does not predict intelligence score.</li><li><strong>Cross-check opportunity</strong>: Gemma 4 E4B is in the tested field, letting this independent measurement be checked against Google's own first-party LiteRT-LM device numbers for the same model (this KB's 2026-09-08 entry had no tokens/s figure at the time; Google's Hugging Face model cards for gemma-4-E2B/E4B-it-litert-lm publish per-device numbers across Android/iOS/desktop/Raspberry Pi/Jetson, not independently verified against Artificial Analysis's own figures in the material read for this entry).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Flagship on-device AI announcements routinely ship without an independently verifiable latency, memory or throughput figure. This is not a standards-body result — it is not MLPerf, and it is a benchmarking firm's own methodology rather than a standards body's, with the device-performance numbers coming from Liquid AI's own Pipette harness rather than an end-to-end independent measurement chain. Artificial Analysis says it independently validated that harness's methodology, and the intelligence scoring itself is Artificial Analysis's own. The inclusion of Gemma 4 E4B in the tested field also lets these device-performance results be cross-checked against Google's own first-party per-device Gemma 4 numbers, published on Google's Hugging Face model cards.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>AI 评测机构 Artificial Analysis 于 2026 年 8 月 24 日发布《口袋尺度的智能：小模型与手机的基准测试》（Intelligence at pocket scale: Benchmarking small models and mobile phones），与 Liquid AI 合作完成，在消费级手机真机上对一大批小语言模型进行实测。Liquid AI（其 LFM 系列模型也是本次测试得分最高的模型之一）开发了 Pipette 测量工具链，并运营着本次测试所使用的温控测试场地；Artificial Analysis 表示其已独立验证了 Liquid AI 的评测方法论，其中&quot;智能&quot;得分为 Artificial Analysis 自行测得，而设备性能数字则来自 Liquid AI 的测试工具链。其方法：对每个候选模型采用同一量化版本（4-bit 或更低），通过 llama.cpp 运行时在端侧实际执行推理，测试在文章所称的&quot;面向可重复结果的温控物理测试场地&quot;中完成。文章的推理测试结果基于 iPhone 17 Pro（12GB 内存）；Artificial Analysis 另一独立的实时设备页面还列出了 Galaxy S26 Ultra（12GB 内存）。在提交的 41 个量化版本中，33 个在 iPhone 17 Pro 上成功完成测试——提交数与实际完成数之间的差距本身也是一个数据点，反映了哪些模型架构能在移动端量化与内存限制下不崩溃、不产出不可用版本。</p>\n<p>参测模型的规模与来源跨度很大，包括 LFM2.5-2.6B 与 LFM2.5-230M（Liquid AI 自家模型系列，鉴于合作关系并不意外，但与其竞品并列展示而非单独呈现）、Nanbeige4.2-3B、MiniCPM5-1B、Qwen3.5 9B、Ornith-1.0-9B、Ling 3.0 Tiny、Falcon-H1R-7B，以及谷歌的 Gemma 4 E4B——最后这一项使本条发现可直接与谷歌自家针对同一模型发布的 LiteRT-LM 端侧实测数字相互印证（参见本知识库 2026-09-08 收录的 Gemma 4 QAT 条目，该条目当时明确指出所读材料中未给出任何 tokens/s 数字；谷歌在其 Hugging Face 模型卡中发布了逐设备实测数字，例如 Gemma 4 E4B 在 iPhone 17 Pro CPU 上为 159 tok/s 预填充 / 9.7 tok/s 解码）。每个模型在两个独立维度上被评分：一是&quot;智能&quot;得分，为五项留出评测（BFCL 工具调用、IFBench 指令遵循、AA-Omniscience、GPQA Diamond、MATH-500）的平均值，在 16K 上下文设置下，测试范围内得分为 27-63；二是原始推理性能——固定 1,024 token 提示词 / 256 token 响应工作负载下的端到端生成耗时（测试范围内为 0.9-26.7 秒）以及 4K 上下文下的峰值内存（0.4-6.9GB）。已发布节选中两个智能得分最高的模型 LFM2.5-2.6B 与 Nanbeige4.2-3B 均达到 63 分，其中 LFM2.5-2.6B 完成该生成任务仅耗时 8.0 秒，而部分 9B 级模型完成同一任务耗时超过 25 秒——这是一个直接的、经物理实测得出的例证，说明参数量本身并不能预测智能得分。</p>\n<h3>技术要点</h3>\n<ul><li><strong>方法</strong>：每个模型使用同一量化版本（4-bit 或更低），通过 llama.cpp 在真机端侧实际运行，测试场地为面向可重复结果的温控物理测试设施，依托 Liquid AI 开发并运营的 Pipette 测量工具链；Artificial Analysis 表示其已独立验证了 Liquid AI 的评测方法论。</li><li><strong>测试设备</strong>：文章的推理测试结果基于 iPhone 17 Pro（12GB 内存）；Artificial Analysis 另一独立的实时设备页面还列出了 Galaxy S26 Ultra（12GB 内存）。</li><li><strong>完成率本身即为数据点</strong>：提交的 41 个版本中有 33 个在 iPhone 17 Pro 上完成测试——部分架构无法在移动端量化/内存限制下正常完成。</li><li><strong>两个独立评分维度</strong>：将&quot;智能&quot;得分（BFCL、IFBench、AA-Omniscience、GPQA Diamond、MATH-500 在 16K 上下文下的平均值，测试范围 27-63 分）与原始性能（固定 1,024 token 提示词/256 token 响应下的端到端生成耗时 0.9-26.7 秒；4K 上下文下峰值内存 0.4-6.9GB）分开呈现。</li><li><strong>得分最高者</strong>：LFM2.5-2.6B 与 Nanbeige4.2-3B 智能得分均为 63 分；LFM2.5-2.6B 完成该固定工作负载仅需 8.0 秒，而部分 9B 级模型完成同一任务需超过 25 秒——参数量本身并不能预测智能得分。</li><li><strong>可交叉验证的契机</strong>：Gemma 4 E4B 也在测试模型之列，使这一独立实测结果可与谷歌自家针对同一模型发布的 LiteRT-LM 端侧实测数字相互对照（本知识库 2026-09-08 条目当时并无 tokens/s 数字；谷歌在其 gemma-4-E2B/E4B-it-litert-lm 的 Hugging Face 模型卡中发布了安卓/iOS/桌面/树莓派/Jetson 各平台的逐设备数字，本条目所读材料中未将其与 Artificial Analysis 自身数字逐一核对）。</li></ul>\n<h3>意义与新意</h3>\n<p>旗舰级端侧 AI 发布普遍未附带任何可独立验证的时延、内存或吞吐数字。本条目并非标准组织给出的结果——它不是 MLPerf，也是一家评测公司自有的方法论而非标准组织的产物，其设备性能数字来自 Liquid AI 自有的 Pipette 测试工具链，而非端到端的独立测量链条。Artificial Analysis 表示其已独立验证了该工具链的方法论，&quot;智能&quot;评分本身则为 Artificial Analysis 自行测得。测试模型中包含 Gemma 4 E4B，这也使这些设备性能结果可与谷歌自家在其 Hugging Face 模型卡中发布的首方逐设备 Gemma 4 数字相互对照。</p>",
+      "images": [],
+      "search_blob": "artificial analysis benchmarks 41 small models physically on phones, in partnership with liquid ai artificial analysis 联合 liquid ai，对 41 个小模型在真机手机上进行实测 mobile-benchmark small-language-models llama.cpp quantization independent-measurement artificial analysis, an ai benchmarking firm, published \"intelligence at pocket scale: benchmarking small models and mobile phones\" on 24 august 2026, in partnership with liquid ai; it measures a broad cross-section of small language models on consumer phones. liquid ai, whose lfm models are among the top-scoring results, developed the pipette measurement tooling and operates the climate-controlled test facility where the benchmarking was run; artificial analysis says it independently validated liquid ai's benchmarking methodology, with the intelligence scores being artificial analysis's own measurements while the device-performance numbers come from liquid ai's harness. the methodology: the same quantized build (4-bit or smaller) of each candidate model is run on-device via the llama.cpp runtime, with inference actually executed on physical hardware in what the article describes as \"a climate-controlled physical testing facility for repeatable results.\" the article's inference results are measured on the iphone 17 pro (12gb ram); artificial analysis's separate live device page additionally lists the galaxy s26 ultra (12gb ram). of 41 quantized builds submitted, 33 completed successfully on the iphone 17 pro — the gap between submitted and completed builds is itself a data point about which model architectures survive mobile quantization and memory constraints without a crash or an unusable build. ai 评测机构 artificial analysis 于 2026 年 8 月 24 日发布《口袋尺度的智能：小模型与手机的基准测试》（intelligence at pocket scale: benchmarking small models and mobile phones），与 liquid ai 合作完成，在消费级手机真机上对一大批小语言模型进行实测。liquid ai（其 lfm 系列模型也是本次测试得分最高的模型之一）开发了 pipette 测量工具链，并运营着本次测试所使用的温控测试场地；artificial analysis 表示其已独立验证了 liquid ai 的评测方法论，其中\"智能\"得分为 artificial analysis 自行测得，而设备性能数字则来自 liquid ai 的测试工具链。其方法：对每个候选模型采用同一量化版本（4-bit 或更低），通过 llama.cpp 运行时在端侧实际执行推理，测试在文章所称的\"面向可重复结果的温控物理测试场地\"中完成。文章的推理测试结果基于 iphone 17 pro（12gb 内存）；artificial analysis 另一独立的实时设备页面还列出了 galaxy s26 ultra（12gb 内存）。在提交的 41 个量化版本中，33 个在 iphone 17 pro 上成功完成测试——提交数与实际完成数之间的差距本身也是一个数据点，反映了哪些模型架构能在移动端量化与内存限制下不崩溃、不产出不可用版本。 industry-news edge-ai"
+    },
+    {
       "id": "2026-08-29_arxiv-rfvm-wideband-phase-shifter-satcom",
       "date_found": "2026-08-29",
       "technology": "satellite",
@@ -18661,6 +18848,36 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>KAUST 的 Zheng、Al-Naffouri 与 UAB/IEEC 的 Liu、López-Salcedo、Seco-Granados（ION GNSS+ 2026 录用；arxiv eess.SP，2026 年 8 月 19 日提交）针对高精度 GNSS 的一个结构性弱点：PPP/RTK 级服务依赖的轨道、钟差、大气与硬件偏差改正由<em>地面</em>参考网生成，而地面站在海洋、极地与沙漠上空几何稀疏，使产品质量与地面基础设施密度强耦合。其方案将携带星载 GNSS 接收机的低轨卫星不再当作集中处理中心的被动数据源，而是作为与地面站在完全去中心化估计器中协同的第二<em>参考层</em>。</p>\n<p>架构为两层动态图：地面层经可靠回传互联；400 星 Walker-Delta 低轨层（20 轨道面、53°、1000 km）经 k 近邻星间链路（k=5）互联。层内频繁共识与层间间歇交换交替进行，层间链路建模为随机二部图——可见性指示变量乘以伯努利链路成功变量（基线 p=0.95）。关键在于节点从不上传原始观测：每台接收机先用投影矩阵在本地消去自身冗余参数，跨网传输的只有紧凑摘要——共享的 GNSS 轨道/钟差状态估计与梯度跟踪变量。算法为嵌套式去中心化梯度跟踪：每层先做 K=10 步层内共识，再经 Metropolis 加权的时变二部混合矩阵做一步跨层更新；只要跨层链路概率为正即保证收敛。单历元仿真（30 颗 GPS 卫星、双频 L1/L2、载波噪声 0.001 m / 码噪声 0.015 m）中，<em>稀疏</em>的 100 站全球网加低轨层达到轨道 0.129 m / 钟差 0.123 m RMSE——比<em>稠密</em>全球纯地面网（0.159/0.153 m）好约 19%——且跨层可用率降至 0.1% 时收敛仅平缓退化。低轨卫星自身轨道/钟差估计几乎不受地面网稀疏度影响（3D RMSE 均约 0.016 m）。作者承认的局限：单历元、理想化观测模型、静态层内混合矩阵、星间链路处理简化。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题：</strong> GNSS 改正质量与地面站数量/分布强耦合；海洋/极地/沙漠结构性欠覆盖。</li><li><strong>架构：</strong> 地面层 + 400 星 Walker-Delta 低轨层（20×20、53°、1000 km）携星载 GNSS 接收机；k=5 近邻星间链路拓扑；跨层链路 = 可见性指示 × 伯努利成功（基线 p=0.95）。</li><li><strong>隐私/带宽：</strong> 原始观测不出节点——本地经投影矩阵 C_r 消去冗余参数；跨网只传共享状态估计 z 与梯度跟踪变量 g。</li><li><strong>算法：</strong> 嵌套去中心化梯度跟踪——每层 K=10 步层内共识（块对角混合矩阵 W_G、W_L）后 1 步跨层更新（时变 Metropolis 二部矩阵 W_b^t）；步长 μ=0.01；跨层链路概率为正即保证收敛。</li><li><strong>核心结果：</strong> 稀疏全球（100 站）+ 低轨 → 轨道 0.129 m / 钟差 0.123 m RMSE，优于稠密全球纯地面网 0.159/0.153 m（分别好 19.0%/19.8%）；44 站加拿大区域网 + 低轨 → 0.212/0.191 m。</li><li><strong>低轨自估计：</strong> 3D 轨道 RMSE 0.016 m、接收机钟差约 0.0095 m，稠密或稀疏地面支撑下几乎相同。</li><li><strong>链路失效鲁棒性：</strong> p=0.95 与 p=0.2 收敛曲线几乎重合；p=0.01 变慢但持续下降；p=0.001 稳定但有残余差距。</li><li><strong>设置：</strong> 单历元最小二乘、30 颗 GPS 卫星、双频非差载波+码、初始轨道 5 m / 钟差 10 ns 不确定度；最多 25,000 轮。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库的低轨 PNT 覆盖此前均在用户侧：NR-NTN 星座上的 SSB 定位（2026-08-15）与 GNSS 安全脉络（Jammertest 2026-08-18、CORS 完好性 2026-08-12）。本条目首次触及低轨-PNT 融合的<em>基础设施</em>侧——把通信式低轨星座用作 GNSS 参考/改正网本身的活动层，且采用去中心化估计器，而非今日 IGS 式分析中心的集中处理。两个结果构成看点：（a）几何可替代密度——100 个稀疏地面站加低轨层在 GNSS 轨道/钟差改正上<em>优于</em>稠密全球地面网，这重塑了高精度改正服务的经济学：拥有星座但没有地面站帝国的运营商（Xona、Centispace、或任何加装 GNSS 接收机的宽带星座）都可受益；（b）双时间尺度梯度跟踪设计容忍跨层可用率低至 0.1%，即方案为真实接触窗物理而建，而非假设永远在线的回传——与知识库低轨联邦学习条目（2026-08-17 双层空中计算 FL）中同样的间歇链路估计模式。注意：仅仿真、单历元、理想化噪声——真实系统还需面对论文明确推迟处理的多径、相位中心与动力学建模；ION GNSS+ 正是后续真实低轨数据验证的合适场合。</p>",
       "images": [],
       "search_blob": "coordination of ground-to-space gnss reference networks: kaust/uab decentralized gradient tracking lets 100 sparse ground stations plus a 400-satellite leo tier beat a dense global ground network on gnss orbit/clock corrections (0.129 m vs 0.159 m orbit rmse), converging even at 0.1 % cross-tier link availability 地空 gnss 参考网协同：kaust/uab 去中心化梯度跟踪让 100 个稀疏地面站加 400 星低轨层在 gnss 轨道/钟差改正上超过稠密全球地面网（轨道 rmse 0.129 m 对 0.159 m），跨层链路可用率低至 0.1% 仍收敛 gnss leo-pnt reference-networks precise-orbit-determination decentralized-estimation gradient-tracking walker-delta inter-satellite-links ion-gnss zheng and al-naffouri (kaust) with liu, lópez-salcedo and seco-granados (uab/ieec; accepted at ion gnss+ 2026; arxiv eess.sp, submitted 19 aug 2026) tackle a structural weakness of high-precision gnss: the orbit, clock, atmospheric and hardware-bias corrections that ppp/rtk-class services depend on are produced by *terrestrial* reference networks whose station geometry is sparse over oceans, polar regions and deserts, tying product quality to ground-infrastructure density. their proposal treats leo satellites carrying onboard gnss receivers not as passive data sources for a processing center, but as a second *reference tier* that cooperates with ground stations in a fully decentralized estimator. kaust 的 zheng、al-naffouri 与 uab/ieec 的 liu、lópez-salcedo、seco-granados（ion gnss+ 2026 录用；arxiv eess.sp，2026 年 8 月 19 日提交）针对高精度 gnss 的一个结构性弱点：ppp/rtk 级服务依赖的轨道、钟差、大气与硬件偏差改正由*地面*参考网生成，而地面站在海洋、极地与沙漠上空几何稀疏，使产品质量与地面基础设施密度强耦合。其方案将携带星载 gnss 接收机的低轨卫星不再当作集中处理中心的被动数据源，而是作为与地面站在完全去中心化估计器中协同的第二*参考层*。 academic-paper satellite"
+    },
+    {
+      "id": "2026-09-19_mlcommons-mlperf-client-v2-agentic-image-gen",
+      "date_found": "2026-09-19",
+      "technology": "edge-ai",
+      "date_published": "2026-08-18",
+      "type": "product",
+      "category": "industry",
+      "title_en": "MLPerf Client v2.0 adds Agentic AI and Image Generation categories to AI PC benchmarking",
+      "title_zh": "MLPerf Client v2.0 为 AI PC 基准测试新增智能体 AI 与图像生成测试类别",
+      "url": "https://mlcommons.org/2026/08/mlperf-client-v2-0/",
+      "topics": [
+        "MLPerf-Client",
+        "benchmark",
+        "AI-PC",
+        "agentic-AI",
+        "image-generation"
+      ],
+      "topic_primary": "ai-pc",
+      "topics_secondary": [
+        "on-device-inference"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-09-19_mlcommons-mlperf-client-v2-agentic-image-gen.md",
+      "summary_short_en": "MLCommons released MLPerf Client v2.0 on 18 August 2026, the next version of its industry-collaborative client benchmark. MLCommons describes MLPerf as \"the de facto standard for evaluating AI performance.\" v2.0's headline additions are two new benchmark categories beyond the v1.x LLM-focused scope: an Agentic AI category measuring \"Software Engineering (SWE) Agent\" and \"Data Analyst Agent\" scenarios, reporting end-to-end performance with an explicit breakdown of LLM-inference time versus tool-execution time; and an Image Generation category, which the announcement describes as using Flux.2 klein 4B as an \"experimental\" test model. The LLM side is also updated: Phi 4 Mini Instruct upgrades Phi 3.5 mini instruct in the required workloads, Qwen 3 8B is added as an experimental model, and a new \"Intermediate Summarization\" task with an input prompt of roughly 4K tokens is introduced. The benchmark continues to report both responsiveness and throughput metrics, and remains a collaboration among AMD, Intel, Microsoft, NVIDIA, Qualcomm Technologies and unnamed PC OEM partners.",
+      "summary_short_zh": "MLCommons 于 2026 年 8 月 18 日发布了 MLPerf Client v2.0，这是其行业协作客户端基准测试的新版本。MLCommons 将 MLPerf 称为\"评估 AI 性能事实上的标准\"。v2.0 版本的核心新增内容是在此前 v1.x 版本仅覆盖 LLM 的基础上新增两个测试类别：智能体 AI（Agentic AI）类别，测量\"软件工程（SWE）智能体\"与\"数据分析智能体\"场景，报告端到端性能并明确拆分 LLM 推理时间与工具执行时间；以及图像生成（Image Generation）类别，公告称其采用 Flux.2 klein 4B 作为\"实验性\"测试模型。LLM 测试侧也有更新：Phi 4 Mini Instruct 在必测工作负载中取代了 Phi 3.5 mini instruct，新增 Qwen 3 8B 作为实验性模型，并引入一项输入约为 4K token 的新\"中等长度摘要\"任务。该基准测试继续同时报告响应性与吞吐量指标，仍由 AMD、Intel、Microsoft、NVIDIA、Qualcomm Technologies 及未具名 PC OEM 伙伴共同协作完成。",
+      "body_html_en": "<h3>Summary</h3>\n<p>MLCommons released MLPerf Client v2.0 on 18 August 2026, the next version of its industry-collaborative client benchmark. MLCommons describes MLPerf as &quot;the de facto standard for evaluating AI performance.&quot; v2.0's headline additions are two new benchmark categories beyond the v1.x LLM-focused scope: an Agentic AI category measuring &quot;Software Engineering (SWE) Agent&quot; and &quot;Data Analyst Agent&quot; scenarios, reporting end-to-end performance with an explicit breakdown of LLM-inference time versus tool-execution time; and an Image Generation category, which the announcement describes as using Flux.2 klein 4B as an &quot;experimental&quot; test model. The LLM side is also updated: Phi 4 Mini Instruct upgrades Phi 3.5 mini instruct in the required workloads, Qwen 3 8B is added as an experimental model, and a new &quot;Intermediate Summarization&quot; task with an input prompt of roughly 4K tokens is introduced. The benchmark continues to report both responsiveness and throughput metrics, and remains a collaboration among AMD, Intel, Microsoft, NVIDIA, Qualcomm Technologies and unnamed PC OEM partners.</p>\n<p>The important caveat, read directly from the release announcement: this is a methodology release, not a results round. MLPerf Client v2.0 is &quot;freely available for download,&quot; but the announcement itself contains no benchmark numbers for any named hardware configuration — vendors and OEMs now have the tooling to submit v2.0 scores, but no v2.0 results have been published as of this entry.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Release</strong>: MLPerf Client v2.0, published 18 August 2026 by MLCommons; a collaboration among AMD, Intel, Microsoft, NVIDIA, Qualcomm Technologies and unnamed PC OEMs.</li><li><strong>New: Agentic AI category</strong>: Software Engineering (SWE) Agent and Data Analyst Agent scenarios; reports end-to-end performance with an explicit LLM-inference vs. tool-execution time breakdown.</li><li><strong>New: Image Generation category</strong>: Flux.2 klein 4B as an experimental test model.</li><li><strong>LLM updates</strong>: Phi 4 Mini Instruct upgrades Phi 3.5 mini instruct in the required workloads; Qwen 3 8B added as experimental; new ~4K-token &quot;Intermediate Summarization&quot; task.</li><li><strong>Metrics</strong>: continues reporting both responsiveness and throughput, consistent with the prior v1.5 release.</li><li><strong>What this release is NOT</strong>: a results round. No benchmark numbers for any named hardware are published in the announcement itself — the tooling exists, submissions have not yet landed.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The two new categories are directly relevant to two open threads in this KB: Agentic AI benchmarking connects to this same run's Agent-X entry (on-device agent latency) and prior compute-offloading/edge-orchestration entries about agent workflows, while Image Generation benchmarking is the first image-generation benchmark in this KB's edge-AI coverage. The entry is filed as a tool/methodology release rather than a results entry — the actual vendor-hardware numbers that would close the domain's disclosure gap have not yet been published.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>MLCommons 于 2026 年 8 月 18 日发布了 MLPerf Client v2.0，这是其行业协作客户端基准测试的新版本。MLCommons 将 MLPerf 称为&quot;评估 AI 性能事实上的标准&quot;。v2.0 版本的核心新增内容是在此前 v1.x 版本仅覆盖 LLM 的基础上新增两个测试类别：智能体 AI（Agentic AI）类别，测量&quot;软件工程（SWE）智能体&quot;与&quot;数据分析智能体&quot;场景，报告端到端性能并明确拆分 LLM 推理时间与工具执行时间；以及图像生成（Image Generation）类别，公告称其采用 Flux.2 klein 4B 作为&quot;实验性&quot;测试模型。LLM 测试侧也有更新：Phi 4 Mini Instruct 在必测工作负载中取代了 Phi 3.5 mini instruct，新增 Qwen 3 8B 作为实验性模型，并引入一项输入约为 4K token 的新&quot;中等长度摘要&quot;任务。该基准测试继续同时报告响应性与吞吐量指标，仍由 AMD、Intel、Microsoft、NVIDIA、Qualcomm Technologies 及未具名 PC OEM 伙伴共同协作完成。</p>\n<p>需要明确指出的重要限定（直接读自发布公告本身）：这是一次方法论发布，而非结果轮次。MLPerf Client v2.0&quot;可免费下载&quot;，但公告本身未包含任何具名硬件配置的评测数字——厂商与 OEM 目前具备了提交 v2.0 成绩的工具，但截至本条目撰写时尚无任何 v2.0 结果发布。</p>\n<h3>技术要点</h3>\n<ul><li><strong>发布</strong>：MLPerf Client v2.0，由 MLCommons 于 2026 年 8 月 18 日发布；由 AMD、Intel、Microsoft、NVIDIA、Qualcomm Technologies 及未具名 PC OEM 厂商协作完成。</li><li><strong>新增：智能体 AI 类别</strong>：软件工程（SWE）智能体与数据分析智能体场景；报告端到端性能，并明确拆分 LLM 推理时间与工具执行时间。</li><li><strong>新增：图像生成类别</strong>：以 Flux.2 klein 4B 作为实验性测试模型。</li><li><strong>LLM 更新</strong>：Phi 4 Mini Instruct 在必测工作负载中取代了 Phi 3.5 mini instruct；新增 Qwen 3 8B 作为实验性模型；新增约 4K token 的&quot;中等长度摘要&quot;任务。</li><li><strong>指标</strong>：延续此前 v1.5 版本的模式，同时报告响应性与吞吐量。</li><li><strong>本次发布并不包含的内容</strong>：结果轮次。公告本身未公布任何具名硬件的评测数字——工具已就绪，但尚无提交结果落地。</li></ul>\n<h3>意义与新意</h3>\n<p>两个新增类别与本知识库内两条已有线索直接相关：智能体 AI 基准测试与本次运行收录的 Agent-X 条目（端侧智能体时延）以及此前关于智能体工作流的 compute-offloading/edge-orchestration 条目相呼应；图像生成基准测试则是本知识库 Edge AI 板块内首次收录的图像生成类基准测试。本条目以工具/方法论发布的形式收录，而非结果条目——真正能够弥合本领域披露缺口的具名厂商硬件数字，目前尚未发布。</p>",
+      "images": [],
+      "search_blob": "mlperf client v2.0 adds agentic ai and image generation categories to ai pc benchmarking mlperf client v2.0 为 ai pc 基准测试新增智能体 ai 与图像生成测试类别 mlperf-client benchmark ai-pc agentic-ai image-generation mlcommons released mlperf client v2.0 on 18 august 2026, the next version of its industry-collaborative client benchmark. mlcommons describes mlperf as \"the de facto standard for evaluating ai performance.\" v2.0's headline additions are two new benchmark categories beyond the v1.x llm-focused scope: an agentic ai category measuring \"software engineering (swe) agent\" and \"data analyst agent\" scenarios, reporting end-to-end performance with an explicit breakdown of llm-inference time versus tool-execution time; and an image generation category, which the announcement describes as using flux.2 klein 4b as an \"experimental\" test model. the llm side is also updated: phi 4 mini instruct upgrades phi 3.5 mini instruct in the required workloads, qwen 3 8b is added as an experimental model, and a new \"intermediate summarization\" task with an input prompt of roughly 4k tokens is introduced. the benchmark continues to report both responsiveness and throughput metrics, and remains a collaboration among amd, intel, microsoft, nvidia, qualcomm technologies and unnamed pc oem partners. mlcommons 于 2026 年 8 月 18 日发布了 mlperf client v2.0，这是其行业协作客户端基准测试的新版本。mlcommons 将 mlperf 称为\"评估 ai 性能事实上的标准\"。v2.0 版本的核心新增内容是在此前 v1.x 版本仅覆盖 llm 的基础上新增两个测试类别：智能体 ai（agentic ai）类别，测量\"软件工程（swe）智能体\"与\"数据分析智能体\"场景，报告端到端性能并明确拆分 llm 推理时间与工具执行时间；以及图像生成（image generation）类别，公告称其采用 flux.2 klein 4b 作为\"实验性\"测试模型。llm 测试侧也有更新：phi 4 mini instruct 在必测工作负载中取代了 phi 3.5 mini instruct，新增 qwen 3 8b 作为实验性模型，并引入一项输入约为 4k token 的新\"中等长度摘要\"任务。该基准测试继续同时报告响应性与吞吐量指标，仍由 amd、intel、microsoft、nvidia、qualcomm technologies 及未具名 pc oem 伙伴共同协作完成。 product edge-ai"
     },
     {
       "id": "2026-08-31_samsung-vw-uwb-digital-key-europe",
@@ -27902,6 +28119,38 @@ window.KB_DATA = {
       "search_blob": "maximum achievable burst size in all-optical satellite networks 全光卫星网络中可达到的最大突发大小 optical-burst-switching all-optical inter-satellite-link wdm leo free-space-optics roethig, mouammar, brasileiro, hosseini, and jukan (tu braunschweig; submitted 25 jun 2026) analyze the maximum burst size achievable in **all-optical satellite networks** using optical burst switching (obs) over wdm, across leo constellations of differing altitude. as leo constellations move from rf/regenerative inter-satellite links toward all-optical (free-space-optical) backbones, obs becomes attractive because it avoids per-hop optical-electrical-optical conversion — but the burst size is bounded by the offset-time / propagation-delay budget, which on satellite links is dominated by orbital geometry rather than fiber length. roethig、mouammar、brasileiro、hosseini、jukan（布伦瑞克工业大学，2026 年 6 月 25 日提交）分析了在不同高度 leo 星座中，基于 wdm 的光突发交换（obs）在**全光卫星网络**中可达到的最大突发大小。随着 leo 星座从射频/再生式星间链路转向全光（自由空间光）骨干，obs 因避免逐跳的光-电-光转换而具吸引力——但突发大小受偏置时间/传播时延预算限制，而在卫星链路上该预算由轨道几何而非光纤长度主导。 academic-paper satellite"
     },
     {
+      "id": "2026-09-19_arxiv-6g-native-ai-channel-foundation-models",
+      "date_found": "2026-09-19",
+      "technology": "cellular",
+      "date_published": "2026-06-24",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "6G Native AI and Channel Foundation Models",
+      "title_zh": "6G 原生 AI 与信道基础模型",
+      "url": "https://arxiv.org/abs/2608.14591",
+      "topics": [
+        "6G",
+        "channel-estimation",
+        "foundation-model",
+        "pretraining",
+        "ISAC",
+        "massive-MIMO"
+      ],
+      "topic_primary": "cellular-ai",
+      "topics_secondary": [
+        "6g-vision",
+        "cellular-massive-mimo"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-09-19_arxiv-6g-native-ai-channel-foundation-models.md",
+      "summary_short_en": "This paper frames \"6G Native AI\" as a system-design requirement rather than a bolt-on feature: the authors define it through three properties — task adaptability, scenario generalization, and deployment-aware scalability — and argue that task-specific supervised models (the dominant approach today) are difficult to use as the main technical basis for meeting them, owing to heavy label dependence, poor generalization, and fragmented per-scenario designs.",
+      "summary_short_zh": "本文将\"6G 原生 AI\"界定为一种系统设计层面的要求，而非事后附加的功能：作者通过三个属性来定义它——任务适应性、场景泛化能力与部署感知的可扩展性——并指出当前主流的任务专用监督模型由于对标注数据依赖重、泛化能力弱、且各场景设计零散，难以作为满足这三方面要求的主要技术基础。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper frames &quot;6G Native AI&quot; as a system-design requirement rather than a bolt-on feature: the authors define it through three properties — task adaptability, scenario generalization, and deployment-aware scalability — and argue that task-specific supervised models (the dominant approach today) are difficult to use as the main technical basis for meeting them, owing to heavy label dependence, poor generalization, and fragmented per-scenario designs.</p>\n<p>The paper's central proposal is the Channel Foundation Model (CFM): a model pretrained on large-scale, heterogeneous, mostly unlabeled channel observations (CSI, channel impulse response) that is then adapted to downstream tasks with comparatively little labeled data, mirroring the foundation-model paradigm from NLP/vision but built around channel physics rather than text or pixels. The authors organize existing and possible CFM pretraining strategies into three families: (1) generative pretraining, which reconstructs masked/missing channel observations (citing WiFo and WirelessGPT as examples) — strong at exploiting unlabeled data, but reconstruction loss alone doesn't guarantee the learned representation actually transfers to downstream tasks; (2) discriminative pretraining, which shapes the representation space by pulling related channel samples together and pushing unrelated ones apart (citing CSI-CLIP, which aligns frequency-domain and delay-domain views of the same channel) — effective but dependent on physically meaningful positive/negative pair construction; and (3) hybrid pretraining, combining reconstruction and contrastive objectives to get both local structure preservation and global separation.</p>\n<p>The paper maps CFM applications across the physical layer (channel estimation, feedback, extrapolation, precoding), RAN functions (beam selection, resource scheduling, interference management), and ISAC (a unified channel representation serving both communication and sensing objectives simultaneously). As empirical grounding, it reports CSI-CLIP experiments on the DeepMIMO dataset (700,000+ samples across 35 scenarios): a 21.57% average relative improvement in a positioning task and 1.75–2.78 percentage-point beam-prediction accuracy gains across six scenarios, relative to non-pretrained baselines. The authors are explicit that these are bounded evidence that CFM-style pretraining can improve positioning and beam prediction when task-specific labels are limited — illustrative results from one representative discriminative CFM measured against a non-pretrained ViT baseline, not a claim that CFMs are universally validated across all pretraining strategies and deployment settings.</p>\n<h3>Key technical points</h3>\n<ul><li>Defines 6G Native AI via three properties: task adaptability, scenario generalization, deployment-aware scalability.</li><li>Proposes Channel Foundation Models (CFMs) pretrained on large-scale unlabeled channel data, adapted with minimal labeled data downstream.</li><li>Three pretraining families: generative (WiFo, WirelessGPT-style reconstruction), discriminative (CSI-CLIP-style contrastive alignment), and hybrid.</li><li>Application map spans physical layer (channel estimation/feedback/precoding), RAN (beam selection, scheduling, interference management), and ISAC (unified sensing+communication representation).</li><li>CSI-CLIP on DeepMIMO (700k+ samples, 35 scenarios): 21.57% average relative gain in positioning, 1.75–2.78 pp gain in beam-prediction accuracy over a non-pretrained ViT baseline — explicitly framed as bounded evidence that CFM-style pretraining helps when task-specific labels are limited, not exhaustive validation.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This entry follows <code>2026-08-20_arxiv-wireless-foundation-models-6g-survey</code> in this KB, whose taxonomy already spans learning paradigm × deployment layer (PHY/MAC/network) and covers WirelessGPT. What's new here is the channel-centric framing of &quot;native AI&quot; as a system requirement, the three-family (generative / discriminative / hybrid) pretraining split, and a CSI-CLIP data point.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文将&quot;6G 原生 AI&quot;界定为一种系统设计层面的要求，而非事后附加的功能：作者通过三个属性来定义它——任务适应性、场景泛化能力与部署感知的可扩展性——并指出当前主流的任务专用监督模型由于对标注数据依赖重、泛化能力弱、且各场景设计零散，难以作为满足这三方面要求的主要技术基础。</p>\n<p>论文的核心提议是&quot;信道基础模型&quot;（Channel Foundation Model, CFM）：在大规模、异构、基本无标注的信道观测数据（CSI、信道冲激响应）上预训练，随后仅用相对少量的标注数据即可适配到下游任务，这与 NLP/视觉领域的基础模型范式相呼应，但其构建基础是信道物理特性而非文本或像素。作者将现有及可能的 CFM 预训练策略归纳为三类：（1）生成式预训练，重建被掩蔽/缺失的信道观测（以 WiFo 和 WirelessGPT 为例）——擅长利用无标注数据，但仅靠重建损失并不能保证学到的表示真正能迁移到下游任务；（2）判别式预训练，通过拉近相关信道样本、推远不相关样本来塑造表示空间（以 CSI-CLIP 为例，其对齐同一信道的频域与时延域视图）——效果显著但依赖于具有物理意义的正负样本对构造；（3）混合式预训练，结合重建与对比目标，兼顾局部结构保留与全局可分性。</p>\n<p>论文将 CFM 的应用场景映射到物理层（信道估计、反馈、外推、预编码）、RAN 功能（波束选择、资源调度、干扰管理）以及 ISAC（同时服务通信与感知目标的统一信道表示）。作为实证支撑，论文报告了在 DeepMIMO 数据集（35 个场景、70 万余样本）上的 CSI-CLIP 实验结果：相较未预训练基线，定位任务平均相对提升 21.57%，六个场景下的波束预测准确率提升 1.75–2.78 个百分点。作者明确说明，这是信道基础模型式预训练在任务专用标注数据有限时能够提升定位与波束预测性能的&quot;有限证据&quot;——即来自一种代表性判别式 CFM（相较于未经预训练的 ViT 基线）的示例性结果，并非声称所有预训练策略与部署场景下的 CFM 均已获得普遍验证。</p>\n<h3>技术要点</h3>\n<ul><li>通过三个属性定义 6G 原生 AI：任务适应性、场景泛化能力、部署感知的可扩展性。</li><li>提出信道基础模型（CFM），在大规模无标注信道数据上预训练，下游仅需少量标注数据即可适配。</li><li>三类预训练策略：生成式（类 WiFo、WirelessGPT 的重建）、判别式（类 CSI-CLIP 的对比对齐）、混合式。</li><li>应用场景涵盖物理层（信道估计/反馈/预编码）、RAN（波束选择、调度、干扰管理）与 ISAC（通信+感知统一表示）。</li><li>CSI-CLIP 在 DeepMIMO 数据集（35 场景、70 万余样本）上相较未经预训练的 ViT 基线：定位任务平均相对提升 21.57%，六个场景下波束预测准确率提升 1.75–2.78 个百分点——作者明确将其定位为信道基础模型式预训练在标注数据有限时有助于提升性能的&quot;有限证据&quot;，而非详尽验证。</li></ul>\n<h3>意义与新意</h3>\n<p>本条目承接知识库中的 <code>2026-08-20_arxiv-wireless-foundation-models-6g-survey</code>（其分类法已涵盖学习范式 × 部署层次［PHY/MAC/网络］，并涉及 WirelessGPT）。本条目的新意在于：以信道为中心，将&quot;原生 AI&quot;界定为系统级需求，提出生成式/判别式/混合式三类预训练划分，并给出 CSI-CLIP 的实证数据点。</p>",
+      "images": [],
+      "search_blob": "6g native ai and channel foundation models 6g 原生 ai 与信道基础模型 6g channel-estimation foundation-model pretraining isac massive-mimo this paper frames \"6g native ai\" as a system-design requirement rather than a bolt-on feature: the authors define it through three properties — task adaptability, scenario generalization, and deployment-aware scalability — and argue that task-specific supervised models (the dominant approach today) are difficult to use as the main technical basis for meeting them, owing to heavy label dependence, poor generalization, and fragmented per-scenario designs. 本文将\"6g 原生 ai\"界定为一种系统设计层面的要求，而非事后附加的功能：作者通过三个属性来定义它——任务适应性、场景泛化能力与部署感知的可扩展性——并指出当前主流的任务专用监督模型由于对标注数据依赖重、泛化能力弱、且各场景设计零散，难以作为满足这三方面要求的主要技术基础。 academic-paper cellular"
+    },
+    {
       "id": "2026-08-18_arxiv-mamba-uwb-cir-human-orientation",
       "date_found": "2026-08-18",
       "technology": "uwb",
@@ -32585,6 +32834,47 @@ window.KB_DATA = {
       "search_blob": "two fcc 6 ghz rule changes could dramatically boost indoor wi-fi performance fcc 两项 6 ghz 规则变更或显著提升室内 wi-fi 性能 6-ghz afc lpi spectrum the us fcc is considering two rule changes that could substantially improve 6 ghz wi-fi performance indoors. the first involves incorporating building entry loss (bel) into automated frequency coordination (afc) calculations for indoor standard-power 6 ghz aps, allowing higher transmit power by accounting for the natural attenuation of signals through building walls. the second proposes raising the low power indoor (lpi) power spectral density limit from 5 dbm/mhz to 8 dbm/mhz. 美国 fcc 正考虑两项可显著提升室内 6 ghz wi-fi 性能的规则变更。第一项涉及将建筑物入口损耗（bel）纳入室内标准功率 6 ghz ap 的自动频率协调（afc）计算中，通过计入墙体对信号的天然衰减允许更高的发射功率。第二项提议将低功率室内（lpi）功率谱密度限制从 5 dbm/mhz 提高至 8 dbm/mhz。 industry-news wifi"
     },
     {
+      "id": "2026-09-19_mobisys-agent-x-on-device-agent-pipeline-acceleration",
+      "date_found": "2026-09-19",
+      "technology": "edge-ai",
+      "date_published": "2026-05-11",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Agent-X: Full Pipeline Acceleration of On-device AI Agents",
+      "title_zh": "Agent-X：端侧 AI 智能体的全流程加速",
+      "url": "https://arxiv.org/abs/2605.10380",
+      "topics": [
+        "on-device-agents",
+        "prefix-caching",
+        "speculative-decoding",
+        "MobiSys",
+        "TinyAgent"
+      ],
+      "topic_primary": "on-device-inference",
+      "topics_secondary": [
+        "edge-model-efficiency"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-09-19_mobisys-agent-x-on-device-agent-pipeline-acceleration.md",
+      "summary_short_en": "Jinha Chung, Byeongjun Shin, Jiin Kim and Minsoo Rhu (KAIST) accepted this paper for publication at MobiSys 2026 (submitted to arXiv 11 May 2026), tackling a specific gap this KB has not yet covered: on-device agentic workloads — an LLM that plans, calls tools, and generates structured output — split their latency very differently from a plain chatbot. The paper's own characterisation, measured by running TinyAgent on a Mac mini M4 Pro, finds an average task takes 35.4 seconds; across agentic tasks, prefill accounts for 21.7% and decode 68.7% of latency (the remaining 9.6% is other overhead) — a far heavier prefill share than cloud LLM serving, where decode is reported to dominate over 95% of latency. The example \"Schedule a meeting with John\" task takes 26.7 seconds in total. The authors attribute this to two agent-specific causes: agent prompts are stuffed with long, dynamically-assembled tool descriptions and few-shot examples that defeat prefix caching, and on-device accelerators offer roughly 11% of the memory bandwidth and 2% of the compute throughput of a server-class NVIDIA H200 GPU, making the (already inflated) prefill stage disproportionately expensive on-device.",
+      "summary_short_zh": "KAIST 的 Jinha Chung、Byeongjun Shin、Jiin Kim 与 Minsoo Rhu 撰写了这篇被 MobiSys 2026 接收的论文（2026 年 5 月 11 日提交至 arXiv），处理的是本知识库此前尚未覆盖的一个具体问题：端侧智能体（agentic）工作负载——即需要规划、调用工具并生成结构化输出的 LLM——其时延构成与普通聊天机器人截然不同。论文自身的刻画（在 Mac mini M4 Pro 上运行 TinyAgent 实测得出）显示：一个任务平均耗时 35.4 秒；在各类智能体任务中，预填充（prefill）占时延的 21.7%、解码（decode）占 68.7%（其余 9.6% 为其他开销）——预填充占比远高于云端 LLM 服务场景（据报道解码通常占据超过 95% 的时延）。示例任务\"安排与 John 的会议\"总耗时 26.7 秒。作者将其归因于两个智能体特有的原因：智能体提示词中塞满了动态拼装、篇幅冗长的工具描述与少样本示例，破坏了前缀缓存的复用；而端侧加速器的内存带宽约为服务器级 NVIDIA H200 GPU 的 11%、算力吞吐约为其 2%，使得本已被拉长的预填充阶段在端侧的代价被进一步放大。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Jinha Chung, Byeongjun Shin, Jiin Kim and Minsoo Rhu (KAIST) accepted this paper for publication at MobiSys 2026 (submitted to arXiv 11 May 2026), tackling a specific gap this KB has not yet covered: on-device agentic workloads — an LLM that plans, calls tools, and generates structured output — split their latency very differently from a plain chatbot. The paper's own characterisation, measured by running TinyAgent on a Mac mini M4 Pro, finds an average task takes 35.4 seconds; across agentic tasks, prefill accounts for 21.7% and decode 68.7% of latency (the remaining 9.6% is other overhead) — a far heavier prefill share than cloud LLM serving, where decode is reported to dominate over 95% of latency. The example &quot;Schedule a meeting with John&quot; task takes 26.7 seconds in total. The authors attribute this to two agent-specific causes: agent prompts are stuffed with long, dynamically-assembled tool descriptions and few-shot examples that defeat prefix caching, and on-device accelerators offer roughly 11% of the memory bandwidth and 2% of the compute throughput of a server-class NVIDIA H200 GPU, making the (already inflated) prefill stage disproportionately expensive on-device.</p>\n<p>Agent-X is a software-only, accuracy-preserving framework with two components addressing prefill and decode separately. PromptWeaver attacks the prefill side: rather than assembling the prompt to include only the currently-relevant tools (which breaks KV-cache reuse across turns because the tool subset keeps changing), it substitutes a fixed set of tool descriptions built via offline non-negative matrix factorisation clustering of the agent's tool-co-activation patterns — 8 clusters, with a greedy combination-selection algorithm choosing which cluster combinations to precompute (at a 15-cluster cache budget, 74.4% of tool-use examples are covered, using 6.26 GB) — and appends a single dynamically-chosen tool-use example (K=1) to preserve planning accuracy. This cuts uncacheable tokens from 1,711 to 519 (a 70% reduction) and yields a measured 1.97x prefill speedup (1.57x for the agent's Planner component, 4.35x for its Arbiter component). ExSpec attacks the decode side without a draft LLM at all: it builds an on-the-fly n-gram (trigram) lookup table from the few-shot examples plus the current user query, exploiting the authors' finding that 96% of an agent Planner's output tokens already overlap with tokens already present in its input prompt, and falls back to standard autoregressive generation whenever no match exists in the table rather than paying speculative decoding's usual &quot;wasted-draft&quot; tax. This yields a 1.73x decode speedup with draft-acceptance rates of 0.25 (Planner) and 0.26 (Arbiter), at a per-query LUT-build overhead of 83ms — described as negligible. Combined, on a TinyAgent-7B model (a fine-tuned WizardLM-2-7B) evaluated on 1,022 test examples from the TinyAgent benchmark via MLX v0.25.2 on the same Mac mini M4 Pro (64GB RAM, 16 GPU cores), Agent-X delivers a 1.61x end-to-end speedup with no measured accuracy loss (task-success accuracy moved from 0.836 to 0.841, i.e. slightly up, attributed to the single retained tool-use example). An ablation isolates each component's individual contribution: PromptWeaver alone yields 1.16x, ExSpec alone 1.43x, the combination 1.61x — a clean demonstration that the two mechanisms are complementary rather than redundant.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem characterisation</strong>: on Mac mini M4 Pro, TinyAgent averages 35.4s/task; across agentic tasks, prefill accounts for 21.7% and decode 68.7% of latency (other 9.6%) — a much heavier prefill share than cloud LLM serving, driven by long dynamic tool-description prompts (defeating prefix caching) and on-device accelerators offering ~11% memory bandwidth / ~2% compute throughput of a server-class H200. The example &quot;Schedule a meeting with John&quot; task takes 26.7s in total.</li><li><strong>PromptWeaver (prefill)</strong>: replaces per-turn dynamic tool descriptions with a fixed, offline-clustered tool-description set (NMF clustering into 8 clusters; greedy combination selection precomputes combinations at a cache budget of 15 clusters, covering 74.4% of tool-use examples using 6.26 GB), plus one dynamically-chosen tool-use example (K=1) to preserve accuracy. Cuts uncacheable tokens 1,711→519 (70% reduction); measured 1.97x prefill speedup (1.57x Planner, 4.35x Arbiter).</li><li><strong>ExSpec (decode)</strong>: LLM-free speculative decoding via an on-the-fly n-gram (trigram) lookup table built from few-shot examples + query, exploiting a measured 96% token-overlap between a Planner's outputs and its inputs; falls back to standard autoregression on no-match rather than paying a wasted-draft cost. 1.73x decode speedup; acceptance rates 0.25 (Planner) / 0.26 (Arbiter); 83ms LUT-build overhead per query.</li><li><strong>Combined result</strong>: 1.61x end-to-end speedup on TinyAgent-7B (MLX v0.25.2, Mac mini M4 Pro, 64GB RAM, 16 GPU cores) across 1,022 test examples, with a slight accuracy increase (0.836→0.841), attributed to the retained example.</li><li><strong>Ablation</strong>: PromptWeaver alone 1.16x, ExSpec alone 1.43x, combined 1.61x — the two mechanisms compose roughly multiplicatively rather than overlapping in what they save.</li><li><strong>Scope</strong>: software-only (no custom silicon or kernel changes); framed by the authors as &quot;seamlessly integrable into existing on-device AI agents.&quot;</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This KB's on-device-inference entries have so far covered chatbot-style LLM decoding (speculative decoding, DVFS, KV-cache management) but nothing specific to agentic workloads, where tool-calling prompts and structured planning shift the bottleneck toward prefill in a way plain chat inference does not exhibit. The paper is measurement-grade — real Mac mini M4 Pro hardware, a named 7B model, an ablation isolating each mechanism's individual contribution — fitting this domain's standing preference for independently reproducible numbers over vendor claims.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>KAIST 的 Jinha Chung、Byeongjun Shin、Jiin Kim 与 Minsoo Rhu 撰写了这篇被 MobiSys 2026 接收的论文（2026 年 5 月 11 日提交至 arXiv），处理的是本知识库此前尚未覆盖的一个具体问题：端侧智能体（agentic）工作负载——即需要规划、调用工具并生成结构化输出的 LLM——其时延构成与普通聊天机器人截然不同。论文自身的刻画（在 Mac mini M4 Pro 上运行 TinyAgent 实测得出）显示：一个任务平均耗时 35.4 秒；在各类智能体任务中，预填充（prefill）占时延的 21.7%、解码（decode）占 68.7%（其余 9.6% 为其他开销）——预填充占比远高于云端 LLM 服务场景（据报道解码通常占据超过 95% 的时延）。示例任务&quot;安排与 John 的会议&quot;总耗时 26.7 秒。作者将其归因于两个智能体特有的原因：智能体提示词中塞满了动态拼装、篇幅冗长的工具描述与少样本示例，破坏了前缀缓存的复用；而端侧加速器的内存带宽约为服务器级 NVIDIA H200 GPU 的 11%、算力吞吐约为其 2%，使得本已被拉长的预填充阶段在端侧的代价被进一步放大。</p>\n<p>Agent-X 是一套纯软件、精度无损的框架，其两个组件分别针对预填充与解码环节。PromptWeaver 针对预填充问题：不再按&quot;仅纳入当前相关工具&quot;的方式组装提示词（这种做法因工具子集在轮次间不断变化而破坏了 KV 缓存跨轮复用），而是通过对智能体工具共激活模式做离线非负矩阵分解聚类（共 8 个簇），并用一种贪心组合选择算法来决定预先计算哪些簇组合（在 15 簇缓存预算下，覆盖了 74.4% 的工具使用样例，占用 6.26GB 存储），来替换为一组固定的工具描述集合，同时附加一个动态选取的单一工具使用示例（K=1）以维持规划准确率。该方法将不可缓存 token 数从 1,711 降至 519（降低 70%），实测预填充加速 1.97 倍（智能体 Planner 组件 1.57 倍，Arbiter 组件 4.35 倍）。ExSpec 则完全不依赖草稿 LLM 来处理解码问题：它基于少样本示例与当前用户查询即时构建一张 n-gram（三元组）查找表，利用作者发现的一个现象——智能体 Planner 组件 96% 的输出 token 已经与其输入提示词中的 token 重叠——并在查找表中未命中时直接回退到标准自回归生成，从而避免了投机解码通常需要承担的&quot;草稿浪费&quot;代价。该方法带来 1.73 倍解码加速，草稿接受率为 0.25（Planner）与 0.26（Arbiter），单次查询的查找表构建开销仅 83 毫秒，论文称其可忽略不计。两者结合后，在 TinyAgent-7B 模型（基于 WizardLM-2-7B 微调）、TinyAgent 基准测试集 1,022 条测试样例、经由 MLX v0.25.2 在同一台 Mac mini M4 Pro（64GB 内存、16 核 GPU）上的实测中，Agent-X 实现端到端 1.61 倍加速，且未观测到精度损失（任务成功率准确度从 0.836 升至 0.841，略有提升，归因于所保留的单一工具使用示例）。消融实验分别隔离了两个组件各自的贡献：仅 PromptWeaver 为 1.16 倍，仅 ExSpec 为 1.43 倍，两者结合为 1.61 倍——清楚表明两种机制是互补而非冗余的。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题刻画</strong>：在 Mac mini M4 Pro 上，TinyAgent 平均每任务耗时 35.4 秒；在各类智能体任务中，预填充占时延的 21.7%、解码占 68.7%（其余 9.6%）——预填充占比远高于云端 LLM 服务场景，原因在于动态拼装的长篇工具描述提示词破坏了前缀缓存复用，且端侧加速器的内存带宽/算力吞吐仅为服务器级 H200 的约 11%/2%。示例任务&quot;安排与 John 的会议&quot;总耗时 26.7 秒。</li><li><strong>PromptWeaver（预填充）</strong>：以固定的、离线聚类得到的工具描述集合取代逐轮动态组装的工具描述（NMF 聚类为 8 个簇；贪心组合选择算法在 15 簇缓存预算下预先计算组合，覆盖 74.4% 的工具使用样例，占用 6.26GB 存储），并附加一个动态选取的工具使用示例（K=1）以维持准确率。不可缓存 token 数从 1,711 降至 519（降低 70%）；实测预填充加速 1.97 倍（Planner 1.57 倍，Arbiter 4.35 倍）。</li><li><strong>ExSpec（解码）</strong>：完全不依赖草稿 LLM 的投机解码，基于少样本示例与当前查询即时构建 n-gram（三元组）查找表，利用实测所得的 Planner 输出与其输入之间 96% 的 token 重叠率；未命中时直接回退标准自回归生成，避免草稿浪费代价。解码加速 1.73 倍；接受率为 0.25（Planner）/0.26（Arbiter）；单次查询查找表构建开销 83 毫秒。</li><li><strong>综合结果</strong>：在 TinyAgent-7B（MLX v0.25.2，Mac mini M4 Pro，64GB 内存，16 核 GPU）上、1,022 条测试样例中实现端到端 1.61 倍加速，精度略有提升（0.836→0.841），作者将其归因于所保留的示例。</li><li><strong>消融实验</strong>：仅 PromptWeaver 为 1.16 倍，仅 ExSpec 为 1.43 倍，两者结合为 1.61 倍——两种机制的收益大致呈乘积关系而非相互重叠。</li><li><strong>适用范围</strong>：纯软件方案（无需定制芯片或内核改动），作者将其定位为&quot;可无缝集成到现有端侧 AI 智能体中&quot;。</li></ul>\n<h3>意义与新意</h3>\n<p>本知识库此前的 on-device-inference 条目覆盖的多是聊天式 LLM 解码问题（投机解码、DVFS、KV 缓存管理），尚未涉及智能体类工作负载——其工具调用提示词与结构化规划会将瓶颈推向预填充环节，这与纯聊天推理的表现不同。该论文属于实测级别的工作——真实的 Mac mini M4 Pro 硬件、明确命名的 7B 模型、逐机制隔离贡献的消融实验——符合本领域一贯倾向于采信可独立复现数字而非厂商宣称的立场。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2605.10380v1/agent_overview.png",
+          "caption_en": "Agent-X system architecture: PromptWeaver prefill path and ExSpec decode path around an on-device agent pipeline",
+          "caption_zh": "Agent-X 系统架构：围绕端侧智能体流水线的 PromptWeaver 预填充路径与 ExSpec 解码路径"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.10380v1/eval_end_to_end_speedup.png",
+          "caption_en": "End-to-end latency speedup results across ablation configurations",
+          "caption_zh": "各消融配置下的端到端时延加速结果"
+        }
+      ],
+      "search_blob": "agent-x: full pipeline acceleration of on-device ai agents agent-x：端侧 ai 智能体的全流程加速 on-device-agents prefix-caching speculative-decoding mobisys tinyagent jinha chung, byeongjun shin, jiin kim and minsoo rhu (kaist) accepted this paper for publication at mobisys 2026 (submitted to arxiv 11 may 2026), tackling a specific gap this kb has not yet covered: on-device agentic workloads — an llm that plans, calls tools, and generates structured output — split their latency very differently from a plain chatbot. the paper's own characterisation, measured by running tinyagent on a mac mini m4 pro, finds an average task takes 35.4 seconds; across agentic tasks, prefill accounts for 21.7% and decode 68.7% of latency (the remaining 9.6% is other overhead) — a far heavier prefill share than cloud llm serving, where decode is reported to dominate over 95% of latency. the example \"schedule a meeting with john\" task takes 26.7 seconds in total. the authors attribute this to two agent-specific causes: agent prompts are stuffed with long, dynamically-assembled tool descriptions and few-shot examples that defeat prefix caching, and on-device accelerators offer roughly 11% of the memory bandwidth and 2% of the compute throughput of a server-class nvidia h200 gpu, making the (already inflated) prefill stage disproportionately expensive on-device. kaist 的 jinha chung、byeongjun shin、jiin kim 与 minsoo rhu 撰写了这篇被 mobisys 2026 接收的论文（2026 年 5 月 11 日提交至 arxiv），处理的是本知识库此前尚未覆盖的一个具体问题：端侧智能体（agentic）工作负载——即需要规划、调用工具并生成结构化输出的 llm——其时延构成与普通聊天机器人截然不同。论文自身的刻画（在 mac mini m4 pro 上运行 tinyagent 实测得出）显示：一个任务平均耗时 35.4 秒；在各类智能体任务中，预填充（prefill）占时延的 21.7%、解码（decode）占 68.7%（其余 9.6% 为其他开销）——预填充占比远高于云端 llm 服务场景（据报道解码通常占据超过 95% 的时延）。示例任务\"安排与 john 的会议\"总耗时 26.7 秒。作者将其归因于两个智能体特有的原因：智能体提示词中塞满了动态拼装、篇幅冗长的工具描述与少样本示例，破坏了前缀缓存的复用；而端侧加速器的内存带宽约为服务器级 nvidia h200 gpu 的 11%、算力吞吐约为其 2%，使得本已被拉长的预填充阶段在端侧的代价被进一步放大。 academic-paper edge-ai"
+    },
+    {
       "id": "2026-05-26_arxiv-toa-ranging-ngd-attack-bt-cs",
       "date_found": "2026-05-26",
       "technology": "bluetooth",
@@ -35375,6 +35665,39 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Tong、Li、Liu、Guo、Zhang（2026 年 2 月）面对一个此前在显眼处被忽视的问题：当 LLM 智能体被用于无线任务时，智能体<em>工作流</em> —— 调用哪些工具、按什么顺序、配什么推理步骤 —— 通常都是手工搭建且很难迁移。WirelessAgent++ 用自动化的<strong>程序搜索</strong>替代手工搭建：把每个工作流视为由模块化算子（检索、推理、工具调用、评估）组成的可执行代码，于是设计问题变成&quot;在能解决该无线任务的程序空间中搜索&quot;。</p>\n<p>搜索引擎是一个领域自适应的<strong>蒙特卡洛树搜索（MCTS）</strong>—— 之所以&quot;领域自适应&quot;，是因为代价函数与算子集都对无线任务作了定制（例如处理 KPI 阈值、对网络控制器的工具调用）。框架之外，作者还发布了 <strong>WirelessBench</strong>，一个三模块的基准测试套件：无线通信作业题（推理）、网络切片（决策）、移动业务保障（工具使用）。</p>\n<p>关键数据：三项基准上分别达到 78.37% / 90.95% / 97.07%，<strong>单任务搜索成本 &lt; 5 美元</strong> —— 把框架定位在&quot;便宜跑得起、易于重部署&quot;区间。相对基线提升显著：相对提示工程基线最高 +31%，相对通用程序优化器 +11.1%。代码开源。</p>\n<h3>技术要点</h3>\n<ul><li>智能体工作流表示为由模块化算子组成的<strong>可执行代码</strong></li><li>领域自适应 <strong>MCTS</strong> 作为工作流搜索引擎</li><li>发布了 <strong>WirelessBench</strong>：通信作业题（推理）、网络切片（决策）、业务保障（工具调用）</li><li>三轴关键得分：78.37 / 90.95 / 97.07%</li><li>单任务搜索成本 &lt; 5 美元；相对提示工程基线最高 +31%，相对通用程序优化器 +11.1%</li><li>代码开源</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>把无线智能体 AI 推过了&quot;提示工程时代&quot;。</strong> 如今&quot;为无线场景做智能体&quot;的论文大多依赖手工搭建的提示 + 工具栈。WirelessAgent++ 证明工作流本身可以被搜索，并且搜索收敛得足够快、足够便宜，可逐任务重部署。</li><li><strong>WirelessBench 有望成为引用骨干。</strong> &quot;三轴 / 三类任务&quot;基准正是该领域长期缺失的东西，后续无线智能体论文很可能会在此套件上报告结果。</li><li><strong>与 MAPC-LLM（<code>2026-05-01_arxiv-mapc-llm-agents.md</code>）相邻：</strong> 该论文手工搭建了 AP-as-LLM-agent 的工作流。WirelessAgent++ 提供了让这类工作流<em>自动演化</em>的方法 —— 是任何智能体 Wi-Fi 工作的自然后续方向。</li></ul>",
       "images": [],
       "search_blob": "wirelessagent++: automated agentic workflow design and benchmarking for wireless networks wirelessagent++：面向无线网络的自动化智能体工作流设计与基准测试 agentic-ai generative-ai tong, li, liu, guo, and zhang (february 2026) attack a problem that has so far been hidden in plain sight: when llm agents are applied to wireless-network tasks, the agentic *workflow* — which tools to call, in what order, with what reasoning steps — is hand-crafted and rarely portable. wirelessagent++ replaces the hand-crafting with an automated **program-search** procedure. each workflow is treated as a piece of executable code composed of modular operators (retrieval, reasoning, tool use, evaluation), and the design problem becomes \"search the space of programs that solve this wireless task.\" tong、li、liu、guo、zhang（2026 年 2 月）面对一个此前在显眼处被忽视的问题：当 llm 智能体被用于无线任务时，智能体*工作流* —— 调用哪些工具、按什么顺序、配什么推理步骤 —— 通常都是手工搭建且很难迁移。wirelessagent++ 用自动化的**程序搜索**替代手工搭建：把每个工作流视为由模块化算子（检索、推理、工具调用、评估）组成的可执行代码，于是设计问题变成\"在能解决该无线任务的程序空间中搜索\"。 academic-paper wifi"
+    },
+    {
+      "id": "2026-09-19_arxiv-ai-agent-ran-cn-converged-framework",
+      "date_found": "2026-09-19",
+      "technology": "cellular",
+      "date_published": "2026-02-27",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Toward E2E Intelligence in 6G Networks: An AI Agent-Based RAN-CN Converged Intelligence Framework",
+      "title_zh": "面向 6G 端到端智能：基于 AI 智能体的 RAN-CN 融合智能框架",
+      "url": "https://arxiv.org/abs/2602.23623",
+      "topics": [
+        "6G",
+        "RAN",
+        "core-network",
+        "LLM-agent",
+        "ReAct",
+        "network-slicing"
+      ],
+      "topic_primary": "cellular-ai",
+      "topics_secondary": [
+        "6g-vision",
+        "network-slicing",
+        "open-ran"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-09-19_arxiv-ai-agent-ran-cn-converged-framework.md",
+      "summary_short_en": "This paper (Han, Ko, Ko, Taleb, Chen) argues that today's 6G network-intelligence proposals are trapped by domain isolation: RAN-side and core-network (CN)-side AI models are trained and deployed independently, so a RAN decision (e.g., triggering a handover) and a CN decision (e.g., scaling capacity) can contradict each other because neither model reasons over the other domain's state. The authors propose an AI Agent-Based RAN-CN Converged Intelligence Framework built around five pieces: a Monitoring DB that aggregates real-time RAN metrics (PRB utilization, handover rates) and CN metrics (UPF delay, QoS violations); a dual-memory system (short-term for current observations, long-term for historical decisions/policies); an LLM core (the paper tests Phi-3-4B-Instruct and GPT-5-mini) that does the actual reasoning; a policy orchestrator that turns LLM output into standardized commands for the RAN Intelligent Controller (RIC) and NWDAF; and an MCP-based tool interface for database queries and control execution.",
+      "summary_short_zh": "这篇论文（Han、Ko、Ko、Taleb、Chen）指出当前 6G 网络智能方案普遍受限于\"域隔离\"问题：RAN 侧与核心网（CN）侧的 AI 模型各自独立训练与部署，导致 RAN 决策（如触发切换）与 CN 决策（如扩容）之间可能互相矛盾，因为两侧模型都无法感知对方域的状态。作者提出了一个基于 AI 智能体的 RAN-CN 融合智能框架，由五个组件构成：聚合 RAN 实时指标（PRB 利用率、切换率）与 CN 指标（UPF 时延、QoS 违规）的监控数据库；分为短期（当前观测）与长期（历史决策/策略）的双记忆系统；作为推理引擎的 LLM 核心（论文测试了 Phi-3-4B-Instruct 与 GPT-5-mini）；将 LLM 输出转化为面向 RAN 智能控制器（RIC）与 NWDAF 的标准化控制指令的策略编排器；以及基于 MCP 的工具接口，用于数据库查询与控制执行。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper (Han, Ko, Ko, Taleb, Chen) argues that today's 6G network-intelligence proposals are trapped by domain isolation: RAN-side and core-network (CN)-side AI models are trained and deployed independently, so a RAN decision (e.g., triggering a handover) and a CN decision (e.g., scaling capacity) can contradict each other because neither model reasons over the other domain's state. The authors propose an AI Agent-Based RAN-CN Converged Intelligence Framework built around five pieces: a Monitoring DB that aggregates real-time RAN metrics (PRB utilization, handover rates) and CN metrics (UPF delay, QoS violations); a dual-memory system (short-term for current observations, long-term for historical decisions/policies); an LLM core (the paper tests Phi-3-4B-Instruct and GPT-5-mini) that does the actual reasoning; a policy orchestrator that turns LLM output into standardized commands for the RAN Intelligent Controller (RIC) and NWDAF; and an MCP-based tool interface for database queries and control execution.</p>\n<p>The reasoning loop follows the ReAct paradigm — the agent forms a hypothesis about network state (thought), issues a structured query or action, incorporates the result (observation), and iterates — which the authors argue lets the system adapt to unseen conditions without retraining, unlike fixed supervised models.</p>\n<p>The evaluation uses three scenarios. First, a multi-task inference test on an 83-trace 5G production dataset from an Irish mobile operator, comparing the LLM agent against an LSTM trained specifically on the test workload (&quot;Seen-LSTM&quot;) and an LSTM trained on a different workload (&quot;Unseen-LSTM&quot;) for RSRP, throughput, and location prediction. Second, a generalization test where the task distribution shifts away from training data without retraining. Third, an end-to-end network-slicing simulation with Poisson-arriving users on a fat-tree core topology, comparing the LLM agent's cross-domain (RAN+CN) slicing decisions against a round-robin baseline and against domain-specific (RAN-only or CN-only) LLM variants.</p>\n<p>Headline numbers: on RSRP the LLM agent scores 1.74 dBm MAE, comparable to the in-distribution Seen-LSTM's 1.72 dBm; on throughput the LLM agent trails the Seen-LSTM (18.93 MAE for the LLM agent vs 16.10 MAE for Seen-LSTM vs 27.82 MAE for Unseen-LSTM); on location inference it beats both LSTM baselines (0.49 mdeg MAE vs 0.87 mdeg). Under distribution shift, Unseen-LSTM's RSRP MAE (dBm) degrades to 3.39 while the LLM agent holds at 1.74 without any retraining. In the 40-user E2E slicing scenario, the cross-domain LLM agent satisfies 27.50 users on average versus 26.63 for the domain-isolated LLM variants, with the gap persisting from 10 to 80 simulated users.</p>\n<h3>Key technical points</h3>\n<ul><li>Five-part architecture: Monitoring DB, dual-memory (short/long-term), LLM reasoning core (Phi-3-4B-Instruct / GPT-5-mini), policy orchestrator to RIC/NWDAF, MCP-based tool interface.</li><li>Reasoning loop is ReAct (thought → action → observation → iterate), targeting adaptation to unseen scenarios without retraining.</li><li>Evaluated on an 83-trace real 5G production dataset from an Irish operator, not purely synthetic traces.</li><li>The LLM agent roughly matches the in-distribution LSTM on RSRP, trails it on throughput, beats it on location, and beats the out-of-distribution LSTM throughout; in E2E slicing it beats round-robin and domain-specific LLM variants.</li><li>Explicitly positioned against 3GPP TR 22.850 (AI/ML consistency alignment) and TR 23.700-84 (cross-domain collaboration) as the standardization context it targets.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB already carries several agentic/LLM-for-RAN or LLM-for-core papers (e.g. <code>2026-06-03_arxiv-agentxgcore-agentic-ai-mobile-core</code>, <code>2026-06-11_arxiv-llm-nwdaf-ai-native-6g</code>, <code>2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis</code>), so this is a crowded topic. What differentiates this entry is the explicit RAN+CN converged reasoning claim backed by a head-to-head ablation against domain-isolated LLM variants on the same E2E slicing task — most prior entries in this bin evaluate a single domain (RAN-only or CN-only) rather than demonstrating the cross-domain gap directly.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>这篇论文（Han、Ko、Ko、Taleb、Chen）指出当前 6G 网络智能方案普遍受限于&quot;域隔离&quot;问题：RAN 侧与核心网（CN）侧的 AI 模型各自独立训练与部署，导致 RAN 决策（如触发切换）与 CN 决策（如扩容）之间可能互相矛盾，因为两侧模型都无法感知对方域的状态。作者提出了一个基于 AI 智能体的 RAN-CN 融合智能框架，由五个组件构成：聚合 RAN 实时指标（PRB 利用率、切换率）与 CN 指标（UPF 时延、QoS 违规）的监控数据库；分为短期（当前观测）与长期（历史决策/策略）的双记忆系统；作为推理引擎的 LLM 核心（论文测试了 Phi-3-4B-Instruct 与 GPT-5-mini）；将 LLM 输出转化为面向 RAN 智能控制器（RIC）与 NWDAF 的标准化控制指令的策略编排器；以及基于 MCP 的工具接口，用于数据库查询与控制执行。</p>\n<p>推理循环遵循 ReAct 范式——智能体对网络状态形成假设（thought）、发出结构化查询或动作（action）、纳入结果（observation）并迭代——作者认为这使系统能够在无需重新训练的情况下适应未见过的场景，区别于固定的监督式模型。</p>\n<p>评估设置了三个场景。第一，在爱尔兰某运营商的 83 条 5G 生产数据集上进行多任务推理测试，将 LLM 智能体与专门针对测试负载训练的 LSTM（&quot;Seen-LSTM&quot;）以及针对不同负载训练的 LSTM（&quot;Unseen-LSTM&quot;）在 RSRP、吞吐量与位置预测上进行对比。第二，测试任务分布偏移但不重新训练时的泛化能力。第三，在采用泊松到达用户模型与胖树核心网拓扑的端到端网络切片仿真中，将 LLM 智能体的跨域（RAN+CN）切片决策与轮询基线以及仅限单一域（仅 RAN 或仅 CN）的 LLM 变体进行对比。</p>\n<p>关键数字：RSRP 预测上 LLM 智能体的 MAE 为 1.74 dBm，接近同分布 Seen-LSTM 的 1.72 dBm；吞吐量预测上 LLM 智能体不及 Seen-LSTM（LLM 智能体 MAE 为 18.93，Seen-LSTM 为 16.10，Unseen-LSTM 为 27.82）；位置推断上优于两种 LSTM 基线（0.49 mdeg 对 0.87 mdeg）。在分布偏移场景下，Unseen-LSTM 的 RSRP MAE（dBm）退化至 3.39，而 LLM 智能体在不重新训练的情况下仍保持 1.74。在 40 用户的端到端切片场景中，跨域 LLM 智能体平均满足 27.50 个用户的 SLA，优于域隔离 LLM 变体的 26.63，且这一差距在 10 到 80 用户规模上持续存在。</p>\n<h3>技术要点</h3>\n<ul><li>五部分架构：监控数据库、双记忆系统（短/长期）、LLM 推理核心（Phi-3-4B-Instruct / GPT-5-mini）、面向 RIC/NWDAF 的策略编排器、基于 MCP 的工具接口。</li><li>推理循环采用 ReAct 范式（thought → action → observation → 迭代），目标是在无需重新训练的情况下适应未见过的场景。</li><li>在爱尔兰某运营商的 83 条真实 5G 生产数据集上评估，而非纯合成轨迹。</li><li>LLM 智能体在 RSRP 上与同分布 LSTM 大致持平，在吞吐量上不及同分布 LSTM，在位置推断上优于同分布 LSTM，并在所有任务上优于分布外（Unseen）LSTM；在端到端切片场景中优于轮询基线与单域 LLM 变体。</li><li>明确将 3GPP TR 22.850（AI/ML 一致性对齐）与 TR 23.700-84（跨域协同）作为其对标的标准化背景。</li></ul>\n<h3>意义与新意</h3>\n<p>知识库中已收录多篇智能体/LLM 用于 RAN 或核心网的论文（如 <code>2026-06-03_arxiv-agentxgcore-agentic-ai-mobile-core</code>、<code>2026-06-11_arxiv-llm-nwdaf-ai-native-6g</code>、<code>2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis</code>），此领域已较为拥挤。本条目的差异化之处在于其明确提出 RAN+CN 融合推理主张，并在同一端到端切片任务上与域隔离的 LLM 变体做了直接消融对比——此前收录的多数条目仅评估单一域（仅 RAN 或仅 CN），并未直接展示跨域带来的差距。</p>",
+      "images": [],
+      "search_blob": "toward e2e intelligence in 6g networks: an ai agent-based ran-cn converged intelligence framework 面向 6g 端到端智能：基于 ai 智能体的 ran-cn 融合智能框架 6g ran core-network llm-agent react network-slicing this paper (han, ko, ko, taleb, chen) argues that today's 6g network-intelligence proposals are trapped by domain isolation: ran-side and core-network (cn)-side ai models are trained and deployed independently, so a ran decision (e.g., triggering a handover) and a cn decision (e.g., scaling capacity) can contradict each other because neither model reasons over the other domain's state. the authors propose an ai agent-based ran-cn converged intelligence framework built around five pieces: a monitoring db that aggregates real-time ran metrics (prb utilization, handover rates) and cn metrics (upf delay, qos violations); a dual-memory system (short-term for current observations, long-term for historical decisions/policies); an llm core (the paper tests phi-3-4b-instruct and gpt-5-mini) that does the actual reasoning; a policy orchestrator that turns llm output into standardized commands for the ran intelligent controller (ric) and nwdaf; and an mcp-based tool interface for database queries and control execution. 这篇论文（han、ko、ko、taleb、chen）指出当前 6g 网络智能方案普遍受限于\"域隔离\"问题：ran 侧与核心网（cn）侧的 ai 模型各自独立训练与部署，导致 ran 决策（如触发切换）与 cn 决策（如扩容）之间可能互相矛盾，因为两侧模型都无法感知对方域的状态。作者提出了一个基于 ai 智能体的 ran-cn 融合智能框架，由五个组件构成：聚合 ran 实时指标（prb 利用率、切换率）与 cn 指标（upf 时延、qos 违规）的监控数据库；分为短期（当前观测）与长期（历史决策/策略）的双记忆系统；作为推理引擎的 llm 核心（论文测试了 phi-3-4b-instruct 与 gpt-5-mini）；将 llm 输出转化为面向 ran 智能控制器（ric）与 nwdaf 的标准化控制指令的策略编排器；以及基于 mcp 的工具接口，用于数据库查询与控制执行。 academic-paper cellular"
     },
     {
       "id": "2026-08-18_csa-aliro-1-0-uwb-hands-free-smart-lock",
