@@ -68,4 +68,4 @@ First KB entry on a named second-generation Yuanfeng SparkLink car-key scheme; s
 
 ## Images
 
-![Yuanfeng second-generation SparkLink digital car-key illustration | 远峰科技星闪第二代数字车钥匙方案示意图](https://inews.gtimg.com/om_bt/OmU0ng3LhIOqZ-yDKdsczGNu9XwlRpe6kMgGHX0EKJ1PUAA/641)
+None.
