@@ -105,7 +105,7 @@ window.SOURCES_DATA = {
       "kind": "browser",
       "category": "standards",
       "topics_hint": [],
-      "notes": "JS-rendered list filtered to current year (is_year=YYYY). New contribution numbers (11-YY-NNNN-…) appear here first. Per-doc .docx is 418/403 to anonymous downloaders, so we never fetch the body — Step 4a clusters new rows by Group (TGbn / TGbp / TGbi / TGbq / TGbr / TGbt / TGm / WNG SC) into per-group daily digests. State key: state.sources.ieee-mentor.last_dcn_seen — the highest DCN ingested last run; rows whose DCN is greater are new.",
+      "notes": "JS-rendered list filtered to current year (is_year=YYYY). New contribution numbers (11-YY-NNNN-…) appear here first. Per-doc .docx is 418/403 to anonymous downloaders, so we never fetch the body — Step 4a clusters new rows by Group (TGbn / TGbp / TGbi / TGbq / TGbr / TGbt / TGm / WNG SC) into per-group daily digests. State key: state.sources.ieee-mentor.last_dcn_seen — the highest DCN ingested last run; rows whose DCN is greater are new. 2026-09-24 (user-approved 11b): SKIP-EXEMPT — never auto-skip on cf>=3; reset the counter manually instead. Between plenaries/interims the upload stream is agendas and minutes only, so three content-lull runs push cf to 3 while the curl fetch is fully healthy (09-21/09-23/09-24); auto-skipping it would miss the first new contributions of the next session. cf reset 3 -> 0 on 2026-09-24.",
       "technology": "wifi"
     },
     {
