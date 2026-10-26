@@ -1172,6 +1172,19 @@ window.SOURCES_DATA = {
       "technology": "uwb"
     },
     {
+      "id": "ieee-mentor-802-15",
+      "name": "IEEE 802.15 Mentor — TG4ab (NG UWB) + IG FG UWB contributions",
+      "url": "https://mentor.ieee.org/802.15/documents?is_year=2026&is_group=04ab",
+      "kind": "html",
+      "category": "standards",
+      "topics_hint": [
+        "uwb-ranging",
+        "uwb-security"
+      ],
+      "notes": "Added 2026-10-23 (user-instructed): the UWB scout had no IEEE Mentor coverage while TG4ab is the busiest group on 802.15 Mentor (78 of the 200 most recent 2026 uploads on 2026-10-23, all P802.15.4ab SA-ballot recirculation comment resolutions against D5.0 — Huawei, Samsung, Apple, Qorvo, Qualcomm, Calterah). Mirrors the WiFi scout's ieee-mentor source; procedure is SKILL.md 'Step 4a-UWB'. FETCH: direct curl with a Chrome UA plus Sec-Fetch-Mode: navigate / Sec-Fetch-Site: same-origin / Sec-Fetch-Dest: document (the group filter returned 'No revisions found' without the Sec-Fetch headers; the unfiltered listing works either way). GROUPS: is_group=04ab (TG4ab, NG UWB — the amendment) and is_group=fguw (IG FG UWB, Future Generation UWB interest group, chaired-agenda by Calterah; fetch both each run). 'n' is a PAGE INDEX (n=1 newest, ~100 rows/page), same trap as 802.11. DCN format 15-YY-NNNN-RR; filename group code appears as 15-26-0448-00-04ab-<slug>.docx. Per-DCN lookup: https://mentor.ieee.org/802.15/documents?is_dcn=<NNNN>&is_year=<year>. UNLIKE 802.11, the 802.15 .docx bodies are NOT account-gated: DCN 448 downloaded 200/80 KB with the same curl and read via zipfile — so digest entries here may be body-grounded (source_quality: full) when the bodies were read. Watermark keys in state: last_dcn_seen + last_upload_seen (diff on both — late uploads on low DCNs are invisible to the DCN watermark alone). SKIP-EXEMPT like the 802.11 source: between plenaries the stream is agendas/minutes, so cf would climb while the fetch is healthy; reset cf manually. Next plenary: November 2026 (TG4ab agenda DCN 450).",
+      "technology": "uwb"
+    },
+    {
       "id": "fira-news",
       "name": "FiRa Consortium News",
       "url": "https://www.firaconsortium.org/news",
