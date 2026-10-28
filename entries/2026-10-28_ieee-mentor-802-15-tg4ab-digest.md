@@ -10,7 +10,7 @@ url: "https://mentor.ieee.org/802.15/documents?is_year=2026&is_group=04ab"
 source_quality: full
 topics: [TG4ab, 802.15.4ab, SA ballot recirculation, NBA MMS, narrowband O-QPSK, channel access, CCA, coexistence, UNII-3, UNII-5]
 topic_primary: uwb-ranging
-topics_secondary: [uwb-standards]
+topics_secondary: []
 novelty_score: 3
 ---
 
