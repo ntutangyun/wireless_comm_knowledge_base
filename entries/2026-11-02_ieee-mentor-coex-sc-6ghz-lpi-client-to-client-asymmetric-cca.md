@@ -35,14 +35,14 @@ DCN 11-26-2160r0（Xin Tang，HPE；文稿日期 2026-10-30，Mentor 列出日�
 - **DCN 11-26-2160r0 · Coex SC** -- 6 GHz Infrastructure Wi-Fi coexistence with LPI Client to Client (C2C) Communication. Xin Tang (HPE). [document](https://mentor.ieee.org/802.11/documents?is_dcn=2160&is_year=2026)
 - Scenario: 9 APs, 80 MHz channels, 14 dBm EIRP, 15 m ISD; two 23 dBm C2C devices on channel 7; ED threshold -65 dBm; enabling-signal threshold -74 dBm (as proposed in ETSI TC BRAN).
 - Result stated: AP received at C2C devices -67.71 dBm (idle, hidden node); C2C received at AP -58.71 dBm (6.29 dB above ED) -- an asymmetric CCA condition.
-- Open questions: explicit C2C authorisation indication by the enabling AP; AP-coordinated channel selection for C2C. No signalling is proposed.
+- Open questions: explicit C2C authorisation indication by the enabling AP; AP-coordinated channel selection for C2C. The deck stops short of a proposal: it floats one possible signalling location (reserved bits B3-B6 of the Regulatory Info subfield in the 6 GHz Operation Information field, 9.4.2.248) and points to the existing 802.11-2024 Channel usage mechanism (4.3.22.4), both marked as requiring further study.
 
 ## Key technical points (ZH)
 
 - **DCN 11-26-2160r0 · Coex SC** -- 6 GHz 基础设施 Wi-Fi 与 LPI 客户端到客户端（C2C）通信的共存。Xin Tang（HPE）。[文档链接](https://mentor.ieee.org/802.11/documents?is_dcn=2160&is_year=2026)
 - 场景：9 个 AP、80 MHz 信道、EIRP 14 dBm、站间距 15 m；两台 23 dBm C2C 设备位于 7 号信道；ED 阈值 -65 dBm；使能信号阈值 -74 dBm（ETSI TC BRAN 提案）。
 - 文稿给出的结果：AP 在 C2C 设备处功率 -67.71 dBm（判空闲，隐藏节点）；C2C 在 AP 处功率 -58.71 dBm（高于 ED 6.29 dB）——非对称 CCA 情形。
-- 开放问题：使能 AP 是否明确指示允许 C2C；C2C 信道选择是否由 AP 协调。文稿未提出具体信令。
+- 开放问题：使能 AP 是否明确指示允许 C2C；C2C 信道选择是否由 AP 协调。文稿没有给出定案：它举了一个可能的信令位置（6 GHz Operation Information 字段中 Regulatory Info 子字段的保留位 B3-B6，9.4.2.248），并指出 802.11-2024 已有的 Channel usage 机制（4.3.22.4）可供参考，两者均标注为有待进一步研究。
 
 ## Why it matters / what's new (EN)
 

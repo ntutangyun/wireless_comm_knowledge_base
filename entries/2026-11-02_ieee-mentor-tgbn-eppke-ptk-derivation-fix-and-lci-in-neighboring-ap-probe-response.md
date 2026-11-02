@@ -1,6 +1,6 @@
 ---
 id: 2026-11-02_ieee-mentor-tgbn-eppke-ptk-derivation-fix-and-lci-in-neighboring-ap-probe-response
-date_published: 2026-11-01
+date_published: 2026-10-30
 date_found: 2026-11-02
 technology: wifi
 type: ieee-document
