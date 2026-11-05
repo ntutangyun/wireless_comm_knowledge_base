@@ -9,8 +9,8 @@ title_zh: "AIR-LLM：通过无线电广播大模型权重，边缘设备在射�
 url: "https://arxiv.org/abs/2610.00465"
 source_quality: full
 topics: [over-the-air-weights, RF-computing, MIMO-broadcast, memory-free-inference, LLM]
-topic_primary: edge-ai-networking
-topics_secondary: [on-device-inference, edge-model-efficiency]
+topic_primary: over-the-air-computation
+topics_secondary: [edge-ai-networking, on-device-inference]
 novelty_score: 4
 ---
 

@@ -9,8 +9,8 @@ title_zh: "TRACE：残差激活码本编码降低多边缘设备序列并行 Tra
 url: "https://arxiv.org/abs/2610.22435"
 source_quality: abstract_only
 topics: [distributed-inference, vector-quantization, sequence-parallel, ViT, communication-efficient, codebook]
-topic_primary: compute-offloading
-topics_secondary: [edge-ai-networking, edge-model-efficiency]
+topic_primary: task-oriented-communication
+topics_secondary: [compute-offloading, edge-ai-networking]
 novelty_score: 3
 ---
 

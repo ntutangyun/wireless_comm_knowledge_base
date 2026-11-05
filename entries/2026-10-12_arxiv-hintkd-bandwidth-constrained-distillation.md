@@ -9,8 +9,8 @@ title_zh: "HintKD：面向带宽受限云-边推理的提示知识蒸馏"
 url: "https://arxiv.org/abs/2610.08412"
 source_quality: abstract_only
 topics: [knowledge-distillation, vector-quantization, cloud-edge-inference, 6G, beam-prediction]
-topic_primary: compute-offloading
-topics_secondary: [edge-model-efficiency]
+topic_primary: task-oriented-communication
+topics_secondary: [compute-offloading]
 novelty_score: 4
 ---
 

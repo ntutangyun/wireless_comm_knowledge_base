@@ -9,8 +9,8 @@ title_zh: "PEAM：把用户历史提炼为毫秒级可执行网络配置规则�
 url: "https://arxiv.org/abs/2610.14855"
 source_quality: full
 topics: [on-device-LLM, mobile-agent, network-configuration, rule-distillation, LoRA, W4A16, smartphone]
-topic_primary: on-device-inference
-topics_secondary: [edge-ai-networking]
+topic_primary: edge-ai-networking
+topics_secondary: [on-device-inference]
 novelty_score: 3
 ---
 

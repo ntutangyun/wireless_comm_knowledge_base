@@ -9,8 +9,8 @@ title_zh: "基于联邦学习与知识蒸馏的拆分计算无监督头网络个
 url: "https://arxiv.org/abs/2610.27952"
 source_quality: full
 topics: [split-computing, federated-learning, knowledge-distillation, head-network, personalization]
-topic_primary: compute-offloading
-topics_secondary: [edge-federated-learning, edge-model-efficiency]
+topic_primary: edge-federated-learning
+topics_secondary: [compute-offloading]
 novelty_score: 3
 ---
 

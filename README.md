@@ -18,14 +18,17 @@ Entries carry a `technology` field and the viewer groups them by domain:
 | `bluetooth` | Bluetooth |
 | `uwb` | Ultra-Wideband (UWB) |
 | `nearlink` | NearLink / SparkLink |
-| `edge-ai` | Edge AI / Edge Computing |
+| `edge-ai` | Communication–Computing Integration (通算一体) |
 
-The first six are radio technologies. `edge-ai` is the adjacent compute domain —
-on-device inference, model compression, edge AI silicon and NPUs, AI PCs,
-computation offloading across the device-edge-cloud split, edge-cloud
-orchestration, federated learning, and the home setups where a Wi-Fi gateway,
-hub or assistant is itself the compute node. Findings whose substance is a radio
-mechanism belong in the radio domain that owns it, not here.
+The first six are radio technologies. `edge-ai` (the id is kept for link
+stability) is communication–computing integration: computation designed
+together with the wireless link that carries it, AI workloads first. It covers
+offloading and split inference over Wi-Fi, Bluetooth, cellular and satellite
+links, over-the-air and RF-domain computation, task-oriented communication,
+wireless federated learning, APs and gateways as compute nodes, and AI traffic
+over wireless networks. Pure on-device compute with no communication angle
+(chips, model compression, AI PCs) is out of scope. Findings whose substance is
+a radio mechanism belong in the radio domain that owns it, not here.
 
 The full domain and topic vocabularies live in `technologies.json` and
 `topics.json`.

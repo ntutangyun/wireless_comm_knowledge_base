@@ -10,7 +10,7 @@ url: "https://arxiv.org/abs/2609.14036"
 source_quality: full
 topics: [on-device-inference, fog-computing, LoRaWAN, explainable-AI, cold-chain]
 topic_primary: on-device-inference
-topics_secondary: [edge-model-efficiency]
+topics_secondary: []
 novelty_score: 3
 ---
 

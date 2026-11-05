@@ -9,8 +9,8 @@ title_zh: "企业级 Wi-Fi 接入点若同时承担 ML 预测任务，代价几�
 url: "https://arxiv.org/abs/2609.01957"
 source_quality: full
 topics: [access-point-compute, resource-contention, forecasting-foundation-models, deployability-benchmark, network-service-degradation]
-topic_primary: edge-ai-networking
-topics_secondary: [home-edge-ai, compute-offloading]
+topic_primary: home-edge-ai
+topics_secondary: [edge-ai-networking, compute-offloading]
 novelty_score: 4
 ---
 

@@ -10,7 +10,7 @@ url: "https://arxiv.org/abs/2610.14089"
 source_quality: abstract_only
 topics: [smart-glasses, VLM, split-inference, INT8, privacy, thermal, Mentra-Live]
 topic_primary: on-device-inference
-topics_secondary: [edge-ai-networking, edge-model-efficiency]
+topics_secondary: [edge-ai-networking]
 novelty_score: 3
 ---
 

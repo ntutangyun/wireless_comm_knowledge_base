@@ -10,7 +10,7 @@ url: "https://www.theregister.com/networks/2026/06/29/zte-released-ai-fttr-solut
 source_quality: full
 topics: [FTTR, home-gateway, NPU, on-device-agent, NAS, TCN, home-network-security]
 topic_primary: home-edge-ai
-topics_secondary: [home-ai-assistant, edge-ai-silicon]
+topics_secondary: []
 novelty_score: 2
 ---
 
@@ -52,7 +52,7 @@ The stated hardware is a **6 TOPS NPU**, **distributed NAS storage**, an **8K me
 
 This is the first entry in the KB's `home-edge-ai` bin, and it is included as a deliberate backfill to seed a newly created topic — the bin had no coverage at all, and this is the most concrete datapoint inside the freshness window for the specific question the bin exists to track: what happens when the home gateway becomes the compute node rather than just the link.
 
-Its value is as a statement of product direction, not as a verified specification. Three things in it are worth tracking regardless of the sourcing. First, the **pairing of an NPU with local storage** — 6 TOPS plus distributed NAS — which is the combination that makes a gateway capable of hosting a model rather than merely classifying packets; the KB's `2026-08-28_arxiv-neuroprefetcher-storage-backed-edge-llm` entry shows exactly why storage next to the accelerator is the interesting part on memory-constrained boxes. Second, the **workload mix**: the same device is claimed to run network security (TCN-based DDoS detection) and ambient human sensing (posture, behaviour) — two workloads with very different privacy profiles converging on one household box. Third, the **agent framing**: positioning the gateway as the host for autonomous on-device agents is the home-network version of the shift the `home-ai-assistant` bin tracks in smart speakers.
+Its value is as a statement of product direction, not as a verified specification. Three things in it are worth tracking regardless of the sourcing. First, the **pairing of an NPU with local storage** — 6 TOPS plus distributed NAS — which is the combination that makes a gateway capable of hosting a model rather than merely classifying packets. Second, the **workload mix**: the same device is claimed to run network security (TCN-based DDoS detection) and ambient human sensing (posture, behaviour) — two workloads with very different privacy profiles converging on one household box. Third, the **agent framing**: positioning the gateway as the host for autonomous on-device agents is the home-network version of the agentic shift seen in smart speakers.
 
 What would make a follow-up entry worthwhile: a model number, an independent measurement of the 6 TOPS claim, a stated Wi-Fi generation, or a real deployment with an operator. Until one of those lands, this stays a novelty-2 positioning datapoint. Readers should weigh it accordingly — this scout's rubric treats vendor TOPS figures as marketing until a benchmark or third party backs them, and nothing here has been so backed.
 
@@ -60,6 +60,6 @@ What would make a follow-up entry worthwhile: a model number, an independent mea
 
 这是本知识库 `home-edge-ai` 分类下的首条条目，作为**有意的回填**收录，用以为一个新建的分类提供起点——该分类此前完全没有覆盖，而在新鲜度窗口之内，本条是针对该分类所要追踪的核心问题最具体的一个数据点：当家庭网关从「链路」变成「算力节点」时，会发生什么。
 
-它的价值在于陈述了一种产品方向，而非提供了经过验证的规格。无论信源如何，其中有三点值得持续关注。其一是 **NPU 与本地存储的组合**——6 TOPS 加分布式 NAS——正是这一组合使网关有可能承载模型，而不只是对报文做分类；本知识库的 `2026-08-28_arxiv-neuroprefetcher-storage-backed-edge-llm` 条目恰好说明了，在内存受限的盒子上，「存储紧邻加速器」为何是关键所在。其二是**负载的混合**：同一台设备被称既运行网络安全（基于 TCN 的 DDoS 检测），又运行环境人体感知（姿态、行为）——两类隐私属性差异极大的负载，汇聚到了家中同一个盒子上。其三是**智能体的定位**：把网关定位为自主端侧智能体的宿主，正是 `home-ai-assistant` 分类在智能音箱上所追踪的那种转变在家庭网络侧的版本。
+它的价值在于陈述了一种产品方向，而非提供了经过验证的规格。无论信源如何，其中有三点值得持续关注。其一是 **NPU 与本地存储的组合**——6 TOPS 加分布式 NAS——正是这一组合使网关有可能承载模型，而不只是对报文做分类。其二是**负载的混合**：同一台设备被称既运行网络安全（基于 TCN 的 DDoS 检测），又运行环境人体感知（姿态、行为）——两类隐私属性差异极大的负载，汇聚到了家中同一个盒子上。其三是**智能体的定位**：把网关定位为自主端侧智能体的宿主，正是智能音箱上那种智能体化转变在家庭网络侧的版本。
 
 什么样的后续才值得再写一条：一个明确型号、对 6 TOPS 说法的独立实测、标明的 Wi-Fi 代际，或与运营商的真实部署。在其中任何一项落地之前，本条维持为新颖度 2 的定位性数据点。读者应据此权衡——本 scout 的评分准则认为，在有基准测试或第三方背书之前，厂商的 TOPS 数字只是市场宣传；而此处并无任何背书。

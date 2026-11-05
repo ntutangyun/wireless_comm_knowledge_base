@@ -10,7 +10,7 @@ url: "https://arxiv.org/abs/2608.25535"
 source_quality: full
 topics: [federated-learning, decentralized-learning, gradient-tracking, AdamW, Top-K-sparsification, error-feedback, Rician-fading, packet-loss, GLOBECOM-2026]
 topic_primary: edge-federated-learning
-topics_secondary: [edge-ai-networking, edge-model-efficiency]
+topics_secondary: [edge-ai-networking]
 novelty_score: 3
 ---
 

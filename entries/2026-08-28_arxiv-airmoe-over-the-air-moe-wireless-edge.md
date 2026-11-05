@@ -9,8 +9,8 @@ title_zh: "AirMoE：在无线边缘实现空中计算的分布式混合专家推
 url: "https://arxiv.org/abs/2608.22932"
 source_quality: abstract_only
 topics: [MoE, over-the-air-computation, AirComp, distributed-inference, expert-placement, wireless-edge]
-topic_primary: edge-ai-networking
-topics_secondary: [compute-offloading, on-device-inference]
+topic_primary: over-the-air-computation
+topics_secondary: [edge-ai-networking, compute-offloading, on-device-inference]
 novelty_score: 3
 ---
 

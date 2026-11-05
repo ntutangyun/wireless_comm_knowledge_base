@@ -10,7 +10,7 @@ url: "https://press.asus.com/news/press-releases/rog-rapture-gt-be19000ai-ai-gam
 source_quality: full
 topics: [Wi-Fi-router, NPU, Docker, Home-Assistant, Frigate, tri-core-architecture, AI-Game-Boost, WiFi-Insight]
 topic_primary: home-edge-ai
-topics_secondary: [edge-ai-silicon]
+topics_secondary: []
 novelty_score: 2
 ---
 

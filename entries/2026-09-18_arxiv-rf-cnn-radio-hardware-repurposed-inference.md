@@ -9,7 +9,7 @@ title_zh: "射频卷积神经网络"
 url: "https://arxiv.org/abs/2609.19279"
 source_quality: full
 topics: [analog-computing, frequency-mixer, CNN, SDR, edge-accelerator]
-topic_primary: edge-ai-silicon
+topic_primary: over-the-air-computation
 topics_secondary: [edge-ai-networking]
 novelty_score: 5
 ---
@@ -46,11 +46,11 @@ Zhihui Gao、Shi-Yuan Ma、Yiran Chen、Dirk Englund 与 Tingjun Chen（杜克�
 
 ## Why it matters / what's new (EN)
 
-Every edge-ai-silicon entry in this KB so far (Ethos-U85, BrainScaleS-2, the ETHEREAL event-driven GNN chip, CGRA accelerators) has been about a dedicated piece of silicon added to a device. RF-CNN's premise is the opposite: it does inference using hardware the device already carries for communication, with no added compute silicon at all. It is also the first entry in this KB to cross the edge-ai/radio boundary in this particular direction — not an AI workload evaluated over a wireless link, and not a Wi-Fi mechanism improved by AI, but a wireless radio's own analog circuitry doing the AI computation itself. Filed under edge-ai-silicon because the finding is about what runs the model and how cheaply; topics_secondary edge-ai-networking reflects that the scheme is conditioned on a radio that supplies weights over the air.
+Edge AI accelerators (Ethos-U85, BrainScaleS-2, event-driven GNN chips, CGRA accelerators) are dedicated pieces of silicon added to a device. RF-CNN's premise is the opposite: it does inference using hardware the device already carries for communication, with no added compute silicon at all. It is also the first entry in this KB to cross the edge-ai/radio boundary in this particular direction — not an AI workload evaluated over a wireless link, and not a Wi-Fi mechanism improved by AI, but a wireless radio's own analog circuitry doing the AI computation itself. Filed under edge-ai-silicon because the finding is about what runs the model and how cheaply; topics_secondary edge-ai-networking reflects that the scheme is conditioned on a radio that supplies weights over the air.
 
 ## Why it matters / what's new (ZH)
 
-本知识库此前所有 edge-ai-silicon 条目（Ethos-U85、BrainScaleS-2、ETHEREAL 事件驱动 GNN 芯片、CGRA 加速器等）都是围绕"为设备加装一块专用芯片"展开的。RF-CNN 的前提恰恰相反：它利用设备本已携带的通信硬件完成推理，完全不增加计算芯片。这也是本知识库中首条以这种方向跨越边缘 AI 与无线电边界的条目——既不是在无线链路上评测 AI 工作负载，也不是用 AI 改进 Wi-Fi 机制，而是无线电自身的模拟电路直接承担了 AI 计算本身。该发现的核心是"由什么运行模型、成本几何"，因此归入 edge-ai-silicon；topics_secondary 标注 edge-ai-networking，反映该方案依赖于一部能够通过空口下发权重的无线电。
+边缘 AI 加速器（Ethos-U85、BrainScaleS-2、事件驱动 GNN 芯片、CGRA 加速器等）都是"为设备加装一块专用芯片"。RF-CNN 的前提恰恰相反：它利用设备本已携带的通信硬件完成推理，完全不增加计算芯片。这也是本知识库中首条以这种方向跨越边缘 AI 与无线电边界的条目——既不是在无线链路上评测 AI 工作负载，也不是用 AI 改进 Wi-Fi 机制，而是无线电自身的模拟电路直接承担了 AI 计算本身。该发现的核心是"由什么运行模型、成本几何"，因此归入 edge-ai-silicon；topics_secondary 标注 edge-ai-networking，反映该方案依赖于一部能够通过空口下发权重的无线电。
 
 ## Images
 

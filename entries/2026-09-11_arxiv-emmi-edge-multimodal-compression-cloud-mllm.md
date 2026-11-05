@@ -9,8 +9,8 @@ title_zh: "EMMI：面向通信高效多模态大模型推理的边缘多模态�
 url: "https://arxiv.org/abs/2609.11058"
 source_quality: abstract_only
 topics: [edge-cloud-split, multimodal-LLM, learned-compression, computation-offloading]
-topic_primary: compute-offloading
-topics_secondary: [on-device-inference, edge-ai-networking]
+topic_primary: task-oriented-communication
+topics_secondary: [compute-offloading, on-device-inference, edge-ai-networking]
 novelty_score: 3
 ---
 

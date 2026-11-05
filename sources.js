@@ -1438,44 +1438,29 @@ window.SOURCES_DATA = {
       "technology": "nearlink"
     },
     {
-      "id": "arxiv-cs-dc-recent",
-      "name": "arxiv cs.DC /recent — distributed & edge computing",
-      "url": "https://arxiv.org/list/cs.DC/recent",
+      "id": "arxiv-over-the-air-computation",
+      "name": "arxiv search listing — over-the-air computation (AirComp)",
+      "url": "https://arxiv.org/search/?query=%22over-the-air+computation%22&searchtype=all&order=-announced_date_first&size=25",
       "kind": "html",
       "category": "academia",
       "topics_hint": [
-        "edge-orchestration",
-        "compute-offloading",
+        "over-the-air-computation",
         "edge-federated-learning"
       ],
-      "notes": "The listing analogue of the cs.NI sweep the radio scouts use. cs.DC is where edge-serving, orchestration and offloading systems papers land. Ask the fetch for papers whose title/abstract names an edge/device/on-device deployment — cs.DC is dominated by HPC and datacentre work, so most of the listing is out of scope.",
+      "notes": "Added 2026-11-05 (通算一体 re-scope). The purest communication–computing integration line: the channel computes the sum. Over-the-air FL papers are plentiful and often incremental power-control variants — keep the ones with a new computation target (inference, MoE, non-sum functions), a hardware/SDR demo, or a short-range-link evaluation.",
       "technology": "edge-ai"
     },
     {
-      "id": "arxiv-on-device-llm",
-      "name": "arxiv search listing — on-device / edge LLM inference",
-      "url": "https://arxiv.org/search/?query=on-device+LLM+inference&searchtype=all&order=-announced_date_first&size=25",
-      "kind": "html",
-      "category": "academia",
-      "topics_hint": [
-        "on-device-inference",
-        "edge-model-efficiency"
-      ],
-      "notes": "Dated listing, newest first — same pattern the UWB scout adopted 2026-08-15 (arxiv-uwb). Keep a high-water-mark id in state.json and only judge ids above it, with one sub-fold pass when the fresh yield is thin. This is the highest-signal single source in the domain.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "arxiv-edge-inference-systems",
-      "name": "arxiv search listing — edge inference systems",
-      "url": "https://arxiv.org/search/?query=edge+inference&searchtype=all&order=-announced_date_first&size=25",
+      "id": "arxiv-split-inference-wireless",
+      "name": "arxiv search listing — split / collaborative inference over wireless",
+      "url": "https://arxiv.org/search/?query=split+inference+wireless&searchtype=all&order=-announced_date_first&size=25",
       "kind": "html",
       "category": "academia",
       "topics_hint": [
         "compute-offloading",
-        "edge-orchestration",
-        "on-device-inference"
+        "task-oriented-communication"
       ],
-      "notes": "Complements arxiv-on-device-llm on the systems side (serving, batching, caching, cold start). Overlaps it heavily — dedupe by arxiv id before judging.",
+      "notes": "Added 2026-11-05. Successor to the retired arxiv-on-device-llm as the highest-volume listing. Prefer papers measured over a real Wi-Fi/BT/5G link; simulated-link papers are fine but must be labelled as such in the entry.",
       "technology": "edge-ai"
     },
     {
@@ -1486,257 +1471,166 @@ window.SOURCES_DATA = {
       "category": "academia",
       "topics_hint": [
         "compute-offloading",
-        "edge-ai-networking"
+        "edge-orchestration"
       ],
-      "notes": "The user named AI/computation offloading as a first-class topic (2026-08-28). Watch for split/collaborative inference, early-exit cascades, and offload policies that are actually evaluated over a real link — those are the ones that connect to the rest of this KB. 2026-09-23 (user-approved 11a): converted from kind web-search to a dated arxiv search listing (order=-announced_date_first). Open WebSearch ranks by relevance, not recency, so this source kept returning pre-window papers and bumping cf on a config problem rather than a real outage. Keep a high-water-mark arxiv id in state.json like arxiv-on-device-llm; query_hint is now only the fallback.",
+      "notes": "The user named AI/computation offloading as a first-class topic (2026-08-28) and it is the core of 通算一体. 2026-09-23: converted to a dated listing. 2026-11-05: apply the wireless-link gate — offloading papers that decide on cost/accuracy with no link model are drops.",
+      "technology": "edge-ai"
+    },
+    {
+      "id": "arxiv-task-oriented-communication",
+      "name": "arxiv search listing — task-oriented / semantic communication for inference",
+      "url": "https://arxiv.org/search/?query=task-oriented+communication+inference&searchtype=all&order=-announced_date_first&size=25",
+      "kind": "html",
+      "category": "academia",
+      "topics_hint": [
+        "task-oriented-communication",
+        "compute-offloading"
+      ],
+      "notes": "Added 2026-11-05. Keep work whose objective is a downstream computation (task accuracy vs bits). Pure semantic-coding PHY work with no computation target, or framed as a 6G air-interface proposal, routes to the cellular scout.",
       "technology": "edge-ai"
     },
     {
       "id": "arxiv-federated-edge",
-      "name": "arxiv search listing — federated & on-device learning",
-      "url": "https://arxiv.org/search/?query=federated+learning+on-device&searchtype=all&order=-announced_date_first&size=25",
+      "name": "arxiv search listing — wireless federated & distributed learning",
+      "url": "https://arxiv.org/search/?query=wireless+federated+learning&searchtype=all&order=-announced_date_first&size=25",
       "kind": "html",
       "category": "academia",
       "topics_hint": [
-        "edge-federated-learning"
+        "edge-federated-learning",
+        "over-the-air-computation"
       ],
-      "notes": "Federated-learning output is enormous and mostly incremental FedAvg variants. Ingest only papers with a real systems or wireless-link contribution, a released artifact, or a deployment — same bar the radio scouts apply to incremental-estimator papers. 2026-09-23 (user-approved 11a): converted from kind web-search to a dated arxiv search listing (order=-announced_date_first). Open WebSearch ranks by relevance, not recency, so this source kept returning pre-window papers and bumping cf on a config problem rather than a real outage. Keep a high-water-mark arxiv id in state.json like arxiv-on-device-llm; query_hint is now only the fallback.",
+      "notes": "2026-11-05: query narrowed from 'federated learning on-device' to 'wireless federated learning'. The bar is unchanged — mostly incremental; ingest only papers with a real systems or wireless-link contribution, a released artifact, or a deployment.",
       "technology": "edge-ai"
     },
     {
-      "id": "arxiv-edge-model-efficiency",
-      "name": "arxiv search listing — quantisation / compression for edge deployment",
-      "url": "https://arxiv.org/search/?query=quantization+on-device&searchtype=all&order=-announced_date_first&size=25",
+      "id": "arxiv-edge-inference-systems",
+      "name": "arxiv search listing — wireless edge inference systems",
+      "url": "https://arxiv.org/search/?query=wireless+edge+inference&searchtype=all&order=-announced_date_first&size=25",
       "kind": "html",
       "category": "academia",
       "topics_hint": [
-        "edge-model-efficiency",
-        "on-device-inference"
+        "compute-offloading",
+        "edge-ai-networking",
+        "edge-orchestration"
       ],
-      "notes": "Bar is high: the quantisation literature is vast. Ingest when the paper reports device-side numbers (latency, memory, energy) rather than accuracy tables alone. 2026-09-23 (user-approved 11a): converted from kind web-search to a dated arxiv search listing (order=-announced_date_first). Open WebSearch ranks by relevance, not recency, so this source kept returning pre-window papers and bumping cf on a config problem rather than a real outage. Keep a high-water-mark arxiv id in state.json like arxiv-on-device-llm; query_hint is now only the fallback.",
+      "notes": "2026-11-05: query narrowed from 'edge inference' to 'wireless edge inference' — the old query was dominated by on-device compute papers that now fail the gate.",
+      "technology": "edge-ai"
+    },
+    {
+      "id": "arxiv-cs-dc-recent",
+      "name": "arxiv cs.DC /recent — distributed & edge computing",
+      "url": "https://arxiv.org/list/cs.DC/recent",
+      "kind": "html",
+      "category": "academia",
+      "topics_hint": [
+        "edge-orchestration",
+        "compute-offloading",
+        "edge-federated-learning"
+      ],
+      "notes": "cs.DC is dominated by HPC and datacentre work. 2026-11-05: ask the fetch only for papers whose title/abstract names a wireless link, mobile/MEC edge, or a bandwidth-constrained device–edge hop.",
+      "technology": "edge-ai"
+    },
+    {
+      "id": "ieee-comsoc-venues",
+      "name": "IEEE ComSoc venues — JSAC / TWC / TMC / INFOCOM / ICC (integrated communication & computation)",
+      "kind": "web-search",
+      "category": "academia",
+      "topics_hint": [
+        "over-the-air-computation",
+        "compute-offloading",
+        "task-oriented-communication"
+      ],
+      "notes": "Added 2026-11-05. The 通算一体 literature is published here first as special issues and calls (JSAC/TWC special issues on communication–computation integration, INFOCOM accepted papers). Many have arxiv versions — dedupe by title before writing; a special-issue call itself is not an entry.",
       "technology": "edge-ai"
     },
     {
       "id": "mobile-systems-venues",
-      "name": "MobiSys / MobiCom / SenSys / MLSys / EuroSys — edge AI papers",
+      "name": "MobiSys / MobiCom / SenSys / INFOCOM / NSDI — wireless edge compute papers",
       "kind": "web-search",
       "category": "academia",
       "topics_hint": [
-        "on-device-inference",
         "compute-offloading",
-        "edge-orchestration"
-      ],
-      "notes": "Seasonal, like the radio scouts' conference sources. These venues publish the measurement-grade edge-AI systems work that arxiv-only sweeps miss. Camera-ready preprints appear roughly 1-2 months before each conference — bump to daily around MobiSys (June), MobiCom (autumn), SenSys (November), MLSys (May).",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "qualcomm-on-device-ai",
-      "name": "Qualcomm — on-device AI / Snapdragon NPU",
-      "url": "https://www.qualcomm.com/news/releases",
-      "kind": "html",
-      "category": "industry",
-      "topics_hint": [
-        "edge-ai-silicon",
-        "on-device-inference",
-        "ai-pc"
-      ],
-      "notes": "Qualcomm spans all three device classes this domain cares about — phones, AI PCs (Snapdragon X) and gateways (Dragonwing). Its AI Research blog carries the substantive posts; the newsroom carries launches.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "mediatek-edge-ai",
-      "name": "MediaTek — Dimensity NPU / edge AI",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [
-        "edge-ai-silicon",
+        "home-edge-ai",
         "on-device-inference"
       ],
-      "notes": "Second-source for the mobile NPU race; often first to publish on-device model-size claims for Android flagships.",
+      "notes": "Seasonal. Measurement-grade systems work over real links (phone ↔ glasses, AP-hosted compute) lands here. Camera-ready preprints appear 1-2 months before each conference — bump to daily around MobiSys (June), MobiCom (autumn), SenSys (November). 2026-11-05: on-device-only papers from these venues now fail the gate.",
       "technology": "edge-ai"
     },
     {
-      "id": "apple-on-device-ml",
-      "name": "Apple Machine Learning Research + Apple Intelligence",
-      "url": "https://machinelearning.apple.com/research",
-      "kind": "html",
-      "category": "industry",
-      "topics_hint": [
-        "on-device-inference",
-        "ai-pc",
-        "edge-model-efficiency"
-      ],
-      "notes": "Apple publishes unusually concrete on-device deployment detail (quantisation schemes, adapter sizes, memory budgets) — high-signal for edge-model-efficiency. Distinguish research posts from marketing pages.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "google-ai-edge",
-      "name": "Google AI Edge / LiteRT / Gemini Nano",
+      "id": "wearable-split-compute",
+      "name": "Phone ↔ wearable split compute (smart glasses, earbuds, watches)",
       "kind": "web-search",
       "category": "industry",
       "topics_hint": [
         "on-device-inference",
-        "home-ai-assistant"
+        "compute-offloading"
       ],
-      "notes": "Covers both the runtime stack (LiteRT, formerly TensorFlow Lite) and the on-device model line (Gemini Nano). Google's home-assistant news is covered by home-ai-assistants instead.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "microsoft-ai-pc",
-      "name": "Microsoft — Copilot+ PC / Windows AI Foundry",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [
-        "ai-pc",
-        "on-device-inference"
-      ],
-      "notes": "The AI PC category is defined largely by Microsoft's platform requirements (NPU TOPS floor, local model APIs). Watch for API surface changes and the local/cloud routing policy — those are the substantive items, not feature announcements.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "intel-amd-client-ai",
-      "name": "Intel / AMD client AI silicon (Core Ultra, Ryzen AI, OpenVINO)",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [
-        "ai-pc",
-        "edge-ai-silicon"
-      ],
-      "notes": "x86 side of the AI PC story. OpenVINO/ROCm release notes occasionally carry real performance deltas worth an entry; product-tier renames are not.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "arm-nvidia-edge",
-      "name": "Arm (Ethos / KleidiAI) + NVIDIA Jetson edge platforms",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [
-        "edge-ai-silicon",
-        "on-device-inference"
-      ],
-      "notes": "The IP and embedded-module tier that ends up inside gateways, cameras and robots. Jetson generation launches are entry-worthy; ecosystem partner posts usually are not.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "huawei-edge-ai",
-      "name": "Huawei — Ascend / HarmonyOS on-device AI",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [
-        "edge-ai-silicon",
-        "on-device-inference",
-        "home-ai-assistant"
-      ],
-      "notes": "Chinese-language query on purpose — the substantive Huawei on-device material (端侧大模型, 小艺 agent capabilities, HarmonyOS AI APIs) is published in Chinese first. Cross-check HDC announcements against the landing-confirmation guard: promised-at-HDC features frequently ship months later or not at all.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "edge-ai-silicon-startups",
-      "name": "Edge AI silicon specialists (Hailo, Ambarella, SiMa.ai, Axelera, Kneron)",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [
-        "edge-ai-silicon"
-      ],
-      "notes": "The non-incumbent accelerator tier — where camera, robotics and gateway design wins show up first. Funding rounds are not entries; shipping silicon with benchmarked numbers, or a named design win, is.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "local-inference-runtimes",
-      "name": "Local inference runtimes (llama.cpp, Ollama, ExecuTorch, MLC, vLLM-edge)",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [
-        "on-device-inference",
-        "edge-model-efficiency"
-      ],
-      "notes": "Runtime releases are where quantisation formats and hardware backends actually land. Ingest a release when it adds a new backend, a new quantisation scheme, or published device benchmarks — routine point releases are noise.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "small-model-releases",
-      "name": "Small / on-device model releases (Phi, Gemma, Qwen, MiniCPM, SmolLM)",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [
-        "on-device-inference",
-        "edge-model-efficiency"
-      ],
-      "notes": "STRICT scope gate: a model release belongs here only when it is published FOR on-device use and comes with device-side numbers (memory footprint, tokens/s on named hardware). A frontier cloud model release is out of scope no matter how newsworthy — see the drop list in SKILL.md.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "home-ai-assistants",
-      "name": "Home AI agents & assistants (Alexa+, Gemini for Home, Siri, 小艺, 小爱)",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [
-        "home-ai-assistant",
-        "on-device-inference"
-      ],
-      "notes": "Added at the user's request (2026-08-28). The interesting axis is always WHERE the intelligence runs and what it can actuate — local wake-word vs cloud reasoning, the agent's device-control tool surface, multi-device handoff. A feature-list refresh with no compute-placement content is a drop.",
+      "notes": "Added 2026-11-05 — the most short-range-specific line in the domain: wearables that tether their AI compute to a phone over Wi-Fi / Bluetooth (or UWB/NearLink). Keep items that state what runs where and over which link; a feature-list refresh is a drop.",
       "technology": "edge-ai"
     },
     {
       "id": "home-gateway-edge-compute",
-      "name": "Home gateways / routers / NAS as edge AI compute",
+      "name": "Wi-Fi routers / mesh / FTTR / CPE gateways as compute nodes",
       "kind": "web-search",
       "category": "industry",
       "topics_hint": [
         "home-edge-ai",
         "edge-ai-networking"
       ],
-      "notes": "Added at the user's request (2026-08-28): the home-Wi-Fi-setup angle on edge AI. Covers AI-capable CPE silicon (Qualcomm Dragonwing, Broadcom, MediaTek Filogic with NPU), router vendors adding on-box inference, and NAS/home-server local-model hosting. NOTE the scope split: a finding about the Wi-Fi mechanism itself routes to wifi_research_scout — this source is for the compute story on the box.",
+      "notes": "User-requested 2026-08-28 and now central to the domain: the wireless box as the compute node. Covers AI-capable CPE silicon (Qualcomm Dragonwing / Networking Pro, Broadcom, MediaTek Filogic with NPU), router vendors adding on-box inference, FTTR gateways. A finding about the Wi-Fi mechanism itself routes to wifi_research_scout — this source is for the compute story on the box.",
       "technology": "edge-ai"
     },
     {
-      "id": "home-assistant-local-ai",
-      "name": "Home Assistant / local-first smart home AI",
-      "url": "https://www.home-assistant.io/blog/",
+      "id": "qualcomm-on-device-ai",
+      "name": "Qualcomm — distributed AI across connected devices / Dragonwing gateways",
+      "url": "https://www.qualcomm.com/news/releases",
       "kind": "html",
       "category": "industry",
       "topics_hint": [
+        "compute-offloading",
         "home-edge-ai",
-        "home-ai-assistant"
-      ],
-      "notes": "The open-source local-first counterweight to the big-vendor assistants, and unusually transparent about what runs on which hardware. Its release notes are dated and specific — cheap to check, occasionally high-signal for home-edge-ai.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "matter-csa-edge",
-      "name": "Connectivity Standards Alliance (Matter) — hubs & local intelligence",
-      "kind": "web-search",
-      "category": "standards",
-      "topics_hint": [
-        "home-edge-ai",
-        "home-ai-assistant"
-      ],
-      "notes": "Matter's hub/controller model is the interoperability substrate for home edge compute. Ingest spec releases and hub-capability changes; certification-count press releases are drops.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "mlcommons-edge-benchmarks",
-      "name": "MLCommons — MLPerf Client / Inference Edge / Tiny",
-      "url": "https://mlcommons.org/benchmarks/",
-      "kind": "html",
-      "category": "standards",
-      "topics_hint": [
-        "ai-pc",
-        "edge-ai-silicon",
         "on-device-inference"
       ],
-      "notes": "The only place vendor performance claims in this domain get independently normalised — which makes each results round genuinely entry-worthy, and makes MLPerf the right citation when an entry has to characterise a marketing TOPS number.",
+      "notes": "2026-11-05: re-targeted from NPU/AI-PC launches (now out of scope) to Qualcomm's cross-device AI (phone ↔ glasses/PC split over Wi-Fi/BT) and gateway compute. Snapdragon NPU launches are drops unless the announcement is about splitting work across a link.",
       "technology": "edge-ai"
     },
     {
-      "id": "lf-edge-kubeedge",
-      "name": "LF Edge / KubeEdge / CNCF edge orchestration",
+      "id": "huawei-edge-ai",
+      "name": "Huawei — 通算一体 / 星闪+AI / 端云协同",
       "kind": "web-search",
-      "category": "standards",
+      "category": "industry",
       "topics_hint": [
-        "edge-orchestration"
+        "compute-offloading",
+        "home-edge-ai",
+        "edge-ai-networking"
       ],
-      "notes": "Open-source orchestration layer for edge AI workloads. Major releases and graduation events only; meetup and blog chatter is a drop.",
+      "notes": "2026-11-05: re-targeted from Ascend/端侧大模型 to Huawei's communication–computing integration material (通算一体 white papers, 星闪/Wi-Fi + AI cross-device collaboration, router/FTTR compute). Chinese first; cross-check HDC announcements against the landing-confirmation guard.",
+      "technology": "edge-ai"
+    },
+    {
+      "id": "operator-computing-network",
+      "name": "Operators & industry bodies — 算力网络 / 通算融合 (China Mobile, IMT-2030 推进组, CCSA)",
+      "kind": "web-search",
+      "category": "industry",
+      "topics_hint": [
+        "edge-orchestration",
+        "edge-ai-networking",
+        "compute-offloading"
+      ],
+      "notes": "Added 2026-11-05. Where the 通算一体 term itself is defined and pushed (operator white papers, IMT-2030 推进组 reports, CCSA study items). Ingest documents with technical content; conference-keynote slogans are drops. Pure wide-area 算力网络 (datacentre interconnect) with no wireless access angle is a drop; RAN-side items route to cellular.",
+      "technology": "edge-ai"
+    },
+    {
+      "id": "cn-on-device-ai",
+      "name": "中文 通算一体 / 无线边缘计算 产业动态",
+      "kind": "web-search",
+      "category": "industry",
+      "topics_hint": [
+        "compute-offloading",
+        "home-edge-ai",
+        "on-device-inference"
+      ],
+      "notes": "2026-11-05: re-targeted from 端侧大模型 to Chinese communication–computing integration news (router/FTTR compute, phone ↔ wearable AI collaboration, 星闪 + AI). Apply the year-disambiguation clause rigorously — Chinese sources routinely write dates without a year.",
       "technology": "edge-ai"
     },
     {
@@ -1748,20 +1642,7 @@ window.SOURCES_DATA = {
         "edge-orchestration",
         "compute-offloading"
       ],
-      "notes": "BOUNDARY SOURCE — read the routing rule first. MEC infrastructure itself stays in cellular's `mec` bin (user decision 2026-08-28); this source exists to catch the AI-workload-on-MEC items and to route the pure-infrastructure ones to cellular_research_scout. Expect to route more than you keep.",
-      "technology": "edge-ai"
-    },
-    {
-      "id": "cn-on-device-ai",
-      "name": "中文端侧 AI / 边缘计算 产业动态",
-      "kind": "web-search",
-      "category": "industry",
-      "topics_hint": [
-        "on-device-inference",
-        "edge-ai-silicon",
-        "ai-pc"
-      ],
-      "notes": "Chinese vendors (Huawei, Xiaomi, OPPO, vivo, Honor, Lenovo) ship on-device model features months before they are covered in English, and the Chinese trade press reports memory footprints and NPU utilisation more concretely. Apply the year-disambiguation clause rigorously — Chinese sources routinely write dates without a year.",
+      "notes": "BOUNDARY SOURCE — read the routing rule first. MEC infrastructure itself stays in cellular's `mec` bin (user decision 2026-08-28); this source exists to catch the computation-on-MEC items and to route the pure-infrastructure ones to cellular_research_scout. Expect to route more than you keep.",
       "technology": "edge-ai"
     }
   ]

@@ -9,8 +9,8 @@ title_zh: "异构移动无线网络中的空口联邦学习"
 url: "https://arxiv.org/abs/2609.32832"
 source_quality: abstract_only
 topics: [federated-learning, over-the-air-computation, heterogeneous-fading, wireless]
-topic_primary: edge-federated-learning
-topics_secondary: [edge-ai-networking]
+topic_primary: over-the-air-computation
+topics_secondary: [edge-federated-learning, edge-ai-networking]
 novelty_score: 3
 ---
 

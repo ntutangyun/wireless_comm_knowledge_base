@@ -9,8 +9,8 @@ title_zh: "FastSA：回传网络互联 MEC 系统中带近似保证与故障恢�
 url: "https://arxiv.org/abs/2610.26142"
 source_quality: full
 topics: [task-offloading, approximation-algorithm, fault-tolerance, mecRT, backhaul-forwarding]
-topic_primary: compute-offloading
-topics_secondary: [edge-orchestration, edge-ai-networking]
+topic_primary: edge-orchestration
+topics_secondary: [compute-offloading, edge-ai-networking]
 novelty_score: 3
 ---
 

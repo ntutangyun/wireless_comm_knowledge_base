@@ -9,8 +9,8 @@ title_zh: "按需推理（Inference on Demand）：将拆分式 AI 推理暴露�
 url: "https://arxiv.org/abs/2610.15062"
 source_quality: full
 topics: [split-inference, CAMARA, 5G-UPF, GTP-U, FABRIC, ResNet18, network-API]
-topic_primary: compute-offloading
-topics_secondary: [edge-orchestration, edge-ai-networking]
+topic_primary: edge-ai-networking
+topics_secondary: [compute-offloading, edge-orchestration]
 novelty_score: 3
 ---
 
