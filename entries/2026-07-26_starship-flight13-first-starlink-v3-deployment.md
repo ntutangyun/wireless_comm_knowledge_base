@@ -16,7 +16,7 @@ novelty_score: 2
 
 ## Summary (EN)
 
-After a July 16 post-ignition abort (four Raptor engines failed to ignite; at least two were removed and re-light reliability hardware fitted) and a July 23 weather waive-off, Starship Flight 13 launched from Starbase on July 24, 2026 at 5:51 p.m. CT with all 33 booster Raptors firing. About 18 minutes in, the upper stage deployed **20 operational Starlink V3 satellites** — the first time functioning V3 hardware (not the mass simulators of Flight 12) has reached orbit. The ship then demonstrated the Raptor relight following the ~11-minute deploy sequence and executed what SpaceX engineers called the "softest splashdown yet" in the Indian Ocean.
+After a July 16 post-ignition abort (four Raptor engines failed to ignite; at least two were removed and re-light reliability hardware fitted) and a July 23 weather waive-off, Starship Flight 13 launched from Starbase on July 24, 2026 at 5:51 p.m. CT with all 33 booster Raptors firing. About 18 minutes in, the upper stage deployed **20 operational Starlink V3 satellites** — the first functioning V3 satellites deployed (not the mass simulators of Flight 12), on what SpaceNews calls a suborbital test flight. The ship then demonstrated the Raptor relight following the ~11-minute deploy sequence and executed what SpaceX engineers called the "softest splashdown yet" in the Indian Ocean.
 
 The persistent weak point remains booster recovery: during Booster 20's simulated ocean landing in the Gulf, only ten Raptors relit for the landing burn and two of those shut down within seconds — the second consecutive booster-landing failure in the V3 campaign. The flight was also SpaceX's first since its IPO, adding public-market scrutiny to the cadence question.
 
@@ -24,7 +24,7 @@ For the constellation roadmap, this converts the V3 promise from paper to orbit:
 
 ## Summary (ZH)
 
-在 7 月 16 日点火后中止（四台猛禽发动机未点燃；至少两台被拆下并加装了改进再点火可靠性的硬件）以及 7 月 23 日因天气放弃后，星舰第 13 次试飞于 2026 年 7 月 24 日 17:51（中部时间）从 Starbase 升空，助推器 33 台猛禽发动机全部点火。升空约 18 分钟后，上面级部署了 **20 颗运营型星链 V3 卫星**——这是功能完整的 V3 硬件（而非第 12 次试飞的质量模拟器）首次入轨。随后飞船完成了约 11 分钟部署序列后的猛禽再点火演示，并在印度洋实现了 SpaceX 工程师所称的"迄今最软溅落"。
+在 7 月 16 日点火后中止（四台猛禽发动机未点燃；至少两台被拆下并加装了改进再点火可靠性的硬件）以及 7 月 23 日因天气放弃后，星舰第 13 次试飞于 2026 年 7 月 24 日 17:51（中部时间）从 Starbase 升空，助推器 33 台猛禽发动机全部点火。升空约 18 分钟后，上面级部署了 **20 颗运营型星链 V3 卫星**——这是首批功能完整的 V3 卫星（而非第 12 次试飞的质量模拟器）完成部署，SpaceNews 称该次为亚轨道试飞。随后飞船完成了约 11 分钟部署序列后的猛禽再点火演示，并在印度洋实现了 SpaceX 工程师所称的"迄今最软溅落"。
 
 薄弱环节仍是助推器回收：20 号助推器在墨西哥湾模拟海上着陆时，着陆点火仅十台猛禽重新点燃，其中两台点火数秒内又熄火——这是 V3 战役中连续第二次助推器着陆失败。本次飞行也是 SpaceX IPO 后的首次试飞，节奏问题面临公开市场的额外审视。
 
