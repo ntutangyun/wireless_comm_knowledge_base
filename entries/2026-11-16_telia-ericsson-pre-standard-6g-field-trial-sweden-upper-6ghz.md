@@ -16,13 +16,13 @@ novelty_score: 3
 
 ## Summary (EN)
 
-TelecomTV reports, in an article dated 2 November 2026, that Telia and Ericsson have started a pre-standard 6G field trial in Sweden. The trial uses Ericsson's pre-standard 6G capabilities in the upper 6 GHz band and is described in the article as one of the Nordic region's first major outdoor 6G trials. Experts from both companies are measuring coverage, signal performance, uplink capacity, reliability and latency, with the stated aim of improving how 6G networks are designed and deployed. Coverage of the launch event also mentions an over-the-air demonstration of pre-standard 6G in that band.
+TelecomTV reports, in an article dated 2 November 2026, that Telia and Ericsson have started a pre-standard 6G field trial in Sweden. The trial uses Ericsson's pre-standard 6G capabilities in the upper 6 GHz band and is described in the article as one of the Nordic region's first major outdoor 6G trials. Experts from both companies are measuring coverage, signal performance, uplink capacity, reliability and latency, with the stated aim of improving how 6G networks are designed and deployed.
 
 The article places the trial inside a wider roadmap. It builds on Telia's NorthStar programme and the Digital Arena Sweden testbed, Telia and Ericsson will assess future spectrum needs including the 6 GHz and 600 MHz bands, and Telia plans to convene stakeholders to define a national 6G security architecture. The article gives initial 6G capabilities for NorthStar partners from 2029 and commercial 6G around 2030 to 2032; it does not state trial duration, results or equipment vendors other than Ericsson.
 
 ## Summary (ZH)
 
-TelecomTV 在 2026 年 11 月 2 日的报道中称，Telia 与爱立信已在瑞典启动预标准 6G 现场试验。试验使用爱立信在上 6 GHz 频段的预标准 6G 能力，文章称其为北欧地区首批大型室外 6G 试验之一。双方专家正在测量覆盖、信号性能、上行容量、可靠性与时延，目的是改进 6G 网络的设计与部署方式。关于启动活动的其他报道还提到了该频段预标准 6G 的空口演示。
+TelecomTV 在 2026 年 11 月 2 日的报道中称，Telia 与爱立信已在瑞典启动预标准 6G 现场试验。试验使用爱立信在上 6 GHz 频段的预标准 6G 能力，文章称其为北欧地区首批大型室外 6G 试验之一。双方专家正在测量覆盖、信号性能、上行容量、可靠性与时延，目的是改进 6G 网络的设计与部署方式。
 
 文章把这次试验置于更广的路线图之中：它建立在 Telia 的 NorthStar 计划和 Digital Arena Sweden 测试平台之上；Telia 与爱立信将评估未来频谱需求，包括 6 GHz 和 600 MHz 频段；Telia 还计划召集各方共同定义瑞典国家级 6G 安全架构。文章给出的时间点为：NorthStar 合作伙伴自 2029 年起可获得初期 6G 能力，6G 商用约在 2030 至 2032 年；文中未说明试验时长、结果，也未提及爱立信以外的设备厂商。
 
