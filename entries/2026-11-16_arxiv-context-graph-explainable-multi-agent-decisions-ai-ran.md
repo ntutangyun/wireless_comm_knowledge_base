@@ -18,13 +18,13 @@ novelty_score: 3
 
 Wang, Liu, Chen (Sun Yat-sen University), Yang (Zhejiang University) and Feng (University of Exeter) address a diagnosis problem in AI-RAN: when several xApps and rApps act on overlapping radio resources, an operator who sees an SLA alert cannot tell which decisions caused it. Existing explainability work, they argue, either attributes a single model's prediction to its input features or keeps a linear event log, and conflict-management methods detect competing actions without reconstructing why they happened. The paper, submitted to IEEE, proposes a Context Graph, a heterogeneous directed graph that links policies, measurements, agent decisions and alerts into a queryable explanation layer.
 
-The graph is built from existing O-RAN data flows: E2SM-KPM measurements, A1 policies and O1 VES alerts, plus decision records that a lightweight Context-Logger xApp timestamps in the Near-RT RIC. Heavier graph assembly and counterfactual inference run in the Non-RT domain so the control loop is not stalled. Evaluation is on a synthetic, standards-aligned simulator (12 cells, URLLC and eMBB slices, a power xApp and a PRB xApp) with graphs up to 45.3k nodes and 96.0k edges.
+The graph is built from existing O-RAN data flows: E2SM-KPM measurements, A1 policies and O1 VES alerts, plus decision records that a lightweight Context-Logger xApp timestamps in the Near-RT RIC. Heavier graph assembly and counterfactual inference run in the Non-RT domain so the control loop is not stalled. Evaluation is on a synthetic, standards-aligned simulator (URLLC and eMBB slices, a power xApp and a PRB xApp; 12-cell and 24-cell configurations) with graphs up to 45.3k nodes and 96.0k edges in the largest (24-cell, 30-minute) configuration.
 
 ## Summary (ZH)
 
 Wang、Liu、Chen（中山大学）、Yang（浙江大学）与 Feng（埃克塞特大学）针对 AI-RAN 中的一个诊断难题：当多个 xApp 与 rApp 作用于相互重叠的无线资源时，运营商看到 SLA 告警后无法判断是哪些决策导致了它。作者认为，现有可解释性工作要么把单个模型的预测归因于输入特征，要么只保留线性事件日志，而冲突管理方法只检测相互竞争的动作，并不还原其成因。这篇已提交 IEEE 的论文提出 Context Graph：一种异构有向图，把策略、测量、智能体决策与告警连接成可查询的解释层。
 
-该图基于现有 O-RAN 数据流构建：E2SM-KPM 测量、A1 策略和 O1 VES 告警，以及由近实时 RIC 中的轻量 Context-Logger xApp 打时间戳的决策记录。较重的图构建与反事实推断放在非实时域运行，以免拖慢控制回路。评估基于一个合成的、与标准对齐的仿真器（12 个小区、URLLC 与 eMBB 切片、一个功率 xApp 与一个 PRB xApp），图规模最大为 4.53 万节点、9.60 万条边。
+该图基于现有 O-RAN 数据流构建：E2SM-KPM 测量、A1 策略和 O1 VES 告警，以及由近实时 RIC 中的轻量 Context-Logger xApp 打时间戳的决策记录。较重的图构建与反事实推断放在非实时域运行，以免拖慢控制回路。评估基于一个合成的、与标准对齐的仿真器（URLLC 与 eMBB 切片、一个功率 xApp 与一个 PRB xApp；含 12 小区与 24 小区配置），在最大配置（24 小区、30 分钟）下图规模达 4.53 万节点、9.60 万条边。
 
 ## Key technical points (EN)
 
