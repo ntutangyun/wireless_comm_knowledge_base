@@ -3,7 +3,7 @@ company: "Nordic Semiconductor"
 req_id: "318fee94-de24-4c67-894d-f853172c047c"
 url: "https://careers.nordicsemi.com/jobs/8587502-senior-soc-design-lead"
 title: "Senior SoC Design Lead"
-location: "Norway"
+location: "Oulu, Finland | Tampere, Finland"
 technology: bluetooth
 keywords: ["wireless SoC", "SoC design", "tape-out"]
 date_found: 2026-11-19

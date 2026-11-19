@@ -3,7 +3,7 @@ company: "Nordic Semiconductor"
 req_id: "cf79159c-6cec-4c39-a16a-f39489f61152"
 url: "https://careers.nordicsemi.com/jobs/8583999-senior-analog-soc-architect"
 title: "Senior Analog SoC Architect"
-location: "Norway"
+location: "Oulu, Finland | Tampere, Finland"
 technology: bluetooth
 keywords: ["wireless SoC", "analog/mixed-signal architecture", "low power"]
 date_found: 2026-11-19
