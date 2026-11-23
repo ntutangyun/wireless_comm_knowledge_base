@@ -52,4 +52,4 @@ This is a product-side HaLow data point from the edge-AI camera segment, alongsi
 
 ## Images
 
-![CamThink NeoEyes Wi-Fi HaLow camera lineup | CamThink NeoEyes Wi-Fi HaLow 相机产品线](https://cdn.prod.website-files.com/6a4debf08214a73d7d061248/6af6543f94ff7c2fbc3942d5_CamThink%20graphic%20(1)%202.jpeg)
+![CamThink NeoEyes Wi-Fi HaLow camera lineup | CamThink NeoEyes Wi-Fi HaLow 相机产品线](https://cdn.prod.website-files.com/6a4debf08214a73d7d061248/6af6543f94ff7c2fbc3942d5_CamThink%20graphic%20%281%29%202.jpeg)
